@@ -26,6 +26,12 @@ inputSequence is a file in a specific text format in bioinformatics.
 2. 'Protein', as its name suggests, requires a Fasta file with protein sequence. 
 3. 'Read', however, is in FastQ format, which is a completely raw DNA data from experiments. 
 
+Windows:
+
+* Download and install vmware at : https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0
+* Download ubuntu iso at: http://www.ubuntu.com/download/desktop
+* Create a virtual (Enable virtualization technology)
+
 Beta Testing Notes:
 
 * RGI file (rgi.py) is from build api-master-8dcc61351daa02b5c1da8a1b119f26032f668c81
