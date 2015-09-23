@@ -3,7 +3,13 @@ Documentation of rgi.py
 Before you run RGI script, make sure you have installed all other bioinformatics tool already:
 
 * MetaGeneMark http://exon.gatech.edu/GeneMark/license_download.cgi
+
+- Tested with MetaGeneMark v3.26 on linux 64 and Mac OS X
+
 * BLAST ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+- Tested with BLAST 2.2.31+ on linux 64 and Mac OS X
+
 * Biopython http://biopython.org/DIST/docs/install/Installation.html#sec12
 * Download the database - card.json from Downloads in our website
 
