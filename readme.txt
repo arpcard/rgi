@@ -1,6 +1,6 @@
 Documentation of rgi.py
 
-Before you run RGI script, make sure you have installed all other bioinformatics tool already:
+Before you run the RGI scripts, make sure you have installed needed external tools:
 
 * MetaGeneMark http://exon.gatech.edu/GeneMark/license_download.cgi
 
@@ -29,7 +29,9 @@ Before you run RGI script, make sure you have installed all other bioinformatics
 
 > sudo apt-get install python-biopython
 
-* Download the database - card.json from Downloads in our website
+* Download the database - card.json from Downloads on the CARD website (a copy may be included with this release)
+
+Running RGI:
 
 Open a terminal, type: 
 
@@ -38,17 +40,16 @@ Open a terminal, type:
 eg. python rgi.py protein query.fasta
 
 Currently, inputSequenceType could be one of 'contig', 'protein' or 'read'.
-inputSequence is a file in a specific text format in bioinformatics. 
 
-1. 'Contig' means that inputSequence is a DNA sequence stored in a FastA file. It can be preprocessed to find an open reading frame (orf) in a sequence or a complete genome sequence.
-2. 'Protein', as its name suggests, requires a Fasta file with protein sequence. 
-3. 'Read', however, is in FastQ format, which is a completely raw DNA data from experiments. 
+1. 'contig' means that inputSequence is a DNA sequence stored in a FASTA file, presumably a complete genome or assembly contigs. RGI will predict ORFs de novo and predict resistome using a combination of BLASTP against the CARD data, curated cut-offs, and SNP screening.
 
-Results:
+2. 'protein', as its name suggests, requires a FASTA file with protein sequences. As above, RGI predict resistome using a combination of BLASTP against the CARD data, curated cut-offs, and SNP screening.
 
-- Report.json (The results are save to this file)
+3. 'read' expects raw FASTQ format nucleotide data and predicts resistome using a combination of BLASTX against the CARD data, curated cut-offs, and SNP screening. This is an experimental tool and we have yet to adjust the CARD cut-offs for BLASTX.  We will be exploring other metagenomics or FASTQ screening methods. Note that RGI does not perform any pre-processing of the FASTQ data (linker trimming, etc).
 
-The JSON is as follows(This shows only one hit):
+RGI Output will produce a detailed JSON file: Report.json
+
+The JSON is as follows (example shows only one hit):
 
 - gene_71|gi|378406451|gb|JN420336.1| Klebsiella pneumoniae plasmid pNDM-MAR, complete sequence: {
 	// Hit 1
@@ -100,9 +101,7 @@ Run the following command to get the Tab Delimited output
 
 > python convertJsonToTSV.py ./Report.json
 
-This outputs a tab-delimited text file:
-
-- dataSummary.txt
+This outputs a tab-delimited text file: dataSummary.txt
 
 The tab-output is as follows:
 
