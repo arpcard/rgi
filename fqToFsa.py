@@ -1,5 +1,11 @@
 import sys
+import os
+import filepaths
 
+script_path = filepaths.determine_path()
+working_directory = os.getcwd()
+
+path = script_path
 
 def convertFqToFsa(managedfile):
 	with open(managedfile, 'r') as f:
@@ -29,7 +35,7 @@ def convertFqToFsa(managedfile):
 
 
 def main(argvfile):
-	sys.stdout = open('read.fsa', 'w')
+	sys.stdout = open(path+'/read.fsa', 'w')
 	convertFqToFsa(argvfile)
 
 

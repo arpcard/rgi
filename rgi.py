@@ -5,6 +5,13 @@ import fqToFsa
 import contigToProteins
 #import blastnsnp
 
+import argparse
+import filepaths
+
+script_path = filepaths.determine_path()
+working_directory = os.getcwd()
+
+path = script_path+"/"
 
 #remove temporary file
 def removeTemp():
@@ -90,10 +97,10 @@ def checkKeyExisted(key, my_dict):
 def writeFASTAfromJson():
 	noSeqList = []
 
-	if os.path.isfile("proteindb.fsa") == False:
-		with open("card.json") as json_file:
+	if os.path.isfile(path+"proteindb.fsa") == False:
+		with open(path+"card.json") as json_file:
 			json_data = json.load(json_file)
-			with open ('proteindb.fsa', 'w') as wp:
+			with open (path+'proteindb.fsa', 'w') as wp:
 
 				for item in json_data:
 
@@ -139,37 +146,37 @@ def writeFASTAfromJson():
 
 #make protein (and dna if needed) database:
 def makeBlastDB(inType, inputSeq):
-	if os.path.isfile("proteindb.fsa") == True and os.path.exists("proteindb.fsa") == True  and os.path.exists("protein.db.phr") == True and os.path.exists("protein.db.pin") == True and os.path.exists("protein.db.psq") == True :
+	if os.path.isfile(path+"proteindb.fsa") == True and os.path.exists(path+"proteindb.fsa") == True  and os.path.exists(path+"protein.db.phr") == True and os.path.exists(path+"protein.db.pin") == True and os.path.exists(path+"protein.db.psq") == True :
 		print "DB exists"
 	else:
 		print "create DB."
-		os.system('makeblastdb -in proteindb.fsa -dbtype prot -out protein.db')
+		os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db')
 	#os.system('makeblastdb -in proteindb.fsa -dbtype prot -out protein.db')
 
 def runBlast(inType, inputSeq):	
 	startBlast = False
 	if inType == 'contig':
 		contigToProteins.main(inputSeq)
-		if os.stat("contig.fsa").st_size != 0:
+		if os.stat(path+"contig.fsa").st_size != 0:
 			from Bio.Blast.Applications import NcbiblastpCommandline
-			blastCLine = NcbiblastpCommandline(query="./contig.fsa", db="protein.db", outfmt=5, out="blastRes.xml")
+			blastCLine = NcbiblastpCommandline(query=path+"contig.fsa", db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
 			stdt, stdr = blastCLine()
-			result_handle = open("blastRes.xml")
+			result_handle = open(path+"blastRes.xml")
 			startBlast = True
 		
 	elif inType == 'protein':
 		from Bio.Blast.Applications import NcbiblastpCommandline
-		blastCLine = NcbiblastpCommandline(query=inputSeq, db="protein.db", outfmt=5, out="blastRes.xml")
+		blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
 		stdt, stdr = blastCLine()
-		result_handle = open("blastRes.xml")
+		result_handle = open(path+"blastRes.xml")
 		startBlast = True
 
 	elif inType == 'read':
 		fqToFsa.main(inputSeq)
 		from Bio.Blast.Applications import NcbiblastxCommandline
-		blastCLine = NcbiblastxCommandline(query='./read.fsa', db="protein.db", outfmt=5, out="blastRes.xml")
+		blastCLine = NcbiblastxCommandline(query=path+'read.fsa', db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
 		stdt, stdr = blastCLine()
-		result_handle = open("blastRes.xml")
+		result_handle = open(path+"blastRes.xml")
 		startBlast = True
 	
 	if startBlast:
@@ -179,7 +186,7 @@ def runBlast(inType, inputSeq):
 		pjson = {}
 
 
-		with open("card.json") as json_file:
+		with open(path+"card.json") as json_file:
 			json_data = json.load(json_file)
 
 		for blast_record in blast_records:
@@ -534,7 +541,7 @@ def runBlast(inType, inputSeq):
 
 		pjson = json.dumps(blastResults)
 
-		with open("Report.json", 'w') as f:
+		with open(path+"Report.json", 'w') as f:
 			print>>f, pjson
 		if inType == 'contig':
 			for gene in blastResults:
@@ -617,7 +624,11 @@ def main(inType, inputSeq):
 
 
 if __name__ == '__main__':
-	main(sys.argv[1], sys.argv[2])
 	"""required: 
 		argv[1] must be one of contig, orf, protein, read
 		inputSeq must be in either FASTA (contig and protein) or FASTQ(read) format!"""
+	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version 3.0.0 Beta')
+	parser.add_argument('inType',help='must be one of contig, orf, protein, read')
+	parser.add_argument('inputSeq',help='must be in either FASTA (contig and protein) or FASTQ(read) format!')	
+	args = parser.parse_args()
+	main(sys.argv[1], sys.argv[2])		

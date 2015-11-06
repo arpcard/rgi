@@ -1,37 +1,11 @@
 import json
 import csv
 import sys
-import os
 #import tryrgi
-import re
 
-import argparse
-import filepaths
-
-script_path = filepaths.determine_path()
-working_directory = os.getcwd()
-path = script_path+"/"
-
-def check_delimiter(fastaHeader):
-	# Colon
-	if ((':').join(re.split(':',fastaHeader)) == fastaHeader) and re.split(':',fastaHeader)[0] != fastaHeader:
-		return ":"
-	# Pipe
-	elif (('|').join(re.split('|',fastaHeader)) == fastaHeader) and re.split('|',fastaHeader)[0] != fastaHeader:
-		return "|"
-	# Dash
-	elif (('-').join(re.split('-',fastaHeader)) == fastaHeader) and re.split('-',fastaHeader)[0] != fastaHeader:
-		return "-"
-	# Underscore
-	elif (('_').join(re.split('_',fastaHeader)) == fastaHeader) and re.split('_',fastaHeader)[0] != fastaHeader:
-		return "_"	
-	# Other
-	else:
-		return ""	
 
 #output the information particular field from alignment.Title by splicing it by '|'
 def findnthbar(bunchstr, start):
-
 	barc = 0
 	over = start+1
 	temp = ""
@@ -45,7 +19,7 @@ def findnthbar(bunchstr, start):
 			else:
 				temp += eachc
 		if barc == over:
-			break		
+			break
 
 	return temp
 
@@ -94,7 +68,7 @@ def printCSV(resultfile):
 		print>>sys.stderr, "convertJsonToTSV expects a file contains a VALID JSON string."
 		exit()
 
-	with open(path+"dataSummary.txt", "w") as af:
+	with open("dataSummary.txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
 		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identites", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
 		for item in data:
@@ -159,14 +133,11 @@ def printCSV(resultfile):
 			AROcatalphaSet = set(AROcatList)
 			AROsortedList = sorted(list(AROcatalphaSet))
 
-			#if typeList:
-			#	writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
-
 			if typeList:
 				#Hack for protein RGI runs where there's no | or seq_start/stop/strand
-				#print item
 				if findnthbar(item, 4) == "":
 					writer.writerow([item, "", "", "", "", ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
+				#print((findnthbar(item, 4)), (findnthbar(item, 5)))
                                 else:
 				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
 
@@ -176,8 +147,5 @@ def main(afile):
 
 
 if __name__ == '__main__':
-	"""required: sys.argv[1] must be a json file"""
-	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
-	parser.add_argument('afile',help='must be a json file generated from RGI')	
-	args = parser.parse_args()
 	main(sys.argv[1])
+	"""required: sys.argv[1] must be a json file"""
