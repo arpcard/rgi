@@ -117,10 +117,10 @@ def printCSV(resultfile,ofile):
 					for aroctkey in data[item][it]["ARO_category"]:
 						cgList.append(str(data[item][it]["ARO_category"][aroctkey]["category_aro_name"].encode('ascii','replace')))
 
-				if data[item][it]["model_type"] == "model-mutation":
+				if data[item][it]["model_type_id"] == 40293:
 					temp = data[item][it]["SNP"]["original"] + str(data[item][it]["SNP"]["position"]) + data[item][it]["SNP"]["change"]
 					snpList.append(convert(temp))
-				elif data[item][it]["model_type"] == "model-blastP":
+				elif data[item][it]["model_type_id"] == 40292:
 					snpList.append("n/a")
 
 				AROlist.append(convert(data[item][it]["ARO_accession"]))

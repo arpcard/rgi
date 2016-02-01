@@ -300,6 +300,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 										
 										sinsidedict["model_name"] = json_data[modelID]["model_name"]
 										sinsidedict["model_type"] = json_data[modelID]["model_type"]
+										sinsidedict["model_type_id"] = modelTypeID
+
 										sinsidedict["model_id"] = modelID
 										sinsidedict["pass_evalue"] = passevalue
 										sinsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
@@ -343,6 +345,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 
 										slinsidedict["model_name"] = json_data[modelID]["model_name"]
 										slinsidedict["model_type"] = json_data[modelID]["model_type"]
+										slinsidedict["model_type_id"] = modelTypeID
+										
 										slinsidedict["pass_evalue"] = passevalue
 										slinsidedict["model_id"] = modelID
 										slinsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
@@ -399,6 +403,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 
 							ppinsidedict["model_name"] = json_data[modelID]["model_name"]
 							ppinsidedict["model_type"] = json_data[modelID]["model_type"]
+							ppinsidedict["model_type_id"] = modelTypeID
+
 							ppinsidedict["pass_evalue"] = passevalue
 							ppinsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
 							ppinsidedict["ARO_name"] = json_data[modelID]["ARO_name"]
@@ -440,6 +446,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 
 							insidedict["model_name"] = json_data[modelID]["model_name"]
 							insidedict["model_type"] = json_data[modelID]["model_type"]
+							insidedict["model_type_id"] = modelTypeID
+
 							insidedict["model_id"] = modelID
 							insidedict["pass_evalue"] = passevalue
 							insidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
@@ -482,6 +490,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 							
 							linsidedict["model_name"] = json_data[modelID]["model_name"]
 							linsidedict["model_type"] = json_data[modelID]["model_type"]
+							linsidedict["model_type_id"] = modelTypeID
+
 							linsidedict["pass_evalue"] = passevalue
 							linsidedict["model_id"] = modelID
 							linsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
