@@ -1,0 +1,65 @@
+|--------------------------------------------------------------------------
+| Package: RGI version 3.0.2 - Contents
+|--------------------------------------------------------------------------
+
+	top
+	|-- RGI-3.0.2.tar.gz
+	|-- README (this file)
+
+|--------------------------------------------------------------------------
+| Install NCBI BLAST version 2.2.8 or 2.2.31+ on linux 64 and Mac OS X
+|--------------------------------------------------------------------------
+
+
+	* BLAST ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+
+	- Tested with BLAST 2.2.28 and BLAST 2.2.31+ on linux 64 and Mac OS X
+
+	* You can alson run the following command to install blast. This will only install version 2.2.28
+
+	> sudo apt-get install ncbi-blast+
+
+	- Test blast install with the following command:
+
+	> makeblastdb
+
+|--------------------------------------------------------------------------
+| Install MetaGeneMark for your system (Tested version 3.26 on linux 64 and Mac OS X)
+|--------------------------------------------------------------------------
+
+	* MetaGeneMark http://exon.gatech.edu/GeneMark/license_download.cgi
+
+	> Follow instructions in mgm/INSTALL 
+
+
+|--------------------------------------------------------------------------
+| Install Biopython
+|--------------------------------------------------------------------------
+
+	* Biopython http://biopython.org/DIST/docs/install/Installation.html#sec12
+	* Run the following command to install Bio-python
+
+	> sudo apt-get install python-biopython
+
+
+|--------------------------------------------------------------------------
+| Download CARD database
+|--------------------------------------------------------------------------
+
+	* Download the database - card.json from Downloads on the CARD website (a copy included with this release)
+
+|--------------------------------------------------------------------------
+| Testing the tarball using pip - Mac or linux
+|--------------------------------------------------------------------------
+
+
+	1. sudo pip install RGI-3.0.2.tar.gz
+
+	2. runner -h 
+
+
+|--------------------------------------------------------------------------
+| Uninstalling RGI
+|--------------------------------------------------------------------------
+
+	1. sudo pip uninstall rgi
