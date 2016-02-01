@@ -7,42 +7,23 @@ import contigToProteins
 
 import argparse
 import filepaths
+import gzip, zlib
+#from gzopen import gzopen
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
+
+clean_files = []
 
 path = script_path+"/"
 
 #remove temporary file
 def removeTemp():
-	'''
-	if os.path.isfile("contigToPro.fasta"):
-		os.remove("contigToPro.fasta")
-	if os.path.isfile("read.fsa"):
-		os.remove("read.fsa")
-	if os.path.isfile("contig.fsa"):
-		os.remove("contig.fsa")
-	if os.path.isfile("contigToORF.fsa"):
-		os.remove("contigToORF.fsa")
-	if os.path.isfile("blastRes.xml"):
-		os.remove("blastRes.xml")
-	if os.path.isfile("blastpjson"):
-		os.remove("blastpjson")
-	if os.path.isfile("proteindb.fsa"):
-		os.remove("proteindb.fsa")
-	if os.path.isfile("dnadb.fsa"):
-		os.remove("dnadb.fsa")
-	if os.path.isfile("protein.db.phr"):
-		os.remove("protein.db.phr")
-		os.remove("protein.db.pin")
-		os.remove("protein.db.psq")
-	if os.path.isfile("temp.fsa"):
-		os.remove("temp.fsa")
-	if os.path.isfile("dna.db.nhr"):
-		os.remove("dna.db.nhr")
-		os.remove("dna.db.nin")
-		os.remove("dna.db.nsq")
-	'''
+	for tempfile in clean_files:
+		if os.path.isfile(tempfile):
+			print>>sys.stderr,"[info] remove temp file: " + str(tempfile)
+			os.remove(tempfile)
+
 
 # check if a string is a float number
 def isfloat(value):
@@ -103,7 +84,6 @@ def writeFASTAfromJson():
 			with open (path+'proteindb.fsa', 'w') as wp:
 
 				for item in json_data:
-
 					if item.isdigit(): #get rid of __comment __timestamp etc
 						# model_type: blastP only (pass_evalue)
 						if json_data[item]["model_type_id"] == "40292":
@@ -123,6 +103,7 @@ def writeFASTAfromJson():
 						# model_type: blastP + SNP (pass_evalue + snp)
 						elif json_data[item]["model_type_id"] == "40293":
 							snpList = ""
+
 							if checkKeyExisted('snp', json_data[item]['model_param']):
 								for key in json_data[item]['model_param']['snp']['param_value']:
 									snpList += json_data[item]['model_param']['snp']['param_value'][key]
@@ -153,30 +134,35 @@ def makeBlastDB(inType, inputSeq):
 		os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db')
 	#os.system('makeblastdb -in proteindb.fsa -dbtype prot -out protein.db')
 
-def runBlast(inType, inputSeq):	
+def runBlast(inType, inputSeq, threads, outputFile, criteria):	
 	startBlast = False
+	file_name = os.path.basename(inputSeq)
+	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
 	if inType == 'contig':
 		contigToProteins.main(inputSeq)
-		if os.stat(path+"contig.fsa").st_size != 0:
+		if os.stat(working_directory+"/"+file_name+".contig.fsa").st_size != 0:
+			clean_files.append(working_directory+"/"+file_name+".contig.fsa")
 			from Bio.Blast.Applications import NcbiblastpCommandline
-			blastCLine = NcbiblastpCommandline(query=path+"contig.fsa", db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
+			blastCLine = NcbiblastpCommandline(query=working_directory+"/"+file_name+".contig.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
 			stdt, stdr = blastCLine()
-			result_handle = open(path+"blastRes.xml")
+			result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
 			startBlast = True
 		
 	elif inType == 'protein':
 		from Bio.Blast.Applications import NcbiblastpCommandline
-		blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
+		blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
 		stdt, stdr = blastCLine()
-		result_handle = open(path+"blastRes.xml")
+		result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
 		startBlast = True
 
 	elif inType == 'read':
+
 		fqToFsa.main(inputSeq)
+		clean_files.append(working_directory+"/"+file_name+".read.fsa")
 		from Bio.Blast.Applications import NcbiblastxCommandline
-		blastCLine = NcbiblastxCommandline(query=path+'read.fsa', db=path+"protein.db", outfmt=5, out=path+"blastRes.xml")
+		blastCLine = NcbiblastxCommandline(query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
 		stdt, stdr = blastCLine()
-		result_handle = open(path+"blastRes.xml")
+		result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
 		startBlast = True
 	
 	if startBlast:
@@ -230,6 +216,7 @@ def runBlast(inType, inputSeq):
 					truePassEvalue = float(passevalue[0:passevalue.find(' ')])
 
 				if modelTypeID == 40293:
+					
 					init = 0
 					evalueSNP = findnthbar(alignTitle, 2)
 					snpL = []
@@ -245,6 +232,8 @@ def runBlast(inType, inputSeq):
 
 					for eachsnp in snpL:					
 						snpdictlist.append({"original": eachsnp[0], "change": eachsnp[-1], "position": int(eachsnp[1:-1])})
+
+					
 
 					for hsp in alignment.hsps:
 						'''print>>sys.stderr, hsp.identities
@@ -265,7 +254,6 @@ def runBlast(inType, inputSeq):
 						print "realSbjctLength: \n" +str(realSbjctLength) + "\n"
 						print "subject_start: \n" + str(hsp.sbjct_start) + "\n"
 						print "query_start: \n" + str(hsp.query_start) + "\n"'''
-						
 
 
 							
@@ -297,7 +285,6 @@ def runBlast(inType, inputSeq):
 										c += 1'''
 								'''print>>sys.stderr, ("corret: snp in sbject: " + sbjctSeq[target])
 								print>>sys.stderr, ("correct: snp in query: " + hsp.query[snpInQuery])'''
-
 								#if hsp.query[snpInQuery] == chan and sbjctSeq[target] == ori:
 								if hsp.query[pos - hsp.sbjct_start + findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == chan and hsp.sbjct[pos - hsp.sbjct_start +findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == ori:								# 224 = pos. sbject_start = 9 = 216==
 
@@ -528,7 +515,9 @@ def runBlast(inType, inputSeq):
 							init += 1
 									
 			if len(perfect) == 0 and len(strict) == 0:
-				blastResults[blast_record.query.encode('ascii','replace')] = loose
+				if criteria == "0":
+					blastResults[blast_record.query.encode('ascii','replace')] = loose
+
 				pscore = 1
 				
 			elif len(perfect) == 0:
@@ -541,7 +530,7 @@ def runBlast(inType, inputSeq):
 
 		pjson = json.dumps(blastResults)
 
-		with open(path+"Report.json", 'w') as f:
+		with open(working_directory+"/"+outputFile+".json", 'w') as f:
 			print>>f, pjson
 		if inType == 'contig':
 			for gene in blastResults:
@@ -593,7 +582,47 @@ function get_number_dash($subject,$index){
 }
 """
 
-def main(inType, inputSeq):
+def decompress(inputfile,ext,out_dir):
+
+    filename = os.path.basename(inputfile)
+    name = os.path.splitext(filename)
+    newFile = out_dir + "/" + str(name[0])
+    clean_files.append(newFile)
+
+    if ext == 'gz':
+	    readFq=gzip.open(inputfile)
+	    data = readFq.readlines()
+
+	    with open(newFile,'w') as fin:
+	    	for eachline in data:
+	    		print>>fin, eachline.rstrip() 
+	    fin.close()
+
+    return newFile
+
+
+def main(args):
+	if args.inputSeq == None:
+		print "[error] missing input(s)"
+		print "[info] Try: rgi -h"
+		exit()
+
+	inType = args.inType
+	inputSeq = args.inputSeq 
+	threads = args.threads
+	outputFile = args.output
+	criteria = args.criteria
+	clean = args.clean
+	# Write each request to a directory based on the input filename with (-results) appeneded
+	#output_dir = working_directory + "/" + os.path.basename(inputSeq) + "-results"
+	output_dir = working_directory
+
+	#if not os.path.exists(output_dir):
+	#	os.makedirs(output_dir)
+
+	# Check if file is compressed
+	if inputSeq.endswith('.gz'):
+		inputSeq = decompress(inputSeq,'gz',output_dir)
 
 	checkBeforeBlast(inType, inputSeq)
 	writeFASTAfromJson()
@@ -601,7 +630,7 @@ def main(inType, inputSeq):
 
 	try:	
 		if inType == 'contig':
-			bpjson = runBlast(inType, inputSeq)
+			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria)
 			'''#1. uncomment here to add blastn+snp model to RGI if we have extended our database, 
 			#2. uncomment the import line above,
 			#3. return myjson instead of bpjson in this case
@@ -609,11 +638,19 @@ def main(inType, inputSeq):
 			myjson = dict(bpjson.item() + njson.item())
 			removeTemp()
 			return myjson'''
-			removeTemp()
+
+			if clean == "1":
+				print>>sys.stderr, "[info] Clean..."
+				removeTemp()
+
 			return bpjson
 		else:
-			bpjson = runBlast(inType, inputSeq)
-			removeTemp()
+			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria)
+
+			if clean == "1":
+				print>>sys.stderr, "[info] Clean..."
+				removeTemp()
+
 			return bpjson
 
 	except Exception as inst:
@@ -622,13 +659,13 @@ def main(inType, inputSeq):
 		removeTemp()
 
 
-
 if __name__ == '__main__':
-	"""required: 
-		argv[1] must be one of contig, orf, protein, read
-		inputSeq must be in either FASTA (contig and protein) or FASTQ(read) format!"""
-	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version 3.0.0 Beta')
-	parser.add_argument('inType',help='must be one of contig, orf, protein, read')
-	parser.add_argument('inputSeq',help='must be in either FASTA (contig and protein) or FASTQ(read) format!')	
+	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version 3.0.3')
+	parser.add_argument('-t','--inType', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
+	parser.add_argument('-i','--inputSeq',help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+	parser.add_argument('-n', '--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
+	parser.add_argument('-o', '--out_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
+	parser.add_argument('-e', '--exclude_loose',  dest="criteria", default="1", help="This option is used to include or exclude the loose hits. Options are 0 or 1 (default=1 for exclude)")
+	parser.add_argument('-c', '--clean',  dest="clean", default="1", help="This removes temporary files in the results directory after run. Options are 0 or 1 (default=1 for remove)")
 	args = parser.parse_args()
-	main(sys.argv[1], sys.argv[2])		
+	main(args)		

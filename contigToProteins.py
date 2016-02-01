@@ -7,12 +7,12 @@ working_directory = os.getcwd()
 
 path = script_path
 
-def catProteins(afile):
+def catProteins(filename,afile):
 
 	with open(afile, 'r') as f:
 		data = f.readlines()
-
-	with open(path+'/contig.fsa', 'w') as wf:
+	#	contig.fsa unique??
+	with open(working_directory+'/'+filename+'.contig.fsa', 'w') as wf:
 
 		startrecord = False
 
@@ -32,9 +32,10 @@ def catProteins(afile):
 
 
 def main(argvfile):
-	os.system(path+"/mgm/gmhmmp "+"-r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+path+"/draft -a " + argvfile)
-	catProteins(path + '/draft')
-	#os.remove(path + '/draft')
+	filename = os.path.basename(argvfile)
+	os.system(path+"/mgm/gmhmmp "+"-r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".draft -a " + argvfile)
+	catProteins(filename,working_directory +"/"+filename+".draft")
+	#os.remove(working_directory +"/"+filename+".draft")
 
 
 if __name__ == '__main__':

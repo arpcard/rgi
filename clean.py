@@ -1,6 +1,7 @@
 import os
 import sys
 import filepaths
+import argparse
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -46,4 +47,6 @@ def main():
 	print>>sys.stderr, "Cleaned directory: "+path
 
 if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Removes BLAST databases created using card.json')
+	args = parser.parse_args()
 	main()

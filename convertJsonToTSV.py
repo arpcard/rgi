@@ -2,7 +2,7 @@ import json
 import csv
 import sys
 import os
-#import tryrgi
+import rgi
 import re
 
 import argparse
@@ -85,7 +85,7 @@ def checkKeyExisted(key, my_dict):
 	return nonNone
 
 
-def printCSV(resultfile):
+def printCSV(resultfile,ofile):
 	try:
 		with open(resultfile, 'r') as f:
 			data = json.load(f)
@@ -94,7 +94,7 @@ def printCSV(resultfile):
 		print>>sys.stderr, "convertJsonToTSV expects a file contains a VALID JSON string."
 		exit()
 
-	with open(path+"dataSummary.txt", "w") as af:
+	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
 		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identites", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
 		for item in data:
@@ -171,13 +171,20 @@ def printCSV(resultfile):
 				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
 
 
-def main(afile):
-	printCSV(afile)
+def main(args):
+	afile = args.afile
+	ofile = args.output
+	# Check if file is compressed
+	if afile.endswith('.gz'):
+		afile = rgi.decompress(afile,'gz',working_directory)
 
+	printCSV(afile,ofile)
+	rgi.removeTemp()
 
 if __name__ == '__main__':
 	"""required: sys.argv[1] must be a json file"""
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
-	parser.add_argument('afile',help='must be a json file generated from RGI')	
+	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
+	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output JSON file (default=dataSummary)")
 	args = parser.parse_args()
-	main(sys.argv[1])
+	main(args)

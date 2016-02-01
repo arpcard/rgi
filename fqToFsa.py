@@ -35,7 +35,8 @@ def convertFqToFsa(managedfile):
 
 
 def main(argvfile):
-	sys.stdout = open(path+'/read.fsa', 'w')
+	file_name = os.path.basename(argvfile)
+	sys.stdout = open(working_directory+'/'+file_name+'.read.fsa', 'w')
 	convertFqToFsa(argvfile)
 
 

@@ -12,22 +12,23 @@ def validateFile(filename):
 		with open(filename) as f:
 		    return json.load(f)
     except ValueError as e:
-        print('invalid json: %s' % e)
+        print>>sys.stderr, ('[error] invalid json: %s' % e)
         return None # or: raise	
 
-def main(filepath):
+def main(args):
+	filepath = args.afile
 	if os.path.exists(filepath):
 		if validateFile(filepath):
 			dst = script_path+"/card.json"
 			# copy new card.json file
 			shutil.copyfile(filepath, dst)
 		else:
-			print "error reading json file"
+			print>>sys.stderr, "[error] failed to read json file"
 	else:
-		print "error uploading file"
+		print>>sys.stderr,"[error] failed to upload file"
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Load card database json file',usage='runner load.py afile')
-	parser.add_argument('afile',help='must be a card database json file')	
+	parser = argparse.ArgumentParser(description='Load card database json file')
+	parser.add_argument('-i', '--afile',help='must be a card database json file')	
 	args = parser.parse_args()
-	main(sys.argv[1])
+	main(args)
