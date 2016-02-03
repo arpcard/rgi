@@ -317,6 +317,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 										sinsidedict["match"] = hsp.match.encode('ascii','replace')
 										sinsidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 										sinsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
+										sinsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
 										if inType == 'contig':
 											sinsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
@@ -361,6 +362,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 										slinsidedict["match"] = hsp.match.encode('ascii','replace')
 										slinsidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 										slinsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
+										slinsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
 										if inType == 'contig':
 											slinsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
@@ -419,6 +421,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 							ppinsidedict["match"] = hsp.match.encode('ascii','replace')
 							ppinsidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 							ppinsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
+							ppinsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
 							if inType == 'contig':
 								ppinsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
@@ -463,6 +466,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 							insidedict["match"] = hsp.match.encode('ascii','replace')
 							insidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 							insidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
+							insidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
 							if inType == 'contig':
 								insidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
@@ -507,6 +511,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 							linsidedict["match"] = hsp.match.encode('ascii','replace')
 							linsidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 							linsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
+							linsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
 							if inType == 'contig':
 								linsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
