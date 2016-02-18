@@ -12,7 +12,7 @@ def catProteins(filename,afile):
 	with open(afile, 'r') as f:
 		data = f.readlines()
 
-	with open(working_directory+'/'+filename+'.contigtoORF.fsa', 'w') as wf:
+	with open(working_directory+'/'+filename+'.contigToORF.fsa', 'w') as wf:
 
 		startrecord = False
 
