@@ -96,7 +96,7 @@ def printCSV(resultfile,ofile):
 
 	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
-		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identites", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
+		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identites", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
 		for item in data:
 			minevalue = False
 			startCompare = False
@@ -126,6 +126,7 @@ def printCSV(resultfile,ofile):
 				AROlist.append(convert(data[item][it]["ARO_accession"]))
 				AROnameList.append(convert(data[item][it]["ARO_name"]))
 				bitScoreList.append(data[item][it]["bit-score"])
+				pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
 				AROcatList.append(cgList)
 				typeList.append(convert(data[item][it]["model_type"]))
 				cutoffList.append(convert(data[item][it]["type_match"]))
@@ -166,9 +167,9 @@ def printCSV(resultfile,ofile):
 				#Hack for protein RGI runs where there's no | or seq_start/stop/strand
 				#print item
 				if findnthbar(item, 4) == "":
-					writer.writerow([item, "", "", "", "", ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
+					writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
                                 else:
-				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
+				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
 
 
 def main(args):
