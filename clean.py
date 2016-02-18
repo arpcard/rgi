@@ -7,6 +7,15 @@ script_path = filepaths.determine_path()
 working_directory = os.getcwd()
 path = script_path+"/"
 
+# clean other files left over
+def _clean():
+	import glob
+	files = glob.glob(path+"*")
+	for f in files:
+		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft"]:
+			print>>sys.stderr, "Remove: " + str(f)
+			os.remove(f)
+
 #remove temporary file
 def main():
 	
@@ -43,6 +52,7 @@ def main():
 	if os.path.isfile(path+"dataSummary.txt"):
 		os.remove(path+"dataSummary.txt")
 
+	_clean()
 
 	print>>sys.stderr, "Cleaned directory: "+path
 
