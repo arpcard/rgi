@@ -3,6 +3,7 @@ import sys
 import os
 import fqToFsa
 import contigToProteins
+import contigToORF
 #import blastnsnp
 
 import argparse
@@ -36,6 +37,7 @@ def isfloat(value):
 
 #output the information particular field from alignment.Title by splicing it by '|'
 def findnthbar(bunchstr, n):
+	#print bunchstr
 	barc = 0
 	start = n+3
 	over = n+4
@@ -134,12 +136,27 @@ def makeBlastDB(inType, inputSeq):
 		os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db')
 	#os.system('makeblastdb -in proteindb.fsa -dbtype prot -out protein.db')
 
+def getORFDNASequence(file_name):
+	predicted_genes_dict = {}
+	if os.stat(working_directory+"/"+file_name+".contigToORF.fsa").st_size != 0:
+		from Bio import SeqIO
+		clean_files.append(working_directory+"/"+file_name+".contigToORF.fsa")
+		for record in SeqIO.parse(working_directory+"/"+file_name+".contigToORF.fsa", 'fasta'):
+		    predicted_genes_dict[record.id[:str(record.id).index('|')]] = str(record.seq)
+	
+	return predicted_genes_dict
+
+
 def runBlast(inType, inputSeq, threads, outputFile, criteria):	
 	startBlast = False
+	predicted_genes_dict = {}
 	file_name = os.path.basename(inputSeq)
 	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
 	if inType == 'contig':
 		contigToProteins.main(inputSeq)
+		# get predicted dna
+		contigToORF.main(inputSeq)
+		predicted_genes_dict = getORFDNASequence(file_name)
 		if os.stat(working_directory+"/"+file_name+".contig.fsa").st_size != 0:
 			clean_files.append(working_directory+"/"+file_name+".contig.fsa")
 			from Bio.Blast.Applications import NcbiblastpCommandline
@@ -170,7 +187,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 		blast_records = NCBIXML.parse(result_handle)
 		blastResults = {}
 		pjson = {}
-
 
 		with open(path+"card.json") as json_file:
 			json_data = json.load(json_file)
@@ -209,6 +225,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 				modelTypeDscp = alignTitle[alignTitle.index(':')+2:]
 				modelTypeId = modelTypeDscp[0:modelTypeDscp.index(' ')]
 				passevalue = modelTypeDscp [modelTypeDscp.index(':')+2:]
+
+
 
 				if isfloat(passevalue):
 					truePassEvalue = passevalue
@@ -318,6 +336,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 										sinsidedict["sequenceFromDB"] = hsp.sbjct.encode('ascii','replace')
 										sinsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
 										sinsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
+										
 
 										if inType == 'contig':
 											sinsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
@@ -326,6 +345,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 											sinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 											sinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											sinsidedict["orf_From"] = orffrom
+											sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
 
 										elif inType == 'protein':
 											sinsidedict["query_start"] = hsp.query_start
@@ -364,6 +384,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 										slinsidedict["SequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
 										slinsidedict["dnaSequenceFromBroadStreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
 
+
 										if inType == 'contig':
 											slinsidedict["query_start"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3
 											slinsidedict["query_end"] = findnthbar(orfInfo, 1) + (hsp.query_start - 1)*3 + realQueryLength*3 - 1
@@ -371,6 +392,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 											slinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 											slinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											slinsidedict["orf_From"] = orffrom
+											slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
 
 										elif inType == 'protein':
 											slinsidedict["query_start"] = hsp.query_start
@@ -430,6 +452,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								ppinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 								ppinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								ppinsidedict["orf_From"] = orffrom
+								ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
 
 							elif inType == 'protein':
 								ppinsidedict["query_start"] = hsp.query_start
@@ -475,6 +498,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								insidedict["orf_start"] = findnthbar(orfInfo, 1)
 								insidedict["orf_end"] = findnthbar(orfInfo, 2)
 								insidedict["orf_From"] = orffrom
+								insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
 
 							elif inType == 'protein':
 								insidedict["query_start"] = hsp.query_start
@@ -520,6 +544,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								linsidedict["orf_start"] = findnthbar(orfInfo, 1)
 								linsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								linsidedict["orf_From"] = orffrom
+								linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
 
 							elif inType == 'protein':
 								linsidedict["query_start"] = hsp.query_start

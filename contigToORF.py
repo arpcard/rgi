@@ -11,8 +11,8 @@ def catProteins(filename,afile):
 
 	with open(afile, 'r') as f:
 		data = f.readlines()
-	
-	with open(working_directory+'/'+filename+'.contig.fsa', 'w') as wf:
+
+	with open(working_directory+'/'+filename+'.contigtoORF.fsa', 'w') as wf:
 
 		startrecord = False
 
@@ -26,16 +26,15 @@ def catProteins(filename,afile):
 					print>>wf, eachline.replace('\t>', '|').strip()
 				else:
 					print>>wf, eachline.strip()
-			elif eachline[0:19] == "Predicted proteins:":
+			elif eachline.strip() == "Nucleotide sequence of predicted genes:":
 				startrecord = True
 
 
 def main(argvfile):
 	filename = os.path.basename(argvfile)
-	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".draft -a " + argvfile)
-	catProteins(filename,working_directory +"/"+filename+".draft")
-	#os.remove(working_directory +"/"+filename+".draft")
-
+	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".adraft -d " + argvfile)
+	catProteins(filename,working_directory +"/"+filename+".adraft")
+	#os.remove(working_directory +"/"+filename+".adraft")
 
 if __name__ == '__main__':
 	main(sys.argv[1])
