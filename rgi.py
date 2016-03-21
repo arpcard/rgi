@@ -149,7 +149,7 @@ def getORFDNASequence(file_name):
 	return predicted_genes_dict
 
 
-def runBlast(inType, inputSeq, threads, outputFile, criteria):	
+def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):	
 	startBlast = False
 	predicted_genes_dict = {}
 	file_name = os.path.basename(inputSeq)
@@ -579,7 +579,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 			if len(perfect) == 0 and len(strict) == 0:
 				if criteria == "0":
 					blastResults[blast_record.query.encode('ascii','replace')] = loose
-
 				pscore = 1
 				
 			elif len(perfect) == 0:
@@ -590,6 +589,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 				blastResults[blast_record.query.encode('ascii','replace')] = perfect
 				pscore = 3
 
+		blastResults["_metadata"] = {"data_type": data_type}
 		pjson = json.dumps(blastResults)
 
 		with open(working_directory+"/"+outputFile+".json", 'w') as f:
@@ -675,6 +675,7 @@ def main(args):
 	outputFile = args.output
 	criteria = args.criteria
 	clean = args.clean
+	data_type = args.data
 	# Write each request to a directory based on the input filename with (-results) appeneded
 	#output_dir = working_directory + "/" + os.path.basename(inputSeq) + "-results"
 	output_dir = working_directory
@@ -692,7 +693,7 @@ def main(args):
 
 	try:	
 		if inType == 'contig':
-			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria)
+			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
 			'''#1. uncomment here to add blastn+snp model to RGI if we have extended our database, 
 			#2. uncomment the import line above,
 			#3. return myjson instead of bpjson in this case
@@ -707,7 +708,7 @@ def main(args):
 
 			return bpjson
 		else:
-			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria)
+			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
 
 			if clean == "1":
 				print>>sys.stderr, "[info] Clean..."
@@ -729,5 +730,6 @@ if __name__ == '__main__':
 	parser.add_argument('-o', '--out_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
 	parser.add_argument('-e', '--exclude_loose',  dest="criteria", default="1", help="This option is used to include or exclude the loose hits. Options are 0 or 1 (default=1 for exclude)")
 	parser.add_argument('-c', '--clean',  dest="clean", default="1", help="This removes temporary files in the results directory after run. Options are 0 or 1 (default=1 for remove)")
+	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
 	args = parser.parse_args()
 	main(args)		
