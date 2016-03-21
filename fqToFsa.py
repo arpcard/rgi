@@ -1,43 +1,19 @@
 import sys
 import os
 import filepaths
+from Bio import SeqIO
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
 
 path = script_path
 
-def convertFqToFsa(managedfile):
-	with open(managedfile, 'r') as f:
-		data = f.readlines()
-
-	linenum = 0
-	'''	if linenum == 0: @description
-	   	elif linenum == 1: DNA_Sequence
-		elif linenum == 2: +More_description
-		elif linenum == 3: Quality(Must be Same length as linenum[1])'''
-
-	lineloc = 0
-
-	for eachline in data:
-		if linenum == 3:
-			linenum = 0
-		elif linenum == 2 and eachline[0] == '+':
-			linenum = 3
-		elif linenum == 1:
-			print eachline
-			linenum = 2
-		elif eachline[0] == '@':
-			linenum = 1
-			print ('>' + eachline[1:].rstrip() + ' ' + data[lineloc+2][1:].rstrip())
-
-		lineloc += 1
-
+def convertFqToFsa(fq_path,fa_path):
+	SeqIO.convert(fq_path, "fastq", fa_path, "fasta")
 
 def main(argvfile):
 	file_name = os.path.basename(argvfile)
-	sys.stdout = open(working_directory+'/'+file_name+'.read.fsa', 'w')
-	convertFqToFsa(argvfile)
+	convertFqToFsa(argvfile,working_directory+'/'+file_name+'.read.fsa')
 
 
 if __name__ == "__main__":
