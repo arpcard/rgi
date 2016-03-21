@@ -10,6 +10,8 @@ import argparse
 import filepaths
 import gzip, zlib
 #from gzopen import gzopen
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -346,6 +348,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 											sinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											sinsidedict["orf_From"] = orffrom
 											sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
+											sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											query_length = float(((1+sinsidedict['query_end']) - sinsidedict['query_start']) / 3)
+											max_ident = float(sinsidedict['max-identities'])
+											sinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 										elif inType == 'protein':
 											sinsidedict["query_start"] = hsp.query_start
@@ -393,6 +399,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 											slinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											slinsidedict["orf_From"] = orffrom
 											slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
+											slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											query_length = float(((1+slinsidedict['query_end']) - slinsidedict['query_start']) / 3)
+											max_ident = float(slinsidedict['max-identities'])
+											slinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 										elif inType == 'protein':
 											slinsidedict["query_start"] = hsp.query_start
@@ -453,7 +463,11 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								ppinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								ppinsidedict["orf_From"] = orffrom
 								ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-
+								ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								query_length = float(((1+ppinsidedict['query_end']) - ppinsidedict['query_start']) / 3)
+								max_ident = float(ppinsidedict['max-identities'])
+								ppinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
+							
 							elif inType == 'protein':
 								ppinsidedict["query_start"] = hsp.query_start
 								ppinsidedict["query_end"] = hsp.query_start + realQueryLength
@@ -499,6 +513,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								insidedict["orf_end"] = findnthbar(orfInfo, 2)
 								insidedict["orf_From"] = orffrom
 								insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
+								insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								query_length = float(((1+insidedict['query_end']) - insidedict['query_start']) / 3)
+								max_ident = float(insidedict['max-identities'])
+								insidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 							elif inType == 'protein':
 								insidedict["query_start"] = hsp.query_start
@@ -545,6 +563,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria):
 								linsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								linsidedict["orf_From"] = orffrom
 								linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
+								linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								query_length = float(((1+linsidedict['query_end']) - linsidedict['query_start']) / 3)
+								max_ident = float(linsidedict['max-identities'])
+								linsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 							elif inType == 'protein':
 								linsidedict["query_start"] = hsp.query_start
