@@ -96,7 +96,7 @@ def printCSV(resultfile,ofile):
 
 	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
-		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identites", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
+		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
 		for item in data:
 			minevalue = False
 			startCompare = False
