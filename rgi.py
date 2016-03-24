@@ -596,10 +596,11 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 			print>>f, pjson
 		if inType == 'contig':
 			for gene in blastResults:
-				for hsp in blastResults[gene]:
-					if blastResults[gene][hsp]["orf_end"] < blastResults[gene][hsp]["query_end"]:
-						print>>sys.stderr, hsp
-						print>>sys.stderr, blastResults[gene][hsp]
+				if not gene == "_metadata":
+					for hsp in blastResults[gene]:
+						if blastResults[gene][hsp]["orf_end"] < blastResults[gene][hsp]["query_end"]:
+							print>>sys.stderr, hsp
+							print>>sys.stderr, blastResults[gene][hsp]
 	return pjson
 
 
