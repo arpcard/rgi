@@ -5,13 +5,13 @@ import fqToFsa
 import contigToProteins
 import contigToORF
 #import blastnsnp
-
 import argparse
 import filepaths
 import gzip, zlib
 #from gzopen import gzopen
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
+import logging
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -24,8 +24,9 @@ path = script_path+"/"
 def removeTemp():
 	for tempfile in clean_files:
 		if os.path.isfile(tempfile):
+			logging.info("removeTemp => remove temp file: " + str(tempfile))
 			print>>sys.stderr,"[info] remove temp file: " + str(tempfile)
-			os.remove(tempfile)
+			#os.remove(tempfile)
 
 
 # check if a string is a float number
@@ -64,11 +65,14 @@ def findnthbar(bunchstr, n):
 
 
 def checkBeforeBlast(inType, inputSeq):
+	logging.info("checkBeforeBlast => " + str([inType,inputSeq]))
 	# give warning if inType is neither 'protein' nor 'dna' and then exit this program
 	if inType != 'protein' and inType != 'contig' and inType != 'read':
 		print>>sys.stderr, "inType must be one of protein, contig, orf or read. "
+		logging.error("checkBeforeBlast => " + str(inType) + ", inType must be one of protein, contig, orf or read. ")
 		removeTemp()
 		exit()
+	logging.info("checkBeforeBlast => success")
 
 
 def checkKeyExisted(key, my_dict):
@@ -146,6 +150,11 @@ def getORFDNASequence(file_name):
 		for record in SeqIO.parse(working_directory+"/"+file_name+".contigToORF.fsa", 'fasta'):
 		    predicted_genes_dict[record.id[:str(record.id).index('|')]] = str(record.seq)
 	
+	# write json for all predicted file
+	pjson = json.dumps(predicted_genes_dict)
+	with open(working_directory+'/'+file_name+'.predictedGenes.json', 'w') as wf:
+		print>>wf, pjson
+
 	return predicted_genes_dict
 
 
@@ -155,11 +164,21 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 	file_name = os.path.basename(inputSeq)
 	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
 	if inType == 'contig':
+		logging.info("runBlast => contigToProteins => start")
 		contigToProteins.main(inputSeq)
+		logging.info("runBlast => contigToProteins => done")
+
 		# get predicted dna
+		logging.info("runBlast => contigToORF => start")
 		contigToORF.main(inputSeq)
+		logging.info("runBlast => contigToORF => done")
+
+		logging.info("runBlast => getORFDNASequence => start")
 		predicted_genes_dict = getORFDNASequence(file_name)
+		logging.info("runBlast => getORFDNASequence => done")
+
 		if os.stat(working_directory+"/"+file_name+".contig.fsa").st_size != 0:
+			logging.info("runBlast => start blastP for inType: " + inType)
 			clean_files.append(working_directory+"/"+file_name+".contig.fsa")
 			from Bio.Blast.Applications import NcbiblastpCommandline
 			blastCLine = NcbiblastpCommandline(query=working_directory+"/"+file_name+".contig.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
@@ -168,6 +187,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 			startBlast = True
 		
 	elif inType == 'protein':
+		logging.info("runBlast => start blastP for inType: " + inType)
 		from Bio.Blast.Applications import NcbiblastpCommandline
 		blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
 		stdt, stdr = blastCLine()
@@ -175,9 +195,11 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 		startBlast = True
 
 	elif inType == 'read':
-
+		logging.info("runBlast => fqToFsa => start")
 		fqToFsa.main(inputSeq)
+		logging.info("runBlast => fqToFsa => done")
 		clean_files.append(working_directory+"/"+file_name+".read.fsa")
+		logging.info("runBlast => start blastX for inType: " + inType)
 		from Bio.Blast.Applications import NcbiblastxCommandline
 		blastCLine = NcbiblastxCommandline(query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
 		stdt, stdr = blastCLine()
@@ -185,6 +207,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 		startBlast = True
 	
 	if startBlast:
+		logging.info("runBlast => startBlast = " + str(startBlast))
 		from Bio.Blast import NCBIXML
 		blast_records = NCBIXML.parse(result_handle)
 		blastResults = {}
@@ -234,6 +257,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 					truePassEvalue = passevalue
 				else:
 					truePassEvalue = float(passevalue[0:passevalue.find(' ')])
+
+				logging.info("runBlast => [info] | modelTypeID = " + str(alignTitle))
 
 				if modelTypeID == 40293:
 					
@@ -347,8 +372,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 											sinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 											sinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											sinsidedict["orf_From"] = orffrom
-											sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-											sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
+												sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
+												sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											else:
+												sinsidedict["orf_dna_sequence"] = ""
+												sinsidedict["orf_prot_sequence"] = ""
+
 											query_length = float(((1+sinsidedict['query_end']) - sinsidedict['query_start']) / 3)
 											max_ident = float(sinsidedict['max-identities'])
 											sinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
@@ -398,8 +428,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 											slinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 											slinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 											slinsidedict["orf_From"] = orffrom
-											slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
-											slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
+												slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
+												slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+											else:
+												slinsidedict["orf_dna_sequence"] = ""
+												slinsidedict["orf_prot_sequence"] = ""
+
 											query_length = float(((1+slinsidedict['query_end']) - slinsidedict['query_start']) / 3)
 											max_ident = float(slinsidedict['max-identities'])
 											slinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
@@ -462,8 +497,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 								ppinsidedict["orf_start"] = findnthbar(orfInfo, 1)
 								ppinsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								ppinsidedict["orf_From"] = orffrom
-								ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-								ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
+									ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
+									ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								else:
+									ppinsidedict["orf_dna_sequence"] = ""
+									ppinsidedict["orf_prot_sequence"] = ""
+
 								query_length = float(((1+ppinsidedict['query_end']) - ppinsidedict['query_start']) / 3)
 								max_ident = float(ppinsidedict['max-identities'])
 								ppinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
@@ -512,8 +552,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 								insidedict["orf_start"] = findnthbar(orfInfo, 1)
 								insidedict["orf_end"] = findnthbar(orfInfo, 2)
 								insidedict["orf_From"] = orffrom
-								insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-								insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
+									insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
+									insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								else:
+									insidedict["orf_dna_sequence"] = ""
+									insidedict["orf_prot_sequence"] = ""
+
 								query_length = float(((1+insidedict['query_end']) - insidedict['query_start']) / 3)
 								max_ident = float(insidedict['max-identities'])
 								insidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
@@ -562,8 +607,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 								linsidedict["orf_start"] = findnthbar(orfInfo, 1)
 								linsidedict["orf_end"] = findnthbar(orfInfo, 2)
 								linsidedict["orf_From"] = orffrom
-								linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
-								linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
+									linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
+									linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+								else:
+									linsidedict["orf_dna_sequence"] = ""
+									linsidedict["orf_prot_sequence"] = ""
+
 								query_length = float(((1+linsidedict['query_end']) - linsidedict['query_start']) / 3)
 								max_ident = float(linsidedict['max-identities'])
 								linsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
@@ -579,14 +629,17 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 			if len(perfect) == 0 and len(strict) == 0:
 				if criteria == "0":
 					blastResults[blast_record.query.encode('ascii','replace')] = loose
+					logging.info("runBlast => hit = " + str(blast_record.query.encode('ascii','replace')) + " => Loose")
 				pscore = 1
 				
 			elif len(perfect) == 0:
 				blastResults[blast_record.query.encode('ascii','replace')] = strict
+				logging.info("runBlast => hit = " + str(blast_record.query.encode('ascii','replace')) + " => Strict")
 				pscore = 2
 				
 			else:
 				blastResults[blast_record.query.encode('ascii','replace')] = perfect
+				logging.info("runBlast => hit = " + str(blast_record.query.encode('ascii','replace')) + " => Perfect")
 				pscore = 3
 
 		blastResults["_metadata"] = {"data_type": data_type}
@@ -596,11 +649,15 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):
 			print>>f, pjson
 		if inType == 'contig':
 			for gene in blastResults:
+				logging.debug("runBlast => gene = " + str(gene))
 				if not gene == "_metadata":
 					for hsp in blastResults[gene]:
-						if blastResults[gene][hsp]["orf_end"] < blastResults[gene][hsp]["query_end"]:
+						if blastResults[gene][hsp]["orf_end"] < blastResults[gene][hsp]["query_end"]:							
 							print>>sys.stderr, hsp
 							print>>sys.stderr, blastResults[gene][hsp]
+							logging.error("runBlast => hsp => " + str(hsp))
+							logging.error("runBlast => [gene][hsp] => " + str(blastResults[gene][hsp]))
+	logging.info("runBlast => done")
 	return pjson
 
 
@@ -665,9 +722,16 @@ def decompress(inputfile,ext,out_dir):
 
 
 def main(args):
+	if args.verbose == '1':
+		print "[info] logs saved to : " + str(working_directory) + "/app.log"
+		logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p')
+		logging.info('main => start rgi')
+
 	if args.inputSeq == None:
 		print "[error] missing input(s)"
 		print "[info] Try: rgi -h"
+		logging.error("main => missing input(s)")
+		logging.error("main => Try: rgi -h")
 		exit()
 
 	inType = args.inType
@@ -692,35 +756,45 @@ def main(args):
 	writeFASTAfromJson()
 	makeBlastDB(inType, inputSeq)
 
-	try:	
-		if inType == 'contig':
-			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
-			'''#1. uncomment here to add blastn+snp model to RGI if we have extended our database, 
-			#2. uncomment the import line above,
-			#3. return myjson instead of bpjson in this case
-			njson = blastnsnp.main('contig', inputSeq)
-			myjson = dict(bpjson.item() + njson.item())
-			removeTemp()
-			return myjson'''
+	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
 
-			if clean == "1":
-				print>>sys.stderr, "[info] Clean..."
-				removeTemp()
-
-			return bpjson
-		else:
-			bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
-
-			if clean == "1":
-				print>>sys.stderr, "[info] Clean..."
-				removeTemp()
-
-			return bpjson
-
-	except Exception as inst:
-		#pass
-		print>>sys.stderr, inst
+	if clean == "1":
+		logging.info('main => clean temporary files')
+		print>>sys.stderr, "[info] clean..."
 		removeTemp()
+	logging.info('main => rgi success')
+	logging.info('----------------------------------------')
+	return bpjson
+
+	# try:	
+	# 	if inType == 'contig':
+	# 		bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
+	# 		'''#1. uncomment here to add blastn+snp model to RGI if we have extended our database, 
+	# 		#2. uncomment the import line above,
+	# 		#3. return myjson instead of bpjson in this case
+	# 		njson = blastnsnp.main('contig', inputSeq)
+	# 		myjson = dict(bpjson.item() + njson.item())
+	# 		removeTemp()
+	# 		return myjson'''
+
+	# 		if clean == "1":
+	# 			print>>sys.stderr, "[info] Clean..."
+	# 			removeTemp()
+
+	# 		return bpjson
+	# 	else:
+	# 		bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
+
+	# 		if clean == "1":
+	# 			print>>sys.stderr, "[info] Clean..."
+	# 			removeTemp()
+
+	# 		return bpjson
+
+	# except Exception as inst:
+	# 	#pass
+	# 	print>>sys.stderr, inst
+	# 	removeTemp()
 
 
 if __name__ == '__main__':
@@ -732,5 +806,6 @@ if __name__ == '__main__':
 	parser.add_argument('-e', '--exclude_loose',  dest="criteria", default="1", help="This option is used to include or exclude the loose hits. Options are 0 or 1 (default=1 for exclude)")
 	parser.add_argument('-c', '--clean',  dest="clean", default="1", help="This removes temporary files in the results directory after run. Options are 0 or 1 (default=1 for remove)")
 	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
+	parser.add_argument('-v', '--verbose', dest="verbose", default="0", help = "log process to file. Options are 0 or 1  (default = 0 for no logging)")
 	args = parser.parse_args()
 	main(args)		
