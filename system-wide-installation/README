@@ -22,6 +22,8 @@
 
 		$ sudo rgi_jsontab -h
 
+		$ sudo rgi_jsonformat -h
+
 		$ sudo rgi_load -h
 
 

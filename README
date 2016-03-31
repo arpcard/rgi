@@ -15,14 +15,17 @@
    |-- __init__.py
    |-- card.json
    |-- clean.py
+   |-- contigToORF.py
    |-- contigToProteins.py
    |-- convertJsonToTSV.py
    |-- filepaths.py
+   |-- formatJson.py
    |-- fqToFsa.py
-   |-- README
    |-- INSTALL
-   |-- rgi.py
    |-- load.py
+   |-- README
+   |-- rgi.py
+   
 
 
 |--------------------------------------------------------------------------
@@ -38,3 +41,4 @@ $ python convertJsonToTSV.py -h
 
 $ python load.py -h
 
+$ python formatJson.py -h 

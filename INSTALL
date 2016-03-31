@@ -191,14 +191,17 @@ Open a terminal, type:
    |-- __init__.py
    |-- card.json
    |-- clean.py
+   |-- contigToORF.py
    |-- contigToProteins.py
    |-- convertJsonToTSV.py
    |-- filepaths.py
+   |-- formatJson.py
    |-- fqToFsa.py
-   |-- README
    |-- INSTALL
-   |-- rgi.py
    |-- load.py
+   |-- README
+   |-- rgi.py
+   
 
 
 |--------------------------------------------------------------------------
@@ -250,7 +253,22 @@ Open a terminal, type:
 		optional arguments:
 		  -h, --help  show this help message and exit
 
+|--------------------------------------------------------------------------
+| Format JSON
+|--------------------------------------------------------------------------
 
+	$ python formatJson.py -h 
+
+		usage: formatJson.py [-h] [-i IN_FILE] [-o OUT_FILE]
+
+		Convert RGI JSON file to Readable JSON file
+
+		optional arguments:
+		  -h, --help            show this help message and exit
+		  -i IN_FILE, --in_file IN_FILE
+		                        input file must be in JSON format e.g Report.json
+		  -o OUT_FILE, --out_file OUT_FILE
+		                        Output JSON file (default=ReportFormatted)	
 
 |--------------------------------------------------------------------------
 | Contact Us:

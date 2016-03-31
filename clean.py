@@ -12,7 +12,7 @@ def _clean():
 	import glob
 	files = glob.glob(path+"*")
 	for f in files:
-		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft","pyc"]:
+		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft","pyc","log"]:
 			#print>>sys.stderr, "Remove: " + str(f)
 			os.remove(f)
 
@@ -51,6 +51,8 @@ def main():
 		os.remove(path+"ReportFormatted.json")
 	if os.path.isfile(path+"draft"):
 		os.remove(path+"draft")
+	if os.path.isfile(path+"adraft"):
+		os.remove(path+"adraft")
 	if os.path.isfile(path+"dataSummary.txt"):
 		os.remove(path+"dataSummary.txt")
 
