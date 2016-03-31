@@ -12,8 +12,8 @@ def _clean():
 	import glob
 	files = glob.glob(path+"*")
 	for f in files:
-		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft"]:
-			print>>sys.stderr, "Remove: " + str(f)
+		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft","pyc"]:
+			#print>>sys.stderr, "Remove: " + str(f)
 			os.remove(f)
 
 #remove temporary file
@@ -47,6 +47,8 @@ def main():
 		os.remove(path+"dna.db.nsq")
 	if os.path.isfile(path+"Report.json"):
 		os.remove(path+"Report.json")
+	if os.path.isfile(path+"ReportFormatted.json"):
+		os.remove(path+"ReportFormatted.json")
 	if os.path.isfile(path+"draft"):
 		os.remove(path+"draft")
 	if os.path.isfile(path+"dataSummary.txt"):
