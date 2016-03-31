@@ -26,7 +26,7 @@ def removeTemp():
 		if os.path.isfile(tempfile):
 			logging.info("removeTemp => remove temp file: " + str(tempfile))
 			print>>sys.stderr,"[info] remove temp file: " + str(tempfile)
-			#os.remove(tempfile)
+			os.remove(tempfile)
 
 
 # check if a string is a float number
