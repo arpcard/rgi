@@ -113,38 +113,39 @@ def printCSV(resultfile,ofile):
 
 			for it in data[item]:
 				cgList = []
-				if checkKeyExisted("ARO_category", data[item][it]):
-					for aroctkey in data[item][it]["ARO_category"]:
-						cgList.append(str(data[item][it]["ARO_category"][aroctkey]["category_aro_name"].encode('ascii','replace')))
+				if it not in ["_metadata","data_type"]:
+					if checkKeyExisted("ARO_category", data[item][it]):
+						for aroctkey in data[item][it]["ARO_category"]:
+							cgList.append(str(data[item][it]["ARO_category"][aroctkey]["category_aro_name"].encode('ascii','replace')))
 
-				if data[item][it]["model_type_id"] == 40293:
-					temp = data[item][it]["SNP"]["original"] + str(data[item][it]["SNP"]["position"]) + data[item][it]["SNP"]["change"]
-					snpList.append(convert(temp))
-				elif data[item][it]["model_type_id"] == 40292:
-					snpList.append("n/a")
+					if data[item][it]["model_type_id"] == 40293:
+						temp = data[item][it]["SNP"]["original"] + str(data[item][it]["SNP"]["position"]) + data[item][it]["SNP"]["change"]
+						snpList.append(convert(temp))
+					elif data[item][it]["model_type_id"] == 40292:
+						snpList.append("n/a")
 
-				AROlist.append(convert(data[item][it]["ARO_accession"]))
-				AROnameList.append(convert(data[item][it]["ARO_name"]))
-				bitScoreList.append(data[item][it]["bit-score"])
-				pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
-				AROcatList.append(cgList)
-				typeList.append(convert(data[item][it]["model_type"]))
-				cutoffList.append(convert(data[item][it]["type_match"]))
-				idenPercent = float(data[item][it]["max-identities"]) / len(data[item][it]["query"])
-				'''print>>sys.stderr, data[item][it]["max-identities"]
-				print>>sys.stderr, len(data[item][it]["query"])
-				print (str(269/289) + "haha")
-				print>>sys.stderr, float(data[item][it]["max-identities"] % len(data[item][it]["query"]))'''
-				identityList.append(idenPercent)
-				
-				if startCompare:
-					if minevalue > data[item][it]["evalue"]:
+					AROlist.append(convert(data[item][it]["ARO_accession"]))
+					AROnameList.append(convert(data[item][it]["ARO_name"]))
+					bitScoreList.append(data[item][it]["bit-score"])
+					pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
+					AROcatList.append(cgList)
+					typeList.append(convert(data[item][it]["model_type"]))
+					cutoffList.append(convert(data[item][it]["type_match"]))
+					idenPercent = float(data[item][it]["max-identities"]) / len(data[item][it]["query"])
+					'''print>>sys.stderr, data[item][it]["max-identities"]
+					print>>sys.stderr, len(data[item][it]["query"])
+					print (str(269/289) + "haha")
+					print>>sys.stderr, float(data[item][it]["max-identities"] % len(data[item][it]["query"]))'''
+					identityList.append(idenPercent)
+					
+					if startCompare:
+						if minevalue > data[item][it]["evalue"]:
+							minevalue = data[item][it]["evalue"]
+							minARO = data[item][it]["ARO_name"]
+					else:
+						startCompare = True
 						minevalue = data[item][it]["evalue"]
 						minARO = data[item][it]["ARO_name"]
-				else:
-					startCompare = True
-					minevalue = data[item][it]["evalue"]
-					minARO = data[item][it]["ARO_name"]
 
 			clist = set(cutoffList)
 			tl = set(typeList)
@@ -160,12 +161,8 @@ def printCSV(resultfile,ofile):
 			AROcatalphaSet = set(AROcatList)
 			AROsortedList = sorted(list(AROcatalphaSet))
 
-			#if typeList:
-			#	writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
-
 			if typeList:
-				#Hack for protein RGI runs where there's no | or seq_start/stop/strand
-				#print item
+				#for protein RGI runs where there's no | or seq_start/stop/strand
 				if findnthbar(item, 4) == "":
 					writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
                                 else:
