@@ -30,12 +30,13 @@ def catProteins(filename,afile):
 				startrecord = True
 
 
-def main(argvfile):
+def main(argvfile, clean):
 	filename = os.path.basename(argvfile)
 	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".draft -a " + argvfile)
 	catProteins(filename,working_directory +"/"+filename+".draft")
-	#os.remove(working_directory +"/"+filename+".draft")
+	if clean == "1":
+		os.remove(working_directory +"/"+filename+".draft")
 
 
 if __name__ == '__main__':
-	main(sys.argv[1])
+	main(sys.argv[1],sys.argv[2])

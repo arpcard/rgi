@@ -152,25 +152,26 @@ def getORFDNASequence(file_name):
 	
 	# write json for all predicted file
 	pjson = json.dumps(predicted_genes_dict)
+	clean_files.append(working_directory+'/'+file_name+'.predictedGenes.json')
 	with open(working_directory+'/'+file_name+'.predictedGenes.json', 'w') as wf:
 		print>>wf, pjson
 
 	return predicted_genes_dict
 
 
-def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type):	
+def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):	
 	startBlast = False
 	predicted_genes_dict = {}
 	file_name = os.path.basename(inputSeq)
 	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
 	if inType == 'contig':
 		logging.info("runBlast => contigToProteins => start")
-		contigToProteins.main(inputSeq)
+		contigToProteins.main(inputSeq,clean)
 		logging.info("runBlast => contigToProteins => done")
 
 		# get predicted dna
 		logging.info("runBlast => contigToORF => start")
-		contigToORF.main(inputSeq)
+		contigToORF.main(inputSeq,clean)
 		logging.info("runBlast => contigToORF => done")
 
 		logging.info("runBlast => getORFDNASequence => start")
@@ -756,7 +757,7 @@ def main(args):
 	writeFASTAfromJson()
 	makeBlastDB(inType, inputSeq)
 
-	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type)
+	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean)
 
 	if clean == "1":
 		logging.info('main => clean temporary files')
