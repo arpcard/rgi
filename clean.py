@@ -60,7 +60,10 @@ def main():
 
 	print>>sys.stderr, "Cleaned directory: "+path
 
-if __name__ == '__main__':
+def run():
 	parser = argparse.ArgumentParser(description='Removes BLAST databases created using card.json')
 	args = parser.parse_args()
 	main()
+
+if __name__ == '__main__':
+	run()

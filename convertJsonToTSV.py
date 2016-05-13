@@ -179,10 +179,14 @@ def main(args):
 	printCSV(afile,ofile)
 	rgi.removeTemp()
 
-if __name__ == '__main__':
+def run():
 	"""required: sys.argv[1] must be a json file"""
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
 	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
 	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output JSON file (default=dataSummary)")
 	args = parser.parse_args()
-	main(args)
+	main(args)	
+
+if __name__ == '__main__':
+	run()
+

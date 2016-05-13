@@ -27,8 +27,11 @@ def main(args):
 	else:
 		print>>sys.stderr,"[error] failed to upload file"
 
-if __name__ == "__main__":
+def run():
 	parser = argparse.ArgumentParser(description='Load card database json file')
 	parser.add_argument('-i', '--afile',help='must be a card database json file')	
 	args = parser.parse_args()
 	main(args)
+
+if __name__ == "__main__":
+	run()

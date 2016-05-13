@@ -158,10 +158,19 @@ def getORFDNASequence(file_name):
 
 	return predicted_genes_dict
 
+def getSubmittedProteinSequence(afile):
+	submitted_proteins_dict = {}
+	if os.stat(afile).st_size != 0:
+		from Bio import SeqIO
+		for record in SeqIO.parse(afile, 'fasta'):
+			submitted_proteins_dict[record.id] = str(record.seq)
+
+	return submitted_proteins_dict
 
 def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):	
 	startBlast = False
 	predicted_genes_dict = {}
+	submitted_proteins_dict = {}
 	file_name = os.path.basename(inputSeq)
 	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
 	if inType == 'contig':
@@ -188,6 +197,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 			startBlast = True
 		
 	elif inType == 'protein':
+		submitted_proteins_dict = getSubmittedProteinSequence(inputSeq)
 		logging.info("runBlast => start blastP for inType: " + inType)
 		from Bio.Blast.Applications import NcbiblastpCommandline
 		blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)
@@ -331,7 +341,18 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 										c += 1'''
 								'''print>>sys.stderr, ("corret: snp in sbject: " + sbjctSeq[target])
 								print>>sys.stderr, ("correct: snp in query: " + hsp.query[snpInQuery])'''
-								#if hsp.query[snpInQuery] == chan and sbjctSeq[target] == ori:
+
+								card_sequence = str(json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"])
+								orf_protein_sequence = ""
+
+								if predicted_genes_dict:
+									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
+								if submitted_proteins_dict:
+									orf_protein_sequence = str(submitted_proteins_dict[orfInfo.split(" ")[0]])
+
+								logging.info("runBlast => [info] | Model:"+str(modelID) + " pos:" +str(pos) +" | "+str(hsp.query[pos - hsp.sbjct_start + findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND " + str(hsp.sbjct[pos - hsp.sbjct_start +findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
+
+								# Report ONLY if the SNPs are present
 								if hsp.query[pos - hsp.sbjct_start + findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == chan and hsp.sbjct[pos - hsp.sbjct_start +findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == ori:								# 224 = pos. sbject_start = 9 = 216==
 
 								#pos = 224, start = 9 = 216
@@ -375,7 +396,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 											sinsidedict["orf_From"] = orffrom
 											if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
 												sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-												sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+												sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
 											else:
 												sinsidedict["orf_dna_sequence"] = ""
 												sinsidedict["orf_prot_sequence"] = ""
@@ -388,6 +409,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 											sinsidedict["query_start"] = hsp.query_start
 											sinsidedict["query_end"] = hsp.query_start + realQueryLength
 											sinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
+											sinsidedict["orf_prot_sequence"] = orf_protein_sequence
 												
 										strict[hitid + "|hsp_num:" + str(init)] = sinsidedict
 										init += 1
@@ -431,7 +453,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 											slinsidedict["orf_From"] = orffrom
 											if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
 												slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
-												slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+												slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
 											else:
 												slinsidedict["orf_dna_sequence"] = ""
 												slinsidedict["orf_prot_sequence"] = ""
@@ -444,6 +466,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 											slinsidedict["query_start"] = hsp.query_start
 											slinsidedict["query_end"] = hsp.query_start + realQueryLength
 											slinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
+											slinsidedict["orf_prot_sequence"] = orf_protein_sequence
 												
 										loose[hitid + "|hsp_num:" + str(init)] = slinsidedict
 										init += 1
@@ -462,7 +485,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 						querySeq = hsp.query.replace('-', '')
 						realQueryLength = len(querySeq)
 
-						if hsp.query == json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]:
+						card_sequence = str(json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"])
+						orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")						
+
+						if card_sequence == orf_protein_sequence:
 							ppinsidedict = {}
 							ppinsidedict["type_match"] = "Perfect"
 							ppinsidedict["model_id"] = modelID
@@ -500,7 +526,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								ppinsidedict["orf_From"] = orffrom
 								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
 									ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-									ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+									ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
 								else:
 									ppinsidedict["orf_dna_sequence"] = ""
 									ppinsidedict["orf_prot_sequence"] = ""
@@ -513,6 +539,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								ppinsidedict["query_start"] = hsp.query_start
 								ppinsidedict["query_end"] = hsp.query_start + realQueryLength
 								ppinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
+								ppinsidedict["orf_prot_sequence"] = orf_protein_sequence
+
 
 							perfect[hitid + "|hsp_num:" + str(init)] = ppinsidedict
 							init += 1
@@ -555,7 +583,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								insidedict["orf_From"] = orffrom
 								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
 									insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]] 
-									insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+									insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
 								else:
 									insidedict["orf_dna_sequence"] = ""
 									insidedict["orf_prot_sequence"] = ""
@@ -568,6 +596,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								insidedict["query_start"] = hsp.query_start
 								insidedict["query_end"] = hsp.query_start + realQueryLength
 								insidedict["query_From"] = blast_record.query.encode('ascii','replace')
+								insidedict["orf_prot_sequence"] = orf_protein_sequence
 
 							strict[hitid + "|hsp_num:" + str(init)] = insidedict
 							init += 1
@@ -610,7 +639,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								linsidedict["orf_From"] = orffrom
 								if orfInfo[:orfInfo.index('|')] in predicted_genes_dict:
 									linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo[:orfInfo.index('|')]]
-									linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11))
+									linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
 								else:
 									linsidedict["orf_dna_sequence"] = ""
 									linsidedict["orf_prot_sequence"] = ""
@@ -623,10 +652,12 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 								linsidedict["query_start"] = hsp.query_start
 								linsidedict["query_end"] = hsp.query_start + realQueryLength
 								linsidedict["query_From"] = blast_record.query.encode('ascii','replace')
+								linsidedict["orf_prot_sequence"] = orf_protein_sequence
 									
 							loose[hitid + "|hsp_num:" + str(init)] = linsidedict
 							init += 1
-									
+
+					
 			if len(perfect) == 0 and len(strict) == 0:
 				if criteria == "0":
 					blastResults[blast_record.query.encode('ascii','replace')] = loose
@@ -796,10 +827,9 @@ def main(args):
 	# 	#pass
 	# 	print>>sys.stderr, inst
 	# 	removeTemp()
-
-
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Resistance Gene Identifier')
+	
+def run():
+	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version 3.1.0')
 	parser.add_argument('-t','--inType', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
 	parser.add_argument('-i','--inputSeq',help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
 	parser.add_argument('-n', '--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
@@ -809,4 +839,9 @@ if __name__ == '__main__':
 	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
 	parser.add_argument('-v', '--verbose', dest="verbose", default="0", help = "log process to file. Options are 0 or 1  (default = 0 for no logging)")
 	args = parser.parse_args()
-	main(args)		
+	main(args)	
+
+
+if __name__ == '__main__':
+	run()
+	
