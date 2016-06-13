@@ -96,7 +96,7 @@ def printCSV(resultfile,ofile):
 
 	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
-		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score"])
+		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID"])
 		for item in data:
 			minevalue = False
 			startCompare = False
@@ -110,10 +110,16 @@ def printCSV(resultfile,ofile):
 			typeList = []
 			evalueList = []
 			identityList = []
+			SequenceFromBroadStreet = ""
+			predictedProtein = ""
+			geneID = ""
+			hitID = ""
 
-			for it in data[item]:
-				cgList = []
-				if it not in ["_metadata","data_type"]:
+			if item not in ["_metadata","data_type"]:
+				geneID = item
+
+				for it in data[item]:
+					cgList = []
 					if checkKeyExisted("ARO_category", data[item][it]):
 						for aroctkey in data[item][it]["ARO_category"]:
 							cgList.append(str(data[item][it]["ARO_category"][aroctkey]["category_aro_name"].encode('ascii','replace')))
@@ -142,10 +148,20 @@ def printCSV(resultfile,ofile):
 						if minevalue > data[item][it]["evalue"]:
 							minevalue = data[item][it]["evalue"]
 							minARO = data[item][it]["ARO_name"]
+							SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+							if "orf_prot_sequence" in data[item][it]:
+								predictedProtein = data[item][it]["orf_prot_sequence"]
+							if "hsp_num:" in it:
+								hitID = it							
 					else:
 						startCompare = True
 						minevalue = data[item][it]["evalue"]
 						minARO = data[item][it]["ARO_name"]
+						SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+						if "orf_prot_sequence" in data[item][it]:
+							predictedProtein = data[item][it]["orf_prot_sequence"]
+						if "hsp_num:" in it:
+							hitID = it						
 
 			clist = set(cutoffList)
 			tl = set(typeList)
@@ -164,9 +180,9 @@ def printCSV(resultfile,ofile):
 			if typeList:
 				#for protein RGI runs where there's no | or seq_start/stop/strand
 				if findnthbar(item, 4) == "":
-					writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
+					writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
                                 else:
-				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList))])
+				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 
 
 def main(args):

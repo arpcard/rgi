@@ -486,7 +486,12 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 						realQueryLength = len(querySeq)
 
 						card_sequence = str(json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"])
-						orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")						
+						orf_protein_sequence = ""
+						
+						if predicted_genes_dict:
+							orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('|')]], generic_dna).translate(table=11)).strip("*")
+						if submitted_proteins_dict:
+							orf_protein_sequence = str(submitted_proteins_dict[orfInfo.split(" ")[0]])					
 
 						if card_sequence == orf_protein_sequence:
 							ppinsidedict = {}
