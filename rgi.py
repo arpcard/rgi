@@ -431,6 +431,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean):
 										slinsidedict["model_id"] = modelID
 										slinsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
 										slinsidedict["ARO_name"] = json_data[modelID]["ARO_name"]
+										slinsidedict["ARO_category"] = json_data[modelID]["ARO_category"]
 										slinsidedict["evalue"] = hsp.expect
 										slinsidedict["bit-score"] = hsp.bits
 										slinsidedict["max-identities"] = hsp.identities
