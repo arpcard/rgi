@@ -18,6 +18,51 @@
 	$ ./mgm/gmhmmp (There should be list of commands)
 
 |--------------------------------------------------------------------------
+| Prodigal ORF finder http://prodigal.ornl.gov/, https://github.com/hyattpd/prodigal/wiki/Installation
+|--------------------------------------------------------------------------
+
+	|--------------------------------------------------------------------------
+	| Automatic Install - conda should be installed
+	|--------------------------------------------------------------------------
+
+		$ conda install rgi
+
+	|--------------------------------------------------------------------------
+	| Manual Install - Prodigal 
+	|--------------------------------------------------------------------------
+
+	
+	|--------------------------------------------------------------------------
+	| Mac OS X
+	|--------------------------------------------------------------------------
+
+		$ brew tap homebrew/science
+
+		$ brew install homebrew/science/prodigal
+
+	|--------------------------------------------------------------------------
+	| Linux Redhat / Centos
+	|--------------------------------------------------------------------------
+
+		$ sudo yum groupinstall 'Development Tools' && sudo yum install curl git irb python-setuptools ruby
+
+		$ git clone https://github.com/Linuxbrew/brew.git ~/.linuxbrew
+
+		$ export PATH="$HOME/.linuxbrew/bin:$PATH"
+
+		$ export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
+	
+		$ export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+
+	|--------------------------------------------------------------------------
+	| Linux Debian / Ubuntu
+	|--------------------------------------------------------------------------
+
+		$ brew tap homebrew/science
+
+		$ brew install homebrew/science/prodigal
+
+|--------------------------------------------------------------------------
 | BLAST ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 |--------------------------------------------------------------------------
 
@@ -46,16 +91,20 @@ Open a terminal, type:
 
 	$ python rgi.py -h 
 
+Check version:
+
+	$ python rgi.py --version or python rgi.py --version
+
 |--------------------------------------------------------------------------
 | RGI inputs
 |--------------------------------------------------------------------------
 
 	$ python rgi.py -h
 
-		usage: rgi.py [-h] [-t INTYPE] [-i INPUTSEQ] [-n THREADS] [-o OUTPUT]
-		              [-e CRITERIA] [-c CLEAN]
+		usage: rgi [-h] [-t INTYPE] [-i INPUTSEQ] [-n THREADS] [-o OUTPUT]
+		           [-e CRITERIA] [-c CLEAN] [-d DATA] [-v VERBOSE] [-x ORF] [-V]
 
-		Resistance Gene Identifier - Version 3.0.3
+		Resistance Gene Identifier - Version 3.1.1
 
 		optional arguments:
 		  -h, --help            show this help message and exit
@@ -77,6 +126,14 @@ Open a terminal, type:
 		  -c CLEAN, --clean CLEAN
 		                        This removes temporary files in the results directory
 		                        after run. Options are 0 or 1 (default=1 for remove)
+		  -d DATA, --data DATA  Specify a data-type, i.e. wgs, chromosome, plasmid,
+		                        etc. (default = NA)
+		  -v VERBOSE, --verbose VERBOSE
+		                        log process to file. Options are 0 or 1 (default = 0
+		                        for no logging)
+		  -x ORF, --orf ORF     choose between prodigal and MetaGeneMark orf finder.
+		                        Options are 0 or 1 (default = 0 for using prodigal)
+		  -V, --version         Prints version number
 
 
 	INTYPE could be one of 'contig', 'protein' or 'read'.
@@ -156,7 +213,7 @@ Open a terminal, type:
 
 	$ python convertJsonToTSV.py -h
 
-		usage: convertJsonToTSV.py [-h] [-i AFILE] [-o OUTPUT]
+		usage: convertJsonToTSV.py [-h] [-i AFILE] [-o OUTPUT] [-x ORF]
 
 		Convert RGI JSON file to Tab-delimited file
 
@@ -167,6 +224,8 @@ Open a terminal, type:
 		                        format e.g out.json, out.json.gz
 		  -o OUTPUT, --out_file OUTPUT
 		                        Output JSON file (default=dataSummary)
+		  -x ORF, --orf ORF     choose between prodigal and MetaGeneMark orf finder.
+		                        Options are 0 or 1 (default = 0 for using prodigal)
 
 |--------------------------------------------------------------------------
 | convertJsonToTSV outputs
