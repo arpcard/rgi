@@ -49,6 +49,26 @@ def findnthbar(bunchstr, start):
 
 	return temp
 
+#output the information particular field from alignment.Title by splicing it by '#'
+def findnthbar2(bunchstr, n):
+	arr = bunchstr.split("#")
+	if n < len(arr):
+		# gene id
+		if n == 1 and arr[n]:
+			return int(arr[n])
+		elif n == 2:
+			return int(arr[n])
+		elif n == 3:
+			 if int(arr[n]) == 1:
+			 	# positive
+			 	return "+"
+			 else:
+			 	# neg
+			 	return "-"
+		else:
+			return arr[n]
+	else:
+		return ""
 
 def findORFfrom (bunchstr):
 	barc = 0
@@ -85,7 +105,7 @@ def checkKeyExisted(key, my_dict):
 	return nonNone
 
 
-def printCSV(resultfile,ofile):
+def printCSV(resultfile,ofile,orf):
 	try:
 		with open(resultfile, 'r') as f:
 			data = json.load(f)
@@ -178,21 +198,34 @@ def printCSV(resultfile,ofile):
 			AROsortedList = sorted(list(AROcatalphaSet))
 
 			if typeList:
-				#for protein RGI runs where there's no | or seq_start/stop/strand
-				if findnthbar(item, 4) == "":
-					writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
-                                else:
-				        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+				if orf == "1":
+					#for protein RGI runs where there's no | or seq_start/stop/strand
+					if findnthbar(item, 4) == "":
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+	                                else:
+					        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+				else:
+					if findnthbar2(item, 1) == "":
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+	                                else:
+					        writer.writerow([findnthbar2(item, 0), 
+					        	findnthbar2(item, 4).strip(" "), 
+					        	int(findnthbar2(item, 1))-1, 
+					        	int(findnthbar2(item, 2))-1, 
+					        	findnthbar2(item, 3), 
+					        	', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+
 
 
 def main(args):
 	afile = args.afile
 	ofile = args.output
+	orf = args.orf
 	# Check if file is compressed
 	if afile.endswith('.gz'):
 		afile = rgi.decompress(afile,'gz',working_directory)
 
-	printCSV(afile,ofile)
+	printCSV(afile,ofile,orf)
 	rgi.removeTemp()
 
 def run():
@@ -200,6 +233,7 @@ def run():
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
 	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
 	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output JSON file (default=dataSummary)")
+	parser.add_argument('-x', '--orf', dest="orf", default="0", help = "choose between prodigal and MetaGeneMark orf finder. Options are 0 or 1  (default = 0 for using prodigal)")
 	args = parser.parse_args()
 	main(args)	
 
