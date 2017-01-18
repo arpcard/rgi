@@ -244,12 +244,12 @@ def getSubmittedProteinSequence(afile):
 
 def runDiamond(inType, inputSeq, threads, outputFile):
 
-	cfilter = "	--index-chunks 1 --block-size 1 --evalue 10" #--quiet
+	cfilter = "	--index-chunks 1 --block-size 1 --quiet"
 
 	if inType == 'contig' or inType == 'read':
 		logging.info("runDiamond => blastx")
-		logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --sensitive'+cfilter)
-		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive'+cfilter)
+		logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10'+cfilter)
+		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10'+cfilter)
 	else:
 		logging.info("runDiamond => blastp")
 		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles'+cfilter)
