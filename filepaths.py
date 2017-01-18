@@ -1,11 +1,6 @@
 import sys
 import os
 
-'''
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
-'''
 def determine_path():
     try:
         root = __file__
@@ -16,5 +11,3 @@ def determine_path():
         print "I'm sorry, but something is wrong."
         print "There is no __file__ variable. Please contact the author."
         sys.exit ()
-
-#print determine_path()

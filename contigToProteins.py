@@ -23,18 +23,21 @@ def catProteins(filename,afile):
 				startrecord = False
 			elif startrecord:
 				if eachline[0] == '>':
-					print>>wf, eachline.replace('\t>', '|').strip()
+					print>>wf, eachline.replace('\t>', '|').strip().lstrip()
 				else:
-					print>>wf, eachline.strip()
+					if eachline.strip() != "":
+						print>>wf, eachline.strip()
+
 			elif eachline[0:19] == "Predicted proteins:":
 				startrecord = True
+	wf.close()
 
 
 def main(argvfile, clean):
 	filename = os.path.basename(argvfile)
 	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".draft -a " + argvfile)
 	catProteins(filename,working_directory +"/"+filename+".draft")
-	if clean == "1":
+	if clean == "yes":
 		os.remove(working_directory +"/"+filename+".draft")
 
 

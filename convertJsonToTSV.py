@@ -105,10 +105,15 @@ def checkKeyExisted(key, my_dict):
 	return nonNone
 
 
-def printCSV(resultfile,ofile,orf):
+def printCSV(resultfile,ofile,orf,verbose):
+	if os.path.isfile(resultfile) == False:
+		print>>sys.stderr, "convertJsonToTSV missing input JSON file."
+		exit()
+
 	try:
 		with open(resultfile, 'r') as f:
 			data = json.load(f)
+		f.close()
 	
 	except ValueError:
 		print>>sys.stderr, "convertJsonToTSV expects a file contains a VALID JSON string."
@@ -202,7 +207,7 @@ def printCSV(resultfile,ofile,orf):
 			AROsortedList = sorted(list(AROcatalphaSet))
 
 			if typeList:
-				if orf == "1":
+				if orf == "genemark":
 					#for protein RGI runs where there's no | or seq_start/stop/strand
 					if findnthbar(item, 4) == "":
 						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
@@ -219,25 +224,56 @@ def printCSV(resultfile,ofile,orf):
 					        	findnthbar2(item, 3), 
 					        	', '.join(list(clist)), pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 
+		if verbose == 'on':
+			# Write help menu
+			writer.writerow([])
+			writer.writerow([])
+			writer.writerow(["COLUMN","HELP_MESSAGE"])
+			writer.writerow(["ORF_ID","Open Reading Frame identifier (internal to RGI)"])
+			writer.writerow(["CONTIG","Source Sequence"])
+			writer.writerow(["START","Start co-ordinate of ORF"])
+			writer.writerow(["STOP","End co-ordinate of ORF"])
+			writer.writerow(["ORIENTATION","Strand of ORF"])
+			writer.writerow(["CUT_OFF","RGI Detection Paradigm"])
+			writer.writerow(["PASS_EVALUE","STRICT detection model Expectation value cut-off"])
+			writer.writerow(["Best_Hit_evalue","Expectation value of match to top hit in CARD"])
+			writer.writerow(["Best_Hit_ARO","ARO term of top hit in CARD"])
+			writer.writerow(["Best_Identities","Percent identity of match to top hit in CARD"])
+			writer.writerow(["ARO","ARO accession of top hit in CARD"])
+			writer.writerow(["ARO_name","ARO term of top hit in CARD"])
+			writer.writerow(["Model_type","CARD detection model type"])
+			writer.writerow(["SNP","Observed mutation (if applicable)"])
+			writer.writerow(["AR0_category","ARO Categorization"])
+			writer.writerow(["bit_score","Bitscore of match to top hit in CARD"])
+			writer.writerow(["Predicted_Protein","ORF predicted protein sequence"])
+			writer.writerow(["CARD_Protein_Sequence","Protein sequence of top hit in CARD"])
+			writer.writerow(["LABEL","ORF label (internal to RGI)"])
+			writer.writerow(["ID","HSP identifier (internal to RGI)"])
 
+	af.close()
 
 def main(args):
 	afile = args.afile
 	ofile = args.output
-	orf = args.orf
+	orf = args.orf.lower()
+	verbose = args.verbose.lower()
+
 	# Check if file is compressed
 	if afile.endswith('.gz'):
 		afile = rgi.decompress(afile,'gz',working_directory)
 
-	printCSV(afile,ofile,orf)
+	if os.path.isfile(afile):	
+		printCSV(afile,ofile,orf,verbose)
+	else:
+		print "Missing file: ",afile 
 	rgi.removeTemp()
 
 def run():
-	"""required: sys.argv[1] must be a json file"""
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
 	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
 	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output JSON file (default=dataSummary)")
-	parser.add_argument('-x', '--orf', dest="orf", default="0", help = "choose between prodigal and MetaGeneMark orf finder. Options are 0 or 1  (default = 0 for using prodigal)")
+	parser.add_argument('-x', '--orf', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK (default = PRODIGAL)")
+	parser.add_argument('-v', '--verbose', dest="verbose", default="OFF", help = "include help menu. Options are OFF or ON  (default = OFF for no help)")
 	args = parser.parse_args()
 	main(args)	
 

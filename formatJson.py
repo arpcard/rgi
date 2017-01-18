@@ -3,7 +3,6 @@ import sys
 import filepaths
 import argparse
 import json
-#import logging
 
 def main(args):
 	if args.in_file == None:
@@ -21,7 +20,6 @@ def run():
 	parser.add_argument('-i','--in_file',help='input file must be in JSON format e.g Report.json')
 	parser.add_argument('-o', '--out_file',  dest="out_file", default="ReportFormatted", help="Output JSON file (default=ReportFormatted)")	
 	args = parser.parse_args()
-	#logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p')
 	main(args)		
 
 if __name__ == '__main__':

@@ -5,31 +5,53 @@
 
 
 |--------------------------------------------------------------------------
-| Install the tarball using pip - Mac or linux
+| Install RGI using CONDA packages - Mac or linux
 |--------------------------------------------------------------------------
 
-	1. sudo pip install RGI-X.tar.gz
+	# searches rgi package and show available versions
+
+	$ conda search --channel bioconda rgi
+
+	# install rgi package
+
+	$ conda install --channel bioconda rgi
+
+	# install rgi specific version
+
+	$ conda install --channel bioconda rgi=3.1.1
+
+	# remove rgi package
+
+	$ conda remove --channel biconda rgi
+
+
+|--------------------------------------------------------------------------
+| Install RGI using TATBALL - Mac or linux
+|--------------------------------------------------------------------------
+
+	# install rgi
+
+	$ sudo pip install RGI-X.tar.gz
+
+	# uninstall rgi
+
+	$ sudo pip uninstall rgi
+
 
 |--------------------------------------------------------------------------
 | Running RGI
 |--------------------------------------------------------------------------
 
-	1. Installed programs Help menu:	
+	# Installed RGI programs Help menu:	
 
-		$ sudo rgi -h
+	$ rgi -h
 
-		$ sudo rgi_clean -h
+	$ rgi_clean -h
 
-		$ sudo rgi_jsontab -h
+	$ rgi_jsontab -h
 
-		$ sudo rgi_jsonformat -h
+	$ rgi_jsonformat -h
 
-		$ sudo rgi_load -h
+	$ rgi_load -h
 
-
-|--------------------------------------------------------------------------
-| Uninstall RGI using pip - Mac or linux
-|--------------------------------------------------------------------------
-
-	1. sudo pip uninstall rgi
-
+	

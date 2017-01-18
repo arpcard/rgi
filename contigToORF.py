@@ -25,7 +25,8 @@ def catProteins(filename,afile):
 				if eachline[0] == '>':
 					print>>wf, eachline.replace('\t>', '|').strip()
 				else:
-					print>>wf, eachline.strip()
+					if eachline.strip() != "":
+						print>>wf, eachline.strip()
 			elif eachline.strip() == "Nucleotide sequence of predicted genes:":
 				startrecord = True
 
@@ -42,7 +43,9 @@ def get_character_len(file_name):
 	return chars	
 
 def main(argvfile,clean,orf):
-	if orf == "1":
+	clean = clean.lower()
+	orf = orf.lower()
+	if orf == "genemark":
 		orf_metagenemark(argvfile,clean)
 	else:
 		orf_prodigal(argvfile,clean)
@@ -52,7 +55,7 @@ def orf_metagenemark(argvfile,clean):
 	filename = os.path.basename(argvfile)
 	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".adraft -d " + argvfile)
 	catProteins(filename,working_directory +"/"+filename+".adraft")
-	if clean == "1":
+	if clean == "yes":
 		os.remove(working_directory +"/"+filename+".adraft")
 
 '''
@@ -77,8 +80,21 @@ def orf_prodigal(argvfile,clean):
 	filename = os.path.basename(argvfile)
 	os.system("prodigal -c -m -a "+working_directory+"/"+filename+".contig.fsa -i "+argvfile+" -o "+working_directory+"/"+filename+".draft -p "+p+" -d "+working_directory+"/"+filename+".contigToORF.fsa -q")
 
-	if clean == "1":
+	# format the contig file headers to remove space
+	format_fasta_headers(working_directory+"/"+filename+".contig.fsa")
+
+	if clean == "yes":
 		os.remove(working_directory +"/"+filename+".draft")
+
+def format_fasta_headers(afile):
+	ofile = open("my_fasta.txt", "w")
+	from Bio import SeqIO
+	for record in SeqIO.parse(afile, 'fasta'):
+		new_header =  record.description.strip().replace(" # ", "#")
+		ofile.write(">" + new_header + "\n" + str(record.seq) + "\n")
+	ofile.close()
+	os.rename("my_fasta.txt", afile)	
+
 
 if __name__ == '__main__':
 	main(sys.argv[1],sys.argv[2], sys.argv[3])
