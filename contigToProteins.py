@@ -11,6 +11,7 @@ def catProteins(filename,afile):
 
 	with open(afile, 'r') as f:
 		data = f.readlines()
+	f.close()
 	
 	with open(working_directory+'/'+filename+'.contig.fsa', 'w') as wf:
 

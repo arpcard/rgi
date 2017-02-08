@@ -9,7 +9,7 @@
 
 
 `-- rgi
-   |-- mgm
+   |-- mgm (contains MetaGeneMark software and license)
 	   |-- ...
 	   |-- ...
    |-- __init__.py

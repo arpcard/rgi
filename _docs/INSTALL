@@ -174,7 +174,7 @@ Check version:
 | RGI outputs
 |--------------------------------------------------------------------------
 
-	RGI Output will produce a detailed JSON file: Report.json
+	RGI output will produce a detailed JSON file, Summary Tab-delimited file and gff3 (where applicable)
 
 	The JSON is as follows (example shows only one hit):
 

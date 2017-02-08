@@ -10,7 +10,10 @@ script_path = filepaths.determine_path()
 def validateFile(filename):
     try:
 		with open(filename) as f:
-		    return json.load(f)
+			out = json.load(f)
+		f.close()
+		return out
+		
     except ValueError as e:
         print>>sys.stderr, ('[error] invalid json: %s' % e)
         return None # or: raise	

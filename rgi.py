@@ -8,13 +8,13 @@ import contigToORF
 import argparse
 import filepaths
 import gzip, zlib
-#from gzopen import gzopen
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
 import logging
 import hashlib
 import time
 import convertJsonToTSV
+import csv
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -42,36 +42,8 @@ def isfloat(value):
     return False
 
 
+# TODO:: re-write this function
 #output the information particular field from alignment.Title by splicing it by '|'
-def _findnthbar(bunchstr, n):
-	if bunchstr[0:5] in "gene_":
-		#print bunchstr[0:5]
-		pass
-	else:
-		bunchstr = "_|_|_ "+ bunchstr
-
-	barc = 0
-	start = n+3
-	over = n+4
-	temp = ""
-	for eachc in bunchstr:
-		if eachc == '|':
-			barc += 1
-		if barc == start:
-			temp += eachc
-		if barc == over:
-			break
-	colonpos = temp.find(':')
-	res=temp[colonpos+2:]
-	res=res.rstrip()
-	if res.isdigit():
-		return int(res)
-	elif isfloat(res):
-		return float(res)
-	else:
-		res = res.encode('ascii','replace')
-		return res
-
 def findnthbar(bunchstr, n):
 	if bunchstr[0:5] in "gene_":
 		pass
@@ -95,6 +67,7 @@ def findnthbar(bunchstr, n):
 	colonpos = temp.find(':')
 	res=temp[colonpos+2:]
 	res=res.rstrip()
+	
 	if res.isdigit():
 		return int(res)
 	elif isfloat(res):
@@ -103,6 +76,7 @@ def findnthbar(bunchstr, n):
 		res = res.encode('ascii','replace')
 		return res
 
+# TODO:: re-write this function
 #output the information particular field from alignment.Title by splicing it by '#'
 def findnthbar2(bunchstr, n):
 
@@ -191,6 +165,7 @@ def writeFASTAfromJson():
 									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
 							else:
 								 noSeqList.append(item)
+			wp.close()
 		json_file.close()
 	#get a list of models who are incomplete
 	'''if noSeqList:
@@ -198,31 +173,47 @@ def writeFASTAfromJson():
 
 
 #make protein (and dna if needed) database:
-def makeBlastDB(inType, inputSeq):
+def makeBlastDB(verbose):
 	if os.path.isfile(path+"proteindb.fsa") == True and os.path.exists(path+"proteindb.fsa") == True  and os.path.exists(path+"protein.db.phr") == True and os.path.exists(path+"protein.db.pin") == True and os.path.exists(path+"protein.db.psq") == True :
-		print "blast DB exists"
+		logging.info("makeBlastDB => blast DB exists")
 	else:
-		print "create blast DB."
-		os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db')
-	#os.system('makeblastdb -in proteindb.fsa -dbtype prot -out protein.db')
+		if verbose == "on":
+			logging.info("makeBlastDB => create blast DB.")
+			os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db 2>&1 >> ' + logging.getLoggerClass().root.handlers[0].baseFilename)
+		else:
+			os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db > /dev/null 2>&1')
 
-def makeDiamondDB():
+def makeDiamondDB(verbose):
 	if os.path.isfile(path+"proteindb.fsa") == True and os.path.exists(path+"proteindb.fsa") == True  and os.path.exists(path+"protein.db.dmnd") == True:
-		print "diamond DB exists"
+		logging.info("makeDiamondDB => diamond DB exists")
 	else:
-		print "create diamond DB."
-		os.system('diamond makedb --in '+path+'proteindb.fsa --db '+path+'protein.db')
+		if verbose == "on":
+			logging.info("makeDiamondDB => create diamond DB.")
+			os.system('diamond makedb --in '+path+'proteindb.fsa --db '+path+'protein.db 2>&1 >> ' + logging.getLoggerClass().root.handlers[0].baseFilename)
+		else:
+			os.system('diamond makedb --quiet --in '+path+'proteindb.fsa --db '+path+'protein.db')
+		
 
-def getORFDNASequence(file_name,orf):
+def getORFDNASequence(file_name,orf,inType):
 	predicted_genes_dict = {}
-	if os.stat(working_directory+"/"+file_name+".contigToORF.fsa").st_size != 0:
-		from Bio import SeqIO
-		clean_files.append(working_directory+"/"+file_name+".contigToORF.fsa")
-		for record in SeqIO.parse(working_directory+"/"+file_name+".contigToORF.fsa", 'fasta'):
-			if orf == "genemark" and '|' in record.id:
-				predicted_genes_dict[record.id[:str(record.id).index('|')]] = str(record.seq)
-			else:
-				predicted_genes_dict[record.id] = str(record.seq)
+	if inType in ["contig"]:
+		if os.stat(working_directory+"/"+file_name+".contigToORF.fsa").st_size != 0:
+			from Bio import SeqIO
+			clean_files.append(working_directory+"/"+file_name+".contigToORF.fsa")
+			for record in SeqIO.parse(working_directory+"/"+file_name+".contigToORF.fsa", 'fasta'):
+				if orf == "genemark" and '|' in record.id:
+					predicted_genes_dict[record.id[:str(record.id).index('|')]] = str(record.seq)
+				else:
+					predicted_genes_dict[record.id] = str(record.seq)
+	else:
+		if os.stat(working_directory+"/"+file_name+".read.fsa").st_size != 0:
+			from Bio import SeqIO
+			clean_files.append(working_directory+"/"+file_name+".read.fsa")
+			for record in SeqIO.parse(working_directory+"/"+file_name+".read.fsa", 'fasta'):
+				if orf == "genemark" and '|' in record.id:
+					predicted_genes_dict[record.id[:str(record.id).index('|')]] = str(record.seq)
+				else:
+					predicted_genes_dict[record.id] = str(record.seq)		
 	
 	# write json for all predicted file
 	pjson = json.dumps(predicted_genes_dict)
@@ -242,18 +233,19 @@ def getSubmittedProteinSequence(afile):
 
 	return submitted_proteins_dict
 
-def runDiamond(inType, inputSeq, threads, outputFile):
+def runDiamond(inType, inputSeq, threads, outputFile, verbose):
 
-	cfilter = "	--index-chunks 1 --block-size 1 --quiet"
+	cfilter = "	--index-chunks 1 --block-size 1 --quiet "
+ 
+	if verbose == "on":
+	   cfilter = cfilter + " --log 2>&1 >> " + logging.getLoggerClass().root.handlers[0].baseFilename
 
 	if inType == 'contig' or inType == 'read':
-		logging.info("runDiamond => blastx")
-		logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10'+cfilter)
-		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10'+cfilter)
+	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
+		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
 	else:
-		logging.info("runDiamond => blastp")
-		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles'+cfilter)
-		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles'+cfilter)
+		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles '+cfilter)
+		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles '+cfilter)
     
 	logging.info('runDiamond => diamond view --outfmt xml --daa '+inputSeq+'.daa --out '+outputFile + cfilter)
 	os.system('diamond view --outfmt xml --daa '+inputSeq+'.daa --out '+outputFile + cfilter )
@@ -287,9 +279,27 @@ def encodeHeaders(fastaFile):
 	 	print>>f, headers_dict_json
 	f.close()	
 
+def validateFastA(fastaFile):
+
+	ofile = open(fastaFile, "r")
+	instream = ofile.readlines()
+	ofile.close()
+
+	lastchar = instream[len(instream) -1]
+
+	if lastchar.endswith('\n'):
+		logging.info("validateFastA => fasta file looks good")
+	else:
+		logging.error("validateFastA => invalid fasta, missing newline at the end of fasta file ("+fastaFile+")")
+		print>>sys.stderr, "[error] invalid fasta, missing newline at the end of fasta file ("+fastaFile+")"
+		exit()	
+
+# TODO:: validate fastq files
+def validateFastQ(afile):
+	logging.info("validateFastQ => TODO:: validate fastq file")
 
 
-def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool):	
+def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,verbose):	
 
 	pjson = {}
 	startBlast = False
@@ -300,34 +310,33 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 	#encodeHeaders(inputSeq)
 	file_name = os.path.basename(inputSeq)
 	clean_files.append(working_directory+"/"+file_name+".blastRes.xml")
-	#print ">>>>", working_directory+"/"+file_name+".blastRes.xml"
 
 	if inType == 'contig':
 		if orf == "genemark":
 			logging.info("runBlast => contigToProteins => start")
 			contigToProteins.main(inputSeq,clean)
 			logging.info("runBlast => contigToProteins => done")
-
+		
 			# get predicted dna
 			logging.info("runBlast => contigToORF => start")
 			contigToORF.main(inputSeq,clean,orf)
 			logging.info("runBlast => contigToORF => done")
 
 			logging.info("runBlast => getORFDNASequence => start")
-			predicted_genes_dict = getORFDNASequence(file_name,orf)
+			predicted_genes_dict = getORFDNASequence(file_name,orf,inType)
 			logging.info("runBlast => getORFDNASequence => done")
 		else:
-			#logging.info("runBlast => contigToProteins => start")
-			#contigToProteins.main(inputSeq,clean)
-			#logging.info("runBlast => contigToProteins => done")
-
+			# logging.info("runBlast => contigToProteins => start")
+			# contigToProteins.main(inputSeq,clean)
+			# logging.info("runBlast => contigToProteins => done")
+			
 			# get predicted dna
 			logging.info("runBlast => contigToORF => start")
 			contigToORF.main(inputSeq,clean,orf)
 			logging.info("runBlast => contigToORF => done")
 
 			logging.info("runBlast => getORFDNASequence => start")
-			predicted_genes_dict = getORFDNASequence(file_name,orf)
+			predicted_genes_dict = getORFDNASequence(file_name,orf,inType)
 			logging.info("runBlast => getORFDNASequence => done")			
 
 		if os.stat(working_directory+"/"+file_name+".contig.fsa").st_size != 0:
@@ -336,7 +345,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 			clean_files.append(working_directory+"/"+file_name+".contig.fsa")
 
 			if alignment_tool == "diamond":
-				runDiamond("protein", working_directory+"/"+file_name+".contig.fsa", threads, working_directory+"/"+file_name+".blastRes.xml")
+				runDiamond("protein", working_directory+"/"+file_name+".contig.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+				#runDiamond(inType, working_directory+"/"+file_name+".contigToORF.fsa", threads, working_directory+"/"+file_name+".blastRes.xml")
+				#fasta.contigToORF.fsa
 			else:
 				from Bio.Blast.Applications import NcbiblastpCommandline
 				blastCLine = NcbiblastpCommandline(query=working_directory+"/"+file_name+".contig.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)#,num_alignments=1)
@@ -351,7 +362,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		logging.info("runBlast => start blastP for inType: " + inType)
 
 		if alignment_tool == "diamond":
-			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml")
+			runDiamond(inType, working_directory+"/"+file_name, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 		else:
 			from Bio.Blast.Applications import NcbiblastpCommandline
 			blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
@@ -366,9 +377,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		logging.info("runBlast => fqToFsa => done")
 		clean_files.append(working_directory+"/"+file_name+".read.fsa")
 		logging.info("runBlast => start blastX for inType: " + inType)
-
+		
 		if alignment_tool == "diamond":
-			runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml")
+			runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 		else:
 			from Bio.Blast.Applications import NcbiblastxCommandline
 			blastCLine = NcbiblastxCommandline(query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
@@ -594,6 +605,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 											sinsidedict["query_end"] = hsp.query_start + realQueryLength
 											sinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
 											sinsidedict["orf_prot_sequence"] = orf_protein_sequence
+
+										elif inType == 'read':
+											pass
 												
 										strict[hitid + "|hsp_num:" + str(init)] = sinsidedict
 										init += 1
@@ -668,7 +682,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 											slinsidedict["query_end"] = hsp.query_start + realQueryLength
 											slinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
 											slinsidedict["orf_prot_sequence"] = orf_protein_sequence
-												
+
+										elif inType == 'read':
+											pass
+
 										loose[hitid + "|hsp_num:" + str(init)] = slinsidedict
 										init += 1
 		
@@ -692,7 +709,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 								orf_protein_sequence = str(submitted_proteins_dict[orfInfo.split("#")[0]])
 						else:
 							if predicted_genes_dict:
-								if orfInfo in predicted_genes_dict.keys():
+								if orfInfo.strip() in predicted_genes_dict.keys():
 									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo], generic_dna).translate(table=11)).strip("*")
 								else:
 									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo[:orfInfo.index('#')]], generic_dna).translate(table=11)).strip("*")
@@ -768,6 +785,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 								ppinsidedict["query_From"] = blast_record.query.encode('ascii','replace')
 								ppinsidedict["orf_prot_sequence"] = orf_protein_sequence
 
+							elif inType == 'read':
+								pass
 
 							perfect[hitid + "|hsp_num:" + str(init)] = ppinsidedict
 							init += 1
@@ -839,6 +858,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 								insidedict["query_end"] = hsp.query_start + realQueryLength
 								insidedict["query_From"] = blast_record.query.encode('ascii','replace')
 								insidedict["orf_prot_sequence"] = orf_protein_sequence
+
+							elif inType == 'read':
+								pass
 
 							strict[hitid + "|hsp_num:" + str(init)] = insidedict
 							init += 1
@@ -912,12 +934,15 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 								linsidedict["query_end"] = hsp.query_start + realQueryLength
 								linsidedict["query_From"] = blast_record.query.encode('ascii','replace')
 								linsidedict["orf_prot_sequence"] = orf_protein_sequence
-									
+
+							elif inType == 'read':
+								pass
+
 							loose[hitid + "|hsp_num:" + str(init)] = linsidedict
 							init += 1
 
 			if len(perfect) == 0 and len(strict) == 0:
-				if criteria == "no":
+				if criteria == "yes":
 					blastResults[blast_record.query.encode('ascii','replace')] = loose
 					logging.info("runBlast => hit = " + str(blast_record.query.encode('ascii','replace')) + " => Loose")
 				pscore = 1
@@ -951,6 +976,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 							#print>>sys.stderr, blastResults[gene][hsp]["query_end"]
 							#logging.error("runBlast => hsp => " + str(hsp))
 							#logging.error("runBlast => [gene][hsp] => " + str(blastResults[gene][hsp]))
+		if inType == 'read':
+			pass
+	result_handle.close()
 	logging.info("runBlast => done")
 	return pjson
 
@@ -1040,10 +1068,10 @@ def main(args):
 		exit()
 	if args.verbose.lower() == 'on':
 		log_file = str(working_directory) + "/"+os.path.basename(args.inputSeq)+".log"
-		print "[info] logs saved to : " + log_file
 		logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p')
+		logging.info("main => logs saved to : " + log_file)
 		logging.info('main => start rgi')
-	
+
 	inType = args.inType.lower()
 	inputSeq = args.inputSeq 
 	threads = args.threads
@@ -1071,18 +1099,28 @@ def main(args):
 	writeFASTAfromJson()
 
 	if alignment_tool == "blast":
-		makeBlastDB(inType, inputSeq)
+		makeBlastDB(args.verbose.lower())
 	else:
-		makeDiamondDB()
+		makeDiamondDB(args.verbose.lower())
 
 	# check the heasders
 	validateHeaders(inputSeq,orf)
+
+	if inType == "read":
+		validateFastQ(inputSeq)
+	else:
+		validateFastA(inputSeq)
+
 	# run blast
-	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool)
+	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,args.verbose.lower())
 
 	# Generate tab-delimited files
 	logging.info('main => Generate tab-delimited ' + outputFile + ".txt")
 	convertJsonToTSV.printCSV(outputFile + ".json",outputFile,orf,args.verbose.lower())
+
+	# Generare gff3 file
+	if inType in ["contig"]:
+		create_gff3(outputFile+".json",outputFile, orf)
 
 	if clean == "yes":
 		logging.info('main => clean temporary files')
@@ -1090,6 +1128,114 @@ def main(args):
 	logging.info('main => rgi success')
 	logging.info('----------------------------------------')
 	return bpjson
+
+def create_gff3(afile,file_name, orf):
+	try:
+		with open(afile, 'r') as f:
+			data = json.load(f)
+		f.close()
+
+	except ValueError:
+		print>>sys.stderr, "invalid JSON."
+		exit()
+
+	with open(working_directory+"/"+file_name+".gff3", "w") as af:
+		sequences = []
+		headers = []
+		body = []
+		writer = csv.writer(af, delimiter='\t')
+		headers.append(['##gff-version 3.2.1'])
+		for item in data:
+			minevalue = False
+			maxpercent = 0
+			startCompare = False
+			minARO = 0
+			minARO_id = 0
+			hitID = ""
+			geneID = ""
+			AROlist = {}
+			orf_dna_sequence = ""
+			predictedProtein = ""
+
+			if item not in ["_metadata","data_type"]:
+				geneID = item
+				for it in data[item]:
+
+					idenPercent = float(data[item][it]["max-identities"]) / len(data[item][it]["query"])
+					# sort results by minimum e-value and maximum percent identity
+					AROlist[str(data[item][it]["ARO_name"])] = data[item][it]["ARO_accession"]
+					pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
+
+					if startCompare:
+						if minevalue > data[item][it]["evalue"] and float(maxpercent) < float(idenPercent):
+							minevalue = data[item][it]["evalue"]
+							maxpercent = float(idenPercent)
+							minARO = data[item][it]["ARO_name"]
+							minARO_id = data[item][it]["ARO_accession"]
+							SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+
+							if "orf_prot_sequence" in data[item][it]:
+								predictedProtein = data[item][it]["orf_prot_sequence"]
+							if "orf_dna_sequence" in data[item][it]:
+								orf_dna_sequence = data[item][it]["orf_dna_sequence"]
+							if "hsp_num:" in it:
+								hitID = it
+					else:
+						startCompare = True
+						minevalue = data[item][it]["evalue"]
+						maxpercent = float(idenPercent)
+						minARO = data[item][it]["ARO_name"]
+						minARO_id = data[item][it]["ARO_accession"]
+						SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+
+						if "orf_prot_sequence" in data[item][it]:
+							predictedProtein = data[item][it]["orf_prot_sequence"]
+						if "orf_dna_sequence" in data[item][it]:
+							orf_dna_sequence = data[item][it]["orf_dna_sequence"]
+						if "hsp_num:" in it:
+							hitID = it
+
+					_source = "RGI:"+ version()	
+					_type = "CDS"
+					_phase = "."
+					_score = str(minevalue)
+
+					if orf == "genemark":
+						_start = str(int(findnthbar(item, 1)))
+						_end = str(int(findnthbar(item, 2)))
+						_strand = str(findnthbar(item, 0))	
+						_seqid = str(geneID).split("|")[0]
+						sequences.append(format_fasta(str(_seqid), orf_dna_sequence))
+						_attributes = "Name=" + str(minARO)+";Alias="+"ARO:"+str(minARO_id)+",ORF label (internal to RGI):"+str(geneID) + ",HSP identifier (internal to RGI):" + str(hitID)+",RGI Detection Paradigm:"+data[item][it]["type_match"]			
+					else: 
+						_start = str(int(findnthbar2(item, 1)))
+						_end = str(int(findnthbar2(item, 2)))
+						_strand = str(findnthbar2(item, 3))
+						_seqid = str(geneID).split("#")[0]
+						sequences.append(format_fasta(str(_seqid), orf_dna_sequence))
+						_attributes = "Name=" + str(minARO)+";Alias="+"ARO:"+str(minARO_id)+",ORF label (internal to RGI):"+str(geneID) + ",HSP identifier (internal to RGI):" + str(hitID)+",RGI Detection Paradigm:"+data[item][it]["type_match"]
+
+					headers.append(['##sequence-region '+_seqid+' '+_start+' '+_end])
+					body.append([_seqid, _source, _type, _start, _end, _score, _strand, _phase, _attributes])
+		
+		# headers
+		for head_item in headers:
+			af.write(head_item[0]+ '\n')
+		# body
+		for body_item in body:
+			writer.writerow(body_item)
+		# footer		
+		writer.writerow(["##FASTA"])
+		for sequence in sequences:
+			af.write(sequence)
+	af.close()
+
+def format_fasta(name, sequence):
+    fasta_string = '>' + name + '\n' + sequence + '\n'
+    return fasta_string
+
+def rRNA_mutation():
+	pass
 
 def version():
 	software_version = "3.1.2"
@@ -1102,6 +1248,7 @@ def data_version():
 		for item in json_data.keys():
 			if item == "_version":
 				data_version = json_data[item]
+	json_file.close()
 	return data_version
 
 def run():
@@ -1109,15 +1256,16 @@ def run():
 	parser.add_argument('-t','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
 	parser.add_argument('-i','--input_sequence',dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
 	parser.add_argument('-n', '--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
-	parser.add_argument('-o', '--out_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
-	parser.add_argument('-e', '--exclude_loose',  dest="criteria", default="YES", help="This option is used to include or exclude the loose hits. Options are NO or YES (default=YES for excluding loose hits)")
+	parser.add_argument('-o', '--output_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
+	parser.add_argument('-e', '--loose_criteria',  dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")
 	parser.add_argument('-c', '--clean',  dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
 	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
 	parser.add_argument('-l', '--verbose', dest="verbose", default="OFF", help = "log progress to file. Options are OFF or ON  (default = OFF for no logging)")
-	parser.add_argument('-x', '--orf', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK  (default = PRODIGAL)")
+	parser.add_argument('-x', '--open_reading_frame', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK  (default = PRODIGAL)")
 	parser.add_argument('-a', '--alignment_tool', dest="aligner", default="BLAST", help = "choose between BLAST and DIAMOND. Options are BLAST or DIAMOND  (default = BLAST)")
 	parser.add_argument('-sv', '--software_version', action='version', version='rgi-software-'+version(), help = "Prints software number")
 	parser.add_argument('-dv', '--data_version', action='version', version='rgi-data-version-'+data_version() ,help = "Prints data version number")
+	#parser.add_argument('-m','--model_type', dest="modelType", default=None, help='specify model type, must be one of rRNA (default: None)')
 	args = parser.parse_args()
 	main(args)	
 

@@ -1,0 +1,9 @@
+files=$1
+
+for file in $files/*; do
+	if [[ $file = *".fa" ]]; then
+		echo "Running RGI for : $file"
+		filename=$( basename $file)
+		python ../rgi.py -i $file --alignment_tool DIAMOND --input_type CONTIG  --output_file $filename.output.dia --clean YES --verbose OFF
+	fi
+done

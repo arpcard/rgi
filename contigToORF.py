@@ -11,6 +11,7 @@ def catProteins(filename,afile):
 
 	with open(afile, 'r') as f:
 		data = f.readlines()
+	f.close()
 
 	with open(working_directory+'/'+filename+'.contigToORF.fsa', 'w') as wf:
 
@@ -29,6 +30,7 @@ def catProteins(filename,afile):
 						print>>wf, eachline.strip()
 			elif eachline.strip() == "Nucleotide sequence of predicted genes:":
 				startrecord = True
+	wf.close()
 
 def get_character_len(file_name):
 	chars = words = lines = 0
@@ -40,6 +42,7 @@ def get_character_len(file_name):
 		        lines += 1
 		        words += len(line.split())
 		        chars += len(line)
+	in_file.close()
 	return chars	
 
 def main(argvfile,clean,orf):
