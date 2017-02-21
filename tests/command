@@ -1,9 +1,22 @@
 files=$1
 
 for file in $files/*; do
-	if [[ $file = *".fa" ]]; then
-		echo "Running RGI for : $file"
+	if [[ $file = *".fasta" ]]; then
+		echo "Running RGI for protein file: $file"
 		filename=$( basename $file)
-		python ../rgi.py -i $file --alignment_tool DIAMOND --input_type CONTIG  --output_file $filename.output.dia --clean YES --verbose OFF
+		python ../rgi.py -i $file --alignment_tool DIAMOND --input_type PROTEIN  --output_file $filename.diamond.output --clean YES --verbose ON  --num_threads 32 --loose_criteria YES
+		#python ../rgi.py -i $file --alignment_tool BLAST --input_type PROTEIN  --output_file $filename.blast.output --clean YES --verbose ON --num_threads 32
+	fi
+	if [[ $file = *".fa" ]]; then
+		echo "Running RGI for nucleotide file: $file"
+		filename=$( basename $file)
+		python ../rgi.py -i $file --alignment_tool DIAMOND --input_type CONTIG  --output_file $filename.diamond.output --clean YES --verbose ON --num_threads 32 --loose_criteria YES
+		#python ../rgi.py -i $file --alignment_tool BLAST --input_type CONTIG  --output_file $filename.blast.output --clean YES --verbose ON --num_threads 32 --loose_criteria YES
+	fi
+	if [[ $file = *".fastq" ]]; then
+		echo "Running RGI for metagenomics file: $file"
+		filename=$( basename $file)
+		python ../rgi.py -i $file --alignment_tool DIAMOND --input_type READ  --output_file $filename.diamond.output --clean YES --verbose ON --num_threads 32 --loose_criteria YES
+		#python ../rgi.py -i $file --alignment_tool BLAST --input_type READ  --output_file $filename.blast.output --clean YES --verbose ON --num_threads 32 --loose_criteria YES
 	fi
 done

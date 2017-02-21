@@ -234,12 +234,14 @@ def getSubmittedProteinSequence(afile):
 	return submitted_proteins_dict
 
 def runDiamond(inType, inputSeq, threads, outputFile, verbose):
-
+	#print ">> ", inType, inputSeq, threads, outputFile, verbose
+	#exit()
 	cfilter = "	--index-chunks 1 --block-size 1 --quiet "
  
 	if verbose == "on":
 	   cfilter = cfilter + " --log 2>&1 >> " + logging.getLoggerClass().root.handlers[0].baseFilename
 
+	'''
 	if inType == 'contig' or inType == 'read':
 	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
 		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --daa '+inputSeq+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
@@ -254,6 +256,19 @@ def runDiamond(inType, inputSeq, threads, outputFile, verbose):
 
 	clean_files.append(inputSeq+'.daa')
 	clean_files.append(outputFile+'.txt')
+
+	'''
+
+	if inType == 'read':
+	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
+		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
+	elif inType == 'contig':
+		print "Error : contigs"
+		exit()
+	else:
+		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
+		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
+   
 
 def getHashName(name):
 	m = hashlib.md5()
@@ -372,15 +387,17 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		startBlast = True
 
 	elif inType == 'read':
-		logging.info("runBlast => fqToFsa => start")
-		fqToFsa.main(inputSeq)
-		logging.info("runBlast => fqToFsa => done")
-		clean_files.append(working_directory+"/"+file_name+".read.fsa")
 		logging.info("runBlast => start blastX for inType: " + inType)
 		
 		if alignment_tool == "diamond":
-			runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+			#runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 		else:
+			logging.info("runBlast => fqToFsa => start")
+			fqToFsa.main(inputSeq)
+			logging.info("runBlast => fqToFsa => done")
+			clean_files.append(working_directory+"/"+file_name+".read.fsa")
+
 			from Bio.Blast.Applications import NcbiblastxCommandline
 			blastCLine = NcbiblastxCommandline(query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
 			stdt, stdr = blastCLine()
@@ -1079,7 +1096,8 @@ def main(args):
 	criteria = args.criteria.lower()
 	clean = args.clean.lower()
 	data_type = args.data.lower()
-	orf = args.orf.lower()
+	#orf = args.orf.lower()
+	orf = "prodigal"
 	alignment_tool = args.aligner.lower()
 
 	bpjson = ""
@@ -1261,7 +1279,7 @@ def run():
 	parser.add_argument('-c', '--clean',  dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
 	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
 	parser.add_argument('-l', '--verbose', dest="verbose", default="OFF", help = "log progress to file. Options are OFF or ON  (default = OFF for no logging)")
-	parser.add_argument('-x', '--open_reading_frame', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK  (default = PRODIGAL)")
+	#parser.add_argument('-x', '--open_reading_frame', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK  (default = PRODIGAL)")
 	parser.add_argument('-a', '--alignment_tool', dest="aligner", default="BLAST", help = "choose between BLAST and DIAMOND. Options are BLAST or DIAMOND  (default = BLAST)")
 	parser.add_argument('-sv', '--software_version', action='version', version='rgi-software-'+version(), help = "Prints software number")
 	parser.add_argument('-dv', '--data_version', action='version', version='rgi-data-version-'+data_version() ,help = "Prints data version number")

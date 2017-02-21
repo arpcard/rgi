@@ -8,23 +8,29 @@
 |--------------------------------------------------------------------------
 
 
-`-- rgi
-   |-- mgm (contains MetaGeneMark software and license)
-	   |-- ...
-	   |-- ...
+`-- rgi/
+   |-- _data/
+         |-- card.json
+   |-- _db/
+         ... (BLAST DBs)
+   |-- _docs/
+         |-- INSTALL
+         |-- README
+   |-- _tmp/
+   |-- tests/
    |-- __init__.py
-   |-- card.json
+   |-- blastnsnp.py
    |-- clean.py
    |-- contigToORF.py
    |-- contigToProteins.py
    |-- convertJsonToTSV.py
+   |-- create_gff3_file.py
    |-- filepaths.py
    |-- formatJson.py
    |-- fqToFsa.py
-   |-- INSTALL
    |-- load.py
-   |-- README
    |-- rgi.py
+   |-- rrna.py
    
 
 
