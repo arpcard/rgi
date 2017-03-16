@@ -15,6 +15,8 @@ import hashlib
 import time
 import convertJsonToTSV
 import csv
+import subprocess
+import shutil
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -120,6 +122,64 @@ def checkKeyExisted(key, my_dict):
 		nonNone = False
 	return nonNone
 
+def loadDatabase(card_dir):
+	card_dir = card_dir.rstrip("/")
+	print "source_path: ", card_dir
+	if card_dir == None:
+		exit("Error: no new card path")
+	else:
+		"""
+		verify that we have the following files at the specified location:
+
+		# CARD json data file
+		- card.json
+
+		# diamond blast
+		- protein.db.dmnd
+
+		# ncbi blast
+		- protein.db.phr
+		- protein.db.pin
+		- protein.db.psq
+
+		# Protein fasta file
+		- proteindb.fsa
+
+		"""
+		needed_files = ['card.json','proteindb.fsa','protein.db.dmnd','protein.db.phr','protein.db.pin','protein.db.psq']
+		found_files = []
+
+		files = os.listdir(card_dir)
+
+		for f in files:
+			if not f.startswith('.'):
+				found_files.append(f)
+
+		missing_files = list(set(needed_files) - set(found_files))
+
+		if len(missing_files) > 0 :
+		 	print "Error: missing database files", missing_files
+		 	exit()
+
+		# Files found - move files into _data and _db directories
+		for _file in os.listdir(card_dir):
+			if not _file.startswith('.') and _file in needed_files:
+				src_path = str(card_dir)+"/"+str(_file)
+				dst_path = ""
+				if _file in ['card.json']:
+					dst_path = data_path+str(_file)
+				else:
+					dst_path = path+str(_file)
+				print "copy", src_path, " to ", dst_path
+				shutil.copy2(src_path,dst_path)
+
+		"""
+		logging.info("new card_json: " + str(card_json))
+		logging.info("loadDatabase => copy " + str(card_json) + " to "+ str(data_path))
+		subprocess.call(['python', script_path + '/load.py', '--afile', card_json])
+		logging.info("loadDatabase => clean old databases")
+		subprocess.call(['python', script_path + '/clean.py'])
+		"""
 
 def writeFASTAfromJson():
 	noSeqList = []
@@ -377,7 +437,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		logging.info("runBlast => start blastP for inType: " + inType)
 
 		if alignment_tool == "diamond":
-			runDiamond(inType, working_directory+"/"+file_name, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 		else:
 			from Bio.Blast.Applications import NcbiblastpCommandline
 			blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
@@ -390,7 +450,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		logging.info("runBlast => start blastX for inType: " + inType)
 		
 		if alignment_tool == "diamond":
-			#runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
 		else:
 			logging.info("runBlast => fqToFsa => start")
@@ -1088,7 +1147,7 @@ def main(args):
 		logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p')
 		logging.info("main => logs saved to : " + log_file)
 		logging.info('main => start rgi')
-
+	
 	inType = args.inType.lower()
 	inputSeq = args.inputSeq 
 	threads = args.threads
@@ -1114,12 +1173,16 @@ def main(args):
 		inputSeq = decompress(inputSeq,'gz',output_dir)
 
 	checkBeforeBlast(inType, inputSeq)
-	writeFASTAfromJson()
+	
+	if args.database == None:
+		writeFASTAfromJson()
 
-	if alignment_tool == "blast":
-		makeBlastDB(args.verbose.lower())
+		if alignment_tool == "blast":
+			makeBlastDB(args.verbose.lower())
+		else:
+			makeDiamondDB(args.verbose.lower())
 	else:
-		makeDiamondDB(args.verbose.lower())
+		loadDatabase(args.database)
 
 	# check the heasders
 	validateHeaders(inputSeq,orf)
@@ -1261,29 +1324,39 @@ def version():
 
 def data_version():
 	data_version = ""
-	with open(data_path+"card.json") as json_file:
-		json_data = json.load(json_file)
-		for item in json_data.keys():
-			if item == "_version":
-				data_version = json_data[item]
-	json_file.close()
-	return data_version
+	if os.path.isfile(data_path+"card.json") == True:
+		with open(data_path+"card.json") as json_file:
+			json_data = json.load(json_file)
+			for item in json_data.keys():
+				if item == "_version":
+					data_version = json_data[item]
+		json_file.close()
+
+	if data_version == "":
+		return "Error: card.json not found"
+	else:
+		return data_version
+
+class customAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        print(data_version())
+        exit()
+
 
 def run():
 	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version ' + version())
-	parser.add_argument('-t','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
-	parser.add_argument('-i','--input_sequence',dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
-	parser.add_argument('-n', '--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
-	parser.add_argument('-o', '--output_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
-	parser.add_argument('-e', '--loose_criteria',  dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")
-	parser.add_argument('-c', '--clean',  dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
-	parser.add_argument('-d', '--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
-	parser.add_argument('-l', '--verbose', dest="verbose", default="OFF", help = "log progress to file. Options are OFF or ON  (default = OFF for no logging)")
-	#parser.add_argument('-x', '--open_reading_frame', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK  (default = PRODIGAL)")
-	parser.add_argument('-a', '--alignment_tool', dest="aligner", default="BLAST", help = "choose between BLAST and DIAMOND. Options are BLAST or DIAMOND  (default = BLAST)")
-	parser.add_argument('-sv', '--software_version', action='version', version='rgi-software-'+version(), help = "Prints software number")
-	parser.add_argument('-dv', '--data_version', action='version', version='rgi-data-version-'+data_version() ,help = "Prints data version number")
-	#parser.add_argument('-m','--model_type', dest="modelType", default=None, help='specify model type, must be one of rRNA (default: None)')
+	parser.add_argument('-i','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
+	parser.add_argument('-t','--input_sequence', dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+	parser.add_argument('-n','--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
+	parser.add_argument('-o','--output_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
+	parser.add_argument('-e','--loose_criteria',  dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")
+	parser.add_argument('-c','--clean',  dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
+	parser.add_argument('-d','--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
+	parser.add_argument('-l','--verbose', dest="verbose", default="OFF", help = "log progress to file. Options are OFF or ON  (default = OFF for no logging)")
+	parser.add_argument('-a','--alignment_tool', dest="aligner", default="BLAST", help = "choose between BLAST and DIAMOND. Options are BLAST or DIAMOND  (default = BLAST)")
+	parser.add_argument('-r','--db', dest="database", default=None, help='specify path to CARD blast databases (default: None)')
+	parser.add_argument('-sv','--software_version', action='version', version=version(), help = "Prints software number")
+	parser.add_argument('-dv','--data_version', action=customAction, nargs=0, help = "Prints data version number") 
 	args = parser.parse_args()
 	main(args)	
 
