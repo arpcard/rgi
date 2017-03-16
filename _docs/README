@@ -35,7 +35,7 @@
 
 
 |--------------------------------------------------------------------------
-| Commands
+| Commands for Running RGI localy
 |--------------------------------------------------------------------------
 
 
@@ -48,3 +48,31 @@ $ python convertJsonToTSV.py -h
 $ python load.py -h
 
 $ python formatJson.py -h 
+
+
+|--------------------------------------------------------------------------
+| Running RGI system-wide
+|--------------------------------------------------------------------------
+
+# install RGI
+
+$ conda install --channel rgi
+
+# un-install RGI
+
+$ conda remove --channel rgi
+
+|--------------------------------------------------------------------------
+| Commands for Running RGI system-wide
+|--------------------------------------------------------------------------
+
+$ rgi -h
+
+$ rgi_clean -h
+
+$ rgi_jsontab -h
+
+$ rgi_load -h
+
+$ rgi_jsonformat -h
+

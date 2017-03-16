@@ -85,9 +85,13 @@ Open a terminal, type:
 
 	$ python rgi.py -h 
 
-Check version:
+Check software version:
 
-	$ python rgi.py --version or python rgi.py --version
+	$ python rgi.py -sv or python rgi.py --software_version
+
+Check data version:
+
+	$ python rgi.py -dv or python rgi.py --data_version
 
 |--------------------------------------------------------------------------
 | RGI inputs
@@ -97,7 +101,7 @@ Check version:
 
 		usage: rgi.py [-h] [-t INTYPE] [-i INPUTSEQ] [-n THREADS] [-o OUTPUT]
 		              [-e CRITERIA] [-c CLEAN] [-d DATA] [-l VERBOSE] [-a ALIGNER]
-		              [-sv] [-dv]
+		              [-r DATABASE] [-sv] [-dv]
 
 		Resistance Gene Identifier - Version 3.1.2
 
@@ -130,6 +134,8 @@ Check version:
 		  -a ALIGNER, --alignment_tool ALIGNER
 		                        choose between BLAST and DIAMOND. Options are BLAST or
 		                        DIAMOND (default = BLAST)
+		  -r DATABASE, --db DATABASE
+		                        specify path to CARD blast databases (default: None)
 		  -sv, --software_version
 		                        Prints software number
 		  -dv, --data_version   Prints data version number
