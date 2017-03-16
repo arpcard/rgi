@@ -1,9 +1,3 @@
 rm ./nucleotide.fa.*
 rm ./protein.fasta.*
 rm ./read.fastq.*
-rm ./sequence.fa.*
-rm ./C0305_S2_R1.fastq.*
-rm ./C0305_S2_R2.fastq.*
-rm ./reads.fastq.*
-rm ./mexF_R1.fastq.*
-rm ./mexF_R2.fastq.*

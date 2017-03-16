@@ -294,8 +294,6 @@ def getSubmittedProteinSequence(afile):
 	return submitted_proteins_dict
 
 def runDiamond(inType, inputSeq, threads, outputFile, verbose):
-	#print ">> ", inType, inputSeq, threads, outputFile, verbose
-	#exit()
 	cfilter = "	--index-chunks 1 --block-size 1 --quiet "
  
 	if verbose == "on":
@@ -323,8 +321,7 @@ def runDiamond(inType, inputSeq, threads, outputFile, verbose):
 	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
 		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
 	elif inType == 'contig':
-		print "Error : contigs"
-		exit()
+		exit("Error : contigs")
 	else:
 		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
 		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
@@ -1345,8 +1342,8 @@ class customAction(argparse.Action):
 
 def run():
 	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version ' + version())
-	parser.add_argument('-i','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
-	parser.add_argument('-t','--input_sequence', dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+	parser.add_argument('-t','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
+	parser.add_argument('-i','--input_sequence', dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
 	parser.add_argument('-n','--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
 	parser.add_argument('-o','--output_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
 	parser.add_argument('-e','--loose_criteria',  dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")

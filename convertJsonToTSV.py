@@ -272,8 +272,7 @@ def main(args):
 def run():
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Tab-delimited file')
 	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
-	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output JSON file (default=dataSummary)")
-	#parser.add_argument('-x', '--orf', dest="orf", default="PRODIGAL", help = "choose between prodigal and MetaGeneMark orf finder. Options are PRODIGAL or GENEMARK (default = PRODIGAL)")
+	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output Tab-delimited file (default=dataSummary)")
 	parser.add_argument('-v', '--verbose', dest="verbose", default="OFF", help = "include help menu. Options are OFF or ON  (default = OFF for no help)")
 	args = parser.parse_args()
 	main(args)	
