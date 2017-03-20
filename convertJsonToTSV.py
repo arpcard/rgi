@@ -121,12 +121,13 @@ def printCSV(resultfile,ofile,orf,verbose):
 
 	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
-		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "AR0_category", "bit_score","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID"])
+		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "Best_Hit_ARO_category", "AR0_category", "bit_score","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID"])
 		for item in data:
 			minevalue = False
 			maxpercent = 0
 			startCompare = False
 			minARO = 0
+			bestAROcategorydict = {}
 			AROlist = []
 			AROnameList = []
 			bitScoreList = []
@@ -166,6 +167,8 @@ def printCSV(resultfile,ofile,orf,verbose):
 					idenPercent = float(data[item][it]["max-identities"]) / len(data[item][it]["query"])
 					identityList.append(idenPercent)
 
+					bestAROcategory = []
+
 					# sort results by minimum e-value and maximum percent identity
 					if startCompare:
 						if minevalue > data[item][it]["evalue"] and float(maxpercent) < float(idenPercent):
@@ -175,8 +178,15 @@ def printCSV(resultfile,ofile,orf,verbose):
 							SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
 							if "orf_prot_sequence" in data[item][it]:
 								predictedProtein = data[item][it]["orf_prot_sequence"]
+
+							if checkKeyExisted("ARO_category", data[item][it]):
+								for key in data[item][it]["ARO_category"]:
+									bestAROcategory.append(str(data[item][it]["ARO_category"][key]["category_aro_name"].encode('ascii','replace')))
+								bestAROcategorydict[str(minARO)+" "+str(minevalue)] = bestAROcategory
+
 							if "hsp_num:" in it:
 								hitID = it
+
 
 					else:
 						startCompare = True
@@ -186,8 +196,13 @@ def printCSV(resultfile,ofile,orf,verbose):
 						SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
 						if "orf_prot_sequence" in data[item][it]:
 							predictedProtein = data[item][it]["orf_prot_sequence"]
+							if checkKeyExisted("ARO_category", data[item][it]):
+								for key in data[item][it]["ARO_category"]:
+									bestAROcategory.append(str(data[item][it]["ARO_category"][key]["category_aro_name"].encode('ascii','replace')))
+								bestAROcategorydict[str(minARO)+" "+str(minevalue)] = bestAROcategory
 						if "hsp_num:" in it:
 							hitID = it
+					
 				# debug
 				#print  "geneID: ", geneID," | ARO_name: ", minARO[0:4] ," | E-value: %.2e  " % minevalue ," |  Percent_Identity: %.2f " %   (maxpercent * 100) , " | Type_match: " , data[item][it]	["type_match"]
 
@@ -205,24 +220,24 @@ def printCSV(resultfile,ofile,orf,verbose):
 			AROcatList = list(chain.from_iterable(AROcatList))
 			AROcatalphaSet = set(AROcatList)
 			AROsortedList = sorted(list(AROcatalphaSet))
-
+			
 			if typeList:
 				if orf == "genemark":
 					#for protein RGI runs where there's no | or seq_start/stop/strand
 					if findnthbar(item, 4) == "":
-						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 	                                else:
-					        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+					        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 				else:
 					if findnthbar2(item, 1) == "":
-						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), '; '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 	                                else:
 					        writer.writerow([findnthbar2(item, 0), 
 					        	findnthbar2(item, 4).strip(" "), 
 					        	int(findnthbar2(item, 1))-1, 
 					        	int(findnthbar2(item, 2))-1, 
 					        	findnthbar2(item, 3), 
-					        	', '.join(list(clist)), pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, ', '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+					        	', '.join(list(clist)), pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 
 		if verbose == 'on':
 			# Write help menu
@@ -243,6 +258,7 @@ def printCSV(resultfile,ofile,orf,verbose):
 			writer.writerow(["ARO_name","ARO term of top hit in CARD"])
 			writer.writerow(["Model_type","CARD detection model type"])
 			writer.writerow(["SNP","Observed mutation (if applicable)"])
+			writer.writerow(["Best_Hit_ARO_category","top hit ARO Categorization"])
 			writer.writerow(["AR0_category","ARO Categorization"])
 			writer.writerow(["bit_score","Bitscore of match to top hit in CARD"])
 			writer.writerow(["Predicted_Protein","ORF predicted protein sequence"])
