@@ -121,10 +121,11 @@ def printCSV(resultfile,ofile,orf,verbose):
 
 	with open(working_directory+"/"+ofile+".txt", "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
-		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "Best_Hit_ARO_category", "AR0_category", "bit_score","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID"])
+		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "Best_Hit_ARO_category", "ARO_category", "Best_Hit_bitscore", "bit_score","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID"])
 		for item in data:
-			minevalue = False
-			maxpercent = 0
+			minevalue = 0.0
+			minscore = 0.0
+			maxpercent = 0.0
 			startCompare = False
 			minARO = 0
 			bestAROcategorydict = {}
@@ -141,10 +142,8 @@ def printCSV(resultfile,ofile,orf,verbose):
 			predictedProtein = ""
 			geneID = ""
 			hitID = ""
-
 			if item not in ["_metadata","data_type"]:
 				geneID = item
-
 				for it in data[item]:
 					cgList = []
 					if checkKeyExisted("ARO_category", data[item][it]):
@@ -164,18 +163,19 @@ def printCSV(resultfile,ofile,orf,verbose):
 					AROcatList.append(cgList)
 					typeList.append(convert(data[item][it]["model_type"]))
 					cutoffList.append(convert(data[item][it]["type_match"]))
-					idenPercent = float(data[item][it]["max-identities"]) / len(data[item][it]["query"])
-					identityList.append(idenPercent)
+					identityList.append(float(data[item][it]["perc_identity"]))
 
 					bestAROcategory = []
 
 					# sort results by minimum e-value and maximum percent identity
 					if startCompare:
-						if minevalue > data[item][it]["evalue"] and float(maxpercent) < float(idenPercent):
+						if maxscore < data[item][it]["bit-score"] and maxpercent < float(data[item][it]["perc_identity"]):
 							minevalue = data[item][it]["evalue"]
-							maxpercent = float(idenPercent)
+							maxscore = data[item][it]["bit-score"]
+							maxpercent = float(data[item][it]["perc_identity"])
 							minARO = data[item][it]["ARO_name"]
 							SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+
 							if "orf_prot_sequence" in data[item][it]:
 								predictedProtein = data[item][it]["orf_prot_sequence"]
 
@@ -186,26 +186,26 @@ def printCSV(resultfile,ofile,orf,verbose):
 
 							if "hsp_num:" in it:
 								hitID = it
-
+						
 
 					else:
 						startCompare = True
 						minevalue = data[item][it]["evalue"]
-						maxpercent = float(idenPercent)
+						maxscore = data[item][it]["bit-score"]
+						maxpercent = float(data[item][it]["perc_identity"])
 						minARO = data[item][it]["ARO_name"]
 						SequenceFromBroadStreet = data[item][it]["SequenceFromBroadStreet"]
+
 						if "orf_prot_sequence" in data[item][it]:
 							predictedProtein = data[item][it]["orf_prot_sequence"]
-							if checkKeyExisted("ARO_category", data[item][it]):
-								for key in data[item][it]["ARO_category"]:
-									bestAROcategory.append(str(data[item][it]["ARO_category"][key]["category_aro_name"].encode('ascii','replace')))
-								bestAROcategorydict[str(minARO)+" "+str(minevalue)] = bestAROcategory
+
+						if checkKeyExisted("ARO_category", data[item][it]):
+							for key in data[item][it]["ARO_category"]:
+								bestAROcategory.append(str(data[item][it]["ARO_category"][key]["category_aro_name"].encode('ascii','replace')))
+							bestAROcategorydict[str(minARO)+" "+str(minevalue)] = bestAROcategory
+
 						if "hsp_num:" in it:
 							hitID = it
-					
-				# debug
-				#print  "geneID: ", geneID," | ARO_name: ", minARO[0:4] ," | E-value: %.2e  " % minevalue ," |  Percent_Identity: %.2f " %   (maxpercent * 100) , " | Type_match: " , data[item][it]	["type_match"]
-
 
 			clist = set(cutoffList)
 			tl = set(typeList)
@@ -225,48 +225,85 @@ def printCSV(resultfile,ofile,orf,verbose):
 				if orf == "genemark":
 					#for protein RGI runs where there's no | or seq_start/stop/strand
 					if findnthbar(item, 4) == "":
-						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), minscore ,', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 	                                else:
-					        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue, minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+					        writer.writerow([findnthbar(item, 0), findORFfrom(item), int(findnthbar(item, 4))-1, int(findnthbar(item, 5))-1, findnthbar(item, 3), ', '.join(list(clist)), pass_evalue, minevalue ,minARO, max(identityList), ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), minscore ,', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 				else:
 					if findnthbar2(item, 1) == "":
-						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), '; '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+						writer.writerow([item, "", "", "", "", ', '.join(list(clist)),pass_evalue, minevalue ,minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), '; '.join(list(arocatset)),', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), minscore ,', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 	                                else:
 					        writer.writerow([findnthbar2(item, 0), 
 					        	findnthbar2(item, 4).strip(" "), 
 					        	int(findnthbar2(item, 1))-1, 
 					        	int(findnthbar2(item, 2))-1, 
 					        	findnthbar2(item, 3), 
-					        	', '.join(list(clist)), pass_evalue, minevalue, minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), ', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
+					        	', '.join(list(clist)), pass_evalue, minevalue ,minARO, maxpercent, ', '.join(map(lambda x:"ARO:"+x, AROlist)), ', '.join(list(arocatset)), ', '.join(list(tl)), snpList, '; '.join(bestAROcategorydict[str(minARO)+" "+str(minevalue)]) ,'; '.join(AROsortedList), minscore ,', '.join(map(str, bitScoreList)),predictedProtein,SequenceFromBroadStreet,geneID,hitID])
 
-		if verbose == 'on':
-			# Write help menu
-			writer.writerow([])
-			writer.writerow([])
-			writer.writerow(["COLUMN","HELP_MESSAGE"])
-			writer.writerow(["ORF_ID","Open Reading Frame identifier (internal to RGI)"])
-			writer.writerow(["CONTIG","Source Sequence"])
-			writer.writerow(["START","Start co-ordinate of ORF"])
-			writer.writerow(["STOP","End co-ordinate of ORF"])
-			writer.writerow(["ORIENTATION","Strand of ORF"])
-			writer.writerow(["CUT_OFF","RGI Detection Paradigm"])
-			writer.writerow(["PASS_EVALUE","STRICT detection model Expectation value cut-off"])
-			writer.writerow(["Best_Hit_evalue","Expectation value of match to top hit in CARD"])
-			writer.writerow(["Best_Hit_ARO","ARO term of top hit in CARD"])
-			writer.writerow(["Best_Identities","Percent identity of match to top hit in CARD"])
-			writer.writerow(["ARO","ARO accession of top hit in CARD"])
-			writer.writerow(["ARO_name","ARO term of top hit in CARD"])
-			writer.writerow(["Model_type","CARD detection model type"])
-			writer.writerow(["SNP","Observed mutation (if applicable)"])
-			writer.writerow(["Best_Hit_ARO_category","top hit ARO Categorization"])
-			writer.writerow(["AR0_category","ARO Categorization"])
-			writer.writerow(["bit_score","Bitscore of match to top hit in CARD"])
-			writer.writerow(["Predicted_Protein","ORF predicted protein sequence"])
-			writer.writerow(["CARD_Protein_Sequence","Protein sequence of top hit in CARD"])
-			writer.writerow(["LABEL","ORF label (internal to RGI)"])
-			writer.writerow(["ID","HSP identifier (internal to RGI)"])
+		# if verbose == 'on':
+		# 	# Write help menu
+		# 	writer.writerow([])
+		# 	writer.writerow([])
+		# 	writer.writerow(["COLUMN","HELP_MESSAGE"])
+		# 	writer.writerow(["ORF_ID","Open Reading Frame identifier (internal to RGI)"])
+		# 	writer.writerow(["CONTIG","Source Sequence"])
+		# 	writer.writerow(["START","Start co-ordinate of ORF"])
+		# 	writer.writerow(["STOP","End co-ordinate of ORF"])
+		# 	writer.writerow(["ORIENTATION","Strand of ORF"])
+		# 	writer.writerow(["CUT_OFF","RGI Detection Paradigm"])
+		# 	writer.writerow(["PASS_EVALUE","STRICT detection model Expectation value cut-off"])
+		# 	writer.writerow(["Best_Hit_evalue","Expectation value of match to top hit in CARD"])
+		# 	writer.writerow(["Best_Hit_ARO","ARO term of top hit in CARD"])
+		# 	writer.writerow(["Best_Identities","Percent identity of match to top hit in CARD"])
+		# 	writer.writerow(["ARO","ARO accession of top hit in CARD"])
+		# 	writer.writerow(["ARO_name","ARO term of top hit in CARD"])
+		# 	writer.writerow(["Model_type","CARD detection model type"])
+		# 	writer.writerow(["SNP","Observed mutation (if applicable)"])
+		# 	writer.writerow(["Best_Hit_ARO_category","top hit ARO Categorization"])
+		# 	writer.writerow(["ARO_category","ARO Categorization"])
+		# 	writer.writerow(["Best_Hit_bitscore","Bit score of match to top hit in CARD"])
+		# 	writer.writerow(["bit_score","Bitscore of match to top hit in CARD"])
+		# 	writer.writerow(["Predicted_Protein","ORF predicted protein sequence"])
+		# 	writer.writerow(["CARD_Protein_Sequence","Protein sequence of top hit in CARD"])
+		# 	writer.writerow(["LABEL","ORF label (internal to RGI)"])
+		# 	writer.writerow(["ID","HSP identifier (internal to RGI)"])
 
 	af.close()
+
+def manual():
+	h = {}
+	h["ORF_ID"] = "Open Reading Frame identifier (internal to RGI)"
+	h["CONTIG"] = "Source Sequence"
+	h["START"] = "Start co-ordinate of ORF"
+	h["STOP"] = "End co-ordinate of ORF"
+	h["ORIENTATION"] = "Strand of ORF"
+	h["CUT_OFF"] = "RGI Detection Paradigm"
+	h["PASS_EVALUE"] = "STRICT detection model Expectation value cut-off"
+	h["Best_Hit_evalue"] = "Expectation value of match to top hit in CARD"
+	h["Best_Hit_ARO"] = "ARO term of top hit in CARD"
+	h["Best_Identities"] = "Percent identity of match to top hit in CARD"
+	h["ARO"] = "ARO accession of top hit in CARD"
+	h["ARO_name"] = "ARO term of top hit in CARD"
+	h["Model_type"] = "CARD detection model type"
+	h["SNP"] = "Observed mutation (if applicable)"
+	h["Best_Hit_ARO_category"] = "top hit ARO Categorization"
+	h["ARO_category"] = "ARO Categorization"
+	h["Best_Hit_bitscore"] = "Bit score of match to top hit in CARD"
+	h["bit_score"] = "Bitscore of match to top hit in CARD"
+	h["Predicted_Protein"] = "ORF predicted protein sequence"
+	h["CARD_Protein_Sequence"] = "Protein sequence of top hit in CARD"
+	h["LABEL"] = "ORF label (internal to RGI)"
+	h["ID"] = "HSP identifier (internal to RGI)"
+	print "\n"
+	print "COLUMN","\t\t\t","HELP_MESSAGE"
+	for i in h:
+		print i,"\t\t\t",h[i]	
+	print "\n"
+
+
+class customAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        manual()
+        exit()
 
 def main(args):
 	afile = args.afile
@@ -290,6 +327,7 @@ def run():
 	parser.add_argument('-i','--afile',help='must be a json file generated from RGI in JSON or gzip format e.g out.json, out.json.gz')	
 	parser.add_argument('-o', '--out_file',  dest="output", default="dataSummary", help="Output Tab-delimited file (default=dataSummary)")
 	parser.add_argument('-v', '--verbose', dest="verbose", default="OFF", help = "include help menu. Options are OFF or ON  (default = OFF for no help)")
+	parser.add_argument('--headers', dest="headers", action=customAction,nargs=0,  help = "print tab-delimted help. Options are OFF or ON  (default = OFF for no help)")
 	args = parser.parse_args()
 	main(args)	
 

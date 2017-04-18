@@ -1,6 +1,9 @@
 import os
 import sys
 import filepaths
+import time
+import hashlib
+import datetime
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -75,9 +78,9 @@ Using traning file:
 def orf_prodigal(argvfile,clean):
 
 	p = "single"
-
+	count =  int(get_character_len(argvfile))
 	#check for number of characters for selection procedure -- ribosomal binding sites
-	if get_character_len(argvfile) < 20000:
+	if count < 200000:
 		p = "meta"
 
 	filename = os.path.basename(argvfile)
@@ -89,14 +92,21 @@ def orf_prodigal(argvfile,clean):
 	if clean == "yes":
 		os.remove(working_directory +"/"+filename+".draft")
 
+def getHashName(name):
+	m = hashlib.md5()
+	t = datetime.datetime.utcnow()
+	m.update(name + str(t))
+	return m.hexdigest()
+
 def format_fasta_headers(afile):
-	ofile = open("my_fasta.txt", "w")
+	name = getHashName(afile)
+	ofile = open(name, "w")
 	from Bio import SeqIO
 	for record in SeqIO.parse(afile, 'fasta'):
 		new_header =  record.description.strip().replace(" # ", "#")
 		ofile.write(">" + new_header + "\n" + str(record.seq) + "\n")
 	ofile.close()
-	os.rename("my_fasta.txt", afile)	
+	os.rename(name, afile)	
 
 
 if __name__ == '__main__':

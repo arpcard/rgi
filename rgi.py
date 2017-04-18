@@ -17,6 +17,9 @@ import convertJsonToTSV
 import csv
 import subprocess
 import shutil
+import datetime
+import clean as cln
+import splitter
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -180,7 +183,7 @@ def loadDatabase(card_dir):
 		logging.info("loadDatabase => clean old databases")
 		subprocess.call(['python', script_path + '/clean.py'])
 		"""
-
+""" e-value function
 def writeFASTAfromJson():
 	noSeqList = []
 
@@ -227,9 +230,59 @@ def writeFASTAfromJson():
 								 noSeqList.append(item)
 			wp.close()
 		json_file.close()
-	#get a list of models who are incomplete
-	'''if noSeqList:
-		print>>sys.stderr, noSeqList'''		
+"""
+
+def writeFASTAfromJson():
+	noSeqList = []
+
+	if os.path.isfile(path+"proteindb.fsa") == False:
+		with open(data_path+"card.json") as json_file:
+			json_data = json.load(json_file)
+			with open (path+'proteindb.fsa', 'w') as wp:
+
+				for item in json_data:
+					if item.isdigit(): #get rid of __comment __timestamp etc
+						# model_type: blastP only (pass_bit_score)
+						if json_data[item]["model_type_id"] == "40292":
+							pass_bit_score = 0
+							if checkKeyExisted("model_param", json_data[item]):
+								if checkKeyExisted("blastp_bit_score", json_data[item]["model_param"]):
+									pass_bit_score = json_data[item]["model_param"]["blastp_bit_score"]["param_value"]
+							
+							if checkKeyExisted("model_sequences", json_data[item]):
+								for seqkey in json_data[item]["model_sequences"]["sequence"]:
+									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40292" + " | pass_bit_score: " + str(pass_bit_score))
+									#print>>wp, ('>' + item + '_' + seqkey + " | " + str(json_data[item]["ARO_name"]))
+									#print>>wp, ('>' + str(json_data[item]["ARO_name"]))
+									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
+
+							else:
+								 noSeqList.append(item)
+
+						# model_type: blastP + SNP (pass_bit_score + snp)
+						elif json_data[item]["model_type_id"] == "40293":
+							snpList = ""
+							pass_bit_score = 0
+							if checkKeyExisted("model_param", json_data[item]):
+								if checkKeyExisted("blastp_bit_score", json_data[item]["model_param"]):
+									pass_bit_score = json_data[item]["model_param"]["blastp_bit_score"]["param_value"]
+									
+								if checkKeyExisted("snp", json_data[item]['model_param']):
+									for key in json_data[item]['model_param']['snp']['param_value']:
+										snpList += json_data[item]['model_param']['snp']['param_value'][key]
+										snpList += ','
+							
+							if checkKeyExisted("model_sequences", json_data[item]):
+								for seqkey in json_data[item]["model_sequences"]["sequence"]:
+									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40293" + " | pass_bit_score: " + str(pass_bit_score) + " | SNP: " + snpList)
+									#print>>wp, ('>' + item + '_' + seqkey + " | " + str(json_data[item]["ARO_name"]))
+									#print>>wp, ('>' + str(json_data[item]["ARO_name"]))
+									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
+							else:
+								 noSeqList.append(item)
+			wp.close()
+		json_file.close()
+
 
 
 #make protein (and dna if needed) database:
@@ -293,8 +346,13 @@ def getSubmittedProteinSequence(afile):
 
 	return submitted_proteins_dict
 
-def runDiamond(inType, inputSeq, threads, outputFile, verbose):
+def runDiamond(inType, inputSeq, threads, outputFile, verbose, num_sequences):
+	#cfilter = "	--index-chunks 4 --block-size 1 --quiet " # --more-sensitive --more-sensitive --min-score 15
 	cfilter = "	--index-chunks 1 --block-size 1 --quiet "
+	#cfilter = "	--index-chunks 1 --block-size 1 --quiet --evalue 10 "
+	#cfilter = "	--index-chunks 1 --block-size 1 --quiet --evalue 10 --more-sensitive"
+	#cfilter = "	--index-chunks 4 --block-size 1 --quiet --evalue 10 --more-sensitive"
+	#cfilter = " --quiet " #--more-sensitive --min-score 400 
  
 	if verbose == "on":
 	   cfilter = cfilter + " --log 2>&1 >> " + logging.getLoggerClass().root.handlers[0].baseFilename
@@ -318,13 +376,13 @@ def runDiamond(inType, inputSeq, threads, outputFile, verbose):
 	'''
 
 	if inType == 'read':
-	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
-		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles --more-sensitive --evalue 10 '+cfilter)
+	 	logging.info('runDiamond => diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles  '+cfilter+' --max-target-seqs '+str(num_sequences))
+		os.system('diamond blastx --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter+' --max-target-seqs '+str(num_sequences))
 	elif inType == 'contig':
 		exit("Error : contigs")
 	else:
-		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
-		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter)
+		logging.info('runDiamond => diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter+' --max-target-seqs '+str(num_sequences))
+		os.system('diamond blastp --in '+path+'proteindb.fsa --db '+path+'protein.db'+' --query '+inputSeq+' --outfmt 5 --out '+outputFile+' --threads '+threads+' --salltitles '+cfilter+' --max-target-seqs '+str(num_sequences))
    
 
 def getHashName(name):
@@ -371,8 +429,9 @@ def validateFastQ(afile):
 	logging.info("validateFastQ => TODO:: validate fastq file")
 
 
-def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,verbose):	
-
+def runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,verbose, num_sequences):	
+	cmd = str(args)
+	t0 = time.time()
 	pjson = {}
 	startBlast = False
 	predicted_genes_dict = {}
@@ -417,12 +476,13 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 			clean_files.append(working_directory+"/"+file_name+".contig.fsa")
 
 			if alignment_tool == "diamond":
-				runDiamond("protein", working_directory+"/"+file_name+".contig.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+				runDiamond("protein", working_directory+"/"+file_name+".contig.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose, num_sequences)
 				#runDiamond(inType, working_directory+"/"+file_name+".contigToORF.fsa", threads, working_directory+"/"+file_name+".blastRes.xml")
 				#fasta.contigToORF.fsa
 			else:
 				from Bio.Blast.Applications import NcbiblastpCommandline
-				blastCLine = NcbiblastpCommandline(query=working_directory+"/"+file_name+".contig.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads)#,num_alignments=1)
+				#"""evalue=10.0,""" 
+				blastCLine = NcbiblastpCommandline(query=working_directory+"/"+file_name+".contig.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads, max_target_seqs=num_sequences)
 				stdt, stdr = blastCLine()
 
 			result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
@@ -434,10 +494,10 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 		logging.info("runBlast => start blastP for inType: " + inType)
 
 		if alignment_tool == "diamond":
-			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
+			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose, num_sequences)
 		else:
 			from Bio.Blast.Applications import NcbiblastpCommandline
-			blastCLine = NcbiblastpCommandline(query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
+			blastCLine = NcbiblastpCommandline(evalue=10.0,query=inputSeq, db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads, max_target_seqs=num_sequences)
 			stdt, stdr = blastCLine()
 
 		result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
@@ -445,17 +505,31 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 
 	elif inType == 'read':
 		logging.info("runBlast => start blastX for inType: " + inType)
-		
-		if alignment_tool == "diamond":
-			runDiamond(inType, inputSeq, threads, working_directory+"/"+file_name+".blastRes.xml",verbose)
-		else:
-			logging.info("runBlast => fqToFsa => start")
-			fqToFsa.main(inputSeq)
-			logging.info("runBlast => fqToFsa => done")
-			clean_files.append(working_directory+"/"+file_name+".read.fsa")
+		logging.info("runBlast => fqToFsa => start")
+		fqToFsa.main(inputSeq)
+		logging.info("runBlast => fqToFsa => done")
+		clean_files.append(working_directory+"/"+file_name+".read.fsa")
+		#files = splitter.main(working_directory+"/"+file_name+".read.fsa")
+		#print " files : ", files
+		#exit()
+		"""
+		# get predicted dna
+		logging.info("runBlast => contigToORF => start")
+		contigToORF.main(working_directory+"/"+file_name+".read.fsa",clean,orf)
+		logging.info("runBlast => contigToORF => done")
+		#exit()
+		file_name = os.path.basename(working_directory+"/"+file_name+".read.fsa")
 
+		logging.info("runBlast => getORFDNASequence => start")
+		predicted_genes_dict = getORFDNASequence(file_name,orf,inType)
+		logging.info("runBlast => getORFDNASequence => done")
+		"""	
+
+		if alignment_tool == "diamond":
+			runDiamond(inType, working_directory+"/"+file_name+".read.fsa", threads, working_directory+"/"+file_name+".blastRes.xml",verbose,num_sequences)
+		else:
 			from Bio.Blast.Applications import NcbiblastxCommandline
-			blastCLine = NcbiblastxCommandline(query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads,num_alignments=1)
+			blastCLine = NcbiblastxCommandline(evalue=10.0,query=working_directory+"/"+file_name+".read.fsa", db=path+"protein.db", outfmt=5, out=working_directory+"/"+file_name+".blastRes.xml",num_threads=threads, max_target_seqs=num_sequences)
 			stdt, stdr = blastCLine()
 		result_handle = open(working_directory+"/"+file_name+".blastRes.xml")
 		startBlast = True
@@ -609,7 +683,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 								if hsp.query[pos - hsp.sbjct_start + findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == chan and hsp.sbjct[pos - hsp.sbjct_start +findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == ori:								# 224 = pos. sbject_start = 9 = 216==
 
 								#pos = 224, start = 9 = 216
-									if hsp.expect <= truePassEvalue:
+									#if hsp.expect <= truePassEvalue:
+									if hsp.bits >= truePassEvalue:
+										#print " 1>> ", hsp.bits, " <= ", truePassEvalue
 										sinsidedict = {}
 										sinsidedict["type_match"] = "Strict"
 										sinsidedict["SNP"] = eachs
@@ -669,9 +745,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 													sinsidedict["orf_dna_sequence"] = ""
 													sinsidedict["orf_prot_sequence"] = ""
 
-											query_length = float(((1+sinsidedict['query_end']) - sinsidedict['query_start']) / 3)
-											max_ident = float(sinsidedict['max-identities'])
-											sinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 										elif inType == 'protein':
 											sinsidedict["query_start"] = hsp.query_start
@@ -681,7 +754,9 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 
 										elif inType == 'read':
 											pass
-												
+
+										sinsidedict["perc_identity"] = float(format(float(sinsidedict["max-identities"]*100) / len(sinsidedict["query"]),'.2f'))
+
 										strict[hitid + "|hsp_num:" + str(init)] = sinsidedict
 										init += 1
 
@@ -746,9 +821,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 													slinsidedict["orf_dna_sequence"] = ""
 													slinsidedict["orf_prot_sequence"] = ""
 
-											query_length = float(((1+slinsidedict['query_end']) - slinsidedict['query_start']) / 3)
-											max_ident = float(slinsidedict['max-identities'])
-											slinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 
 										elif inType == 'protein':
 											slinsidedict["query_start"] = hsp.query_start
@@ -759,6 +831,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 										elif inType == 'read':
 											pass
 
+										slinsidedict["perc_identity"] = float(format(float(slinsidedict["max-identities"]*100) / len(slinsidedict["query"]),'.2f'))
+
 										loose[hitid + "|hsp_num:" + str(init)] = slinsidedict
 										init += 1
 		
@@ -766,7 +840,7 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 				elif modelTypeID == 40292:
 					init = 0
 					passevalue = findnthbar(alignTitle, 1)
-
+					# print alignTitle, ">>> ", passevalue
 					for hsp in alignment.hsps:
 
 						querySeq = hsp.query.replace('-', '')
@@ -848,9 +922,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 										ppinsidedict["orf_dna_sequence"] = ""
 										ppinsidedict["orf_prot_sequence"] = ""
 
-								query_length = float(((1+ppinsidedict['query_end']) - ppinsidedict['query_start']) / 3)
-								max_ident = float(ppinsidedict['max-identities'])
-								ppinsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
 							
 							elif inType == 'protein':
 								ppinsidedict["query_start"] = hsp.query_start
@@ -861,10 +932,15 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 							elif inType == 'read':
 								pass
 
+							ppinsidedict["perc_identity"] = float(format(float(ppinsidedict["max-identities"]*100) / len(ppinsidedict["query"]),'.2f'))
+
 							perfect[hitid + "|hsp_num:" + str(init)] = ppinsidedict
 							init += 1
 									
-						elif hsp.expect <= passevalue:
+						#elif hsp.expect <= passevalue:
+						elif hsp.bits >= passevalue:
+							#print " 2>> ", hsp.bits, " <= ", passevalue
+							#print hsp
 							insidedict = {}
 							insidedict["type_match"] = "Strict"
 							insidedict["orf_strand"] = findnthbar(orfInfo, 0)
@@ -922,10 +998,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 										insidedict["orf_dna_sequence"] = ""
 										insidedict["orf_prot_sequence"] = ""									
 
-								query_length = float(((1+insidedict['query_end']) - insidedict['query_start']) / 3)
-								max_ident = float(insidedict['max-identities'])
-								insidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
-
 							elif inType == 'protein':
 								insidedict["query_start"] = hsp.query_start
 								insidedict["query_end"] = hsp.query_start + realQueryLength
@@ -935,11 +1007,15 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 							elif inType == 'read':
 								pass
 
+							insidedict["perc_identity"] = float(format(float(insidedict["max-identities"]*100) / len(insidedict["query"]),'.2f'))
+
 							strict[hitid + "|hsp_num:" + str(init)] = insidedict
 							init += 1
 							
 						else:
 							linsidedict = {}
+							# print " >> expect: ",hsp.expect, " passevalue: ", passevalue, " ", json_data[modelID]["model_name"]
+							# print " >> bits: ",hsp.bits, " passevalue: ", passevalue, " ", json_data[modelID]["model_name"]
 							linsidedict["type_match"] = "Loose"
 							linsidedict["orf_strand"] = findnthbar(orfInfo, 0)
 							linsidedict["orf_start"] = findnthbar(orfInfo, 1)
@@ -998,10 +1074,6 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 										linsidedict["orf_dna_sequence"] = ""
 										linsidedict["orf_prot_sequence"] = ""
 
-								query_length = float(((1+linsidedict['query_end']) - linsidedict['query_start']) / 3)
-								max_ident = float(linsidedict['max-identities'])
-								linsidedict["perc_identity"] = format(((max_ident*100) / query_length), '.2f')
-
 							elif inType == 'protein':
 								linsidedict["query_start"] = hsp.query_start
 								linsidedict["query_end"] = hsp.query_start + realQueryLength
@@ -1010,6 +1082,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 
 							elif inType == 'read':
 								pass
+
+							linsidedict["perc_identity"] = float(format(float(linsidedict["max-identities"]*100) / len(linsidedict["query"]), '.2f'))
 
 							loose[hitid + "|hsp_num:" + str(init)] = linsidedict
 							init += 1
@@ -1029,8 +1103,8 @@ def runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, 
 				blastResults[blast_record.query.encode('ascii','replace')] = perfect
 				logging.info("runBlast => hit = " + str(blast_record.query.encode('ascii','replace')) + " => Perfect")
 				pscore = 3
-		
-		blastResults["_metadata"] = {"data_type": data_type}
+
+		blastResults["_metadata"] = {"data_type": data_type, "software_version": version() , "data_version": data_version(), "timestamp_local": datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'), "timestamp_utc": str(datetime.datetime.utcnow()),"duration": round(time.time() - t0, 3), "command": cmd  }
 		pjson = json.dumps(blastResults)
 
 		with open(working_directory+"/"+outputFile+".json", 'w') as f:
@@ -1133,6 +1207,7 @@ def validateHeaders(inputfile,orf):
 
 
 def main(args):
+	t0 = time.time()
 	if args.inputSeq == None:
 		print "[error] missing input(s)"
 		print "[info] Try: rgi -h"
@@ -1145,6 +1220,11 @@ def main(args):
 		logging.info("main => logs saved to : " + log_file)
 		logging.info('main => start rgi')
 	
+	# clean databases before running rgi, just in case the user have old blast databases
+	if args.clean_databases.lower() == 'yes':
+		logging.info('main => clean blast dbs')
+		cln.main()
+
 	inType = args.inType.lower()
 	inputSeq = args.inputSeq 
 	threads = args.threads
@@ -1152,9 +1232,32 @@ def main(args):
 	criteria = args.criteria.lower()
 	clean = args.clean.lower()
 	data_type = args.data.lower()
+	num_sequences = args.num_sequences
+
 	#orf = args.orf.lower()
 	orf = "prodigal"
 	alignment_tool = args.aligner.lower()
+
+	"""
+	Select search mode options
+	The search modes are: 
+
+	FAST:
+		--alignment_tool DIAMOND (contig, protein)
+		--alignment_tool PALADIN (read)
+		--shapes 1
+
+	SENSITIVE
+		--alignment_tool BLAST (contig, protein, read)
+		--shapes 0
+	"""
+	
+	"""
+	if  args.mode == "fast":
+		alignment_tool = "diamond"
+	else:
+		alignment_tool = "blast"
+	"""
 
 	bpjson = ""
 
@@ -1173,6 +1276,7 @@ def main(args):
 	
 	if args.database == None:
 		writeFASTAfromJson()
+		#exit("Debug...")
 
 		if alignment_tool == "blast":
 			makeBlastDB(args.verbose.lower())
@@ -1190,7 +1294,7 @@ def main(args):
 		validateFastA(inputSeq)
 
 	# run blast
-	bpjson = runBlast(inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,args.verbose.lower())
+	bpjson = runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,args.verbose.lower(), num_sequences)
 
 	# Generate tab-delimited files
 	logging.info('main => Generate tab-delimited ' + outputFile + ".txt")
@@ -1204,6 +1308,7 @@ def main(args):
 		logging.info('main => clean temporary files')
 		removeTemp()
 	logging.info('main => rgi success')
+	logging.info('main => total running time ' + str(round(time.time()-t0, 3)) + 's')
 	logging.info('----------------------------------------')
 	return bpjson
 
@@ -1316,7 +1421,7 @@ def rRNA_mutation():
 	pass
 
 def version():
-	software_version = "3.1.2"
+	software_version = "3.1.3"
 	return software_version
 
 def data_version():
@@ -1342,18 +1447,21 @@ class customAction(argparse.Action):
 
 def run():
 	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version ' + version())
-	parser.add_argument('-t','--input_type', dest="inType", default="contig", help='must be one of contig, orf, protein, read (default: contig)')
-	parser.add_argument('-i','--input_sequence', dest="inputSeq",help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
-	parser.add_argument('-n','--num_threads',  dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
-	parser.add_argument('-o','--output_file',  dest="output", default="Report", help="Output JSON file (default=Report)")	
-	parser.add_argument('-e','--loose_criteria',  dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")
-	parser.add_argument('-c','--clean',  dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
+	parser.add_argument('-t','--input_type', dest="inType", default="CONTIG", help='must be one of contig, orf, protein, read (default: contig)')
+	parser.add_argument('-i','--input_sequence', dest="inputSeq", default=None, help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+	parser.add_argument('-n','--num_threads', dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
+	parser.add_argument('-k','--max_target_seqs', dest="num_sequences", default="1", help="maximum number of target sequences to report alignments for (default=1)")
+	parser.add_argument('-o','--output_file', dest="output", default="Report", help="Output JSON file (default=Report)")	
+	parser.add_argument('-e','--loose_criteria', dest="criteria", default="NO", help="The options are YES to include loose hits and NO to exclude loose hits. (default=NO to exclude loose hits)")
+	parser.add_argument('-c','--clean', dest="clean", default="YES", help="This removes temporary files in the results directory after run. Options are NO or YES (default=YES for remove)")
+	parser.add_argument('-cd','--clean_databases', dest="clean_databases", default="YES", help="This removes blast databases before rgi run. Options are NO or YES (default=YES for remove)")
 	parser.add_argument('-d','--data', dest="data", default="NA", help = "Specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
 	parser.add_argument('-l','--verbose', dest="verbose", default="OFF", help = "log progress to file. Options are OFF or ON  (default = OFF for no logging)")
 	parser.add_argument('-a','--alignment_tool', dest="aligner", default="BLAST", help = "choose between BLAST and DIAMOND. Options are BLAST or DIAMOND  (default = BLAST)")
 	parser.add_argument('-r','--db', dest="database", default=None, help='specify path to CARD blast databases (default: None)')
 	parser.add_argument('-sv','--software_version', action='version', version=version(), help = "Prints software number")
 	parser.add_argument('-dv','--data_version', action=customAction, nargs=0, help = "Prints data version number") 
+	parser.add_argument('-m','--mode', dest="mode", default="fast", help='search mode. Options are FAST or SENSITIVE (default: FAST)')
 	args = parser.parse_args()
 	main(args)	
 
