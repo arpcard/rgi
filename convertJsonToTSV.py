@@ -147,7 +147,6 @@ def printCSV(resultfile,ofile,orf,verbose):
 			if item not in ["_metadata","data_type"]:
 				geneID = item
 				for it in data[item]:
-					print data[item][it].keys()
 					cgList = []
 					if checkKeyExisted("ARO_category", data[item][it]):
 						for aroctkey in data[item][it]["ARO_category"]:

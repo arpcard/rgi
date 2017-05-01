@@ -19,7 +19,7 @@ import subprocess
 import shutil
 import datetime
 import clean as cln
-import splitter
+#import splitter
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -183,7 +183,8 @@ def loadDatabase(card_dir):
 		logging.info("loadDatabase => clean old databases")
 		subprocess.call(['python', script_path + '/clean.py'])
 		"""
-""" e-value function
+		
+""" '''e-value function'''
 def writeFASTAfromJson():
 	noSeqList = []
 
@@ -232,6 +233,7 @@ def writeFASTAfromJson():
 		json_file.close()
 """
 
+'''bit-score function'''
 def writeFASTAfromJson():
 	noSeqList = []
 
@@ -242,7 +244,7 @@ def writeFASTAfromJson():
 
 				for item in json_data:
 					if item.isdigit(): #get rid of __comment __timestamp etc
-						# model_type: blastP only (pass_bit_score)
+						# model_type: protein homolog model
 						if json_data[item]["model_type_id"] == "40292":
 							pass_bit_score = 0
 							if checkKeyExisted("model_param", json_data[item]):
@@ -251,15 +253,13 @@ def writeFASTAfromJson():
 							
 							if checkKeyExisted("model_sequences", json_data[item]):
 								for seqkey in json_data[item]["model_sequences"]["sequence"]:
-									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40292" + " | pass_bit_score: " + str(pass_bit_score))
-									#print>>wp, ('>' + item + '_' + seqkey + " | " + str(json_data[item]["ARO_name"]))
-									#print>>wp, ('>' + str(json_data[item]["ARO_name"]))
+									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40292" + " | pass_bit_score: " + str(pass_bit_score)) + " | " + json_data[item]["ARO_name"] 
 									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
 
 							else:
-								 noSeqList.append(item)
+								noSeqList.append(item)							
 
-						# model_type: blastP + SNP (pass_bit_score + snp)
+						# model_type: protein variant model
 						elif json_data[item]["model_type_id"] == "40293":
 							snpList = ""
 							pass_bit_score = 0
@@ -274,12 +274,32 @@ def writeFASTAfromJson():
 							
 							if checkKeyExisted("model_sequences", json_data[item]):
 								for seqkey in json_data[item]["model_sequences"]["sequence"]:
-									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40293" + " | pass_bit_score: " + str(pass_bit_score) + " | SNP: " + snpList)
-									#print>>wp, ('>' + item + '_' + seqkey + " | " + str(json_data[item]["ARO_name"]))
-									#print>>wp, ('>' + str(json_data[item]["ARO_name"]))
+									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 40293" + " | pass_bit_score: " + str(pass_bit_score) + " | SNP: " + snpList) + " | " + json_data[item]["ARO_name"]
 									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
 							else:
 								 noSeqList.append(item)
+							
+						# model_type: presence and absence of protein variant model
+						elif json_data[item]["model_type_id"] == "41091":
+							snpList = ""
+							pass_bit_score = 0
+							if checkKeyExisted("model_param", json_data[item]):
+								if checkKeyExisted("blastp_bit_score", json_data[item]["model_param"]):
+									pass_bit_score = json_data[item]["model_param"]["blastp_bit_score"]["param_value"]
+									
+								if checkKeyExisted("snp", json_data[item]['model_param']):
+									for key in json_data[item]['model_param']['snp']['param_value']:
+										snpList += json_data[item]['model_param']['snp']['param_value'][key]
+										snpList += ','
+							
+							if checkKeyExisted("model_sequences", json_data[item]):
+								for seqkey in json_data[item]["model_sequences"]["sequence"]:
+									print>>wp, ('>' + item + '_' + seqkey + " | model_type_id: 41091" + " | pass_bit_score: " + str(pass_bit_score) + " | SNP: " + snpList) + " | " + json_data[item]["ARO_name"]
+									print>>wp, (json_data[item]["model_sequences"]["sequence"][seqkey]["protein_sequence"]["sequence"])
+							else:
+								 noSeqList.append(item)
+
+
 			wp.close()
 		json_file.close()
 
@@ -302,7 +322,7 @@ def makeDiamondDB(verbose):
 	else:
 		if verbose == "on":
 			logging.info("makeDiamondDB => create diamond DB.")
-			os.system('diamond makedb --in '+path+'proteindb.fsa --db '+path+'protein.db 2>&1 >> ' + logging.getLoggerClass().root.handlers[0].baseFilename)
+			os.system('diamond makedb --quiet --in '+path+'proteindb.fsa --db '+path+'protein.db 2>&1 >> ' + logging.getLoggerClass().root.handlers[0].baseFilename)
 		else:
 			os.system('diamond makedb --quiet --in '+path+'proteindb.fsa --db '+path+'protein.db')
 		
@@ -1447,7 +1467,7 @@ class customAction(argparse.Action):
 
 def run():
 	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version ' + version())
-	parser.add_argument('-t','--input_type', dest="inType", default="CONTIG", help='must be one of contig, orf, protein, read (default: contig)')
+	parser.add_argument('-t','--input_type', dest="inType", default="CONTIG", help='must be one of contig, protein and read (default: contig)')
 	parser.add_argument('-i','--input_sequence', dest="inputSeq", default=None, help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
 	parser.add_argument('-n','--num_threads', dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
 	parser.add_argument('-k','--max_target_seqs', dest="num_sequences", default="1", help="maximum number of target sequences to report alignments for (default=1)")
