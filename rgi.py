@@ -184,7 +184,7 @@ def loadDatabase(card_dir):
 		subprocess.call(['python', script_path + '/clean.py'])
 		"""
 		
-""" '''e-value function'''
+'''e-value function'''
 def writeFASTAfromJson():
 	noSeqList = []
 
@@ -196,6 +196,7 @@ def writeFASTAfromJson():
 				for item in json_data:
 					if item.isdigit(): #get rid of __comment __timestamp etc
 						# model_type: blastP only (pass_evalue)
+						# model_type: protein homolog model
 						if json_data[item]["model_type_id"] == "40292":
 							pass_eval = 1e-30
 							if checkKeyExisted("model_param", json_data[item]):
@@ -211,6 +212,7 @@ def writeFASTAfromJson():
 								 noSeqList.append(item)
 
 						# model_type: blastP + SNP (pass_evalue + snp)
+						# model_type: protein variant model
 						elif json_data[item]["model_type_id"] == "40293":
 							snpList = ""
 							pass_eval = 1e-30
@@ -231,9 +233,10 @@ def writeFASTAfromJson():
 								 noSeqList.append(item)
 			wp.close()
 		json_file.close()
-"""
+
 
 '''bit-score function'''
+'''
 def writeFASTAfromJson():
 	noSeqList = []
 
@@ -304,7 +307,7 @@ def writeFASTAfromJson():
 
 			wp.close()
 		json_file.close()
-
+'''
 
 
 #make protein (and dna if needed) database:
@@ -684,8 +687,8 @@ def runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, c
 								if hsp.query[pos - hsp.sbjct_start + findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == chan and hsp.sbjct[pos - hsp.sbjct_start +findNumDash(hsp.sbjct, (pos-hsp.sbjct_start))] == ori:								# 224 = pos. sbject_start = 9 = 216==
 
 								#pos = 224, start = 9 = 216
-									#if hsp.expect <= truePassEvalue:
-									if hsp.bits >= truePassEvalue:
+									if hsp.expect <= truePassEvalue:
+									#if hsp.bits >= truePassEvalue:
 										sinsidedict = {}
 										sinsidedict["type_match"] = "Strict"
 										sinsidedict["SNP"] = eachs
@@ -935,8 +938,8 @@ def runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, c
 							perfect[hitid + "|hsp_num:" + str(init)] = ppinsidedict
 							init += 1
 									
-						#elif hsp.expect <= passevalue:
-						elif hsp.bits >= passevalue:
+						elif hsp.expect <= passevalue:
+						#elif hsp.bits >= passevalue:
 							#print " 2>> ", hsp.bits, " <= ", passevalue
 							#print hsp
 							insidedict = {}

@@ -127,7 +127,7 @@ def printCSV(resultfile,ofile,orf,verbose):
 			minscore = 0.0
 			maxpercent = 0.0
 			startCompare = False
-			minARO = 0
+			minARO = ""
 			bestAROcategorydict = {}
 			AROlist = []
 			AROnameList = []
@@ -169,9 +169,8 @@ def printCSV(resultfile,ofile,orf,verbose):
 					AROlist.append(convert(data[item][it]["ARO_accession"]))
 					AROnameList.append(convert(data[item][it]["ARO_name"]))
 					bitScoreList.append(data[item][it]["bit-score"])
-					#pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
-					pass_evalue = "n/a"
-					pass_bitscore = str(data[item][it]["pass_evalue"]).split("|")[0]
+					pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
+					pass_bitscore = "n/a"
 					AROcatList.append(cgList)
 					typeList.append(convert(data[item][it]["model_type"]))
 					cutoffList.append(convert(data[item][it]["type_match"]))
@@ -225,69 +224,124 @@ def printCSV(resultfile,ofile,orf,verbose):
 						if "hsp_num:" in it:
 							hitID = it
 
-			clist = set(cutoffList)
-			tl = set(typeList)
-			arocatset = set(AROnameList)
-			
-			if set(snpList) == set(['n/a']):
-				snpList = 'n/a'
-			else:
-				snpList = ', '.join(snpList)
+				clist = set(cutoffList)
+				tl = set(typeList)
+				arocatset = set(AROnameList)
+				
+				if set(snpList) == set(['n/a']):
+					snpList = 'n/a'
+				else:
+					snpList = ', '.join(snpList)
 
-			from itertools import chain
-			AROcatList = list(chain.from_iterable(AROcatList))
-			AROcatalphaSet = set(AROcatList)
-			AROsortedList = sorted(list(AROcatalphaSet))
-			
-			if typeList:
-				if orf == "genemark":
-					#for protein RGI runs where there's no | or seq_start/stop/strand
-					if findnthbar(item, 4) == "":
-						writer.writerow([item, 
-							"", 
-							"", 
-							"", 
-							"", 
-							', '.join(list(clist)),
-							pass_evalue,
-							minevalue, 
-							minARO, 
-							maxpercent, 
-							', '.join(map(lambda x:"ARO:"+x, AROlist)), 
-							'; '.join(list(arocatset)),
-							'; '.join(list(tl)), 
-							snpList, 
-							'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]) ,
-							'; '.join(AROsortedList),
-							pass_bitscore,
-							maxscore ,
-							', '.join(map(str, bitScoreList)),
-							predictedDNA,
-							predictedProtein,
-							SequenceFromBroadStreet,
-							geneID,
-							hitID, 
-							topModel
-							])
-	                                else:
-					        writer.writerow([findnthbar(item, 0), 
-					        	findORFfrom(item), 
-					        	int(findnthbar(item, 4))-1, 
-					        	int(findnthbar(item, 5))-1, 
-					        	findnthbar(item, 3), 
+				from itertools import chain
+				AROcatList = list(chain.from_iterable(AROcatList))
+				AROcatalphaSet = set(AROcatList)
+				AROsortedList = sorted(list(AROcatalphaSet))
+
+				if typeList:
+					if orf == "genemark":
+						#for protein RGI runs where there's no | or seq_start/stop/strand
+						if findnthbar(item, 4) == "":
+							writer.writerow([item, 
+								"", 
+								"", 
+								"", 
+								"", 
+								', '.join(list(clist)),
+								pass_evalue,
+								minevalue, 
+								minARO, 
+								maxpercent, 
+								', '.join(map(lambda x:"ARO:"+x, AROlist)), 
+								'; '.join(list(arocatset)),
+								'; '.join(list(tl)), 
+								snpList, 
+								'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]) ,
+								'; '.join(AROsortedList),
+								pass_bitscore,
+								maxscore ,
+								', '.join(map(str, bitScoreList)),
+								predictedDNA,
+								predictedProtein,
+								SequenceFromBroadStreet,
+								geneID,
+								hitID, 
+								topModel
+								])
+		                                else:
+						        writer.writerow([findnthbar(item, 0), 
+						        	findORFfrom(item), 
+						        	int(findnthbar(item, 4))-1, 
+						        	int(findnthbar(item, 5))-1, 
+						        	findnthbar(item, 3), 
+						        	', '.join(list(clist)), 
+						        	pass_evalue,
+						        	minevalue ,
+						        	minARO, 
+						        	max(identityList), 
+						        	', '.join(map(lambda x:"ARO:"+x, AROlist)), 
+						        	'; '.join(list(arocatset)), 
+						        	'; '.join(list(tl)), 
+						        	snpList, 
+						        	'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]) ,
+						        	'; '.join(AROsortedList), 
+						        	pass_bitscore,
+						        	maxscore ,
+						        	', '.join(map(str, bitScoreList)),
+						        	predictedDNA,
+						        	predictedProtein,
+						        	SequenceFromBroadStreet,
+						        	geneID,
+						        	hitID,
+						        	topModel
+						        	])
+					else:
+						if findnthbar2(item, 1) == "":
+							writer.writerow([item, 
+								"", 
+								"", 
+								"", 
+								"", 
+								', '.join(list(clist)),
+								pass_evalue,
+								minevalue,
+								minARO, 
+								maxpercent, 
+								', '.join(map(lambda x:"ARO:"+x, AROlist)), 
+								'; '.join(list(arocatset)),
+								', '.join(list(tl)), 
+								snpList, 
+								'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
+								'; '.join(AROsortedList), 
+								pass_bitscore,
+								maxscore,
+								', '.join(map(str, bitScoreList)),
+								predictedDNA,
+								predictedProtein,
+								SequenceFromBroadStreet,
+								geneID,
+								hitID,
+								topModel
+								])
+						else:
+							writer.writerow([findnthbar2(item, 0),
+								findnthbar2(item, 4).strip(" "), 
+					        	int(findnthbar2(item, 1))-1, 
+					        	int(findnthbar2(item, 2))-1, 
+					        	findnthbar2(item, 3), 
 					        	', '.join(list(clist)), 
-					        	pass_evalue,
-					        	minevalue ,
+					        	pass_evalue, 
+					        	minevalue,
 					        	minARO, 
-					        	max(identityList), 
+					        	maxpercent, 
 					        	', '.join(map(lambda x:"ARO:"+x, AROlist)), 
-					        	'; '.join(list(arocatset)), 
-					        	'; '.join(list(tl)), 
+					        	', '.join(list(arocatset)), 
+					        	', '.join(list(tl)), 
 					        	snpList, 
-					        	'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]) ,
+					        	'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
 					        	'; '.join(AROsortedList), 
 					        	pass_bitscore,
-					        	maxscore ,
+					        	maxscore,
 					        	', '.join(map(str, bitScoreList)),
 					        	predictedDNA,
 					        	predictedProtein,
@@ -295,62 +349,7 @@ def printCSV(resultfile,ofile,orf,verbose):
 					        	geneID,
 					        	hitID,
 					        	topModel
-					        	])
-				else:
-					if findnthbar2(item, 1) == "":
-						writer.writerow([item, 
-							"", 
-							"", 
-							"", 
-							"", 
-							", ".join(list(clist)),
-							pass_evalue,
-							minevalue,
-							minARO, 
-							maxpercent, 
-							"; ".join(map(lambda x:"ARO:"+x, AROlist)), 
-							"; ".join(list(arocatset)),
-							"; ".join(list(tl)), 
-							snpList, 
-							"; ".join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
-							"; ".join(AROsortedList), 
-							pass_bitscore,
-							maxscore,
-							", ".join(map(str, bitScoreList)),
-							predictedDNA,
-							predictedProtein,
-							SequenceFromBroadStreet,
-							geneID,
-							hitID,
-							topModel
-							])
-					else:
-						writer.writerow([findnthbar2(item, 0),
-							findnthbar2(item, 4).strip(" "), 
-				        	int(findnthbar2(item, 1))-1, 
-				        	int(findnthbar2(item, 2))-1, 
-				        	findnthbar2(item, 3), 
-				        	", ".join(list(clist)), 
-				        	pass_evalue, 
-				        	minevalue,
-				        	minARO, 
-				        	maxpercent, 
-				        	"; ".join(map(lambda x:"ARO:"+x, AROlist)), 
-				        	"; ".join(list(arocatset)), 
-				        	"; ".join(list(tl)), 
-				        	snpList, 
-				        	"; ".join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
-				        	"; ".join(AROsortedList), 
-				        	pass_bitscore,
-				        	maxscore,
-				        	", ".join(map(str, bitScoreList)),
-				        	predictedDNA,
-				        	predictedProtein,
-				        	SequenceFromBroadStreet,
-				        	geneID,
-				        	hitID,
-				        	topModel
-					        ])
+						        ])
 
 
 
