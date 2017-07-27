@@ -7,19 +7,14 @@ import datetime
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
-
 path = script_path
 
 def catProteins(filename,afile):
-
 	with open(afile, 'r') as f:
 		data = f.readlines()
-	f.close()
 
-	with open(working_directory+'/'+filename+'.contigToORF.fsa', 'w') as wf:
-
+	with open(os.path.join(working_directory,filename+'.contigToORF.fsa'), 'w') as wf:
 		startrecord = False
-
 		for eachline in data:
 			if eachline == '':
 				pass
@@ -33,7 +28,6 @@ def catProteins(filename,afile):
 						print>>wf, eachline.strip()
 			elif eachline.strip() == "Nucleotide sequence of predicted genes:":
 				startrecord = True
-	wf.close()
 
 def get_character_len(file_name):
 	chars = words = lines = 0
@@ -45,7 +39,6 @@ def get_character_len(file_name):
 		        lines += 1
 		        words += len(line.split())
 		        chars += len(line)
-	in_file.close()
 	return chars	
 
 def main(argvfile,clean,orf):
@@ -56,7 +49,6 @@ def main(argvfile,clean,orf):
 	else:
 		orf_prodigal(argvfile,clean)
    
-
 def orf_metagenemark(argvfile,clean):
 	filename = os.path.basename(argvfile)
 	os.system(path+"/mgm/gmhmmp -r -m "+path+"/mgm/MetaGeneMark_v1.mod -o "+working_directory+"/"+filename+".adraft -d " + argvfile)
@@ -84,13 +76,20 @@ def orf_prodigal(argvfile,clean):
 		p = "meta"
 
 	filename = os.path.basename(argvfile)
-	os.system("prodigal -c -m -a "+working_directory+"/"+filename+".contig.fsa -i "+argvfile+" -o "+working_directory+"/"+filename+".draft -p "+p+" -d "+working_directory+"/"+filename+".contigToORF.fsa -q")
+	os.system("prodigal -c -m -a {} -i {} -o {} -p {} -d {} -q" \
+		.format(os.path.join(working_directory,filename+".contig.fsa"),
+			argvfile, 
+			os.path.join(working_directory,filename+".draft"),
+			p,
+			os.path.join(working_directory,filename+".contigToORF.fsa")
+		)
+	)
 
 	# format the contig file headers to remove space
-	format_fasta_headers(working_directory+"/"+filename+".contig.fsa")
+	format_fasta_headers(os.path.join(working_directory,filename+".contig.fsa"))
 
 	if clean == "yes":
-		os.remove(working_directory +"/"+filename+".draft")
+		os.remove(os.path.join(working_directory,filename+".draft"))
 
 def getHashName(name):
 	m = hashlib.md5()
