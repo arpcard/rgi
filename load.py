@@ -11,7 +11,6 @@ def validateFile(filename):
     try:
 		with open(filename) as f:
 			out = json.load(f)
-		f.close()
 		return out
 		
     except ValueError as e:

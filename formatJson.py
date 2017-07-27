@@ -6,14 +6,11 @@ import json
 
 def main(args):
 	if args.in_file == None:
-		print "[error] missing input(s)"
-		print "[info] Try: python formatJson.py -h"	
+		print("[error] missing input(s)")
+		print("[info] Try: python formatJson.py -h")
 		exit()
-
-	infile = args.in_file 
-	outfile = args.out_file
-
-	os.system("cat "+infile+" | python -m json.tool > "+outfile+".json" )
+		
+	os.system("cat {} | python -m json.tool > {}.json".format(args.in_file ,args.out_file))
 
 def run():
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Readable JSON file')

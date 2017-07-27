@@ -4,7 +4,6 @@ import sys
 import os
 import rgi
 import re
-
 import argparse
 import filepaths
 
@@ -119,7 +118,7 @@ def printCSV(resultfile,ofile,orf,verbose):
 		print>>sys.stderr, "convertJsonToTSV expects a file contains a VALID JSON string."
 		exit()
 
-	with open(working_directory+"/"+ofile+".txt", "w") as af:
+	with open(os.path.join(working_directory,ofile+".txt"), "w") as af:
 		writer = csv.writer(af, delimiter='\t', dialect='excel')
 		writer.writerow(["ORF_ID", "CONTIG", "START", "STOP", "ORIENTATION", "CUT_OFF", "PASS_EVALUE", "Best_Hit_evalue", "Best_Hit_ARO", "Best_Identities", "ARO", "ARO_name", "Model_type", "SNP", "Best_Hit_ARO_category", "ARO_category", "PASS_bitscore", "Best_Hit_bitscore", "bit_score","Predicted_DNA","Predicted_Protein","CARD_Protein_Sequence","LABEL","ID","Model_id"])
 		for item in data:
@@ -157,20 +156,12 @@ def printCSV(resultfile,ofile,orf,verbose):
 						snpList.append(convert(temp))
 					elif data[item][it]["model_type_id"] == 40292:
 						snpList.append("n/a")
-					"""
-					if data[item][it]["model_type_id"] == 41091:
-						if checkKeyExisted("SNP",data[item][it]):
-							temp = data[item][it]["SNP"]["original"] + str(data[item][it]["SNP"]["position"]) + data[item][it]["SNP"]["change"]
-							snpList.append(convert(temp))
-						else:
-							snpList.append("n/a")
-					"""
 
 					AROlist.append(convert(data[item][it]["ARO_accession"]))
 					AROnameList.append(convert(data[item][it]["ARO_name"]))
 					bitScoreList.append(data[item][it]["bit-score"])
-					pass_evalue = str(data[item][it]["pass_evalue"]).split("|")[0]
-					pass_bitscore = "n/a"
+					pass_evalue = "n/a"
+					pass_bitscore = str(data[item][it]["pass_evalue"]).split("|")[0]
 					AROcatList.append(cgList)
 					typeList.append(convert(data[item][it]["model_type"]))
 					cutoffList.append(convert(data[item][it]["type_match"]))
@@ -178,7 +169,7 @@ def printCSV(resultfile,ofile,orf,verbose):
 
 					bestAROcategory = []
 
-					# sort results by minimum e-value and maximum percent identity
+					# sort results by bit-score and percent identity
 					if startCompare:
 						if maxscore < data[item][it]["bit-score"] and maxpercent < float(data[item][it]["perc_identity"]):
 							minevalue = data[item][it]["evalue"]
@@ -398,7 +389,6 @@ class customAction(argparse.Action):
 def main(args):
 	afile = args.afile
 	ofile = args.output
-	#orf = args.orf.lower()
 	orf = "prodigal"
 	verbose = args.verbose.lower()
 
@@ -409,7 +399,7 @@ def main(args):
 	if os.path.isfile(afile):	
 		printCSV(afile,ofile,orf,verbose)
 	else:
-		print "Missing file: ",afile 
+		print("Missing file: ",afile)
 	rgi.removeTemp()
 
 def run():
