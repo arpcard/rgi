@@ -14,7 +14,7 @@ def main(args):
 
 def run():
 	parser = argparse.ArgumentParser(description='Convert RGI JSON file to Readable JSON file')
-	parser.add_argument('-i','--in_file',help='input file must be in JSON format e.g Report.json')
+	parser.add_argument('-i','--in_file',help='input file must be in JSON format e.g Report.json', required=True)
 	parser.add_argument('-o', '--out_file',  dest="out_file", default="ReportFormatted", help="Output JSON file (default=ReportFormatted)")	
 	args = parser.parse_args()
 	main(args)		

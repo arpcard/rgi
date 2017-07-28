@@ -24,13 +24,11 @@
    |-- contigToORF.py
    |-- contigToProteins.py
    |-- convertJsonToTSV.py
-   |-- create_gff3_file.py
    |-- filepaths.py
    |-- formatJson.py
    |-- fqToFsa.py
    |-- load.py
    |-- rgi.py
-   |-- rrna.py
    
 
 

@@ -36,7 +36,7 @@ def main(args):
 
 def run():
 	parser = argparse.ArgumentParser(description='Load card database json file')
-	parser.add_argument('-i', '--afile',help='must be a card database json file')
+	parser.add_argument('-i', '--afile',help='must be a card database json file', required=True)
 	args = parser.parse_args()
 	main(args)
 

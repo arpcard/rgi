@@ -1247,7 +1247,7 @@ class customAction(argparse.Action):
 def run():
 	parser = argparse.ArgumentParser(description='Resistance Gene Identifier - Version ' + version())
 	parser.add_argument('-t','--input_type', dest="inType", default="CONTIG", help='must be one of contig, protein and read (default: contig)')
-	parser.add_argument('-i','--input_sequence', dest="inputSeq", default=None, help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+	parser.add_argument('-i','--input_sequence', dest="inputSeq", default=None, help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz', required=True)
 	parser.add_argument('-n','--num_threads', dest="threads", default="32", help="Number of threads (CPUs) to use in the BLAST search (default=32)")
 	parser.add_argument('-k','--max_target_seqs', dest="num_sequences", default="1", help="maximum number of target sequences to report alignments for (default=1)")
 	parser.add_argument('-o','--output_file', dest="output", default="Report", help="Output JSON file (default=Report)")	
