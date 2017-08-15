@@ -20,6 +20,7 @@ import shutil
 import datetime
 import clean as cln
 #import splitter
+# from profilehooks import timecall
 
 script_path = filepaths.determine_path()
 working_directory = os.getcwd()
@@ -348,7 +349,7 @@ def validateFastA(fastaFile):
 def validateFastQ(afile):
 	logging.info("validateFastQ => TODO:: validate fastq file")
 
-
+# @timecall       # or @timecall(immediate=True)
 def runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, clean, orf, alignment_tool,verbose, num_sequences):	
 	cmd = str(args)
 	t0 = time.time()
@@ -696,7 +697,7 @@ def runBlast(args, inType, inputSeq, threads, outputFile, criteria, data_type, c
 
 										loose[hitid + "|hsp_num:" + str(init)] = slinsidedict
 										init += 1
-				
+
 				elif modelTypeID == 40292:
 					init = 0
 					passevalue = findnthbar(alignTitle, 1)
@@ -1028,7 +1029,7 @@ def validateHeaders(inputfile,orf):
 		print>>sys.stderr, message
 		exit()
 
-
+# @timecall 
 def main(args):
 	t0 = time.time()
 	if args.inputSeq == None:

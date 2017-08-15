@@ -7,7 +7,7 @@ script_path = filepaths.determine_path()
 working_directory = os.getcwd()
 path = script_path+"/"
 
-app_files = [".gitignore","_docs","_tmp","_db","mgm"]
+app_files = [".gitignore","_docs","_tmp","_db","mgm", "__init__"]
 
 # clean other files left over
 def _clean():
@@ -29,7 +29,10 @@ def _clean():
 	db_files = glob.glob(path+"_db/*")
 	for dbfile in db_files:
 		if os.path.isfile(dbfile):
-			os.remove(dbfile)
+			if os.path.basename(dbfile) in ["__init__.py"]:
+				pass
+			else:
+				os.remove(dbfile)
 	print>>sys.stderr, "Cleaned directory: "+path+"_db"
 
     # clean tmp files
