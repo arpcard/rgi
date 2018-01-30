@@ -1,0 +1,4 @@
+#!/usr/bin/python
+from app.MainBase import MainBase
+
+MainBase()

@@ -1,0 +1,7 @@
+*
+!.gitignore
+!__init__.py
+protein*
+rnadb*
+predictions.*
+*.txt
