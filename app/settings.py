@@ -23,22 +23,6 @@ def determine_path():
         print("There is no __file__ variable. Please contact the author.")
         sys.exit()
 
-def get_data_version():
-	data_version = ""
-	card_json_path = os.path.join(data_path,"card.json")
-	if os.path.isfile(card_json_path) == True:
-		with open(card_json_path) as json_file:
-			json_data = json.load(json_file)
-			for item in json_data.keys():
-				if item == "_version":
-					data_version = json_data[item]
-
-	if data_version == "":
-		logger.error('data file card.json not found in data path: {}. \nPlease download card.json from https://card.mcmaster.ca/download. \nSee `rgi load --help` to upload the card.json to rgi application.\n'.format(data_path))
-
-	return data_version
-
-
 # ====================================================================================
 # FILEPATHS
 # ====================================================================================
@@ -58,7 +42,10 @@ logs = os.path.join(script_path, "_logs/")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
-formatter = logging.Formatter('%(levelname)s %(asctime)s : (%(filename)s::%(funcName)s::%(lineno)d) : %(message)s')
+# detailed log
+# formatter = logging.Formatter('%(levelname)s %(asctime)s : (%(filename)s::%(funcName)s::%(lineno)d) : %(message)s')
+# basic log
+formatter = logging.Formatter('%(levelname)s %(asctime)s : %(message)s')
 
 file_handler = logging.FileHandler(os.path.join(logs,"app.log"))
 file_handler.setLevel(logging.WARNING)
@@ -70,8 +57,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
+LOCAL_DATABASE = os.path.join(os.getcwd(), "localDB")
 
-DATA_VERSION = get_data_version()
 APP_NAME="Resistance Gene Identifier"
 SOFTWARE_VERSION = '4.0.0'
 SOFTWARE_SUMMARY = 'Use the Resistance Gene Identifier to predict resistome(s) from protein or nucleotide \

@@ -16,7 +16,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -31,6 +31,15 @@ class RGI(RGIBase):
 		self.data = data
 		self.aligner = aligner.lower()
 		self.database = galaxy
+
+		self.local_database = local_database
+		self.db = path
+		self.dp = data_path
+
+		if self.local_database:
+			self.db = LOCAL_DATABASE
+			self.dp = LOCAL_DATABASE
+
 		self.working_directory = o_f_path
 		self.blast_results_xml_file = ''
 
@@ -97,7 +106,7 @@ class RGI(RGIBase):
 
 	def create_databases(self):
 		"""Creates databases."""
-		db_obj = Database()
+		db_obj = Database(self.local_database)
 		db_obj.build_databases()
 
 	def run(self):
@@ -170,10 +179,10 @@ class RGI(RGIBase):
 		xml_file = os.path.join(self.working_directory,"{}.temp.blastRes.xml".format(file_name))
 
 		if self.aligner == "diamond":
-			diamond_obj = Diamond(self.input_sequence, xml_file)
+			diamond_obj = Diamond(self.input_sequence, xml_file, local_database=self.local_database)
 			diamond_obj.run()
 		else:
-			blast_obj = Blast(self.input_sequence, xml_file)
+			blast_obj = Blast(self.input_sequence, xml_file, local_database=self.local_database)
 			blast_obj.run()
 
 		self.set_xml_filepath(xml_file)
@@ -190,10 +199,10 @@ class RGI(RGIBase):
 			if os.stat(contig_fsa_file).st_size > 0:
 				logger.info("work with file {}".format(contig_fsa_file))
 				if self.aligner == "diamond":
-					diamond_obj = Diamond(contig_fsa_file)
+					diamond_obj = Diamond(contig_fsa_file, local_database=self.local_database)
 					diamond_obj.run()
 				else:
-					blast_obj = Blast(contig_fsa_file)
+					blast_obj = Blast(contig_fsa_file, local_database=self.local_database)
 					blast_obj.run()
 				self.set_xml_filepath(blast_results_xml_file)
 			else:
@@ -213,7 +222,7 @@ class RGI(RGIBase):
 		logger.info("run filter")
 		"""Filter each detection models and predict resistome(s)."""
 		filter_obj = Filter(self.input_type,  self.loose, self.input_sequence, self.blast_results_xml_file, \
-			os.path.join(data_path,"card.json"),os.path.basename(self.input_sequence) ,self.output_file, self)
+			os.path.join(self.dp,"card.json"),os.path.basename(self.input_sequence) ,self.output_file, self)
 		filter_obj.run()
 
 	def output(self): pass

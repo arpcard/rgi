@@ -61,12 +61,13 @@ Usage
 
    usage: rgi <command> [<args>] 
             commands are:
-               main    Runs rgi application
-               tab     Creates a Tab-delimited from rgi results
-               parser  Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
-               load    Loads CARD database json file
-               clean   Removes BLAST databases and temporary files
-               galaxy  Galaxy project wrapper
+               main     Runs rgi application
+               tab      Creates a Tab-delimited from rgi results
+               parser   Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
+               load     Loads CARD database json file
+               clean    Removes BLAST databases and temporary files
+               galaxy   Galaxy project wrapper
+               database Information on installed card database
 
    Resistance Gene Identifier - 4.0.0
 

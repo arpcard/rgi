@@ -3,13 +3,20 @@ from app.settings import *
 
 class Variant(BaseModel):
 	"""Class for protein variant searches."""
-	def __init__(self, input_type, loose, input_sequence, xml_file, working_directory):
+	def __init__(self, input_type, loose, input_sequence, xml_file, working_directory, local_database=False):
 		self.input_type = input_type
 		self.loose = loose
 		self.input_sequence = input_sequence
 		self.xml_file = xml_file
 		self.output = {}
 		self.working_directory = working_directory
+
+		self.local_database = local_database
+		self.data = data_path
+
+		if self.local_database:
+			self.db = LOCAL_DATABASE
+			self.data = LOCAL_DATABASE
 
 	def __repr__(self):
 		"""Returns Variant class full object."""
@@ -27,7 +34,7 @@ class Variant(BaseModel):
 		if self.input_type == "protein":
 			submitted_proteins_dict = (self.get_submitted_protein_sequence(self.input_sequence))
 
-		with open(data_path+"card.json") as json_file:
+		with open(os.path.join(self.data,"card.json")) as json_file:
 			json_data = json.load(json_file)
 
 		with open(self.xml_file, 'r') as result_handle:

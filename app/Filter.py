@@ -47,11 +47,11 @@ class Filter(BaseModel):
 		# results = {}
 		try:
 			if model_type == "homolog":
-				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory)
+				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database)
 			if model_type == "variant":
-				obj = Variant(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory)
+				obj = Variant(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database)
 			if model_type == "overexpression":
-				obj = Overexpression(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory)
+				obj = Overexpression(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database)
 			results = obj.run()
 			logger.info("save {} results...".format(model_type))
 			file_name = os.path.basename(self.input_sequence)
@@ -117,7 +117,7 @@ class Filter(BaseModel):
 			self.file_name = os.path.basename(self.input_sequence)
 			d, x = self.create_db_query()
 
-			rrna_obj = Rrna(self.input_sequence, self.output_file, d, x, self.loose)
+			rrna_obj = Rrna(self.input_sequence, self.output_file, d, x, self.loose, self.rgi_obj.local_database)
 			res = rrna_obj.run()
 
 
@@ -138,7 +138,7 @@ class Filter(BaseModel):
 		out_file = os.path.join(self.working_directory, "{}.db".format(f_name))
 		xml_file = os.path.join(self.working_directory,"{}.blastRes.rrna.xml".format(f_name))
 		logger.info("DB from user query")
-		db_obj = Database()
+		db_obj = Database(self.rgi_obj.local_database)
 		db_obj.make_custom_db(in_file, out_file)
 		self.blast_reference_to_db_query(out_file, xml_file)
 		return out_file, xml_file
@@ -146,8 +146,8 @@ class Filter(BaseModel):
 	def blast_reference_to_db_query(self, db, xml_file):
 		logger.info("blast_reference_to_db_query")
 		# blast all rrna db against query db
-		rrna_db_fasta = os.path.join(path, "rnadb.fsa")
-		blast_obj = Blast(rrna_db_fasta, program='blastn', output_file=xml_file)
+		rrna_db_fasta = os.path.join(self.rgi_obj.dp, "rnadb.fsa")
+		blast_obj = Blast(rrna_db_fasta, program='blastn', output_file=xml_file, local_database=self.rgi_obj.local_database)
 		blast_obj.run_custom(db)
 
 	def format_fasta(self):

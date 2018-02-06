@@ -12,12 +12,13 @@ class MainBase(object):
         # """
         USAGE='''%(prog)s <command> [<args>] 
             commands are:
-               main    Runs rgi application
-               tab     Creates a Tab-delimited from rgi results
-               parser  Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
-               load    Loads CARD database json file
-               clean   Removes BLAST databases and temporary files
-               galaxy  Galaxy project wrapper'''
+               main     Runs rgi application
+               tab      Creates a Tab-delimited from rgi results
+               parser   Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
+               load     Loads CARD database json file
+               clean    Removes BLAST databases and temporary files
+               galaxy   Galaxy project wrapper
+               database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', help='Subcommand to run')
@@ -45,14 +46,13 @@ class MainBase(object):
         parser.add_argument('-a','--alignment_tool', dest="aligner", default="BLAST", help = "specify alignment tool. Options are BLAST or DIAMOND  (default = BLAST)")
         parser.add_argument('-n','--num_threads', dest="threads", default="32", help="number of threads (CPUs) to use in the BLAST search (default=32)")
         parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
+        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
         parser.add_argument('-d','--data', dest="data", default="NA", help = "specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
-        parser.add_argument('-v','--software_version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software number")
-        parser.add_argument('-dv','--data_version',action='version',version="{}".format(DATA_VERSION), help = "prints data version number")
+        parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
         return parser
 
     def main_run(self, args):
-        logger.info('Running rgi main')
         rgi_obj = RGI(**vars(args))
         rgi_obj.run()
 
@@ -67,7 +67,6 @@ class MainBase(object):
         return parser
 
     def tab_run(self, args):
-        logger.info('Running rgi tab')
         obj = ConvertJsonToTSV(args.afile)
         obj.run()
 
@@ -89,12 +88,10 @@ class MainBase(object):
         self.load_run(args)
 
     def load_args(self):
-        parser = argparse.ArgumentParser(prog="rgi load", description="{} - {} - Load".format(APP_NAME, SOFTWARE_VERSION))
-        parser.add_argument('-i','--afile', help='must be a card database json file', required=True)
+        parser = app.load.create_parser()
         return parser
 
     def load_run(self, args):
-        logger.info('Running rgi load')
         app.load.main(args)
 
     def clean(self):
@@ -103,12 +100,11 @@ class MainBase(object):
         self.clean_run(args)
 
     def clean_args(self):
-        parser = argparse.ArgumentParser(prog="rgi clean", description="{} - {} - Clean".format(APP_NAME, SOFTWARE_VERSION))
+        parser = app.clean.create_parser()
         return parser
 
     def clean_run(self, args):
-        logger.info('Running rgi clean')
-        app.clean.main()
+        app.clean.main(args)
 
     def galaxy(self):
         parser = self.galaxy_args()
@@ -123,10 +119,44 @@ class MainBase(object):
         return parser
 
     def galaxy_run(self, args):
-        logger.info('Running rgi galaxy')
         obj = Galaxy(args.galaxy_database)
         obj.load_db_galaxy()
 
+    def database(self):
+        parser = self.database_args()
+        args = parser.parse_args(sys.argv[2:])
+        print(self.database_run(args))
+
+    def database_args(self):
+        parser = argparse.ArgumentParser(prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))
+        parser.add_argument('-v','--version',action='store_true', help = "prints data version number")
+        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
+        return parser
+
+    def database_run(self, args):
+        data_version = ""
+        # path to card.json file and database files
+        if args.local_database:
+            db = LOCAL_DATABASE
+            # error if it doesn't exist
+            if not os.path.exists(LOCAL_DATABASE):
+                print("Error: missing local directory: {}".format(LOCAL_DATABASE))
+                print("Please run `rgi load --local -i <path to card.json>` to create local database.")
+                print("See `rgi load --help` to upload the card.json to rgi application.\n".format(os.path.abspath(LOCAL_DATABASE)))
+                exit()
+        else:
+            db = data_path
+        card_json_path = os.path.join(db,"card.json")
+        if os.path.isfile(card_json_path) == True:
+            with open(card_json_path) as json_file:
+                json_data = json.load(json_file)
+                for item in json_data.keys():
+                    if item == "_version":
+                        data_version = json_data[item]
+        if data_version == "":
+            # logger.error('data file card.json not found in data path: {}. \nPlease download card.json from https://card.mcmaster.ca/download. \nSee `rgi load --help` to upload the card.json to rgi application.\n'.format(os.path.abspath(db)))
+            print('\nError: data file card.json not found in data path: {}. \nPlease download card.json from https://card.mcmaster.ca/download. \nSee `rgi load --help` to upload the card.json to rgi application.\n'.format(os.path.abspath(db)))
+        return data_version
 
 if __name__ == '__main__':
     MainBase()

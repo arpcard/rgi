@@ -52,15 +52,37 @@ def clean():
 			os.remove(logfile)
 	logger.info("Cleaned directory: {}".format(logs))
 
+def clean_local():
+	if os.path.exists(LOCAL_DATABASE):
+		print("clean: ", LOCAL_DATABASE)
+		files = glob.glob(LOCAL_DATABASE+"*")
+		for f in files:
+			if os.path.isfile(f) and os.path.basename(f) not in ["card.json"]:
+				logger.info("Remove: {}".format(f))
+				# os.remove(f)
+				print("Remove: {}".format(f))
+	else:
+		print("Info: Local database not found at {}, nothing to clean.".format(LOCAL_DATABASE))
+
 #remove temporary file
-def main():
-	clean()
+def main(args):
+	if args.local_database == True:
+		clean_local()
+	else:
+		clean()
+
+
 	# logger.info("Cleaned directory: {}".format(path))
 
+def create_parser():
+	parser = argparse.ArgumentParser(prog="rgi clean", description="{} - {} - Clean".format(APP_NAME, SOFTWARE_VERSION))
+	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
+	return parser
+
 def run():
-	parser = argparse.ArgumentParser(description='Removes BLAST databases created using card.json')
+	parser = create_parser()
 	args = parser.parse_args()
-	main()
+	main(args)
 
 if __name__ == '__main__':
 	run()

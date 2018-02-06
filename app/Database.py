@@ -2,8 +2,15 @@ from app.settings import *
 
 class Database(object):
 	"""Class to create BLAST databases from a card.json file."""
-	def __init__(self):
+	def __init__(self, local_database=False):
 		"""Creates Database object."""
+		self.local_database = local_database
+		self.db = path
+		self.data = data_path
+
+		if self.local_database:
+			self.db = LOCAL_DATABASE
+			self.data = LOCAL_DATABASE
 
 	def __repr__(self):
 		"""Returns Database class full object."""
@@ -18,24 +25,24 @@ class Database(object):
 
 	def make_blast_database(self):
 		"""Build BLAST database from a FASTA file."""
-		if os.path.isfile(path+"proteindb.fsa") == True and os.path.exists(path+"proteindb.fsa") == True  \
-		   and os.path.exists(path+"protein.db.phr") == True and os.path.exists(path+"protein.db.pin") == True \
-		   and os.path.exists(path+"protein.db.psq") == True:
+		if os.path.isfile(os.path.join(self.db,"proteindb.fsa")) == True and os.path.exists(os.path.join(self.db,"proteindb.fsa")) == True  \
+		   and os.path.exists(os.path.join(self.db,"protein.db.phr")) == True and os.path.exists(os.path.join(self.db,"protein.db.pin")) == True \
+		   and os.path.exists(os.path.join(self.db,"protein.db.psq")) == True:
 		   logger.info("blast DB exists")
 		   pass
 		else:
 			logger.info("create blast DB.")
-			os.system('makeblastdb -in '+path+'proteindb.fsa -dbtype prot -out '+path+'protein.db 2>&1 >> ' + file_handler.baseFilename)
+			os.system('makeblastdb -in {} -dbtype prot -out {} 2>&1 >> {}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),file_handler.baseFilename))
 
 	def make_diamond_database(self):
 		"""Build DIAMOND database from a FASTA file."""
-		if os.path.isfile(path+"proteindb.fsa") == True and os.path.exists(path+"proteindb.fsa") == True \
-			and os.path.exists(path+"protein.db.dmnd") == True:
+		if os.path.isfile(os.path.join(self.db,"proteindb.fsa")) == True and os.path.exists(os.path.join(self.db,"proteindb.fsa")) == True \
+			and os.path.exists(os.path.join(self.db,"protein.db.dmnd")) == True:
 			logger.info("diamond DB exists")
 			pass
 		else:
 			logger.info("create diamond DB.")
-			os.system('diamond makedb --quiet --in '+path+'proteindb.fsa --db '+path+'protein.db 2>&1 >> ' + file_handler.baseFilename)
+			os.system('diamond makedb --quiet --in {} --db {} 2>&1 >> {}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),file_handler.baseFilename))
 
 	def make_custom_db(self, in_file, out_file, db_type="nucl", program="blast"):
 		if program == 'blast':
@@ -46,14 +53,18 @@ class Database(object):
 
 	def write_fasta_from_json(self):
 		"""Creates a fasta file from card.json file."""
-		if os.path.isfile('%sproteindb.fsa' % (path)):
+		if os.path.isfile(os.path.join(self.db, "proteindb.fsa")):
 			# logger.info("Database already exists.")
 			return
 		else:
-			with open('%scard.json' % (data_path), 'r') as jfile:
-				j = json.load(jfile)
+			try:
+				with open(os.path.join(self.data, "card.json"), 'r') as jfile:
+					j = json.load(jfile)
+			except Exception as e:
+				logger.error(e)
+				exit()
 
-			with open('%sproteindb.fsa' % (path), 'w') as fout:
+			with open(os.path.join(self.db, "proteindb.fsa"), 'w') as fout:
 				for i in j:
 					if i.isdigit():
 		            	# model_type: protein homolog model
@@ -104,14 +115,14 @@ class Database(object):
 		snpList_16s = []
 		snpList_23s = []
 		"""Creates a fasta file for 16S and 23S data from card.json file."""
-		if os.path.isfile('%srnadb.fsa' % (path)):
+		if os.path.isfile(os.path.join(self.db, "rnadb.fsa")):
 			# logger.info("RNA database already exists.")
 			return
 		else:
-			with open('%scard.json' % (data_path), 'r') as jfile:
+			with open(os.path.join(self.data, "card.json"), 'r') as jfile:
 				j = json.load(jfile)
 
-			with open('%srnadb.fsa' % (path), 'w') as fout:
+			with open(os.path.join(self.db, "rnadb.fsa"), 'w') as fout:
 				for i in j:
 					if i.isdigit():
 						# model_type: ribosomal RNA model
@@ -150,11 +161,11 @@ class Database(object):
 										fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence']))
 
 		# write snps to file
-		with open('%s16s_rRNA.txt' % (path), 'w') as f16s:
+		with open(os.path.join(self.db,"16s_rRNA.txt"), 'w') as f16s:
 			snpList_16s.sort()
 			f16s.write(',\n'.join(snpList_16s))
 
-		with open('%s23s_rRNA.txt' % (path), 'w') as f23s:
+		with open(os.path.join(self.db, "23s_rRNA.txt"), 'w') as f23s:
 			snpList_23s.sort()
 			f23s.write(',\n'.join(snpList_23s))
 

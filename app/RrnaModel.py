@@ -3,12 +3,19 @@ from app.settings import *
 
 class Rrna(BaseModel):
 	"""Class for ribosomal RNA searches."""
-	def __init__(self, input_file, output_file, db, xml, loose):
+	def __init__(self, input_file, output_file, db, xml, loose, local_database=False):
 		self.input_file = input_file
 		self.output_file = output_file
 		self.db = db
 		self.xml_file = xml
 		self.loose = loose
+
+		self.local_database = local_database
+		self.data = data_path
+
+		if self.local_database:
+			# self.db = LOCAL_DATABASE
+			self.data = LOCAL_DATABASE
 
 	def __repr__(self):
 		"""Returns Ribosomal RNA class full object."""
@@ -23,7 +30,7 @@ class Rrna(BaseModel):
 	def run(self):
 		blastResults = {}
 
-		with open(data_path+"card.json") as json_file:
+		with open(os.path.join(self.data,"card.json")) as json_file:
 			json_data = json.load(json_file)
 
 		with open(self.xml_file, 'r') as result_handle:
