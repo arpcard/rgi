@@ -69,7 +69,7 @@ Usage
                galaxy   Galaxy project wrapper
                database Information on installed card database
 
-   Resistance Gene Identifier - 4.0.0
+   Resistance Gene Identifier - 4.0.1
 
    positional arguments:
    command     Subcommand to run
