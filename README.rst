@@ -50,9 +50,9 @@ or
 
 .. code-block:: sh
 
-   python3: setup.py buil1d
-   python3: setup.py test
-   python3: setup.py install
+   python3 setup.py build
+   python3 setup.py test
+   python3 setup.py install
 
 Running RGI Tests
 -------------------
