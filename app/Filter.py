@@ -116,7 +116,6 @@ class Filter(BaseModel):
 			""" Cleans rRNA model previous result and temporal files"""
 			self.file_name = os.path.basename(self.input_sequence)
 			d, x = self.create_db_query()
-
 			rrna_obj = Rrna(self.input_sequence, self.output_file, d, x, self.loose, self.rgi_obj.local_database)
 			res = rrna_obj.run()
 
@@ -146,7 +145,7 @@ class Filter(BaseModel):
 	def blast_reference_to_db_query(self, db, xml_file):
 		logger.info("blast_reference_to_db_query")
 		# blast all rrna db against query db
-		rrna_db_fasta = os.path.join(self.rgi_obj.dp, "rnadb.fsa")
+		rrna_db_fasta = os.path.join(self.rgi_obj.db, "rnadb.fsa")
 		blast_obj = Blast(rrna_db_fasta, program='blastn', output_file=xml_file, local_database=self.rgi_obj.local_database)
 		blast_obj.run_custom(db)
 
@@ -173,5 +172,5 @@ class Filter(BaseModel):
 		if(os.path.exists(self.xml_file)):
 			self.process_xml_file()
 		else:
-			logger.error("missing blast xml file({}). Please check if input_type: '{}' correspond with input file: '{}'" \
+			logger.error("missing blast xml file({}). Please check if input_type: '{}' correspond with input file: '{}' or use '--low_quality' flag for short contigs to predicts partial genes." \
 					.format(self.xml_file, self.input_type, self.input_sequence))

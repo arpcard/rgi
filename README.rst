@@ -36,12 +36,23 @@ Install Dependecies
 - pip3 install filetype
 - pip3 install psycopg2
 - pip3 install pandas
+- pip3 install pytest
+- pip3 install mock
 
 Install RGI from project root
 -----------------------------
 
-- pip3 install .
+.. code-block:: sh
 
+   pip3 install .
+
+or
+
+.. code-block:: sh
+
+   python3: setup.py buil1d
+   python3: setup.py test
+   python3: setup.py install
 
 Running RGI Tests
 -------------------

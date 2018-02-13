@@ -16,7 +16,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -31,6 +31,7 @@ class RGI(RGIBase):
 		self.data = data
 		self.aligner = aligner.lower()
 		self.database = galaxy
+		self.low_quality = low_quality
 
 		self.local_database = local_database
 		self.db = path
@@ -190,7 +191,7 @@ class RGI(RGIBase):
 	def process_contig(self):
 		"""Process nuclotide sequence(s)."""
 		file_name = os.path.basename(self.input_sequence)
-		orf_obj = ORF(input_file=self.input_sequence, clean=self.clean, working_directory=self.working_directory)
+		orf_obj = ORF(input_file=self.input_sequence, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality)
 		orf_obj.contig_to_orf()
 		contig_fsa_file = os.path.join(self.working_directory,"{}.temp.contig.fsa".format(file_name))
 		blast_results_xml_file = os.path.join(self.working_directory,"{}.temp.contig.fsa.blastRes.xml".format(file_name))
@@ -206,12 +207,19 @@ class RGI(RGIBase):
 					blast_obj.run()
 				self.set_xml_filepath(blast_results_xml_file)
 			else:
-				logger.error("orf file is empty")
+				self.write_stub_output_file()
+				logger.error("no open reading frames (orfs) found.")
 		except Exception as e:
+			self.write_stub_output_file()
 			logger.exception("failed to write orf file")
 		else:
 			# logger.info("success procession orf file")
 			pass
+
+	def write_stub_output_file(self):
+		# write empty output file if there are no open reading frames
+		with open(os.path.join(self.output_file), 'w') as fout:
+			fout.write(json.dumps({}))
 
 	def process_read(self):
 		"""Process fastq or reads sequence(s)."""

@@ -29,11 +29,10 @@ class Rrna(BaseModel):
 
 	def run(self):
 		blastResults = {}
-
 		with open(os.path.join(self.data,"card.json")) as json_file:
 			json_data = json.load(json_file)
 
-		with open(self.xml_file, 'r') as result_handle:
+		with open(os.path.join(self.xml_file), 'r') as result_handle:
 			blast_records = NCBIXML.parse(result_handle)
 
 			for blast_record in blast_records:

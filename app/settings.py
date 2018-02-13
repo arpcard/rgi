@@ -31,24 +31,21 @@ script_path = determine_path()
 
 path = os.path.join(script_path, "_db/")
 data_path = os.path.join(script_path, "_data/")
-tmp = os.path.join(script_path, "_tmp/")
-logs = os.path.join(script_path, "_logs/")
-
 
 # ====================================================================================
 # LOGGING CONFIG
 # ====================================================================================
-
+level = logging.WARNING
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+logger.setLevel(level)
 
 # detailed log
 # formatter = logging.Formatter('%(levelname)s %(asctime)s : (%(filename)s::%(funcName)s::%(lineno)d) : %(message)s')
 # basic log
 formatter = logging.Formatter('%(levelname)s %(asctime)s : %(message)s')
 
-file_handler = logging.FileHandler(os.path.join(logs,"app.log"))
-file_handler.setLevel(logging.WARNING)
+file_handler = logging.FileHandler(os.path.join(os.getcwd(),"app.log"))
+file_handler.setLevel(level)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -60,7 +57,7 @@ logger.addHandler(stream_handler)
 LOCAL_DATABASE = os.path.join(os.getcwd(), "localDB")
 
 APP_NAME="Resistance Gene Identifier"
-SOFTWARE_VERSION = '4.0.1'
+SOFTWARE_VERSION = "4.0.2"
 SOFTWARE_SUMMARY = 'Use the Resistance Gene Identifier to predict resistome(s) from protein or nucleotide \
 data based on homology and SNP models. Check https://card.mcmaster.ca/download for software and data updates. \
 Receive email notification of monthly CARD updates via the CARD Mailing List \

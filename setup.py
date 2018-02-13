@@ -1,20 +1,29 @@
 """
-from this directory run: pip install .
+from this directory run: 
+
+pip3 install .
+
+or
+
+python3: setup.py buil1d
+python3: setup.py test
+python3: setup.py install
 
 entry_points =[
 	'console_scripts':['rgi = main.run']
 ]
 """
 # from distutils.core import setup
+from app.settings import SOFTWARE_VERSION
 from setuptools import setup
 #This is a list of files to install, and where
 #(relative to the 'root' dir, where setup.py is)
 #You could be more specific.
 
-files = ["*.py", "*.txt", "*.md", "*.json", "_data/*", "_db/*", "_logs/*", "_tests/*","_tmp/*","d3/*", "diff/*" ]
+files = ["*.py", "*.txt", "*.md", "*.json", "_data/*", "_db/*", "diff/*" ]
 
 setup(name = "RGI",
-    version = "4.0.0",
+    version = SOFTWARE_VERSION,
     description = "Resistance Gene Identifier",
     author = "Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573.",
     author_email = "card@mcmaster.ca",
@@ -43,7 +52,6 @@ setup(name = "RGI",
     license = "The license is located at https://card.mcmaster.ca/about",
     #location where the package may be downloaded
     download_url = "https://card.mcmaster.ca/download",
-    # setuptools?
-    #install_requires=['ncbi-blast+','python-biopython'],   
+    install_requires=['numpy', 'biopython', 'profilehooks', 'filetype', 'psycopg2', 'pandas', 'pytest', 'mock'],   
     platforms = "Linux, Mac OS X"
 ) 

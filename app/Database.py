@@ -76,9 +76,15 @@ class Database(object):
 									% (j[i]['model_id'], j[i]['model_name']))
 								logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 							else:
-								for seq in j[i]['model_sequences']['sequence']:
-									fout.write('>%s_%s | model_type_id: 40292 | pass_bitscore: %s | %s\n' % (i, seq, pass_bit_score, j[i]['ARO_name']))
-									fout.write('%s\n' %(j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								try:
+									for seq in j[i]['model_sequences']['sequence']:
+										fout.write('>%s_%s | model_type_id: 40292 | pass_bitscore: %s | %s\n' % (i, seq, pass_bit_score, j[i]['ARO_name']))
+										fout.write('%s\n' %(j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								except Exception as e:
+									logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running." \
+										% (j[i]['model_id'], j[i]['model_name']))
+									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
+
 
 		            	# model_type: protein variant model
 						elif j[i]["model_type_id"] == "40293":
@@ -89,11 +95,22 @@ class Database(object):
 									% (j[i]['model_id'], j[i]['model_name']))
 								logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 							else:
-								snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-								for seq in j[i]['model_sequences']['sequence']:
-									fout.write('>%s_%s | model_type_id: 40293 | pass_bit_score: %s | SNP: %s | %s\n' \
-										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-									fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								try:
+									snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
+								except Exception as e:
+									logger.warning("No snp for model (%s, %s). RGI will omit this model and keep running." \
+										% (j[i]['model_id'], j[i]['model_name']))
+									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
+
+								try:
+									for seq in j[i]['model_sequences']['sequence']:
+										fout.write('>%s_%s | model_type_id: 40293 | pass_bit_score: %s | SNP: %s | %s\n' \
+											% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+										fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								except Exception as e:
+									logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running." \
+										% (j[i]['model_id'], j[i]['model_name']))
+									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 
 		            	# model_type: protein overexpression model
 						elif j[i]["model_type_id"] == "41091":
@@ -104,11 +121,22 @@ class Database(object):
 									% (j[i]['model_id'], j[i]['model_name']))
 								logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 							else:
-								snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-								for seq in j[i]['model_sequences']['sequence']:
-									fout.write('>%s_%s | model_type_id: 41091 | pass_bit_score: %s | SNP: %s | %s\n' \
-										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-									fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								try:
+									snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
+								except Exception as e:
+									logger.warning("No snp for model (%s, %s). RGI will omit this model and keep running." \
+										% (j[i]['model_id'], j[i]['model_name']))
+									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
+
+								try:
+									for seq in j[i]['model_sequences']['sequence']:
+										fout.write('>%s_%s | model_type_id: 41091 | pass_bit_score: %s | SNP: %s | %s\n' \
+											% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+										fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+								except Exception as e:
+									logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running." \
+										% (j[i]['model_id'], j[i]['model_name']))
+									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 
 
 	def write_fasta_from_json_rna(self):
@@ -135,7 +163,6 @@ class Database(object):
 								logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 							else:
 								snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-
 								for s in snpList:
 									if "16S" in j[i]['ARO_name']:
 										if s not in snpList_16s:
@@ -145,8 +172,6 @@ class Database(object):
 											snpList_23s.append(s)
 
 								for seq in j[i]['model_sequences']['sequence']:
-								
-									
 									if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
 										basecomplement = self.complementary_strand(j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence'])
 							
@@ -155,7 +180,6 @@ class Database(object):
 										fout.write('%s\n' % (basecomplement))
 
 									else:
-									
 										fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
 										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
 										fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence']))

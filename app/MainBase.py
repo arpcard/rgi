@@ -48,6 +48,7 @@ class MainBase(object):
         parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
+        parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes")
         parser.add_argument('-d','--data', dest="data", default="NA", help = "specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
         parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
         return parser

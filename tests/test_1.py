@@ -63,7 +63,8 @@ def run_rgi(rgi, input_type, input_sequence, output_file):
 		'--output_file', output_file,
 		'--alignment_tool', alignment_tool,
 		'--clean',
-		'--include_loose'
+		'--include_loose',
+		'--low_quality'
     ]))	
 
 def test_rgi_protein_sequence(rgi):
