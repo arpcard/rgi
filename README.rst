@@ -8,12 +8,18 @@ Table of Contents
 
 - `License`_
 - `Requirements`_
-- `Install Dependecies`_
-- `Install RGI from project root`_
-- `Running RGI Tests`_
-- `Running RGI`_
+- `Install dependecies`_
+- `Install app from project root`_
+- `Running app tests`_
+- `Help menu`_
 - `Usage`_
+- `Load card.json`_
+- `Check database version`_
+- `Run app`_
+- `Running app with short contigs to predict partial genes`_
+- `Clean previous or old databases`_
 - `Support & Bug Reports`_
+
 
 License
 --------
@@ -27,7 +33,7 @@ Requirements
 - `DIAMOND v0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
 - `Python 3.6 <https://www.python.org/>`_
 
-Install Dependecies
+Install dependecies
 --------------------
 
 - pip3 install numpy
@@ -39,7 +45,7 @@ Install Dependecies
 - pip3 install pytest
 - pip3 install mock
 
-Install RGI from project root
+Install app from project root
 -----------------------------
 
 .. code-block:: sh
@@ -54,16 +60,19 @@ or
    python3 setup.py test
    python3 setup.py install
 
-Running RGI Tests
+Running app tests
+-------------------
+.. code-block:: sh
+   
+   cd tests
+   pytest -v -rxs
+
+Help menu
 -------------------
 
-- cd tests
-- pytest -v
+.. code-block:: sh
 
-Running RGI
--------------------
-
-- rgi -h
+   rgi --help
 
 Usage
 -------------------
@@ -93,6 +102,84 @@ Usage
    https://card.mcmaster.ca/download for software and data updates. Receive email
    notification of monthly CARD updates via the CARD Mailing List
    (https://mailman.mcmaster.ca/mailman/listinfo/card-l)
+
+
+Load card.json 
+-------------------
+
+- local or working directory
+
+   .. code-block:: sh
+   
+      rgi load --afile /path/to/card.json --local
+
+- system wide 
+
+   .. code-block:: sh
+
+      rgi load --afile /path/to/card.json
+
+Check database version
+-----------------------
+
+- local or working directory
+
+   .. code-block:: sh
+   
+      rgi database --version --local
+
+- system wide 
+
+   .. code-block:: sh
+
+      rgi database --version
+
+Run app
+----------------------
+
+- local or working directory
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local 
+
+- system wide 
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
+
+
+Running app with short contigs to predict partial genes 
+--------------------------------------------------------
+
+- local or working directory
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --local --low_quality 
+
+- system wide 
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --low_quality
+
+
+Clean previous or old databases
+--------------------------------
+
+- local or working directory
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+- system wide 
+
+   .. code-block:: sh 
+   
+      rgi clean      
 
 
 Support & Bug Reports

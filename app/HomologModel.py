@@ -106,9 +106,9 @@ class Homolog(BaseModel):
 								ppinsidedict = {}
 								ppinsidedict["type_match"] = "Perfect"
 								ppinsidedict["model_id"] = modelID
-								ppinsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0).decode()
-								ppinsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1).decode()
-								ppinsidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2).decode()
+								ppinsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
+								ppinsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)
+								ppinsidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 								ppinsidedict["orf_from"] = orffrom.decode()
 								ppinsidedict["model_name"] = json_data[modelID]["model_name"]
 								ppinsidedict["model_type"] = json_data[modelID]["model_type"]
@@ -161,9 +161,9 @@ class Homolog(BaseModel):
 								# logger.info("Strict hits")
 								insidedict = {}
 								insidedict["type_match"] = "Strict"
-								insidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0).decode()
-								insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1).decode()							
-								insidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2).decode()
+								insidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
+								insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)							
+								insidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 								insidedict["orf_from"] = orffrom.decode()
 								insidedict["model_name"] = json_data[modelID]["model_name"]
 								insidedict["model_type"] = json_data[modelID]["model_type"]
@@ -218,9 +218,9 @@ class Homolog(BaseModel):
 								# logger.info("Loose hits")
 								linsidedict = {}
 								linsidedict["type_match"] = "Loose"
-								linsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0).decode()
-								linsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1).decode()
-								linsidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2).decode()
+								linsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
+								linsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)
+								linsidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 								linsidedict["orf_from"] = orffrom.decode().strip()
 								linsidedict["model_name"] = json_data[modelID]["model_name"]
 								linsidedict["model_type"] = json_data[modelID]["model_type"]

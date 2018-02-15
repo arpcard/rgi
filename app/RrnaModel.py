@@ -113,9 +113,9 @@ class Rrna(BaseModel):
 											sinsidedict["orf_start"] = hsp.sbjct_start
 											sinsidedict["orf_end"] = hsp.sbjct_end
 
-											sinsidedict["_orf_strand"] = self.extract_nth_bar(orf_info, 0).decode()
-											sinsidedict["_orf_start"] = self.extract_nth_bar(orf_info, 1).decode()
-											sinsidedict["_orf_end"] = self.extract_nth_bar(orf_info, 2).decode()
+											sinsidedict["_orf_strand"] = self.extract_nth_bar(orf_info, 0)
+											sinsidedict["_orf_start"] = self.extract_nth_bar(orf_info, 1)
+											sinsidedict["_orf_end"] = self.extract_nth_bar(orf_info, 2)
 
 											sinsidedict["orf_from"] = alignment.hit_def
 											sinsidedict["strand"] = strand
@@ -159,9 +159,9 @@ class Rrna(BaseModel):
 											slinsidedict["orf_start"] = hsp.sbjct_start
 											slinsidedict["orf_end"] = hsp.sbjct_end
 
-											slinsidedict["_orf_strand"] = self.extract_nth_bar(orf_info, 0).decode()
-											slinsidedict["_orf_start"] = self.extract_nth_bar(orf_info, 1).decode()
-											slinsidedict["_orf_end"] = self.extract_nth_bar(orf_info, 2).decode()
+											slinsidedict["_orf_strand"] = self.extract_nth_bar(orf_info, 0)
+											slinsidedict["_orf_start"] = self.extract_nth_bar(orf_info, 1)
+											slinsidedict["_orf_end"] = self.extract_nth_bar(orf_info, 2)
 
 											slinsidedict["orf_from"] = alignment.hit_def
 											slinsidedict["strand"] = strand

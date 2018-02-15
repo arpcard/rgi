@@ -4,7 +4,11 @@ from app.settings import *
 class ConvertJsonToTSV(object):
 
 	def __init__(self, filepath, homolog_file=None, variant_file=None, overexpression_file=None, rrna_file=None):
-		self.filepath = filepath
+		f_path, f_name = os.path.split(filepath)
+		name, ext = os.path.splitext(f_name)
+		self.filepath = os.path.join(f_path, "{}.json".format(f_name))
+		if ext.lower() == ".json":
+			self.filepath = os.path.join(f_path, "{}{}".format(name,ext))			
 		self.homolog_file = homolog_file
 		self.variant_file = variant_file
 		self.overexpression_file = overexpression_file
@@ -53,7 +57,7 @@ class ConvertJsonToTSV(object):
 	def run(self):
 		if os.path.isfile(self.filepath):
 			f_path, f_name = os.path.split(self.filepath)
-			with open(os.path.join(f_path, "{}.txt".format(f_name)), "w") as af:
+			with open(os.path.join(f_path, "{}.txt".format(os.path.splitext(f_name)[0])), "w") as af:
 				writer = csv.writer(af, delimiter='\t', dialect='excel')
 				writer.writerow(["ORF_ID",
                                 "Contig",

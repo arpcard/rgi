@@ -78,7 +78,8 @@ class BaseModel(object):
 
             # if that doesn't work encode into ascii-bytestring
             except ValueError:
-                return result.encode("ascii", "replace")
+                # return result.encode("ascii", "replace")
+                return result
 
     def extract_nth_hash(self, bunch_str, n):
         """

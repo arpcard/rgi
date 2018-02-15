@@ -83,7 +83,7 @@ class Variant(BaseModel):
 						snpl = []
 						snp_dict_list = []
 						temp = ""
-						evalue_snp_dec = evalue_snp.decode()
+						evalue_snp_dec = evalue_snp
 						snpl = evalue_snp_dec.split(',')
 						
 						for each_snp in snpl:
@@ -125,9 +125,9 @@ class Variant(BaseModel):
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
 											sinsidedict["snp"] = eachs
-											sinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0).decode()
-											sinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1).decode()
-											sinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2).decode()
+											sinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
+											sinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)
+											sinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
 											sinsidedict["orf_from"] = orf_from.decode()
 											sinsidedict["model_name"] = json_data[model_id]["model_name"]
 											sinsidedict["model_type"] = json_data[model_id]["model_type"]
@@ -182,9 +182,9 @@ class Variant(BaseModel):
 											slinsidedict = {}
 											slinsidedict["type_match"] = "Loose"
 											slinsidedict["snp"] = eachs
-											slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0).decode()
-											slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1).decode()				
-											slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2).decode()
+											slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
+											slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)				
+											slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
 											slinsidedict["orf_from"] = orf_from.decode()
 											slinsidedict["model_name"] = json_data[model_id]["model_name"]
 											slinsidedict["model_type"] = json_data[model_id]["model_type"]
