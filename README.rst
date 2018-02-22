@@ -185,7 +185,7 @@ Clean previous or old databases
 Support & Bug Reports
 ----------------------
 
-Please log an issue on `github issue <https://github.com/arpcard/oop/issues>`_.
+Please log an issue on `github issue <https://github.com/arpcard/rgi/issues>`_.
 
 You can email the CARD curators or developers directly at `card@mcmaster.ca <mailto:card@mcmaster.ca>`_, via Twitter at `@arpcard <http://www.twitter.com/arpcard>`_.
 
