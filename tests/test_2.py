@@ -1,6 +1,6 @@
 import os
 import pytest
-from mock import Mock
+from unittest.mock import Mock
 
 from app.RGI import RGI
 from app.HomologModel import Homolog

@@ -1,5 +1,5 @@
 """
-from this directory run: 
+from this directory run:
 
 pip3 install .
 
@@ -30,7 +30,7 @@ setup(name = "RGI",
     url = "https://card.mcmaster.ca",
     #Name the folder where your packages live:
     #(If you have other packages (dirs) or modules (py files) then
-    #put them into the package directory - they will be found 
+    #put them into the package directory - they will be found
     #recursively.)
     packages = ['app'],
     #'package' package must contain files (see list above)
@@ -45,13 +45,13 @@ setup(name = "RGI",
     #'rgi_clean' is in the root to clean blast databases
     #'rgi_load' is in the root to load new card.json file.
     scripts = ["rgi"],
-    long_description = """This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in CARD. Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes.""", 
+    long_description = """This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in CARD. Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes.""",
     #
     #This next part it for the Cheese Shop, look a little down the page.
-    #classifiers = [] 
+    #classifiers = []
     license = "The license is located at https://card.mcmaster.ca/about",
     #location where the package may be downloaded
     download_url = "https://card.mcmaster.ca/download",
-    install_requires=['numpy', 'biopython', 'profilehooks', 'filetype', 'psycopg2', 'pandas', 'pytest', 'mock'],   
+    install_requires=['biopython', 'filetype', 'pandas', 'pytest', 'mock'],
     platforms = "Linux, Mac OS X"
-) 
+)
