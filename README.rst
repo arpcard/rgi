@@ -8,15 +8,15 @@ Table of Contents
 
 - `License`_
 - `Requirements`_
-- `Install dependecies`_
-- `Install app from project root`_
-- `Running app tests`_
+- `Install dependencies`_
+- `Install RGI from project root`_
+- `Running RGI tests`_
 - `Help menu`_
 - `Usage`_
 - `Load card.json`_
 - `Check database version`_
-- `Run app`_
-- `Running app with short contigs to predict partial genes`_
+- `Run RGI`_
+- `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
 - `Support & Bug Reports`_
 
@@ -33,19 +33,16 @@ Requirements
 - `DIAMOND v0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
 - `Python 3.6 <https://www.python.org/>`_
 
-Install dependecies
+Install dependencies
 --------------------
 
-- pip3 install numpy
 - pip3 install biopython
-- pip3 install profilehooks
 - pip3 install filetype
-- pip3 install psycopg2
 - pip3 install pandas
 - pip3 install pytest
 - pip3 install mock
 
-Install app from project root
+Install RGI from project root
 -----------------------------
 
 .. code-block:: sh
@@ -60,7 +57,7 @@ or
    python3 setup.py test
    python3 setup.py install
 
-Running app tests
+Running RGI tests
 -------------------
 .. code-block:: sh
    
@@ -134,7 +131,7 @@ Check database version
 
       rgi database --version
 
-Run app
+Run RGI 
 ----------------------
 
 - local or working directory
@@ -150,7 +147,7 @@ Run app
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
 
 
-Running app with short contigs to predict partial genes 
+Running RGI with short contigs to predict partial genes 
 --------------------------------------------------------
 
 - local or working directory
