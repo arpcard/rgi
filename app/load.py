@@ -14,6 +14,8 @@ def validateFile(filename):
 		return None # or: raise
 
 def main(args):
+	if args.debug:
+		logger.setLevel(10)
 	filepath = args.afile
 	if os.path.exists(filepath):
 		if validateFile(filepath):
@@ -25,11 +27,11 @@ def main(args):
 					os.makedirs(LOCAL_DATABASE)
 			else:
 				db = data_path
+			logger.info("path to save card.json file {}".format(db))
 			try:
 				# copy new card.json file
 				shutil.copyfile(filepath, os.path.join(db, "card.json"))
-				logger.info("[success] file copied ok")
-				print("[success] file copied ok")
+				logger.info("file loaded ok")
 			except Exception as e:
 				logger.warning("failed to copy json file: {}".format(e))
 		else:
@@ -41,6 +43,7 @@ def create_parser():
 	parser = argparse.ArgumentParser(prog="rgi load", description="{} - {} - Load".format(APP_NAME, SOFTWARE_VERSION))
 	parser.add_argument('-i', '--afile',help='must be a card database json file')
 	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
+	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
 	return parser
 
 def run():

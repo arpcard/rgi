@@ -7,6 +7,7 @@ class Database(object):
 		self.local_database = local_database
 		self.db = path
 		self.data = data_path
+		self.stdout = "2>&1 >> /dev/null" #"2> /dev/null"
 
 		if self.local_database:
 			self.db = LOCAL_DATABASE
@@ -32,7 +33,7 @@ class Database(object):
 		   pass
 		else:
 			logger.info("create blast DB.")
-			os.system('makeblastdb -in {} -dbtype prot -out {} 2>&1 >> {}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),file_handler.baseFilename))
+			os.system('makeblastdb -in {} -dbtype prot -out {} {stdout}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),stdout=self.stdout))
 
 	def make_diamond_database(self):
 		"""Build DIAMOND database from a FASTA file."""
@@ -42,12 +43,12 @@ class Database(object):
 			pass
 		else:
 			logger.info("create diamond DB.")
-			os.system('diamond makedb --quiet --in {} --db {} 2>&1 >> {}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),file_handler.baseFilename))
+			os.system('diamond makedb --quiet --in {} --db {} {stdout}'.format(os.path.join(self.db,"proteindb.fsa"),os.path.join(self.db,"protein.db"),stdout=self.stdout))
 
 	def make_custom_db(self, in_file, out_file, db_type="nucl", program="blast"):
 		if program == 'blast':
-			os.system('makeblastdb -in {in_file}  -dbtype {db_type} -out {out_file} 2>&1 >> \
-				{log_file}'.format( in_file=in_file, db_type=db_type, out_file=out_file, log_file=file_handler.baseFilename))
+			os.system('makeblastdb -in {in_file}  -dbtype {db_type} -out {out_file} \
+				{stdout}'.format( in_file=in_file, db_type=db_type, out_file=out_file, stdout=self.stdout))
 		else:
 			exit("Only NCBI BLAST is supported.")
 

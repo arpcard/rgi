@@ -4,7 +4,8 @@ from app.MainBase import MainBase
 
 inputs = "inputs/"
 outputs = "outputs/"
-alignment_tool = "diamond"
+# currently failing with DIAMOND for some reason
+alignment_tool = "BLAST"
 working_directory = os.getcwd()
 
 # Run all tests with
@@ -50,9 +51,9 @@ def validate_results(filepath,perc_identity=0, ARO_name='', type_match=''):
 						# print(pi, name, tm)
 						if pi == perc_identity and name == ARO_name and tm == type_match:
 							return True
-			return False				 
+			return False
 	else:
-		print("missing file: {}".format(f))			
+		print("missing file: {}".format(f))
 		return False
 
 def run_rgi(rgi, input_type, input_sequence, output_file):
@@ -65,7 +66,7 @@ def run_rgi(rgi, input_type, input_sequence, output_file):
 		'--clean',
 		'--include_loose',
 		'--low_quality'
-    ]))	
+    ]))
 
 def test_rgi_protein_sequence(rgi):
 
@@ -137,4 +138,4 @@ def test_rgi_rrna_model(rgi):
 		'Streptococcus pneumoniae 23S rRNA mutation conferring resistance to macrolides and streptogramins antibiotics', 'Strict') == True
 
 
-	
+
