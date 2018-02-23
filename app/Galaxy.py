@@ -1,17 +1,18 @@
 from app.settings import *
 
 class Galaxy(object):
-	def __init__(self, database):
+	def __init__(self, database, debug=False):
 		self.database = database
+		self.debug = debug
+		if self.debug:
+			logger.setLevel(10)
 
 	def load_db_galaxy(self):
-		card_dir = self.database
+		logger.info("source_path: {}".format(self.database))
 
-		logger.info("source_path: ", card_dir)
-
-		if card_dir == None:
+		if self.database == None:
 			logger.error("no new card path")
-			exit("no new card path")
+			exit()
 
 		"""
 		verify that we have the following files at the specified location:
@@ -34,7 +35,7 @@ class Galaxy(object):
 		needed_files = ['card.json','proteindb.fsa','protein.db.dmnd','protein.db.phr','protein.db.pin','protein.db.psq']
 		found_files = []
 
-		files = os.listdir(card_dir)
+		files = os.listdir(self.database)
 
 		for f in files:
 			if not f.startswith('.'):
@@ -42,14 +43,14 @@ class Galaxy(object):
 
 		missing_files = list(set(needed_files) - set(found_files))
 
-		if len(missing_files) > 0 :
+		if len(missing_files) > 0:
 		 	logger.error("Error: missing database files {}".format(missing_files))
-		 	exit("Error: missing database files {}".format(missing_files))
+		 	exit()
 		
 		# Files found - move files into _data and _db directories
-		for f in os.listdir(card_dir):
+		for f in os.listdir(self.database):
 			if not f.startswith('.') and f in needed_files:
-				src_path = os.path.join(card_dir,f)
+				src_path = os.path.join(self.database,f)
 				dst_path = ""
 				if f in ['card.json']:
 					dst_path = os.path.join(data_path,f)

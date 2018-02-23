@@ -16,7 +16,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -43,6 +43,10 @@ class RGI(RGIBase):
 
 		self.working_directory = o_f_path
 		self.blast_results_xml_file = ''
+		self.debug = debug
+
+		if self.debug:
+			logger.setLevel(10)
 
 		super(RGIBase, self).__init__()
 
