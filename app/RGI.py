@@ -16,7 +16,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -43,6 +43,10 @@ class RGI(RGIBase):
 
 		self.working_directory = o_f_path
 		self.blast_results_xml_file = ''
+		self.debug = debug
+
+		if self.debug:
+			logger.setLevel(10)
 
 		super(RGIBase, self).__init__()
 
@@ -180,10 +184,10 @@ class RGI(RGIBase):
 		xml_file = os.path.join(self.working_directory,"{}.temp.blastRes.xml".format(file_name))
 
 		if self.aligner == "diamond":
-			diamond_obj = Diamond(self.input_sequence, xml_file, local_database=self.local_database)
+			diamond_obj = Diamond(self.input_sequence, xml_file, local_database=self.local_database, num_threads=self.threads)
 			diamond_obj.run()
 		else:
-			blast_obj = Blast(self.input_sequence, xml_file, local_database=self.local_database)
+			blast_obj = Blast(self.input_sequence, xml_file, local_database=self.local_database, num_threads=self.threads)
 			blast_obj.run()
 
 		self.set_xml_filepath(xml_file)
@@ -200,10 +204,10 @@ class RGI(RGIBase):
 			if os.stat(contig_fsa_file).st_size > 0:
 				logger.info("work with file {}".format(contig_fsa_file))
 				if self.aligner == "diamond":
-					diamond_obj = Diamond(contig_fsa_file, local_database=self.local_database)
+					diamond_obj = Diamond(contig_fsa_file, local_database=self.local_database, num_threads=self.threads)
 					diamond_obj.run()
 				else:
-					blast_obj = Blast(contig_fsa_file, local_database=self.local_database)
+					blast_obj = Blast(contig_fsa_file, local_database=self.local_database, num_threads=self.threads)
 					blast_obj.run()
 				self.set_xml_filepath(blast_results_xml_file)
 			else:

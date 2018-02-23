@@ -20,7 +20,7 @@ def clean():
     # clean data files
 	data_files = glob.glob(os.path.join(data_path,"*"))
 	for datafile in data_files:
-		if os.path.isfile(datafile) and os.path.basename(datafile) not in ["card.json", ".gitignore"]:
+		if os.path.isfile(datafile) and os.path.basename(datafile) not in ["card.json", ".gitignore","__init__.py"]:
 			logger.info("Remove: {}".format(datafile))
 			os.remove(datafile)
 	logger.info("Cleaned directory: {}".format(data_path))
@@ -28,7 +28,7 @@ def clean():
     # clean db files
 	db_files = glob.glob(os.path.join(path,"*"))
 	for dbfile in db_files:
-		if os.path.isfile(dbfile) and os.path.basename(dbfile) not in [".gitignore"]:
+		if os.path.isfile(dbfile) and os.path.basename(dbfile) not in [".gitignore","__init__.py"]:
 			logger.info("Remove: {}".format(dbfile))
 			os.remove(dbfile)
 	logger.info("Cleaned directory: {}".format(path))
@@ -46,6 +46,8 @@ def clean_local():
 
 #remove temporary file
 def main(args):
+	if args.debug:
+		logger.setLevel(10)
 	if args.local_database == True:
 		clean_local()
 	else:
@@ -56,6 +58,7 @@ def main(args):
 def create_parser():
 	parser = argparse.ArgumentParser(prog="rgi clean", description="{} - {} - Clean".format(APP_NAME, SOFTWARE_VERSION))
 	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
+	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
 	return parser
 
 def run():

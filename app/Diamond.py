@@ -2,7 +2,7 @@ from app.settings import *
 
 class Diamond(object):
 	"""Class to create Diamond object and align for protein and translated DNA searches."""
-	def __init__(self,input_file, output_file=None, program = 'blastp', num_threads=4, local_database=False ):
+	def __init__(self,input_file, output_file=None, program = 'blastp', num_threads=32, local_database=False ):
 		"""Creates Diamond object for running DIAMOND algorithm."""
 		self.input_file = input_file
 		if output_file == None:

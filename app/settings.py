@@ -44,14 +44,9 @@ logger.setLevel(level)
 # basic log
 formatter = logging.Formatter('%(levelname)s %(asctime)s : %(message)s')
 
-file_handler = logging.FileHandler(os.path.join(os.getcwd(),"app.log"))
-file_handler.setLevel(level)
-file_handler.setFormatter(formatter)
-
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
-logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 LOCAL_DATABASE = os.path.join(os.getcwd(), "localDB")

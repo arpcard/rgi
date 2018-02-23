@@ -1,5 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # run unit tests for RGI
+
+# exit on failure of any command
+set -e
 
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
