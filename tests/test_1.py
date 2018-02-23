@@ -4,8 +4,7 @@ from app.MainBase import MainBase
 
 inputs = "inputs/"
 outputs = "outputs/"
-# currently failing with DIAMOND for some reason
-alignment_tool = "BLAST"
+alignment_tool = "diamond"
 working_directory = os.getcwd()
 
 # Run all tests with
