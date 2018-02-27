@@ -10,7 +10,7 @@ import app.clean
 class MainBase(object):
     def __init__(self, api=False):
         # """
-        USAGE='''%(prog)s <command> [<args>] 
+        USAGE='''%(prog)s <command> [<args>]
             commands are:
                main     Runs rgi application
                tab      Creates a Tab-delimited from rgi results
@@ -21,7 +21,9 @@ class MainBase(object):
                database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
-        parser.add_argument('command', help='Subcommand to run')
+        parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
+                                                'clean', 'galaxy', 'database'],
+                                                help='Subcommand to run')
 
         if api == False:
             args=parser.parse_args(sys.argv[1:2])
@@ -39,18 +41,29 @@ class MainBase(object):
 
     def main_args(self):
         parser = argparse.ArgumentParser(prog="rgi main",description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
-        parser.add_argument('-i','--input_sequence', dest="input_sequence", default=None, required=True, \
+        parser.add_argument('-i','--input_sequence', dest="input_sequence", required=True, \
             help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
-        parser.add_argument('-o','--output_file', dest="output_file", default=None,required=True, help="output JSON file (default=None)")
-        parser.add_argument('-t','--input_type', dest="input_type", default="CONTIG", required=False, help='must be one of contig, protein, read (default: contig)')
-        parser.add_argument('-a','--alignment_tool', dest="aligner", default="BLAST", help = "specify alignment tool. Options are BLAST or DIAMOND  (default = BLAST)")
-        parser.add_argument('-n','--num_threads', dest="threads", default="32", help="number of threads (CPUs) to use in the BLAST search (default=32)")
+        parser.add_argument('-o','--output_file', dest="output_file", required=True, help="output folder and base filename")
+        parser.add_argument('-t','--input_type', dest="input_type",
+                type=str.lower,
+                default="contig", choices=['read','contig','protein', 'wgs'],
+                required=False,
+                help='specify data input type (default = contig)')
+        parser.add_argument('-a','--alignment_tool', dest="aligner",
+                type=str.upper,
+                choices = ['DIAMOND', 'BLAST'],
+                default="BLAST",
+                help = "specify alignment tool (default = BLAST)")
+        parser.add_argument('-n','--num_threads', dest="threads", type=int,
+                default=32, help="number of threads (CPUs) to use in the BLAST search (default=32)")
         parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
         parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes")
-        parser.add_argument('-d','--data', dest="data", default="NA", help = "specify a data-type, i.e. wgs, chromosome, plasmid, etc. (default = NA)")
+        parser.add_argument('-d','--data', dest="data", default="NA",
+                choices=['wgs', 'plasmid', 'chromosome', 'NA'],
+                help = "specify a data-type (default = NA)")
         parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
         return parser
 

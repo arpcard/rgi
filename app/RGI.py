@@ -78,12 +78,19 @@ class RGI(RGIBase):
 
 	def validate_inputs(self):
 		"""Validate inputs."""
-		# give warning if input_type is neither 'protein' nor 'dna' and then exit this program
-		if self.input_type != 'protein' and self.input_type != 'contig' and self.input_type != 'read':
-			logger.error("input_type must be one of protein, contig or read.")
+		if not os.path.exists(self.input_sequence):
+			logger.error("input file does not exist: {}".format(self.input_sequence))
 			exit()
-		if self.input_sequence == None:
-			logger.error("missing input file")
+
+                # could add validation for mutually exclusive options e.g.
+                # protein sequence for contig input_type etc
+
+                # otherwise you blow up your input when deleting intermediate
+                # files
+		if self.output == self.input_sequence and self.clean:
+			logger.error("output path same as input, must specify "
+						 "different path when cleaning to prevent "
+					     "accidental deletion of input files")
 			exit()
 
 		logger.info("{} => {}".format(self.input_sequence, filetype.guess(self.input_sequence)))
@@ -95,7 +102,7 @@ class RGI(RGIBase):
 		else:
 			logger.error(kind.extension)
 			logger.error(kind.mime)
-			logger.warning("Sorry, no supoprt for this format.")
+			logger.warning("Sorry, no support for this format.")
 			exit()
 
 	@staticmethod
@@ -104,7 +111,7 @@ class RGI(RGIBase):
 	        fasta = SeqIO.parse(handle, "fasta")
 	        return any(fasta)
 
-	
+
 	def __set_xml_filepath(self,fp):
 		"""Sets blast xml filepath."""
 		self.blast_results_xml_file = fp
@@ -144,7 +151,7 @@ class RGI(RGIBase):
 		files = glob.glob(os.path.join(directory, "*"))
 		for f in files:
 			if os.path.basename(self.input_sequence) + ".temp" in f and os.path.isfile(f):
-				self.remove_file(f)				
+				self.remove_file(f)
 
 	def remove_file(self, f):
 		"""Removes file."""
@@ -242,5 +249,5 @@ class RGI(RGIBase):
 
 
 
-			
+
 
