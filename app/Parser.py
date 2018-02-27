@@ -45,7 +45,9 @@ def main(j):
     dc = {'Perfect': {}, 'Strict': {}, 'Loose': {}}
     rm = {'Perfect': {}, 'Strict': {}, 'Loose': {}}
     gf = {'Perfect': {}, 'Strict': {}, 'Loose': {}}
+    genes = {'Perfect': {}, 'Strict': {}, 'Loose': {}}
     no_rm = {'Perfect': [], 'Strict': [], 'Loose': []}
+
     for orf, hsp in j.items():
         if isinstance(hsp, dict):
             best_hsp = max(hsp.keys(), key=(lambda key: hsp[key]['bit_score']))
@@ -56,6 +58,13 @@ def main(j):
                 for key in j[orf][best_hsp]['ARO_category']:
                     for c in criteria:
                         if j[orf][best_hsp]['type_match'] == c:
+
+                            if j[orf][best_hsp]['model_name'] not in genes[c]:
+                                genes[c][j[orf][best_hsp]['model_name']] = []
+                            for i in genes[c]:
+                                if j[orf][best_hsp]['model_name'] == i:
+                                    genes[c][i].append({orf: best_hsp})
+
                             if "category_aro_class_name" in j[orf][best_hsp]["ARO_category"][key]:
                                 if j[orf][best_hsp]["ARO_category"][key]["category_aro_class_name"] == "Drug Class":
                                     if j[orf][best_hsp]["ARO_category"][key]["category_aro_name"] not in dc[c]:
@@ -80,9 +89,10 @@ def main(j):
                                     for i in gf[c]:
                                         if j[orf][best_hsp]["ARO_category"][key]["category_aro_name"] == i:
                                             gf[c][i].append({orf: best_hsp})
-    return dc, rm, gf
+    return dc, rm, gf, genes
 
 def make_json(m,j,f,t,s):
+    finalgene = {'name': 'ARO', 'children': []}
     finaldrugclass = {'name': 'Drug Classes', 'children': []}
     finalresistmech = {'name': 'Resistance Mechanisms', 'children': []}
     finalgenefam = {'name': 'AMR Gene Family', 'children': []}
@@ -96,6 +106,7 @@ def make_json(m,j,f,t,s):
                     finaldrugclass['children'].append({'name': crit, 'children': []})
                     finalresistmech['children'].append({'name': crit, 'children': []})
                     finalgenefam['children'].append({'name': crit, 'children': []})
+                    finalgene['children'].append({'name': crit, 'children': []})
                 else:
                     pass
             elif crit == 'Loose' and f is False:
@@ -106,6 +117,8 @@ def make_json(m,j,f,t,s):
                     finalresistmech['children'].append(cdict)
                 elif dc == m[2]:
                     finalgenefam['children'].append(cdict)
+                elif dc == m[3]:
+                    finalgene['children'].append(cdict)
                 else:
                     print("Something has gone horribly wrong")
                 continue
@@ -186,6 +199,8 @@ def make_json(m,j,f,t,s):
                         finalresistmech['children'].append(cdict)
                     elif dc == m[2]:
                         finalgenefam['children'].append(cdict)
+                    elif dc == m[3]:
+                        finalgene['children'].append(cdict)
                     else:
                         print('Something has gone horribly wrong')
                         #print(cdict,'\n')
@@ -196,7 +211,7 @@ def make_json(m,j,f,t,s):
                                     #     pass
 
     else:
-        return finaldrugclass, finalresistmech, finalgenefam
+        return finaldrugclass, finalresistmech, finalgenefam, finalgene
 
 def create_parser():
     parser = argparse.ArgumentParser(prog="rgi parser",description='Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.')
@@ -218,6 +233,9 @@ def write_output(results, counter, output):
 
     with open(os.path.join(os.getcwd(), output + '-count-hits.json'), 'w') as o4:
         json.dump(counter, o4)
+
+    with open(os.path.join(os.getcwd(), output + '-tree-og.json'), 'w') as o5:
+        json.dump(results[3], o5)
 
 def calc_number_of_hits(m,f):
     perfect_list = []

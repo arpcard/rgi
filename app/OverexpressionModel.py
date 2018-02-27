@@ -79,7 +79,6 @@ class Overexpression(BaseModel):
 
 						init = 0
 						snp = self.extract_nth_bar(alignTitle, 2)
-						snp = snp
 						snp = snp.split(',')
 						snpL = []
 						snpdictlist = []
