@@ -31,7 +31,7 @@ class ORF(object):
 		_min, _max = self.min_max_sequence_length()
 		logger.info("minimum sequence length: {}, maximun sequence length {}".format(_min,_max))
 
-		if self.low_quality == True:
+		if self.low_quality == True or _min < 20000:
 			quality = "-p meta"
 
 		filename = os.path.basename(self.input_file)
