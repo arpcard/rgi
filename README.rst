@@ -21,6 +21,7 @@ Table of Contents
 - `Run RGI`_
 - `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
+- `Run RGI from docker`_
 - `Support & Bug Reports`_
 
 
