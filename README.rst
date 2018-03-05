@@ -188,9 +188,6 @@ Run RGI from docker
 
 - First you you must either pull the docker container from dockerhub (latest CARD version automatically installed)
 
-  // this should be changed to arpcard/rgi if you make a dockerhub account for arpcard and enable automated builds 
-  // https://docs.docker.com/docker-hub/builds/
-
   .. code-block:: sh
 
         docker pull finlaymaguire/rgi
@@ -209,9 +206,9 @@ Run RGI from docker
 
         docker run -i -v $PWD/rgi_data:/data -t arpcard/rgi bash
 
-- Or you can directly run the container as an executable with `$RGI_ARGS` being any of the commands described above.
- Remember paths to input and outputs files are relative to the container (i.e. `/data/` if mounted as above. 
-  ..code-block:: sh
+- Or you can directly run the container as an executable with `$RGI_ARGS` being any of the commands described above. Remember paths to input and outputs files are relative to the container (i.e. `/data/` if mounted as above).
+
+  .. code-block:: sh
         
         docker run -v $PWD/rgi_data:/data arpcard/rgi $RGI_ARGS
        
