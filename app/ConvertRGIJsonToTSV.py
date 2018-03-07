@@ -79,6 +79,7 @@ class ConvertJsonToTSV(object):
                                 "Predicted_DNA",
                                 "Predicted_Protein",
                                 "CARD_Protein_Sequence",
+                                "Percentage Length of Reference Sequence",
                                 "ID",
                                 "Model_ID"])
 
@@ -171,6 +172,7 @@ class ConvertJsonToTSV(object):
 								rgi_data[hsp][ordered[0]]["orf_dna_sequence"],
 								rgi_data[hsp][ordered[0]]["orf_prot_sequence"],
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
+								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"]
 								]
@@ -229,6 +231,7 @@ class ConvertJsonToTSV(object):
 								"",
 								rgi_data[hsp][ordered[0]]["orf_prot_sequence"],
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
+								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"]
 								]
