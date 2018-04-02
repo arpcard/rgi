@@ -5,7 +5,7 @@ FROM phusion/baseimage
 LABEL base.image="ubuntu"
 LABEL version="1"
 LABEL software="RGI"
-LABEL software.version="4.0.2"
+LABEL software.version="4.0.3"
 LABEL description="Tool to identify resistance genes using the CARD database"
 LABEL website="https://card.mcmaster.ca/"
 LABEL documentation="https://github.com/arpcard/rgi/blob/master/README.rst"
