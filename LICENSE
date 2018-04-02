@@ -1,1 +1,104 @@
-Use or reproduction of these materials, in whole or in part, by any non-academic organization whether or not for non-commercial (including research) or commercial purposes is prohibited, except with written permission of McMaster University. Commercial uses are offered only pursuant to a written license and user fee. To obtain permission and begin the licensing process, see http://card.mcmaster.ca/about.
+1. About the CARD, ARO, and RGI
+
+The Comprehensive Antibiotic Resistance Database ("CARD") provides data, models, and 
+algorithms relating to the molecular basis of antimicrobial resistance. The CARD provides 
+curated reference sequences and SNPs organized via the Antibiotic Resistance Ontology 
+("ARO"). These data can be browsed on the website or downloaded in a number of formats. 
+These data are additionally associated with detection models, in the form of curated 
+homology cut-offs and SNP maps, for prediction of resistome from molecular sequences. 
+These models can be downloaded or can be used for analysis of genome sequences using the 
+Resistance Gene Identifier ("RGI"), either online or as a stand-alone tool.
+
+The CARD was designed and developed by the laboratories of Drs. Gerry Wright and Andrew G. 
+McArthur of McMaster University's Department of Biochemistry & Biomedical Sciences 
+(Hamilton, Ontario, Canada) with the help of a global team of collaborators. It is built 
+entirely using open source software and tools. This research has been supported by funds 
+from the Canadian Foundation for Innovation, Canadian Institutes of Health Research, 
+Natural Sciences and Engineering Research Council of Canada, Medical Research Council 
+(UK), and Ontario Research Fund, as well as a Cisco Research Chair in Bioinformatics 
+supported by Cisco Systems Canada, Inc. (Dr. McArthur), Canada Research Chair (Dr. 
+Wright), and Killam Research Fellowship (Dr. Wright).
+
+2. Trade Marks and Official Marks
+
+All trade marks used or displayed on the CARD (card.mcmaster.ca) website are registered or 
+unregistered trade  marks or official marks of McMaster University. Nothing on the website 
+should be interpreted to grant any license to use any trade mark or official mark without 
+the express written permission of McMaster University.
+
+3. Copyright and Discliamer
+
+All of the materials on the website, including but not limited to the CARD, the RGI, and 
+the underlying HTML, text, illustration, designs, icons, audio clips, video clips, 
+documents, products, software and all other content (the "Materials") are protected by 
+copyright and are either owned by McMaster University, provided by the creator for free 
+use by the scientific community, or McMaster University has obtained a license to use the 
+Materials for their website. Except as noted in the Terms of Use below, specifically 
+sections 4 and 5 below, none of the Materials may be copied, reproduced, distributed, 
+republished, downloaded, displayed, posted or transmitted in any form or by any means, 
+without the prior written consent of McMaster University, or the original creator, where 
+applicable. 
+
+The only exception is the distribution of the Resistance Gene Identifier (RGI) software on
+the Conda open source, cross-platform, language-agnostic package manager and environment 
+management system (https://conda.io/). Conda users are still required to abid by the Terms 
+of Use listed, specifically sections 4 and 5 below.
+
+To obtain permission to reproduce material on the CARD website, please send a request to:
+
+McMaster University
+c/o McMaster Industry Liaison Office
+305 – 175 Longwood Rd South
+Hamilton, Ontario L8P 0A1
+Attention: Copyright Advisor
+E: milodsk@mcmaster.ca
+
+4. Terms of Use for Non-Commercial, Research or Academic Reproduction
+
+All information and the Materials at CARD has been posted to provide the public with 
+direct access to information about Antibiotic Resistance. The information and the 
+Materials have been posted with the intent that it be readily available for personal and 
+public non-commercial, research or academic use by individuals at academic institutions 
+only and except where otherwise prohibited, may be reproduced, in part or in whole and by 
+any means, without charge or further permission from McMaster University. Any other 
+organization must seek to obtain a license described in section 5 below.
+
+We only ask that:
+
+4.1 The Materials not be modified and used "as is"
+
+4.2 Users exercise due diligence in ensuring the accuracy of the Materials
+
+4.3 McMaster University be identified as the source of the Materials
+
+4.4 The reproduction is not represented as an official version of the Materials 
+reproduced, nor as having been made in affiliation with or without the endorsement of 
+McMaster University
+
+5. Terms of Use for Commercial or Non-Academic Organizations
+
+Use or reproduction of Materials on the site, in whole or in part, by any non-academic 
+organization whether or not for non-commercial (including research) or commercial purposes 
+is prohibited, except with written permission of McMaster University. Commercial uses of 
+the Materials on the site are offered only pursuant to a written license and user fee. To 
+obtain permission and begin the licensing process, please contact McMaster University 
+using the address in section 3.
+
+6. Disclaimer
+
+The Materials on this site are provided "as is" without warranties or conditions of any 
+kind either expressed or implied. To the fullest extent possible under applicable law, 
+McMaster University disclaims all warranties and conditions, expressed or implied, 
+including but not limited to, implied warranties or conditions of merchantability and 
+fitness for a particular purpose, non-infringement or other violation of rights. McMaster 
+University does not warrant or make any other representations regarding the use, accuracy,
+timelines, applicability, performance, security, availability or reliability of this 
+website or any of the sites linked to this website, or the results from the use of this
+website or any sites linked to this website, or otherwise respecting the Materials on this 
+website or any sites linked to this website.
+
+7. Limitation of Liability
+
+Under no circumstances, including but not limited to negligence, shall McMaster University 
+be liable for any direct, indirect, special, punitive, incidental or consequential damages 
+arising out of the use of, or the inability to use, the website or the Materials.
