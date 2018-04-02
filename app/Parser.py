@@ -164,6 +164,7 @@ def make_json(m,j,f,t,s):
                                     ndict['CARD_Protein_Sequence'] = j[orf][hsp]['sequence_from_broadstreet']
                                     ndict['match'] = j[orf][hsp]['match']
                                     ndict['query'] = j[orf][hsp]['query']
+                                    ndict['sbjct'] = j[orf][hsp]['sequence_from_db']
                                     ndict['LABEL'] = orf
                                     ndict['ID'] = list(hit.values())[0]
                                     ndict['Model_ID'] = j[orf][hsp]['model_id']
