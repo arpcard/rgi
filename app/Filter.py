@@ -14,7 +14,7 @@ import multiprocessing
 class Filter(BaseModel):
 
 	"""This class takes in blast xml file and card.json file and producess perfect strict paradigm for RGI """
-	def __init__(self, input_type, loose, input_sequence, xml_file, card_json, input_file, output_file, rgi_obj=None):
+	def __init__(self, input_type, loose, input_sequence, xml_file, card_json, input_file, output_file, num_threads ,rgi_obj=None):
 		self.input_type = input_type
 		self.xml_file = xml_file
 		self.card_json = card_json
@@ -24,6 +24,7 @@ class Filter(BaseModel):
 		self.blast_results = {}
 		self.rna_results = {}
 		self.rgi_obj = rgi_obj
+		self.num_threads = num_threads
 		self.working_directory = rgi_obj.working_directory
 
 		if output_file == None:
@@ -146,7 +147,7 @@ class Filter(BaseModel):
 		logger.info("blast_reference_to_db_query")
 		# blast all rrna db against query db
 		rrna_db_fasta = os.path.join(self.rgi_obj.db, "rnadb.fsa")
-		blast_obj = Blast(rrna_db_fasta, program='blastn', output_file=xml_file, local_database=self.rgi_obj.local_database)
+		blast_obj = Blast(rrna_db_fasta, program='blastn', output_file=xml_file, local_database=self.rgi_obj.local_database, num_threads=self.num_threads)
 		blast_obj.run_custom(db)
 
 	def format_fasta(self):
