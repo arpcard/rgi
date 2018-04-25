@@ -104,6 +104,9 @@ class RGI(RGIBase):
 			logger.error(kind.mime)
 			logger.warning("Sorry, no support for this format.")
 			exit()
+		if self.threads > os.cpu_count():
+			logger.error("Argument num_threads illegal value, expected (>=1 and =<{}):  given `{}`)".format(os.cpu_count(), self.threads))
+			exit()
 
 	@staticmethod
 	def is_fasta(filename):
@@ -241,7 +244,7 @@ class RGI(RGIBase):
 		logger.info("run filter")
 		"""Filter each detection models and predict resistome(s)."""
 		filter_obj = Filter(self.input_type,  self.loose, self.input_sequence, self.blast_results_xml_file, \
-			os.path.join(self.dp,"card.json"),os.path.basename(self.input_sequence) ,self.output_file, self)
+			os.path.join(self.dp,"card.json"),os.path.basename(self.input_sequence) ,self.output_file,self.threads, self)
 		filter_obj.run()
 
 	def output(self): pass

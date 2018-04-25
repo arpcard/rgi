@@ -10,6 +10,7 @@ import app.clean
 class MainBase(object):
     def __init__(self, api=False):
         # """
+        self.cpu_count = os.cpu_count()
         USAGE='''%(prog)s <command> [<args>]
             commands are:
                main     Runs rgi application
@@ -55,7 +56,7 @@ class MainBase(object):
                 default="BLAST",
                 help = "specify alignment tool (default = BLAST)")
         parser.add_argument('-n','--num_threads', dest="threads", type=int,
-                default=32, help="number of threads (CPUs) to use in the BLAST search (default=32)")
+                default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
         parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
