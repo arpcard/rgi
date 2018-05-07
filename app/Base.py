@@ -258,11 +258,14 @@ class BaseModel(object):
         nudged = False
         # check if there are any loose hits that might be strict
         for i in loose:
+            # half_pass_bitscore = int(float(loose[i]["pass_bitscore"])/2)
+            # if 95 <= int(loose[i]["perc_identity"]) <= 100 and loose[i]["bit_score"] > half_pass_bitscore:
             if 95 <= int(loose[i]["perc_identity"]) <= 100:
                 # add to strict 
                 loose[i]["type_match"] = "Strict"
                 nudged = True
-                # print("Nudged Loose -> Strict ... HSP: {} | Model Name: {} | Percent Id: {}%".format(i,loose[i]["model_name"], loose[i]["perc_identity"]))
+                # print("Nudged Loose -> Strict ... HSP: {} | model_name: {} | perc_identity: {}% |  bit_score : {} | pass_bitscore:  {} | half_pass_bitscore : {}"\
+                #     .format(i,loose[i]["model_name"], loose[i]["perc_identity"], loose[i]["bit_score"], loose[i]["pass_bitscore"], half_pass_bitscore))
         return nudged, loose
 
 
