@@ -149,6 +149,14 @@ class ConvertJsonToTSV(object):
 									other_snps = "n/a"
 								if not other_snps:
 									other_snps = "n/a"
+
+								if rgi_data[hsp][hit]["model_type_id"] in [40295]:
+									percentage_length_reference_sequence = format(((rgi_data[hsp][ordered[0]]["orf_end"] - rgi_data[hsp][ordered[0]]["orf_start"]) /\
+										len(rgi_data[hsp][ordered[0]]["dna_sequence_from_broadstreet"]))*100, '.2f')
+								else:
+									percentage_length_reference_sequence = format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) /\
+										len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f')
+
 								match_dict[hsp] = [hsp,
 								rgi_data[hsp][ordered[0]]["orf_from"],
 								rgi_data[hsp][ordered[0]]["orf_start"],
@@ -172,7 +180,8 @@ class ConvertJsonToTSV(object):
 								rgi_data[hsp][ordered[0]]["orf_dna_sequence"],
 								rgi_data[hsp][ordered[0]]["orf_prot_sequence"],
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
-								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
+								# length of hsps / length reference
+								percentage_length_reference_sequence,
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"]
 								]
@@ -242,31 +251,28 @@ class ConvertJsonToTSV(object):
 	def manual():
 		h = {}
 		h["ORF_ID"] = "Open Reading Frame identifier (internal to RGI)"
-		h["CONTIG"] = "Source Sequence"
-		h["START"] = "Start co-ordinate of ORF"
-		h["STOP"] = "End co-ordinate of ORF"
-		h["ORIENTATION"] = "Strand of ORF"
-		h["CUT_OFF"] = "RGI Detection Paradigm"
-		h["PASS_EVALUE"] = "STRICT detection model Expectation value cut-off"
-		h["Best_Hit_evalue"] = "Expectation value of match to top hit in CARD"
+		h["Contig"] = "Source Sequence"
+		h["Start"] = "Start co-ordinate of ORF"
+		h["Stop"] = "End co-ordinate of ORF"
+		h["Orientation"] = "Strand of ORF"
+		h["Cut_Off"] = "RGI Detection Paradigm"
+		h["Pass_Bitscore"] = "STRICT detection model bitscore value cut-off"
+		h["Best_Hit_Bitscore"] = "bitscore value of match to top hit in CARD"
 		h["Best_Hit_ARO"] = "ARO term of top hit in CARD"
 		h["Best_Identities"] = "Percent identity of match to top hit in CARD"
 		h["ARO"] = "ARO accession of top hit in CARD"
-		h["ARO_name"] = "ARO term of top hit in CARD"
 		h["Model_type"] = "CARD detection model type"
 		h["SNPs_in_Best_Hit_ARO"] = "Mutations observed in the ARO term of top hit in CARD (if applicable)"
 		h["Other_SNPs"] = "Mutations observed in ARO terms of other hits indicated by model id (if applicable)"
-		h["Best_Hit_ARO_category"] = "top hit ARO Categorization"
-		h["ARO_category"] = "ARO Categorization"
-		h["PASS_bitscore"] = "STRICT detection model bitscore value cut-off"
-		h["Best_Hit_bitscore"] = "Bit score of match to top hit in CARD"
-		h["bit_score"] = "Bitscore of match to top hit in CARD"
+		h["Drug Class"] = "ARO Categorization"
+		h["Resistance Mechanism"] = "ARO Categorization"
+		h["AMR Gene Family"] = "ARO Categorization"
 		h["Predicted_DNA"] = "ORF predicted nucleotide sequence"
 		h["Predicted_Protein"] = "ORF predicted protein sequence"
 		h["CARD_Protein_Sequence"] = "Protein sequence of top hit in CARD"
-		h["LABEL"] = "ORF label (internal to RGI)"
+		h["Percentage Length of Reference Sequence"] = "Percentage Length of Reference Sequence"
 		h["ID"] = "HSP identifier (internal to RGI)"
-		h["Model_id"] = "CARD detection model id"
+		h["Model_ID"] = "CARD detection model id"
 
 		print ("\n")
 		print ("COLUMN","\t\t\t","HELP_MESSAGE")
