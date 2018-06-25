@@ -97,8 +97,9 @@ class RGI(RGIBase):
 		kind = filetype.guess(self.input_sequence)
 
 		if kind is None:
-			if self.is_fasta(self.input_sequence):
-				logger.info("Fasta")
+			if self.is_fasta(self.input_sequence) == False:
+				logger.error("invalid fasta")
+				exit()
 		else:
 			logger.error(kind.extension)
 			logger.error(kind.mime)
@@ -110,9 +111,14 @@ class RGI(RGIBase):
 
 	@staticmethod
 	def is_fasta(filename):
-	    with open(filename, "r") as handle:
-	        fasta = SeqIO.parse(handle, "fasta")
-	        return any(fasta)
+		"""Checks for valid fasta format."""
+		with open(filename, "r") as handle:
+			fasta = SeqIO.parse(handle, "fasta")
+			# check each record in the file
+			for record in fasta:
+				if any(record.id) == False or any(record.seq) == False:
+					return False
+			return True
 
 
 	def __set_xml_filepath(self,fp):
