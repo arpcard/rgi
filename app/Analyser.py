@@ -1,4 +1,4 @@
-from settings import *
+from app.settings import *
 
 class Analyser(object):
 	"""Class to find analyse fasta files."""
