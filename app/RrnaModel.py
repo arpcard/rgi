@@ -100,10 +100,10 @@ class Rrna(BaseModel):
 
 								if hsp.query_start < pos and (hsp.query_start + real_query_length) > pos:
 									# Report ONLY if the SNPs are present
-									qry = pos - hsp.query_start + self.find_num_dash(hsp.query, (pos-hsp.query_start))
-									sbj = pos - hsp.query_start + self.find_num_dash(hsp.query, (pos-hsp.query_start))
+									qry = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
+									sbj = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 
-									if hsp.query[qry] == ori and hsp.sbjct[sbj] == chan:		
+									if hsp.sbjct[sbj] == chan:		
 										if hsp.bits >= true_pass_evalue:
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
