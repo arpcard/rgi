@@ -183,8 +183,11 @@ class Overexpression(BaseModel):
 									if hsp.sbjct_start < int(pos) and (hsp.sbjct_start + realQueryLength) > int(pos):
 										"""Checks if there is a mutation."""
 										logger.info("Mutation check")
-										if hsp.query[int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos)-hsp.sbjct_start))] == chan and \
-											hsp.sbjct[int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos)-hsp.sbjct_start))] == ori:
+
+										qry = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
+										sbj = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
+
+										if hsp.query[qry] == chan:
 											logger.info("Mutation detected")
 											snp_counter+=1
 											sinsidedict = {}

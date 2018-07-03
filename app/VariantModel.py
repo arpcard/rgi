@@ -77,7 +77,7 @@ class Variant(BaseModel):
 						except ValueError:
 							true_pass_evalue = float(pass_value[0:pass_value.find(' ')])
 
-						# logger.info("runBlast => [info] | model_type_id = " + str(align_title))				
+						# logger.info("runBlast | model_type_id = " + str(align_title))				
 						init = 0
 						evalue_snp = self.extract_nth_bar(align_title, 2)
 						snpl = []
@@ -112,15 +112,18 @@ class Variant(BaseModel):
 									if submitted_proteins_dict:
 										orf_protein_sequence = str(submitted_proteins_dict[orf_info.decode().split(" ")[0]])
 										
-									logger.info("runBlast => [info] | Model:"+str(model_id) + " pos:" +str(pos) +" | "+str(hsp.query[pos - hsp.sbjct_start + \
-												self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND " + str(hsp.sbjct[pos - hsp.sbjct_start \
-												+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
+									# logger.info("runBlast | Model:"+str(model_id) + " pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
+									# 			self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
+									# 			+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
 
 									# Report ONLY if the SNPs are present
-									qry = pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))
-									sbj = pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))
+									qry = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
+									sbj = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
-									if hsp.query[qry] == chan and hsp.sbjct[sbj] == ori:			
+									if hsp.query[qry] == chan:	
+										logger.info("runBlast | Model:"+str(model_id) + " pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
+												self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
+												+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))	
 										if hsp.bits >= true_pass_evalue:		
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
