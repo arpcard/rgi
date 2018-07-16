@@ -6,6 +6,8 @@ from app.Galaxy import Galaxy
 import app.Parser
 import app.load
 import app.clean
+from app.BWT import BWT
+from app.Heatmap import Heatmap
 
 class MainBase(object):
     def __init__(self, api=False):
@@ -19,11 +21,13 @@ class MainBase(object):
                load     Loads CARD database json file
                clean    Removes BLAST databases and temporary files
                galaxy   Galaxy project wrapper
+               bwt      Metagenomics resistomes
+               heatmap  heatmap for multiple analysis
                database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
-                                                'clean', 'galaxy', 'database'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'heatmap'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -109,6 +113,47 @@ class MainBase(object):
 
     def load_run(self, args):
         app.load.main(args)
+    
+    def bwt(self):
+        parser = self.bwt_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.bwt_run(args)
+
+    def bwt_args(self):
+        parser = argparse.ArgumentParser(prog="rgi bwt",description='Aligns metagenomic reads to CARD and wildCARD reference using bowtie or bwa and provide reports.')
+        parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmied)")
+        parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmied)")
+        parser.add_argument('-a', '--aligner', default="bowtie2", choices=['bowtie2','bwa'], help="aligner")
+        parser.add_argument('-d', '--database', required=True, help="reference fasta (combined card and wildcard data")
+        parser.add_argument('-j', '--card_json', required=True, help="json file (card.json)")
+        parser.add_argument('-i', '--wildcard_index', required=True, help="wildcard tab-delimeted index file (index-for-model-sequences.txt)")
+        parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
+        parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        return parser
+
+    def bwt_run(self, args):
+        obj = BWT(args.aligner, args.card_json, args.database, args.read_one, args.read_two, args.threads, args.wildcard_index, args.output_file, args.debug)
+        obj.run()
+
+    def heatmap(self):
+        parser = self.heatmap_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.heatmap_run(args)
+
+    def heatmap_args(self):
+        parser = argparse.ArgumentParser(prog="rgi heatmap",description='Creates a heatmap when given multiple RGI results.')
+        parser.add_argument('-i', '--input', dest="input", required=True, help="Directory containing the RGI .json files (REQUIRED)")
+        parser.add_argument('-category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"), help="The option to organize models based on a category (OPTIONAL)")
+        parser.add_argument('-frequency', dest="frequency", choices=("on", "off"), default="off", help="Represent samples based on resistance profile. Default = off (OPTIONAL)")
+        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output .eps file (OPTIONAL). The number of files run will automatically be appended to the end of the file name.")
+        parser.add_argument('-cluster', dest="cluster", choices=("samples", "genes", "both"),help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples) (OPTIONAL)")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        return parser
+
+    def heatmap_run(self, args):
+        obj = Heatmap(args.input, args.classification, args.frequency, args.output, args.cluster, args.debug)
+        obj.run()
 
     def clean(self):
         parser = self.clean_args()
