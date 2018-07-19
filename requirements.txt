@@ -3,3 +3,5 @@ filetype>=1.0.0
 pytest>=3.0.0
 mock>=2.0.0
 pandas>=0.15.0
+matplotlib>=2.1.2
+seaborn>=0.8.1
