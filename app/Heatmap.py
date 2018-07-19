@@ -7,8 +7,8 @@ import pandas as pd
 from collections import defaultdict, Counter
 from argparse import ArgumentParser
 from textwrap import wrap
-# import matplotlib # this needs to be added to run on galaxylab
-# matplotlib.use('Agg') # this needs to be added to run on galaxylab
+import matplotlib # this needs to be added to run on galaxylab
+matplotlib.use('Agg') # this needs to be added to run on galaxylab
 from matplotlib import gridspec
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -224,11 +224,11 @@ class Heatmap(object):
             ax1.plot([1,1], [ymin, ymax], lw = 10)
             ax1.text(0.5, (ymin + (ymax - ymin)/2), cat_list[i], fontsize='xx-large', horizontalalignment="center")
 
-        def get_axis_size(self, fig, ax):
-            """Retunrs the width and length of a subplot axes"""
-            bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-            width, height = bbox.width, bbox.height
-            return width, height
+    def get_axis_size(self, fig, ax):
+        """Retunrs the width and length of a subplot axes"""
+        bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+        width, height = bbox.width, bbox.height
+        return width, height
 
 
     def run(self):
@@ -540,14 +540,14 @@ class Heatmap(object):
                     if self.get_axis_size(fig,ax0)[0] > (self.get_axis_size(fig,ax0)[1])/2:
                         # print('hehe')
                         break
-                    # if get_axis_size(fig,ax0)[1] > 100:
-                    #     fig_length = fig_length/2
-                    #     figsize = (fig_width, fig_length)
-                    #     desired_width = (get_axis_size(fig,ax0)[1])/2
-                    #     figsize = (desired_width, fig_length)
-                    #     fig = plt.figure(figsize = figsize)
-                    #     ax0,ax1,gs = create_plot('c', 4)
-                    #     print('eeeee')
+                    if self.get_axis_size(fig,ax0)[1] > 100:
+                        fig_length = fig_length/2
+                        figsize = (fig_width, fig_length)
+                        desired_width = (self.get_axis_size(fig,ax0)[1])/2
+                        figsize = (desired_width, fig_length)
+                        fig = plt.figure(figsize = figsize)
+                        ax0,ax1,gs = self.create_plot('c', 4)
+                        print('eeeee')
                     if self.get_axis_size(fig,ax0)[0] < desired_width:
                         fig_length = fig_length/2
                         figsize = (fig_width, fig_length)
@@ -555,6 +555,7 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
+                        break
 
                 # Calculate correct categories dimensions to use
                 ratio_to_use = math.floor(float(self.get_axis_size(fig,ax0)[0])/8)
