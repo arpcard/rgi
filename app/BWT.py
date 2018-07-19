@@ -339,12 +339,18 @@ class BWT(object):
 			<filename>.seqs.txt
 		"""
 		summary = []
+		variants = {}
+		models = {}
+		
 		logger.info("get_reads_count ...")
 		reads = self.get_reads_count()
 		logger.info("get_model_details ...")
 		models = self.get_model_details()
-		logger.info("get_variant_details ...")
-		variants = self.get_variant_details()
+
+		if self.wildcard_index is not None:
+			logger.info("get_variant_details ...")
+			variants = self.get_variant_details()
+
 		mapq_average = 0
 
 		with open(self.output_tab_coverage_all_positions_summary, 'r') as csvfile:
@@ -382,36 +388,37 @@ class BWT(object):
 						database = "Resistomes & Variants"
 						prevalence_sequence_id = row[0].split("|")[0].split(":")[1]
 
-					if model_id in variants.keys():
-						for s in variants[model_id]:
-							if s.isdigit() == False:
-								observed_in_genomes = "NO"
-								observed_in_plasmids = "NO"
-								for d in variants[model_id][s]:
-									if d not in observed_data_types:
-										observed_data_types.append(d)
-								if s not in observed_in_pathogens:
-									observed_in_pathogens.append(s.replace('"', ""))
+					if variants:
+						if model_id in variants.keys():
+							for s in variants[model_id]:
+								if s.isdigit() == False:
+									observed_in_genomes = "NO"
+									observed_in_plasmids = "NO"
+									for d in variants[model_id][s]:
+										if d not in observed_data_types:
+											observed_data_types.append(d)
+									if s not in observed_in_pathogens:
+										observed_in_pathogens.append(s.replace('"', ""))
 
-						if database != "CARD":
-							if "ncbi_chromosome" in observed_data_types:
-								observed_in_genomes = "YES"
-							if "ncbi_plasmid" in observed_data_types:
-								observed_in_plasmids = "YES"
+							if database != "CARD":
+								if "ncbi_chromosome" in observed_data_types:
+									observed_in_genomes = "YES"
+								if "ncbi_plasmid" in observed_data_types:
+									observed_in_plasmids = "YES"
 
-							try:
-								reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
-									rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
-									percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
-								)
-							except Exception as e:
-								reference_allele_source = ""
-								logger.warning("missing key with prev_id {} , {}".format(prevalence_sequence_id, e))
+								try:
+									reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
+										rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
+										percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
+									)
+								except Exception as e:
+									reference_allele_source = ""
+									logger.warning("missing key with prev_id {} , {}".format(prevalence_sequence_id, e))
 
-					else:
-						# provide info from model
-						# logger.warning("model not in prev: {}".format(model_id))
-						observed_in_pathogens = models[model_id]["taxon"]
+						else:
+							# provide info from model
+							# logger.warning("model not in prev: {}".format(model_id))
+							observed_in_pathogens = models[model_id]["taxon"]
 					
 					# check all clases categories
 					if "AMR Gene Family" not in resistomes.keys():
@@ -708,6 +715,7 @@ class BWT(object):
 
 	def run(self):
 		"""
+		Align reads to reference genomes and report
 		"""
 		# print args
 		logger.info(json.dumps(self.__dict__, indent=2))

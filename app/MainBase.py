@@ -126,7 +126,7 @@ class MainBase(object):
         parser.add_argument('-a', '--aligner', default="bowtie2", choices=['bowtie2','bwa'], help="aligner")
         parser.add_argument('-d', '--database', required=True, help="reference fasta (combined card and wildcard data")
         parser.add_argument('-j', '--card_json', required=True, help="json file (card.json)")
-        parser.add_argument('-i', '--wildcard_index', required=True, help="wildcard tab-delimeted index file (index-for-model-sequences.txt)")
+        parser.add_argument('-i', '--wildcard_index', required=False, help="wildcard tab-delimeted index file (index-for-model-sequences.txt)")
         parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
