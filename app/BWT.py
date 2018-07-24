@@ -372,110 +372,114 @@ class BWT(object):
 
 		mapq_average = 0
 
-		with open(self.output_tab_coverage_all_positions_summary, 'r') as csvfile:
-			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
-			for row in reader:
-				if row[0] in reads.keys():
-					logger.info(row[0])
-					model_id = row[0].split("|")[1].split(":")[1]
-					cvterm_name = models[model_id]["model_name"]
-					model_type = models[model_id]["model_type"]
-					resistomes = models[model_id]["categories"]
-					alignments = self.get_alignments(row[0])
-					mapq_l = []
-					mate_pair = []
-					for a in alignments:
-						mapq_l.append(int(a["mapq"]))
-						if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
-							mate_pair.append(a["mrnm"])
-							# if cvterm_name.replace(" ", "_") in row[0]:
-							# 	logger.info("=> {},{}".format(cvterm_name.replace(" ", "_"), row[0]))
+		for alignment_hit in reads.keys():
+			logger.info(alignment_hit)
+			# print(reads[alignment_hit])
+			# exit()
+			model_id = alignment_hit.split("|")[1].split(":")[1]
+			cvterm_name = models[model_id]["model_name"]
+			model_type = models[model_id]["model_type"]
+			resistomes = models[model_id]["categories"]
+			alignments = self.get_alignments(alignment_hit)
+			mapq_l = []
+			mate_pair = []
+			for a in alignments:
+				mapq_l.append(int(a["mapq"]))
+				if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
+					mate_pair.append(a["mrnm"])
+					# if cvterm_name.replace(" ", "_") in alignment_hit:
+					# 	logger.info("=> {},{}".format(cvterm_name.replace(" ", "_"), alignment_hit))
 
-					if len(mapq_l) > 0:
-						mapq_average = sum(mapq_l)/len(mapq_l)
+			if len(mapq_l) > 0:
+				mapq_average = sum(mapq_l)/len(mapq_l)
 
-					observed_in_genomes = "no data"
-					observed_in_plasmids = "no data"
-					prevalence_sequence_id = ""
-					observed_data_types = []
-					# Genus and species level only (only get first two words)
-					observed_in_pathogens = []
-					database = "CARD"
-					reference_allele_source = "CARD curation"
+			observed_in_genomes = "no data"
+			observed_in_plasmids = "no data"
+			prevalence_sequence_id = ""
+			observed_data_types = []
+			# Genus and species level only (only get first two words)
+			observed_in_pathogens = []
+			database = "CARD"
+			reference_allele_source = "CARD curation"
 
-					if "Prevalence_Sequence_ID" in row[0]:
-						database = "Resistomes & Variants"
-						prevalence_sequence_id = row[0].split("|")[0].split(":")[1]
+			if "Prevalence_Sequence_ID" in alignment_hit:
+				database = "Resistomes & Variants"
+				prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[1]
 
-					if variants:
-						if model_id in variants.keys():
-							for s in variants[model_id]:
-								if s.isdigit() == False:
-									observed_in_genomes = "NO"
-									observed_in_plasmids = "NO"
-									for d in variants[model_id][s]:
-										if d not in observed_data_types:
-											observed_data_types.append(d)
-									if s not in observed_in_pathogens:
-										observed_in_pathogens.append(s.replace('"', ""))
+			if variants:
+				if model_id in variants.keys():
+					for s in variants[model_id]:
+						if s.isdigit() == False:
+							observed_in_genomes = "NO"
+							observed_in_plasmids = "NO"
+							for d in variants[model_id][s]:
+								if d not in observed_data_types:
+									observed_data_types.append(d)
+							if s not in observed_in_pathogens:
+								observed_in_pathogens.append(s.replace('"', ""))
 
-							if database != "CARD":
-								if "ncbi_chromosome" in observed_data_types:
-									observed_in_genomes = "YES"
-								if "ncbi_plasmid" in observed_data_types:
-									observed_in_plasmids = "YES"
+					if database != "CARD":
+						if "ncbi_chromosome" in observed_data_types:
+							observed_in_genomes = "YES"
+						if "ncbi_plasmid" in observed_data_types:
+							observed_in_plasmids = "YES"
 
-								try:
-									reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
-										rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
-										percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
-									)
-								except Exception as e:
-									reference_allele_source = ""
-									logger.warning("missing key with prev_id {} , {}".format(prevalence_sequence_id, e))
+						try:
+							reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
+								rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
+								percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
+							)
+						except Exception as e:
+							reference_allele_source = ""
+							logger.warning("missing key with prev_id {} , {}".format(prevalence_sequence_id, e))
 
-						else:
-							# provide info from model
-							# logger.warning("model not in prev: {}".format(model_id))
-							observed_in_pathogens = models[model_id]["taxon"]
-					
-					# check all clases categories
-					if "AMR Gene Family" not in resistomes.keys():
-						resistomes["AMR Gene Family"] = []
-					if "Drug Class" not in resistomes.keys():
-						resistomes["Drug Class"] = []
-					if "Resistance Mechanism" not in resistomes.keys():
-						resistomes["Resistance Mechanism"] = []
+				else:
+					# provide info from model
+					# logger.warning("model not in prev: {}".format(model_id))
+					observed_in_pathogens = models[model_id]["taxon"]
+			
+			# check all clases categories
+			if "AMR Gene Family" not in resistomes.keys():
+				resistomes["AMR Gene Family"] = []
+			if "Drug Class" not in resistomes.keys():
+				resistomes["Drug Class"] = []
+			if "Resistance Mechanism" not in resistomes.keys():
+				resistomes["Resistance Mechanism"] = []
 
-					summary.append({
-						"id": row[0],
-						"cvterm_name": cvterm_name,
-						"model_type": model_type,
-						"database": database,
-						"reference_allele_source": reference_allele_source,
-						"observed_in_genomes": observed_in_genomes,
-						"observed_in_plasmids": observed_in_plasmids,
-						"observed_in_pathogens": observed_in_pathogens,
-						"reads": reads[row[0]],
-						"alignments": alignments,
-						"mapq_average": format(mapq_average,'.2f'),
-						"mate_pair": mate_pair,
-						"percent_coverage": {
-							"covered": format((100.0 - float(row[3])*100),'.2f'),
-							"uncovered": format(float(row[3])*100,'.2f')
-						},
-						"length_coverage": {
-							"covered": str(int(row[2]) - int(row[1])),
-							"uncovered": row[1]
-						},
-						"reference": {
-							"sequence_length": str(row[2])
-						},
-						# "mutation": "N/A",
-						"resistomes": resistomes
-						# ,"predicted_pathogen": "N/A"
-						})
+			summary.append({
+				"id": alignment_hit,
+				"cvterm_name": cvterm_name,
+				"model_type": model_type,
+				"database": database,
+				"reference_allele_source": reference_allele_source,
+				"observed_in_genomes": observed_in_genomes,
+				"observed_in_plasmids": observed_in_plasmids,
+				"observed_in_pathogens": observed_in_pathogens,
+				"reads": reads[alignment_hit],
+				"alignments": alignments,
+				"mapq_average": format(mapq_average,'.2f'),
+				"mate_pair": mate_pair,
 
+				"percent_coverage": {
+					"covered": format(0),
+					"uncovered": format(float(0)*100,'.2f')
+				},
+				"length_coverage": {
+					"covered": 0,
+					"uncovered": 0
+				},
+				"reference": {
+					"sequence_length": 0
+				},
+
+				"mutation": "N/A",
+				"resistomes": resistomes
+				,"predicted_pathogen": "N/A"
+				})
+				# 
+			# print(summary)
+			# logger.info(json.dumps(summary, indent=2))
+			# exit()
 		# write json
 		with open(self.allele_mapping_data_json, "w") as af:
 			af.write(json.dumps(summary,sort_keys=True))
@@ -701,7 +705,7 @@ class BWT(object):
 					"; ".join(mapping_summary[i]["Drug Class"]),
 					"; ".join(mapping_summary[i]["Resistance Mechanism"])
 				])
-	
+
 	def check_index(self):
 		"""
 		Check if index exists for a given reference fasta file.
@@ -738,7 +742,7 @@ class BWT(object):
 		"""
 		# print args
 		logger.info(json.dumps(self.__dict__, indent=2))
-
+		
 		# index database
 		logger.info("index database")
 		self.check_index()
@@ -791,7 +795,7 @@ class BWT(object):
 		# get coverage for all positions
 		logger.info("get coverage for all positions")
 		self.get_coverage_all_positions()
-
+		
 		# get summary
 		logger.info("get summary")
 		self.get_summary()
