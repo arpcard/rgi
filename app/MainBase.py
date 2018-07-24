@@ -6,6 +6,9 @@ from app.Galaxy import Galaxy
 import app.Parser
 import app.load
 import app.clean
+import app.card_annotation
+import app.wildcard_annotation
+import app.remove_duplicates
 from app.BWT import BWT
 from app.Heatmap import Heatmap
 
@@ -21,13 +24,16 @@ class MainBase(object):
                load     Loads CARD database json file
                clean    Removes BLAST databases and temporary files
                galaxy   Galaxy project wrapper
-               bwt      Metagenomics resistomes
-               heatmap  heatmap for multiple analysis
+               bwt      Metagenomics resistomes (Experimental)
+               card_annotation create fasta files with annotations from card.json (Experimental)
+               wildcard_annotation create fasta files with annotations from variants (Experimental)
+               remove_duplicates removes duplicate sequences (Experimental)
+               heatmap  heatmap for multiple analysis (Experimental)
                database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
-                                                'clean', 'galaxy', 'database', 'bwt', 'heatmap'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'remove_duplicates', 'heatmap'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -113,7 +119,43 @@ class MainBase(object):
 
     def load_run(self, args):
         app.load.main(args)
-    
+
+    def card_annotation(self):
+        parser = self.card_annotation_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.load_run(args)
+
+    def card_annotation_args(self):
+        parser = app.card_annotation.create_parser()
+        return parser
+
+    def card_annotation_run(self, args):
+        app.card_annotation.main(args)
+
+    def wildcard_annotation(self):
+        parser = self.wildcard_annotation_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.load_run(args)
+
+    def wildcard_annotation_args(self):
+        parser = app.wildcard_annotation.create_parser()
+        return parser
+
+    def wildcard_annotation_run(self, args):
+        app.wildcard_annotation.main(args)
+
+    def remove_duplicates(self):
+        parser = self.remove_duplicates_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.load_run(args) 
+
+    def remove_duplicates_args(self): 
+        parser = app.remove_duplicates.create_parser()
+        return parser
+
+    def remove_duplicates_run(self, args):
+        app.remove_duplicates.main(args)
+
     def bwt(self):
         parser = self.bwt_args()
         args = parser.parse_args(sys.argv[2:])
@@ -124,16 +166,24 @@ class MainBase(object):
         parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmied)")
         parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmied)")
         parser.add_argument('-a', '--aligner', default="bowtie2", choices=['bowtie2','bwa'], help="aligner")
-        parser.add_argument('-d', '--database', required=True, help="reference fasta (combined card and wildcard data")
-        parser.add_argument('-j', '--card_json', required=True, help="json file (card.json)")
-        parser.add_argument('-i', '--wildcard_index', required=False, help="wildcard tab-delimeted index file (index-for-model-sequences.txt)")
         parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
         return parser
 
     def bwt_run(self, args):
-        obj = BWT(args.aligner, args.card_json, args.database, args.read_one, args.read_two, args.threads, args.wildcard_index, args.output_file, args.debug)
+        obj = BWT(
+            args.aligner, 
+            args.include_wildcard, 
+            args.read_one, 
+            args.read_two, 
+            args.threads, 
+            args.output_file, 
+            args.debug, 
+            args.local_database
+        )
         obj.run()
 
     def heatmap(self):

@@ -1,8 +1,6 @@
 
 from app.settings import *
-# from seaborn import heatmap
 import math, os, json, csv
-import numpy as np
 import pandas as pd
 from collections import defaultdict, Counter
 from argparse import ArgumentParser

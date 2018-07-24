@@ -6,20 +6,37 @@ class BWT(object):
 	Class to align metagenomic reads to CARD and wildCARD reference using bwa or bowtie2 and 
 	provide reports (gene, allele report and read level reports).
 	"""
-	def __init__(self, aligner, card_json, database, read_one, read_two, threads, wildcard_index, output_file, debug):
+	def __init__(self, aligner, include_wildcard, read_one, read_two, threads, output_file, debug, local_database):
 		"""Creates BWT object."""
 		self.aligner = aligner
-		self.card_json = card_json
-		self.database = database
 		self.read_one = read_one
 		self.read_two = read_two
 		self.threads = threads
-		self.wildcard_index = wildcard_index
 		self.output_file = output_file
+
+		self.local_database = local_database
+		self.db = path
+		self.data = data_path
+		self.include_wildcard = include_wildcard
+
+		if self.local_database:
+			self.db = LOCAL_DATABASE
+			self.data = LOCAL_DATABASE
+
+		self.reference_genome = os.path.join(self.data, "card_reference.fasta")
+
+		# index dbs
+		self.indecies_directory = os.path.join(self.db,"bwt")
+		self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bowtie2"))
+		self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bwa"))
+
+		if self.include_wildcard == True:
+			self.reference_genome = os.path.join(self.data, "card_wildcard_reference.fasta")
+			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bowtie2"))
+			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bwa"))
+
+		# outputs
 		self.working_directory = os.path.join(os.getcwd())
-		self.indecies_directory = os.path.join(self.working_directory,"db")
-		self.index_directory_bowtie2 = os.path.join(self.working_directory, self.indecies_directory, "{}".format("bowtie2"))
-		self.index_directory_bwa = os.path.join(self.working_directory, self.indecies_directory, "{}".format("bwa"))
 		self.output_sam_file = os.path.join(self.working_directory, "{}.sam".format(self.output_file))
 		self.output_bam_file = os.path.join(self.working_directory, "{}.bam".format(self.output_file))
 		self.output_bam_sorted_file = os.path.join(self.working_directory, "{}.sorted.bam".format(self.output_file))
@@ -52,7 +69,7 @@ class BWT(object):
 
 			os.system("bowtie2-build {reference_genome} {index_directory} --threads {threads}".format(
 				index_directory=self.index_directory_bowtie2,
-				reference_genome=self.database,
+				reference_genome=self.reference_genome,
 				threads=self.threads
 				)
 			)
@@ -63,7 +80,7 @@ class BWT(object):
 
 			os.system("bwa index -p {index_directory} {reference_genome}".format(
 				index_directory=self.index_directory_bwa,
-				reference_genome=self.database
+				reference_genome=self.reference_genome
 				)
 			)
 
@@ -180,9 +197,10 @@ class BWT(object):
 		Get converage for all positions using 'genomeCoverageBed'
 		BAM file _must_ be sorted by position
 		"""
+		
 		cmd = "genomeCoverageBed -ibam {sorted_bam_file}  -g {reference_genome} > {output_tab}".format(
 			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
-			reference_genome=self.database, 
+			reference_genome=self.reference_genome, 
 			output_tab=self.output_tab_coverage_all_positions
 		)
 		os.system(cmd)
@@ -215,7 +233,8 @@ class BWT(object):
 		categories = {}
 		model_name = ""
 		try:
-			with open(self.card_json, 'r') as jfile:
+			logger.info(os.path.join(self.data, "card.json"))
+			with open(os.path.join(self.data, "card.json"), 'r') as jfile:
 				data = json.load(jfile)
 		except Exception as e:
 			logger.error("{}".format(e))
@@ -252,7 +271,7 @@ class BWT(object):
 		Parse tab-delimited to a dictionary for all variants
 		"""
 		os.system("cat {index_file} | cut -f1,2,6,8,9,10 | sort > {output_file}".format(
-			index_file=self.wildcard_index, 
+			index_file=os.path.join(self.data, "index-for-model-sequences.txt"), 
 			output_file=self.model_species_data_type
 			)
 		)
@@ -341,13 +360,13 @@ class BWT(object):
 		summary = []
 		variants = {}
 		models = {}
-		
+
 		logger.info("get_reads_count ...")
 		reads = self.get_reads_count()
 		logger.info("get_model_details ...")
 		models = self.get_model_details()
 
-		if self.wildcard_index is not None:
+		if self.include_wildcard:
 			logger.info("get_variant_details ...")
 			variants = self.get_variant_details()
 
@@ -689,7 +708,7 @@ class BWT(object):
 		"""
 		# check if we have db
 		files = [os.path.basename(x) for x in glob.glob(os.path.join(self.indecies_directory,"*"))]
-		# logger.info(json.dumps(files, indent=2))
+		logger.info(json.dumps(files, indent=2))
 		if self.aligner == "bowtie2":
 			if (("bowtie2.1.bt2" in files) and \
 				("bowtie2.2.bt2" in files) and \
