@@ -204,7 +204,7 @@ class BWT(object):
 			output_tab=self.output_tab_coverage_all_positions
 		)
 		os.system(cmd)
-		os.system("cat {output_tab} | awk '$2 == 0' | cut -f1,3,4,5 > {output_file}".format(
+		os.system("cat {output_tab} | awk '$2 > 0' | cut -f1,3,4,5 > {output_file}".format(
 			output_tab=self.output_tab_coverage_all_positions,
 			output_file=self.output_tab_coverage_all_positions_summary
 			)
