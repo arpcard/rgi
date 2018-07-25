@@ -350,12 +350,76 @@ class BWT(object):
 						})
 			return sequences
 
+	def get_coverage_details(self, hit_id):
+		"""
+		Parse tab-delimited file
+		"""
+		sequences = {}
+		sequences.update({
+			hit_id: {
+				"covered": 0,
+				"uncovered": 0,
+				"length": 0
+			}
+		})
+
+		with open(self.output_tab_coverage_all_positions_summary, 'r') as csvfile:
+			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+			for row in reader:
+				if hit_id == row[0]:
+					sequences[hit_id]["covered"] =  sequences[hit_id]["covered"] + int(row[1])
+					sequences[hit_id]["length"] =  int(row[2])
+		sequences[hit_id]["uncovered"] =  sequences[hit_id]["length"] - sequences[hit_id]["covered"]
+
+		return sequences
+
 	def get_summary(self):
 		"""
-		This function uses the following files:
+		This function uses the following TAB-delimited files:
 			<filename>.coverage_all_positions.summary.txt,
 			<filename>.txt,
 			<filename>.seqs.txt
+
+		------------------------------------------------------------------
+		<filename>.txt | samtools idxstats
+		------------------------------------------------------------------
+		columns:  
+				1. reference sequence name
+				2. sequence length
+				3. # mapped reads
+				4. # unmapped reads
+
+		------------------------------------------------------------------
+		<filename>.coverage_all_positions.summary.txt | genomeCoverageBed -ibam
+		------------------------------------------------------------------
+		columns:
+				1. chromosome (or entire genome)
+				2. depth of coverage from features in input file
+				3. number of bases on chromosome (or genome) with depth equal to column 2.
+				4. size of chromosome (or entire genome) in base pairs
+				5. fraction of bases on chromosome (or entire genome) with depth equal to column 2.
+
+		used 1,3,4,5
+
+		------------------------------------------------------------------
+		<filename>.seqs.txt | samtools view
+		------------------------------------------------------------------
+		columns:
+				1.	QNAME	Query template/pair NAME
+				2.	FLAG	bitwise FLAG
+				3.	RNAME	Reference sequence NAME
+				4.	POS		1-based leftmost POSition/coordinate of clipped sequence
+				5.	MAPQ	MAPping Quality (Phred-scaled)
+				6.	CIGAR	extended CIGAR string
+				7.	MRNM	Mate Reference sequence NaMe (`=' if same as RNAME)
+				8.	MPOS	1-based Mate POSistion
+				9.	TLEN	inferred Template LENgth (insert size)
+				10.	SEQ		query SEQuence on the same strand as the reference
+				11.	QUAL	query QUALity (ASCII-33 gives the Phred base quality)
+				12+. OPT	variable OPTional fields in the format TAG:VTYPE:VALUE
+
+		used 1,2,3,4,5, and 7
+
 		"""
 		summary = []
 		variants = {}
@@ -374,8 +438,7 @@ class BWT(object):
 
 		for alignment_hit in reads.keys():
 			logger.info(alignment_hit)
-			# print(reads[alignment_hit])
-			# exit()
+			coverage = self.get_coverage_details(alignment_hit)
 			model_id = alignment_hit.split("|")[1].split(":")[1]
 			cvterm_name = models[model_id]["model_name"]
 			model_type = models[model_id]["model_type"]
@@ -461,15 +524,15 @@ class BWT(object):
 				"mate_pair": mate_pair,
 
 				"percent_coverage": {
-					"covered": format(0),
-					"uncovered": format(float(0)*100,'.2f')
+					"covered": format(float(coverage[alignment_hit]["covered"] / coverage[alignment_hit]["length"])*100,'.2f' ),
+					"uncovered": format(float(coverage[alignment_hit]["uncovered"] / coverage[alignment_hit]["length"])*100,'.2f')
 				},
 				"length_coverage": {
-					"covered": 0,
-					"uncovered": 0
+					"covered": "{}".format(coverage[alignment_hit]["covered"]),
+					"uncovered": "{}".format(coverage[alignment_hit]["uncovered"])
 				},
 				"reference": {
-					"sequence_length": 0
+					"sequence_length": "{}".format(coverage[alignment_hit]["length"])
 				},
 
 				"mutation": "N/A",
@@ -742,7 +805,7 @@ class BWT(object):
 		"""
 		# print args
 		logger.info(json.dumps(self.__dict__, indent=2))
-		
+
 		# index database
 		logger.info("index database")
 		self.check_index()
@@ -795,7 +858,7 @@ class BWT(object):
 		# get coverage for all positions
 		logger.info("get coverage for all positions")
 		self.get_coverage_all_positions()
-		
+
 		# get summary
 		logger.info("get summary")
 		self.get_summary()
