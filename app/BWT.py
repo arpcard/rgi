@@ -50,6 +50,9 @@ class BWT(object):
 		self.allele_mapping_data_json = os.path.join(self.working_directory, "{}.allele_mapping_data.json".format(self.output_file))
 		self.allele_mapping_data_tab = os.path.join(self.working_directory, "{}.allele_mapping_data.txt".format(self.output_file))
 		self.gene_mapping_data_tab = os.path.join(self.working_directory, "{}.gene_mapping_data.txt".format(self.output_file))
+
+		self.bowtie2_met_file = os.path.join(self.working_directory, "{}.bowtie2_met_file.txt".format(self.output_file))
+
 		self.debug = debug
 
 		if self.debug:
@@ -87,23 +90,25 @@ class BWT(object):
 	def align_bowtie2_unpaired(self):
 		"""
 		"""
-		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -U {unpaired_reads}  -S {output_sam_file}".format(
+		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -U {unpaired_reads}  -S {output_sam_file} --met-file {bowtie2_met_file}".format(
 			threads=self.threads,
 			index_directory=self.index_directory_bowtie2,
 			unpaired_reads=self.read_one,
-			output_sam_file=self.output_sam_file
+			output_sam_file=self.output_sam_file,
+			bowtie2_met_file=self.bowtie2_met_file
 			)
 		)
 
 	def align_bowtie2(self):
 		"""
 		"""
-		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -1 {read_one} -2 {read_two}  -S {output_sam_file}".format(
+		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -1 {read_one} -2 {read_two}  -S {output_sam_file} --met-file {bowtie2_met_file}".format(
 			threads=self.threads,
 			index_directory=self.index_directory_bowtie2,
 			read_one=self.read_one,
 			read_two=self.read_two,
-			output_sam_file=self.output_sam_file
+			output_sam_file=self.output_sam_file,
+			bowtie2_met_file=self.bowtie2_met_file
 		))
 
 	def align_bwa_single_end_mapping(self):
