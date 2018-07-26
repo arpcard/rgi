@@ -90,7 +90,7 @@ class BWT(object):
 	def align_bowtie2_unpaired(self):
 		"""
 		"""
-		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -U {unpaired_reads}  -S {output_sam_file} --met-file {bowtie2_met_file}".format(
+		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -U {unpaired_reads}  -S {output_sam_file} --met-file {bowtie2_met_file} --all".format(
 			threads=self.threads,
 			index_directory=self.index_directory_bowtie2,
 			unpaired_reads=self.read_one,
@@ -102,7 +102,7 @@ class BWT(object):
 	def align_bowtie2(self):
 		"""
 		"""
-		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -1 {read_one} -2 {read_two}  -S {output_sam_file} --met-file {bowtie2_met_file}".format(
+		os.system("bowtie2 --local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 --threads {threads} -x {index_directory} -1 {read_one} -2 {read_two}  -S {output_sam_file} --met-file {bowtie2_met_file} --all".format(
 			threads=self.threads,
 			index_directory=self.index_directory_bowtie2,
 			read_one=self.read_one,
