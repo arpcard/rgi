@@ -147,9 +147,9 @@ class MainBase(object):
     def remove_duplicates(self):
         parser = self.remove_duplicates_args()
         args = parser.parse_args(sys.argv[2:])
-        self.load_run(args) 
+        self.load_run(args)
 
-    def remove_duplicates_args(self): 
+    def remove_duplicates_args(self):
         parser = app.remove_duplicates.create_parser()
         return parser
 
@@ -175,13 +175,13 @@ class MainBase(object):
 
     def bwt_run(self, args):
         obj = BWT(
-            args.aligner, 
-            args.include_wildcard, 
-            args.read_one, 
-            args.read_two, 
-            args.threads, 
-            args.output_file, 
-            args.debug, 
+            args.aligner,
+            args.include_wildcard,
+            args.read_one,
+            args.read_two,
+            args.threads,
+            args.output_file,
+            args.debug,
             args.local_database
         )
         obj.run()
@@ -198,11 +198,13 @@ class MainBase(object):
         parser.add_argument('-frequency', dest="frequency", choices=("on", "off"), default="off", help="Represent samples based on resistance profile. Default = off (OPTIONAL)")
         parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output .eps file (OPTIONAL). The number of files run will automatically be appended to the end of the file name.")
         parser.add_argument('-cluster', dest="cluster", choices=("samples", "genes", "both"),help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples) (OPTIONAL)")
+        parser.add_argument('-display', dest="display", choices=("plain", "fill", "text"), default="plain", help="Specify display options for categories (OPTIONAL).")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+
         return parser
 
     def heatmap_run(self, args):
-        obj = Heatmap(args.input, args.classification, args.frequency, args.output, args.cluster, args.debug)
+        obj = Heatmap(args.input, args.classification, args.frequency, args.output, args.cluster, args.display, args.debug)
         obj.run()
 
     def clean(self):
@@ -272,4 +274,3 @@ class MainBase(object):
 
 if __name__ == '__main__':
     MainBase()
-
