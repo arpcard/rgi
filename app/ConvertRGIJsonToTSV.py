@@ -105,8 +105,6 @@ class ConvertJsonToTSV(object):
 						other_snps = ""
 
 						for hit in rgi_data[hsp]:
-							order[hit] = rgi_data[hsp][hit]["bit_score"]
-
 							if rgi_data[hsp][hit]["type_match"] == "Perfect":
 								order_perfect.append((
 									hit, rgi_data[hsp][hit]["bit_score"], rgi_data[hsp][hit]["perc_identity"]
