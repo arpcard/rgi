@@ -8,6 +8,10 @@ import os
 from Bio import SeqIO
 import json
 from abc import ABCMeta, abstractmethod
+from app.settings import logger
+from Bio.Alphabet import generic_dna
+from Bio.Seq import Seq
+from pyfaidx import Fasta
 
 class RGIBase(object):
     """Interface for RGI"""
@@ -225,8 +229,9 @@ class BaseModel(object):
         Returns:
             blast_results (dict): dictionary of sorted results
         """     
+        nudged = False
         if len(perfect) == 0 and len(strict) == 0 and len(loose) > 0:
-            nudged , loose = self.nudge(loose)
+            nudged , loose = self.nudge_loose_to_strict(loose)
             if nudged is True and self.loose is False:
                 blast_results[query_id] = loose
             elif self.loose is True:
@@ -234,6 +239,7 @@ class BaseModel(object):
 
         elif len(perfect) == 0:
             if len(strict) > 0: 
+                nudged , strict = self.nudge_strict_to_perfect(strict)
                 blast_results[query_id] = strict
         else:
             if len(perfect) > 0: 
@@ -241,7 +247,117 @@ class BaseModel(object):
 
         return blast_results
 
-    def nudge(self, loose):
+    def nudge_strict_to_perfect(self, strict):
+        """
+        Nudge strict hits with missing n-terminus, c-terminus and alternate start codons
+
+        Parameters
+        ----------
+
+        Args:
+            strict (dict): dictionary containing strict hits
+
+        Returns:
+            nudged (bool): True or False
+            strict (dict): dictionary containing strict or perfect hits
+        """ 
+        
+        nudged = False
+
+        # - check if there is 100% match with matching part to the reference
+        # - getting matching protein then pull nucleotides from reference and translate 
+        # - check the start codons including alternates 
+        # - promote to perfect if the start codon is present in the N-terminus
+        
+        for s in strict:
+            if int(strict[s]["perc_identity"]) == 100 and strict[s]["type_match"] == "Strict" and strict[s]["model_type_id"] not in [40295]:
+                reference = strict[s]["sequence_from_broadstreet"]
+                query = strict[s]["orf_prot_sequence"]
+                # Missing n-terminus or c-terminus
+                if len(query) < len(reference) and query in reference:
+                    length_nucleotides = (len(reference) - len(strict[s]["match"]))*3
+
+                    # pull nucleotides from query or submitted sequence
+                    partial_bases = self.get_part_sequence(
+                        self.input_sequence, strict[s]["orf_from"], 
+                        strict[s]["orf_start"], strict[s]["orf_end"], 
+                        length_nucleotides, strict[s]["orf_strand"], 
+                        strict[s]["ARO_name"]
+                    )
+
+                    logger.info("Missing part: {}".format(partial_bases))
+
+                    if strict[s]["orf_strand"] == "-":
+                        partial_protein = str(Seq(partial_bases, generic_dna).reverse_complement().translate(table=11))
+                        logger.info("Reverse strand: {}".format(partial_protein))
+                    else:
+                        partial_protein = str(Seq(partial_bases, generic_dna).translate(table=11))
+                        logger.info("Forward strand: {}".format(partial_protein))
+                    
+                    logger.info("Translated protein: {}".format(partial_protein))
+                    # update start codon to M for all other alternate start codons
+                    _partial_protein = partial_protein[0]
+                    if partial_protein[0] in ["L","M","I","V"]:
+                        _partial_protein = "M"+partial_protein[1:]
+
+                    combine = _partial_protein + strict[s]["match"]
+
+                    if combine == strict[s]["sequence_from_broadstreet"]:
+                        logger.info("Missing n-terminus push to Perfect: {}".format(strict[s]["ARO_name"]))
+                        strict[s]["type_match"] = "Perfect"
+                        strict[s]["nudged"] = True
+                        strict[s]["partial_bases"] = partial_bases
+                        nudged = True  
+
+                # reference contained within open reading frame
+                elif len(query) > len(reference) and reference in query:
+                    logger.info("Reference contained within open reading frame push to Perfect: {}".format(strict[s]["ARO_name"]))
+                    strict[s]["type_match"] = "Perfect"
+                    strict[s]["nudged"] = True
+                    nudged = True 
+                
+                # orf and reference are overlapping  
+                elif reference not in query and query not in reference:
+                    logger.warning("TODO:: orf and reference are overlapping")          
+
+        return nudged, strict
+
+    def get_part_sequence(self, fasta_file, header, start, stop, nterminus, strand, name):
+        """
+        Pull part sequence from fasta file
+        # https://github.com/mdshw5/pyfaidx
+        # pip install pyfaidx
+
+        Parameters
+        ----------
+
+        Args:
+            fasta_file (str): input fasta file
+            header (str): header for fasta sequence
+            start (str): start coordinate
+            stop (str): stop coordinate
+            nterminus (int): length of missing sequence
+            strand (str): strand
+            name (str): gene name
+
+        Returns:
+            sequence (str): portion on a sequence
+        """  
+        # remove the last 2 characters from header as this is appended by prodigal
+        header = header[:header.rfind("_")]
+
+        # logger.info("[PARTIAL] ARO: {} | contig: {} | filename: {}".format(name, header, fasta_file))
+    
+        genes = Fasta(fasta_file, sequence_always_upper=False, read_long_names=False, one_based_attributes=True)
+        # logger.info(genes.records)
+
+        logger.info(json.dumps({"strand":strand, "start":start, "stop":stop, "nterminus":nterminus}, indent=2))
+        if strand == "-":
+            return str(genes.get_spliced_seq( header, [[stop, stop+nterminus]]))
+        elif strand == "+":
+            return str(genes.get_spliced_seq( header, [[start-nterminus, start]]))
+
+    def nudge_loose_to_strict(self, loose):
         """
         Nudge loose hits with at least 95 percent identity to be strict hits
 
@@ -258,14 +374,13 @@ class BaseModel(object):
         nudged = False
         # check if there are any loose hits that might be strict
         for i in loose:
-            # half_pass_bitscore = int(float(loose[i]["pass_bitscore"])/2)
-            # if 95 <= int(loose[i]["perc_identity"]) <= 100 and loose[i]["bit_score"] > half_pass_bitscore:
             if 95 <= int(loose[i]["perc_identity"]) <= 100:
                 # add to strict 
+                logger.info("loose hit with at least 95 percent identity push to Strict: {}".format(loose[i]["ARO_name"]))
                 loose[i]["type_match"] = "Strict"
+                loose[i]["nudged"] = True
                 nudged = True
-                # print("Nudged Loose -> Strict ... HSP: {} | model_name: {} | perc_identity: {}% |  bit_score : {} | pass_bitscore:  {} | half_pass_bitscore : {}"\
-                #     .format(i,loose[i]["model_name"], loose[i]["perc_identity"], loose[i]["bit_score"], loose[i]["pass_bitscore"], half_pass_bitscore))
+
         return nudged, loose
 
 

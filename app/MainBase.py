@@ -27,13 +27,14 @@ class MainBase(object):
                bwt      Metagenomics resistomes (Experimental)
                card_annotation create fasta files with annotations from card.json (Experimental)
                wildcard_annotation create fasta files with annotations from variants (Experimental)
+               baits_annotation create fasta files with annotations from baits (Experimental)
                remove_duplicates removes duplicate sequences (Experimental)
                heatmap  heatmap for multiple analysis (Experimental)
                database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
-                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'remove_duplicates', 'heatmap'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -123,7 +124,7 @@ class MainBase(object):
     def card_annotation(self):
         parser = self.card_annotation_args()
         args = parser.parse_args(sys.argv[2:])
-        self.load_run(args)
+        self.card_annotation_run(args)
 
     def card_annotation_args(self):
         parser = app.card_annotation.create_parser()
@@ -135,7 +136,7 @@ class MainBase(object):
     def wildcard_annotation(self):
         parser = self.wildcard_annotation_args()
         args = parser.parse_args(sys.argv[2:])
-        self.load_run(args)
+        self.wildcard_annotation_run(args)
 
     def wildcard_annotation_args(self):
         parser = app.wildcard_annotation.create_parser()
@@ -147,7 +148,7 @@ class MainBase(object):
     def remove_duplicates(self):
         parser = self.remove_duplicates_args()
         args = parser.parse_args(sys.argv[2:])
-        self.load_run(args)
+        self.remove_duplicates_run(args)
 
     def remove_duplicates_args(self):
         parser = app.remove_duplicates.create_parser()
@@ -171,6 +172,7 @@ class MainBase(object):
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
+        parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits")
         return parser
 
     def bwt_run(self, args):

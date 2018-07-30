@@ -1,5 +1,6 @@
 import csv
 from app.settings import *
+from operator import itemgetter, attrgetter
 
 class ConvertJsonToTSV(object):
 
@@ -92,7 +93,9 @@ class ConvertJsonToTSV(object):
 						pass
 
 					for hsp in rgi_data:
-						order = {}
+						order_perfect = []
+						order_loose = []
+						order_strict = []
 						dna = 0
 						cgList = []
 						hitID = []
@@ -104,7 +107,31 @@ class ConvertJsonToTSV(object):
 						for hit in rgi_data[hsp]:
 							order[hit] = rgi_data[hsp][hit]["bit_score"]
 
-						ordered = sorted(order, key=order.get, reverse=True)
+							if rgi_data[hsp][hit]["type_match"] == "Perfect":
+								order_perfect.append((
+									hit, rgi_data[hsp][hit]["bit_score"], rgi_data[hsp][hit]["perc_identity"]
+								))
+
+							if rgi_data[hsp][hit]["type_match"] == "Strict":
+								order_strict.append((
+									hit, rgi_data[hsp][hit]["bit_score"], rgi_data[hsp][hit]["perc_identity"]
+								))
+
+							if rgi_data[hsp][hit]["type_match"] == "Loose":
+								order_loose.append((
+									hit, rgi_data[hsp][hit]["bit_score"], rgi_data[hsp][hit]["perc_identity"]
+								))
+
+						ordered = []
+						# sort by bitscore and percent identity
+						if len(order_perfect) > 0:
+							ordered = sorted(order_perfect, key=itemgetter(1,2)).pop(0)
+						elif len(order_strict) > 0:
+							ordered = sorted(order_strict, key=itemgetter(1,2)).pop(0)
+						else:
+							ordered = sorted(order_loose, key=itemgetter(1,2)).pop(0)
+
+						ordered = [i for i in ordered]
 
 						if "orf_dna_sequence" in rgi_data[hsp][ordered[0]]:
 							dna = 1
