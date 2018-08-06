@@ -199,8 +199,7 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
 
 def make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
                 multi_file, variant_sequences, index_file, k):
-    print(plasmid_file, chr_file, both_file, genus_file, species_file, multi_file, variant_sequences, index_file, k)
-    exit()
+
     p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file)
     s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species")
     g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus")
