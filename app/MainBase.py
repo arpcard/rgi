@@ -134,7 +134,7 @@ class MainBase(object):
 
     def kmer_run(self, args):
         app.build_kmer_sets.main(args)
-        
+
     def card_annotation(self):
         parser = self.card_annotation_args()
         args = parser.parse_args(sys.argv[2:])
@@ -210,11 +210,13 @@ class MainBase(object):
     def heatmap_args(self):
         parser = argparse.ArgumentParser(prog="rgi heatmap",description='Creates a heatmap when given multiple RGI results.')
         parser.add_argument('-i', '--input', dest="input", required=True, help="Directory containing the RGI .json files (REQUIRED)")
-        parser.add_argument('-category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"), help="The option to organize models based on a category (OPTIONAL)")
-        parser.add_argument('-frequency', dest="frequency", choices=("on", "off"), default="off", help="Represent samples based on resistance profile. Default = off (OPTIONAL)")
-        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output .eps file (OPTIONAL). The number of files run will automatically be appended to the end of the file name.")
-        parser.add_argument('-cluster', dest="cluster", choices=("samples", "genes", "both"),help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples) (OPTIONAL)")
-        parser.add_argument('-display', dest="display", choices=("plain", "fill", "text"), default="plain", help="Specify display options for categories (OPTIONAL).")
+        parser.add_argument('-cat', '--category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"), help="The option to organize resistance genes based on a category.")
+        parser.add_argument('-f', '--frequency', dest="frequency", action="store_true", help="Represent samples based on resistance profile.")
+        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output EPS and PNG files. \
+            The number of files run will automatically be appended to the end of the file name.\
+            If not given, default is RGI_heatmap.")
+        parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
+        parser.add_argument('-d', '--display', dest="display", choices=("plain", "fill", "text"), default="plain", help="Specify display options for categories.")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
 
         return parser

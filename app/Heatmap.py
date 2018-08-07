@@ -26,6 +26,9 @@ class Heatmap(object):
         if self.debug:
             logger.setLevel(10)
 
+        # print(self.frequency)
+        # exit()
+
     def __repr__(self):
         """Returns Heatmap class full object."""
         return "Heatmap({}".format(self.__dict__)
@@ -174,7 +177,7 @@ class Heatmap(object):
         yint = range(min(y), math.ceil(max(y)))
         bp = ax2.bar(range(len(freq_dict)), sorted(freq_dict.values(), reverse=True), color="k", align="edge")
         ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
-        ax2.set_ylabel("Profile Frequency", rotation=0, va='center', labelpad=150, fontsize='xx-large')
+        # ax2.set_ylabel("Profile Frequency", rotation=0, va='center', labelpad=150, fontsize='xx-large')
 
     def cluster_data(self, option, df):
         """Hierarchically clusters the dataframe"""
@@ -209,22 +212,27 @@ class Heatmap(object):
         ranges = freq.values
         return categories, ranges
 
-    def draw_categories(self, ax1, ranges, cat_list, ax0, display):
+    def draw_categories(self, ax1, ranges, cat_list, ax0, display, df):
         """Draws all elements of categories on axes"""
         pal = sns.color_palette("dark") # for text
         light_pal = sns.color_palette("pastel") # for fill
         label_bb = ax0.yaxis.get_ticklabels()[0].get_window_extent() # get height of labels
 
+        # Get longest gene name to determine width of marker fill
+        longest_gene = max(df.index.tolist(), key=len) # string
+        i = df.index.tolist().index(longest_gene) # index
+        fill_width = ax0.yaxis.get_ticklabels()[i].get_window_extent().width
+
         # Draw first category first
         ax1.plot([1,1], [0,ranges[0]], lw=10,
             color=pal[3])
         ax1.text(0.5, (ranges[0]/2), cat_list[0], horizontalalignment="center",
-            fontsize='xx-large', color=pal[3])
+            fontsize='xx-large', color=pal[3], weight="bold")
 
         if display == "fill":
             for line in ax0.yaxis.get_ticklines()[0:ranges[0]*2]:
                 line.set_color(light_pal[3])
-                line.set_markersize(5000)
+                line.set_markersize(fill_width)
                 # print(label_bb.height)
                 line.set_markeredgewidth(label_bb.height-(label_bb.height*0.25))
                 # print(label_bb.height-(label_bb.height*0.05))
@@ -245,15 +253,15 @@ class Heatmap(object):
             if cat_list[i].count('\n') > 1:
                 temp_str = " ".join(cat_list[i].split('\n'))
                 new_str = '\n'.join(wrap(temp_str,60))
-                ax1.text(0.5, (ymin + (ymax - ymin)/2), new_str, fontsize='large', horizontalalignment="center", color=pal[c_iter])
+                ax1.text(0.5, (ymin + (ymax - ymin)/2), new_str, fontsize='large', horizontalalignment="center", color=pal[c_iter], weight="bold")
             else:
-                ax1.text(0.5, (ymin + (ymax - ymin)/2), cat_list[i], fontsize='xx-large', horizontalalignment="center", color=pal[c_iter])
+                ax1.text(0.5, (ymin + (ymax - ymin)/2), cat_list[i], fontsize='xx-large', horizontalalignment="center", color=pal[c_iter], weight="bold")
 
             if display == "fill":
                 for line in ax0.yaxis.get_ticklines()[ymin*2:ymax*2]:
                     line.set_clip_on(True)
                     line.set_color(light_pal[c_iter])
-                    line.set_markersize(5000)
+                    line.set_markersize(fill_width)
                     line.set_markeredgewidth(label_bb.height-(label_bb.height*0.25))
             elif display == "text":
                 for label in ax0.yaxis.get_ticklabels()[ymin:ymax]:
@@ -262,7 +270,7 @@ class Heatmap(object):
             c_iter += 1
 
     def get_axis_size(self, fig, ax):
-        """Retunrs the width and length of a subplot axes"""
+        """Returns the width and length of a subplot axes"""
         bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
         width, height = bbox.width, bbox.height
         return width, height
@@ -474,7 +482,7 @@ class Heatmap(object):
                 exit()
 
             # Figure parameters if frequency option chosen
-            if self.frequency == "on":
+            if self.frequency:
                 df, freq_dict = self.create_frequency_df(df, self.output)
                 df = df.reindex(index=unique_ids)
                 df = df.set_index("index")
@@ -506,25 +514,29 @@ class Heatmap(object):
                         # print('updated figsize', figsize)
                         # """END DEBUGGING"""
                     if self.get_axis_size(fig,ax0)[0] < (self.get_axis_size(fig,ax0)[1])/3:
-                        print('LESS THAN 1/3')
+                        # print('LESS THAN 1/3')
                         fig_length = fig_length/2
                         figsize = (fig_width, fig_length)
                         desired_width = (self.get_axis_size(fig,ax0)[1])/3
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        print('updated ax0', self.get_axis_size(fig,ax0))
-                        print('updated ax1', self.get_axis_size(fig,ax1))
-                        print('updated figsize', figsize)
+                        """DEBUG"""
+                        # print('updated ax0', self.get_axis_size(fig,ax0))
+                        # print('updated ax1', self.get_axis_size(fig,ax1))
+                        # print('updated figsize', figsize)
+                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
                         print('BASE AXIS TOO SMALL')
                         desired_width = desired_width*2
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        print('updated ax0', self.get_axis_size(fig,ax0))
-                        print('updated ax1', self.get_axis_size(fig,ax1))
-                        print('updated figsize', figsize)
+                        """DEBUG"""
+                        # print('updated ax0', self.get_axis_size(fig,ax0))
+                        # print('updated ax1', self.get_axis_size(fig,ax1))
+                        # print('updated figsize', figsize)
+                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[1] < 150:
                         if self.get_axis_size(fig,ax0)[0] > (self.get_axis_size(fig,ax0)[1])/3:
                             if self.get_axis_size(fig,ax0)[0] > 10:
@@ -560,7 +572,7 @@ class Heatmap(object):
                 ax1_dim = self.get_axis_size(fig, ax1)
                 cat, ranges = self.calculate_categories(s, ax1_dim[0])
                 # Draw categories
-                self.draw_categories(ax1, ranges, cat, ax0, self.display)
+                self.draw_categories(ax1, ranges, cat, ax0, self.display, df)
 
                 # Draw barplot
                 self.draw_barplot(freq_dict,ax2)
@@ -569,7 +581,9 @@ class Heatmap(object):
                 gs.tight_layout(fig)
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
 
+                print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                print("Rendering PNG")
                 plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
                 if self.cluster == "samples":
                     print('Output file {fn}: AMR genes categorised by {c} and only unique '
@@ -614,38 +628,44 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        print('updated ax0', self.get_axis_size(fig,ax0))
-                        print('updated ax1', self.get_axis_size(fig,ax1))
-                        print('updated figsize', figsize)
+                        """DEBUG"""
+                        # print('updated ax0', self.get_axis_size(fig,ax0))
+                        # print('updated ax1', self.get_axis_size(fig,ax1))
+                        # print('updated figsize', figsize)
+                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < (self.get_axis_size(fig,ax0)[1])/3:
-                        print('LESS THAN 1/3')
+                        # print('LESS THAN 1/3')
                         fig_length = fig_length/2
                         figsize = (fig_width, fig_length)
                         desired_width = (self.get_axis_size(fig,ax0)[1])/3
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        print('updated ax0', self.get_axis_size(fig,ax0))
-                        print('updated ax1', self.get_axis_size(fig,ax1))
-                        print('updated figsize', figsize)
+                        """DEBUG"""
+                        # print('updated ax0', self.get_axis_size(fig,ax0))
+                        # print('updated ax1', self.get_axis_size(fig,ax1))
+                        # print('updated figsize', figsize)
+                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
                         print('BASE AXIS TOO SMALL')
                         desired_width = desired_width*2
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        print('updated ax0', self.get_axis_size(fig,ax0))
-                        print('updated ax1', self.get_axis_size(fig,ax1))
-                        print('updated figsize', figsize)
+                        """DEBUG"""
+                        # print('updated ax0', self.get_axis_size(fig,ax0))
+                        # print('updated ax1', self.get_axis_size(fig,ax1))
+                        # print('updated figsize', figsize)
+                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[1] < 150:
                         if self.get_axis_size(fig,ax0)[0] > (self.get_axis_size(fig,ax0)[1])/3:
                             if self.get_axis_size(fig,ax0)[0] > 10:
                                 break
 
                 # Calculate correct categories dimensions to use
-                print(self.get_axis_size(fig,ax0)[0])
+                # print(self.get_axis_size(fig,ax0)[0])
                 ratio_to_use = (self.get_axis_size(fig,ax0)[0])/8
-                print(ratio_to_use)
+                # print(ratio_to_use)
 
                 # print(get_axis_size(fig,ax1))
                 if figsize[1] > 100:
@@ -676,14 +696,15 @@ class Heatmap(object):
 
                 cat, ranges = self.calculate_categories(s, ax1_dim[0])
 
-                self.draw_categories(ax1, ranges, cat, ax0, self.display)
+                self.draw_categories(ax1, ranges, cat, ax0, self.display, df)
                 # print(figsize)
 
                 # Save figure
                 gs.tight_layout(fig)
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
-
+                print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                print("Rendering PNG")
                 plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
                 if self.cluster == "samples":
                     print('Output file {n}: AMR genes categorised by {c} and '
@@ -702,7 +723,7 @@ class Heatmap(object):
 
         # No categories
         else:
-            if self.frequency == "on":
+            if self.frequency:
                 from matplotlib.ticker import MaxNLocator
                 if self.cluster:
                     df = self.cluster_data(self.cluster, df)
@@ -736,8 +757,9 @@ class Heatmap(object):
                 # Save figure
                 gs.tight_layout(fig)
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
-
+                print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                print("Rendering PNG")
                 plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
                 if self.cluster == 'samples':
                     print('Output file %s: AMR genes are listed in alphabetical order and unique '
@@ -790,7 +812,9 @@ class Heatmap(object):
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
                 # print(file_name)
                 # plt.savefig(self.output + '-' + str(len(jsons)) +".eps", bbox_inches="tight", format="eps")
+                print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                print("Rendering PNG")
                 plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
                 if self.cluster == 'samples':
                     print('Output file %s: AMR genes are listed in alphabetical order '
