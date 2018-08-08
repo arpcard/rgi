@@ -6,18 +6,16 @@ from Bio import SeqIO, Seq
 This script builds the CARD*k-mer sets.
 Please provide location to the CARD*Resistomes&Variants nucleotide FASTAs
     and the location to the index file (index-for-model-sequences.txt).
-Please ensure that scripts "v3_kmer.py", "v3_kmer_species.py", and "plasmids.py"
-    are all located in your working directory.
 """
 
 working_directory = os.path.join(os.getcwd())
 
 def combine_variant_sequences(f1, f2, f3, f4):
     os.system(
-        "cat {fasta_one} {fasta_two} {fasta_three} {fasta_four} \
-        > nucleotide_prevalence_all.fasta"
+        "cat {fasta_one} {fasta_two} {fasta_three} {fasta_four} > {prev_fasta}"
         .format(fasta_one=f1, fasta_two=f2,
-        fasta_three=f3, fasta_four=f4)
+        fasta_three=f3, fasta_four=f4,
+        prev_fasta=os.path.join(working_directory, 'nucleotide_prevalence_all.fasta'))
     )
 
 def split_variant_sequences(index, fasta):
@@ -50,7 +48,7 @@ def split_variant_sequences(index, fasta):
             else:
                 print('Error')
 
-    # Discard shared kmers in genomic sets
+    # Discard shared sequences in genomic sets
     p_and_chr = id_plas.intersection(id_chr)
     tplas = id_plas.difference(id_chr) # plasmid sequqences not in chromosomes
     tchr = id_chr.difference(id_plas)
@@ -58,10 +56,10 @@ def split_variant_sequences(index, fasta):
     tcontig = tcontig.difference(tplas)
     tcontig = tcontig.difference(p_and_chr)
     print('Writing genomic outputs...')
-    with open('both.fasta', 'w') as both:
-        with open('plasmid.fasta', 'w') as plasmids:
-            with open('chr.fasta', 'w') as chrs:
-                with open('contig.fasta', 'w') as contigs:
+    with open(os.path.join(working_directory, 'both.fasta'), 'w') as both:
+        with open(os.path.join(working_directory, 'plasmid.fasta'), 'w') as plasmids:
+            with open(os.path.join(working_directory, 'chr.fasta'), 'w') as chrs:
+                with open(os.path.join(working_directory, 'contig.fasta'), 'w') as contigs:
                     for entry in SeqIO.parse(fasta, 'fasta'):
                         prev_id = entry.id.split(":")[1].split("|")[0]
                         if prev_id in p_and_chr:
@@ -84,9 +82,9 @@ def split_variant_sequences(index, fasta):
     species_count = 0
     genus_count = 0
     multi_count = 0
-    with open('species.fasta', 'w') as single_path:
-        with open('genus.fasta', 'w') as single_genus:
-            with open('multi.fasta', 'w') as multi_path:
+    with open(os.path.join(working_directory, 'species.fasta'), 'w') as single_path:
+        with open(os.path.join(working_directory, 'genus.fasta'), 'w') as single_genus:
+            with open(os.path.join(working_directory, 'multi.fasta'), 'w') as multi_path:
                 for entry in SeqIO.parse(fasta, 'fasta'):
                     prev_id = entry.id.split(":")[1].split("|")[0]
                     if len(id_path[prev_id]) == 1:
@@ -111,115 +109,117 @@ def count_kmers(k):
     print("Counting single species kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "species.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "species.temp.jf"),
+                fasta=os.path.join(working_directory, "species.fasta"))
     )
     # Writes jellyfish output to text file
     species_kmers = "species_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, species_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, species_kmers),
+                db_path=os.path.join(working_directory, "species.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     # Genus
     print("Counting single genus kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "genus.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "genus.temp.jf"),
+                fasta=os.path.join(working_directory, "genus.fasta"))
     )
     # Writes jellyfish output to text file
     genus_kmers = "genus_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, genus_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, genus_kmers),
+                db_path=os.path.join(working_directory, "genus.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     # Multi genus
     print("Counting multi genus kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "multi.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "multi.temp.jf"),
+                fasta=os.path.join(working_directory, "multi.fasta"))
     )
     # Writes jellyfish output to text file
     multi_kmers = "multi_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, multi_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, multi_kmers),
+                db_path=os.path.join(working_directory, "multi.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     # Chr + Plasmid kmers
     print("Counting chr + plasmid kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "both.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "both.temp.jf"),
+                fasta=os.path.join(working_directory, "both.fasta"))
     )
     # Writes jellyfish output to text file
     both_kmers = "both_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, both_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, both_kmers),
+                db_path=os.path.join(working_directory, "both.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     # Plasmid kmers
     print("Counting plasmid kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "plasmid.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "plasmid.temp.jf"),
+                fasta=os.path.join(working_directory, "plasmid.fasta"))
     )
     # Writes jellyfish output to text file
     plasmid_kmers = "plasmid_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, plasmid_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, plasmid_kmers),
+                db_path=os.path.join(working_directory, "plasmid.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     # Chr kmers
     print("Counting chromosome kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count -m {k} -t 24 -s 2G {fasta}"
-        .format(k=k, fasta=os.path.join(working_directory, "chr.fasta"))
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "chr.temp.jf"),
+                fasta=os.path.join(working_directory, "chr.fasta"))
     )
     # Writes jellyfish output to text file
     chr_kmers = "chr_{k}.out".format(k=k)
     os.system(
-        "jellyfish dump -c -t -o {name} mer_counts.jf"
-        .format(name=os.path.join(working_directory, chr_kmers))
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, chr_kmers),
+                db_path=os.path.join(working_directory, "chr.temp.jf"))
     )
-    os.system(
-        "rm mer_counts.jf"
-    )
+    # os.system(
+    #     "rm mer_counts.jf"
+    # )
 
     return species_kmers, genus_kmers, multi_kmers, both_kmers, plasmid_kmers, chr_kmers
-
-def create_kmer_db(sk, gk, mk, pk, ck, bk, variants, index, k):
-    os.system(
-        "python3 v3_kmer_species.py -s {species_kmers} -m {multi_kmers} \
-        -prev {species_fasta} -k {k}"
-        .format(species_kmers=os.path.join(working_directory, species_kmers),
-        multi_kmers=os.path.join(working_directory, multi_kmers),
-        species_fasta=os.path.join(working_directory, "species.fasta"),
-        k=k)
-    )
 
 def is_tool(name):
     import distutils.spawn
@@ -234,7 +234,6 @@ def main(args):
         print("Missing dependency: jellyfish.\nPlease install from https://github.com/gmarcais/Jellyfish/releases")
         exit("Debug")
 
-    # some code
     f1 = args.fasta_one
     f2 = args.fasta_two
     f3 = args.fasta_three
@@ -261,7 +260,6 @@ def main(args):
 
     print("-- COUNTING KMERS --")
     species_kmers, genus_kmers, multi_kmers, both_kmers, plasmid_kmers, chr_kmers = count_kmers(k)
-    print(species_kmers)
     print("DONE \n")
 
     # """DEBUG"""
@@ -305,7 +303,7 @@ def create_parser():
         help="k-mer size (e.g., 61)")
     parser.add_argument('--skip', dest="skip", action='store_true',
         help="Skips the concatenation and splitting of the CARD*R*V sequences.")
-    
+
     return parser
 
 def run():
