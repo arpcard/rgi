@@ -18,7 +18,7 @@ def main(args):
 	logger.info(json.dumps(args.__dict__, indent=2))
 	if args.debug:
 		logger.setLevel(10)
-	
+
 	if args.card_json is not None:
 		# validate json
 		if validate_file(args.card_json) == False:
@@ -35,12 +35,15 @@ def main(args):
 		# load annotation files (card and wildcard)
 		load_reference_card_and_wildcard(args.local_database, args.card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
 
+	if args.kmer_database is not None:
+		load_file(args.local_database, args.kmer_database, "{}mer_database.json".format(str(args.kmer_size)))
+
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
 	logger.info("loaded card only for 'rgi bwt'.")
 
 def load_reference_card_and_wildcard(local_db, card_fasta_file, wildcard_fasta_file, filename):
-	
+
 	db = get_location(local_db)
 
 	filenames = []
@@ -53,7 +56,7 @@ def load_reference_card_and_wildcard(local_db, card_fasta_file, wildcard_fasta_f
 		for line in fin:
 			fout.write(line)
 	logger.info("loaded card and wildcard annotations for 'rgi bwt'.")
-	
+
 def get_location(local_db):
 	db = ""
 
@@ -81,12 +84,15 @@ def load_file(local_db, filepath, filename, validate_json=False):
 
 def create_parser():
 	parser = argparse.ArgumentParser(prog="rgi load", description="{} - {} - Load".format(APP_NAME, SOFTWARE_VERSION))
-	parser.add_argument('-i', '--card_json', required=True, help='must be a card database json file')
-	
+	parser.add_argument('-i', '--card_json', required=False, help='must be a card database json file')
+
 	parser.add_argument('--card_annotation', required=False, help="annotated reference FASTA")
-	
+
 	parser.add_argument('--wildcard_annotation', required=False, help="annotated reference FASTA")
 	parser.add_argument('--wildcard_index', required=False, help="wildcard index file (index-for-model-sequences.txt)")
+
+	parser.add_argument('--kmer_database', required=False, help="json of kmer database")
+	parser.add_argument('--kmer_size', required=False, help="json of kmer database")
 
 	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
 	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")

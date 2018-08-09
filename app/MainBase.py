@@ -10,6 +10,7 @@ import app.build_kmer_sets
 import app.card_annotation
 import app.wildcard_annotation
 import app.remove_duplicates
+import app.kmer_query
 from app.BWT import BWT
 from app.Heatmap import Heatmap
 
@@ -31,12 +32,13 @@ class MainBase(object):
                baits_annotation create fasta files with annotations from baits (Experimental)
                remove_duplicates removes duplicate sequences (Experimental)
                heatmap  heatmap for multiple analysis (Experimental)
-               kmer     Build kmer sets (Experimental)
+               kmer_build     Build CARD*kmer database (Experimental)
+               kmer_query     Query sequences through CARD*kmers (Experimental)
                database Information on installed card database'''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
-                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -123,17 +125,29 @@ class MainBase(object):
     def load_run(self, args):
         app.load.main(args)
 
-    def kmer(self):
-        parser = self.kmer_args()
+    def kmer_build(self):
+        parser = self.kmer_build_args()
         args = parser.parse_args(sys.argv[2:])
-        self.kmer_run(args)
+        self.kmer_build_run(args)
 
-    def kmer_args(self):
+    def kmer_build_args(self):
         parser = app.build_kmer_sets.create_parser()
         return parser
 
-    def kmer_run(self, args):
+    def kmer_build_run(self, args):
         app.build_kmer_sets.main(args)
+
+    def kmer_query(self):
+        parser = self.kmer_query_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.kmer_query_run(args)
+
+    def kmer_query_args(self):
+        parser = app.kmer_query.create_parser()
+        return parser
+
+    def kmer_query_run(self, args):
+        app.kmer_query.main(args)
 
     def card_annotation(self):
         parser = self.card_annotation_args()

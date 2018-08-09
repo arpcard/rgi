@@ -177,7 +177,7 @@ class Heatmap(object):
         yint = range(min(y), math.ceil(max(y)))
         bp = ax2.bar(range(len(freq_dict)), sorted(freq_dict.values(), reverse=True), color="k", align="edge")
         ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
-        # ax2.set_ylabel("Profile Frequency", rotation=0, va='center', labelpad=150, fontsize='xx-large')
+        ax2.set_ylabel("Profile Frequency", rotation=0, va='center', labelpad=150, fontsize='xx-large')
 
     def cluster_data(self, option, df):
         """Hierarchically clusters the dataframe"""
@@ -582,9 +582,9 @@ class Heatmap(object):
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
 
                 print("Rendering EPS")
-                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
-                plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
+                plt.savefig(file_name + '.png', bbox_inches="tight", format="png", pad_inches=0.5)
                 if self.cluster == "samples":
                     print('Output file {fn}: AMR genes categorised by {c} and only unique '
                     'resistome profiles are displayed with ther frequency and have been '
@@ -703,9 +703,9 @@ class Heatmap(object):
                 gs.tight_layout(fig)
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
-                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
-                plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
+                plt.savefig(file_name + '.png', bbox_inches="tight", format="png", pad_inches=0.5)
                 if self.cluster == "samples":
                     print('Output file {n}: AMR genes categorised by {c} and '
                     'samples have been clustered hierarchically (see SciPy '
@@ -758,9 +758,9 @@ class Heatmap(object):
                 gs.tight_layout(fig)
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
-                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
-                plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
+                plt.savefig(file_name + '.png', bbox_inches="tight", pad_inches=0.5, format="png")
                 if self.cluster == 'samples':
                     print('Output file %s: AMR genes are listed in alphabetical order and unique '
                     'resistome profiles are displayed with their frequency have been '
@@ -813,9 +813,9 @@ class Heatmap(object):
                 # print(file_name)
                 # plt.savefig(self.output + '-' + str(len(jsons)) +".eps", bbox_inches="tight", format="eps")
                 print("Rendering EPS")
-                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps")
+                plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
-                plt.savefig(file_name + '.png', bbox_inches="tight", format="png")
+                plt.savefig(file_name + '.png', bbox_inches="tight", format="png", pad_inches=0.5)
                 if self.cluster == 'samples':
                     print('Output file %s: AMR genes are listed in alphabetical order '
                     'and samples have been clustered hierarchically (see SciPy documentation). '
