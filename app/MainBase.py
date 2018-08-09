@@ -10,7 +10,7 @@ import app.build_kmer_sets
 import app.card_annotation
 import app.wildcard_annotation
 import app.remove_duplicates
-import app.kmer_query
+# import app.kmer_query
 from app.BWT import BWT
 from app.Heatmap import Heatmap
 

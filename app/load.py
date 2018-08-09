@@ -36,7 +36,16 @@ def main(args):
 		load_reference_card_and_wildcard(args.local_database, args.card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
 
 	if args.kmer_database is not None:
-		load_file(args.local_database, args.kmer_database, "{}mer_database.json".format(str(args.kmer_size)))
+		if args.kmer_size is not None:
+			load_file(args.local_database, args.kmer_database, "{}mer_database.json".format(str(args.kmer_size)))
+		else:
+			logger.error("Need to specify kmer size when loading kmer files.")
+
+	if args.amr_kmers is not None:
+		if args.kmer_size is not None:
+			load_file(args.local_database, args.amr_kmers, "amr_{}mer.txt".format(str(args.kmer_size)))
+		else:
+			logger.error("Need to specify kmer size when loading kmer files.")
 
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
@@ -92,7 +101,8 @@ def create_parser():
 	parser.add_argument('--wildcard_index', required=False, help="wildcard index file (index-for-model-sequences.txt)")
 
 	parser.add_argument('--kmer_database', required=False, help="json of kmer database")
-	parser.add_argument('--kmer_size', required=False, help="json of kmer database")
+	parser.add_argument('--amr_kmers', required=False, help="txt file of all amr kmers")
+	parser.add_argument('--kmer_size', required=False, help="kmer size if loading kmer files")
 
 	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
 	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")

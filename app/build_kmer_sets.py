@@ -239,6 +239,7 @@ def main(args):
     f3 = args.fasta_three
     f4 = args.fasta_four
     index = args.index
+    card_fasta = args.card_fasta
     k = args.k
 
 
@@ -284,6 +285,26 @@ def main(args):
     species_file, multi_file, variant_sequences, index, k)
     print("DONE \n")
 
+    print("-- CREATING AMR {}-MER SET --".format(k))
+
+    os.system(
+        "cat {card} {variants} > card_and_prevalence.fasta"
+        .format(card=args.card, variants=variant_sequences)
+    )
+
+    os.system(
+        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        .format(k=k, jf_out=os.path.join(working_directory, "all_amr.temp.jf"),
+                fasta=os.path.join(working_directory, "card_and_prevalence.fasta"))
+    )
+
+    amr_kmers = "all_amr_{k}mers.txt".format(k=k)
+    os.system(
+        "jellyfish dump --column --tab --output {name} {db_path}"
+        .format(name=os.path.join(working_directory, amr_kmers),
+                db_path=os.path.join(working_directory, "all_amr.temp.jf"))
+    )
+
     print("Finished creating CARD*kmers set.")
 
 def create_parser():
@@ -297,6 +318,8 @@ def create_parser():
         help="nucleotide_fasta_protein_variant_model_variants.fasta")
     parser.add_argument('-4', dest="fasta_four",
         help="nucleotide_fasta_rRNA_gene_variant_model_variants.fasta")
+    parser.add_argument('-c', '--card', dest="card_fasta",
+        help="fasta file of CARD reference sequences. If missing, run 'rgi card_annotation' to generate.")
     parser.add_argument('-i', '--index', dest="index", required=True,
         help="CARD*R&V Variants index file (index-for-model-sequences.txt)")
     parser.add_argument('-k', dest="k", required=True,
