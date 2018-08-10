@@ -10,7 +10,7 @@ import app.build_kmer_sets
 import app.card_annotation
 import app.wildcard_annotation
 import app.remove_duplicates
-# import app.kmer_query
+from app.kmer_query import CARDkmers
 from app.BWT import BWT
 from app.Heatmap import Heatmap
 
@@ -143,11 +143,29 @@ class MainBase(object):
         self.kmer_query_run(args)
 
     def kmer_query_args(self):
-        parser = app.kmer_query.create_parser()
+        parser = argparse.ArgumentParser(
+            description='Tests sequenes using CARD*k-mers')
+        parser.add_argument('-i', '--input', dest="input", required=True,
+            help="Input file (bam file from RGI*BWT, json file of RGI results, \
+            fasta file of sequences)")
+        parser.add_argument('--bwt', action="store_true",
+            help="Specify if the input file for analysis is a bam file generated from RGI*BWT")
+        parser.add_argument('--rgi', action="store_true",
+            help="Specify if the input file is a RGI results json file")
+        parser.add_argument('--fasta', action="store_true",
+            help="Specify if the input file is a fasta file of sequences")
+        parser.add_argument('-k', '--kmer_size', dest="k", required=True,
+            help="length of k")
+        parser.add_argument('-o', '--output', dest="output", required=True,
+            help="Output file name.")
+        parser.add_argument('--local', dest="local_database", action='store_true',
+            help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
         return parser
 
     def kmer_query_run(self, args):
-        app.kmer_query.main(args)
+        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.output, args.local_database, args.debug)
+        obj.run()
 
     def card_annotation(self):
         parser = self.card_annotation_args()
