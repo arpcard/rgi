@@ -741,6 +741,12 @@ class Heatmap(object):
                 ax0,ax2,gs = self.create_plot('f', 0)
                 df,freq_dict = self.create_frequency_df(df, self.output)
 
+                """FOR DEBUGGING"""
+                print('final ax0', self.get_axis_size(fig,ax0))
+                print('final ax2', self.get_axis_size(fig,ax2))
+                print("final figsize", figsize)
+                """END DEBUGGING"""
+
                 # Create the heatmap
                 # print(figsize)
                 g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
@@ -755,7 +761,42 @@ class Heatmap(object):
                 self.draw_barplot(freq_dict,ax2)
 
                 # Save figure
-                gs.tight_layout(fig)
+                try:
+                    gs.tight_layout(fig)
+                except:
+                    # print("fixing")
+                    # Increase width of plot to avoid matplotlib tight_layout error
+                    new_figsize = (fig_width*3, fig_length)
+                    fig = plt.figure(figsize = new_figsize)
+                    # Try to draw plot with default sizing
+                    if figsize[1] > 100:
+                        sns.set(font_scale=1.7)
+                    # if df.shape[0] > 200:
+                    #     sns.set(font_scale=1.0)
+
+                    sns.set_style("white")
+                    ax0,ax2,gs = self.create_plot('f', 0)
+                    df,freq_dict = self.create_frequency_df(df, self.output)
+
+                    """FOR DEBUGGING"""
+                    print('final ax0', self.get_axis_size(fig,ax0))
+                    print('final ax2', self.get_axis_size(fig,ax2))
+                    print("final figsize", new_figsize)
+                    """END DEBUGGING"""
+
+                    # Create the heatmap
+                    g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
+                    plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
+                    plt.setp(g.xaxis.get_ticklabels(), visible=False)
+                    g.tick_params(bottom=False)
+                    g.yaxis.set_label_position("left")
+                    g.set_ylabel(" ")
+                    g.set_xlabel(" ")
+
+                    # Draw barplot
+                    self.draw_barplot(freq_dict,ax2)
+                    gs.tight_layout(fig)
+
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
@@ -799,6 +840,10 @@ class Heatmap(object):
                     sns.set(font_scale=1.2)
 
                 sns.set_style("white")
+
+                """FOR DEBUGGING"""
+                print("final figsize", figsize)
+                """END DEBUGGING"""
 
                 # Create the heatmap
                 # print(figsize)
