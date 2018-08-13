@@ -263,14 +263,14 @@ class BaseModel(object):
         """ 
         
         nudged = False
-
+        
         # - check if there is 100% match with matching part to the reference
         # - getting matching protein then pull nucleotides from reference and translate 
         # - check the start codons including alternates 
         # - promote to perfect if the start codon is present in the N-terminus
         
         for s in strict:
-            if int(strict[s]["perc_identity"]) == 100 and strict[s]["type_match"] == "Strict" and strict[s]["model_type_id"] not in [40295]:
+            if int(strict[s]["perc_identity"]) == 100 and strict[s]["type_match"] == "Strict" and strict[s]["model_type_id"] not in [40295] and self.input_type == 'contig':
                 reference = strict[s]["sequence_from_broadstreet"]
                 query = strict[s]["orf_prot_sequence"]
                 # Missing n-terminus or c-terminus
@@ -317,9 +317,11 @@ class BaseModel(object):
                     nudged = True 
                 
                 # orf and reference are overlapping  
+                '''
                 elif reference not in query and query not in reference:
-                    logger.warning("TODO:: orf and reference are overlapping")          
-
+                    logger.warning("TODO:: orf and reference are overlapping")
+                '''
+        
         return nudged, strict
 
     def get_part_sequence(self, fasta_file, header, start, stop, nterminus, strand, name):
