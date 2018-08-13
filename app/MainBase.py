@@ -9,6 +9,7 @@ import app.clean
 import app.build_kmer_sets
 import app.card_annotation
 import app.wildcard_annotation
+import app.baits_annotation
 import app.remove_duplicates
 from app.kmer_query import CARDkmers
 from app.BWT import BWT
@@ -191,6 +192,18 @@ class MainBase(object):
     def wildcard_annotation_run(self, args):
         app.wildcard_annotation.main(args)
 
+    def baits_annotation(self):
+        parser = self.baits_annotation_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.baits_annotation_run(args)
+
+    def baits_annotation_args(self):
+        parser = app.baits_annotation.create_parser()
+        return parser
+
+    def baits_annotation_run(self, args):
+        app.baits_annotation.main(args)
+        
     def remove_duplicates(self):
         parser = self.remove_duplicates_args()
         args = parser.parse_args(sys.argv[2:])

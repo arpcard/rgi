@@ -1,6 +1,6 @@
 import os, sys, json, csv, argparse
 """
-This script it used to create annotions and fasta for AMR++ using card data (version 2.0.0 and up)
+This script it used to create annotations and fasta for AMR++ using card data (version 2.0.0 and up)
 """
 
 def main(args):
