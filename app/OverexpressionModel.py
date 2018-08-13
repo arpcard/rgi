@@ -116,7 +116,7 @@ class Overexpression(BaseModel):
 							if submitted_proteins_dict:
 								orf_protein_sequence = str(submitted_proteins_dict[orfInfo.decode().split(" ")[0]])
 
-							if card_sequence == orf_protein_sequence:
+							if card_sequence.upper() == orf_protein_sequence.upper():
 								"""Perfect hits."""
 								logger.info("Perfect hits")
 								ppinsidedict = {}
