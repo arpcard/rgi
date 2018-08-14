@@ -58,3 +58,7 @@ data based on homology and SNP models. Check https://card.mcmaster.ca/download f
 Receive email notification of monthly CARD updates via the CARD Mailing List \
 (https://mailman.mcmaster.ca/mailman/listinfo/card-l)'
 
+GALAXY_PROJECT_WRAPPER='GALAXY_DATABASE must contain the following: \
+data files (card.json, proteindb.fsa),\
+diamond blast database (protein.db.dmnd), \
+ncbi blast database (protein.db.phr, protein.db.pin, protein.db.psq)'

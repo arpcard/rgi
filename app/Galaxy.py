@@ -1,18 +1,19 @@
 from app.settings import *
+import shutil
 
 class Galaxy(object):
-	def __init__(self, database, debug=False):
+	def __init__(self, database, debug):
 		self.database = database
 		self.debug = debug
+		
 		if self.debug:
 			logger.setLevel(10)
 
-	def load_db_galaxy(self):
-		logger.info("source_path: {}".format(self.database))
+	def __repr__(self):
+		"""Returns Galaxy class full object."""
+		return "Galaxy({}".format(self.__dict__)
 
-		if self.database == None:
-			logger.error("no new card path")
-			exit()
+	def load_db_galaxy(self):
 
 		"""
 		verify that we have the following files at the specified location:
@@ -44,10 +45,11 @@ class Galaxy(object):
 		missing_files = list(set(needed_files) - set(found_files))
 
 		if len(missing_files) > 0:
-		 	logger.error("Error: missing database files {}".format(missing_files))
+		 	logger.error("missing database files {}".format(missing_files))
 		 	exit()
-		
+		logger.info("found all needed files: {}".format(json.dumps(needed_files, indent=2)))
 		# Files found - move files into _data and _db directories
+		logger.info("files found - now move files into _data and _db directories")
 		for f in os.listdir(self.database):
 			if not f.startswith('.') and f in needed_files:
 				src_path = os.path.join(self.database,f)
@@ -60,6 +62,7 @@ class Galaxy(object):
 				try:
 					shutil.copy2(src_path,dst_path)
 				except Exception as e:
-					logger.warning("failed to copy file: {}".format(e))
+					logger.error("failed to copy file: {}".format(e))
+					exit()
 
 				

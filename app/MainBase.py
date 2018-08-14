@@ -203,7 +203,7 @@ class MainBase(object):
 
     def baits_annotation_run(self, args):
         app.baits_annotation.main(args)
-        
+
     def remove_duplicates(self):
         parser = self.remove_duplicates_args()
         args = parser.parse_args(sys.argv[2:])
@@ -289,14 +289,13 @@ class MainBase(object):
 
     def galaxy_args(self):
         parser = argparse.ArgumentParser(prog="rgi galaxy", description="{} - {} - Galaxy project wrapper".\
-            format(APP_NAME, SOFTWARE_VERSION))
-        parser.add_argument('--galaxy_database', help='specify path to CARD blast databases. Note this is \
-            ONLY used for galaxyproject wrapper (default: None)', required=False)
+            format(APP_NAME, SOFTWARE_VERSION), epilog=GALAXY_PROJECT_WRAPPER)
+        parser.add_argument('--galaxy_database', help='path to CARD data and blast databases', required=True)
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
         return parser
 
     def galaxy_run(self, args):
-        obj = Galaxy(args.galaxy_database)
+        obj = Galaxy(args.galaxy_database, args.debug)
         obj.load_db_galaxy()
 
     def database(self):
