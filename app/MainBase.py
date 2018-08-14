@@ -157,6 +157,8 @@ class MainBase(object):
             help="Specify if the input file is a fasta file of sequences")
         parser.add_argument('-k', '--kmer_size', dest="k", required=True,
             help="length of k")
+        parser.add_argument('-n','--threads', dest="threads", type=int,
+            default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o', '--output', dest="output", required=True,
             help="Output file name.")
         parser.add_argument('--local', dest="local_database", action='store_true',
