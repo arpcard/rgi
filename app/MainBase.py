@@ -167,7 +167,7 @@ class MainBase(object):
         return parser
 
     def kmer_query_run(self, args):
-        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.output, args.local_database, args.debug)
+        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.threads, args.output, args.local_database, args.debug)
         obj.run()
 
     def card_annotation(self):
