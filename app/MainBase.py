@@ -157,6 +157,8 @@ class MainBase(object):
             help="Specify if the input file is a fasta file of sequences")
         parser.add_argument('-k', '--kmer_size', dest="k", required=True,
             help="length of k")
+        parser.add_argument('-m', '--minimum', dest="min", default=10,
+            help="Minimum number of kmers in the called category for the classification to be made (default=10).")
         parser.add_argument('-n','--threads', dest="threads", type=int,
             default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o', '--output', dest="output", required=True,
@@ -167,7 +169,7 @@ class MainBase(object):
         return parser
 
     def kmer_query_run(self, args):
-        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.threads, args.output, args.local_database, args.debug)
+        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.min, args.threads, args.output, args.local_database, args.debug)
         obj.run()
 
     def card_annotation(self):
