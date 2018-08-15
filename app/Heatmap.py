@@ -405,7 +405,7 @@ class Heatmap(object):
 
         # Create dataframe from genes dictionary
         if not genes:
-            print("Error: No data recovered from JSONs, cannot build heatmap. "
+            logger.error("Error: No data recovered from JSONs, cannot build heatmap. "
             "Please check you are using RGI results from ver 4.0.0 or greater.")
             exit()
         df = pd.DataFrame.from_dict(genes)
@@ -478,7 +478,7 @@ class Heatmap(object):
                 df = df.iloc[:, clustered_col]
                 df = df.reset_index().set_index("uID")
             elif self.cluster == "both" or self.cluster == "genes":
-                print("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
+                logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
                 exit()
 
             # Figure parameters if frequency option chosen
@@ -527,7 +527,7 @@ class Heatmap(object):
                         # print('updated figsize', figsize)
                         """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
-                        print('BASE AXIS TOO SMALL')
+                        # print('BASE AXIS TOO SMALL')
                         desired_width = desired_width*2
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
@@ -741,11 +741,11 @@ class Heatmap(object):
                 ax0,ax2,gs = self.create_plot('f', 0)
                 df,freq_dict = self.create_frequency_df(df, self.output)
 
-                """FOR DEBUGGING"""
-                print('final ax0', self.get_axis_size(fig,ax0))
-                print('final ax2', self.get_axis_size(fig,ax2))
-                print("final figsize", figsize)
-                """END DEBUGGING"""
+                # """FOR DEBUGGING"""
+                # print('final ax0', self.get_axis_size(fig,ax0))
+                # print('final ax2', self.get_axis_size(fig,ax2))
+                # print("final figsize", figsize)
+                # """END DEBUGGING"""
 
                 # Create the heatmap
                 # print(figsize)
@@ -778,11 +778,11 @@ class Heatmap(object):
                     ax0,ax2,gs = self.create_plot('f', 0)
                     df,freq_dict = self.create_frequency_df(df, self.output)
 
-                    """FOR DEBUGGING"""
-                    print('final ax0', self.get_axis_size(fig,ax0))
-                    print('final ax2', self.get_axis_size(fig,ax2))
-                    print("final figsize", new_figsize)
-                    """END DEBUGGING"""
+                    # """FOR DEBUGGING"""
+                    # print('final ax0', self.get_axis_size(fig,ax0))
+                    # print('final ax2', self.get_axis_size(fig,ax2))
+                    # print("final figsize", new_figsize)
+                    # """END DEBUGGING"""
 
                     # Create the heatmap
                     g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
@@ -841,9 +841,9 @@ class Heatmap(object):
 
                 sns.set_style("white")
 
-                """FOR DEBUGGING"""
-                print("final figsize", figsize)
-                """END DEBUGGING"""
+                # """FOR DEBUGGING"""
+                # print("final figsize", figsize)
+                # """END DEBUGGING"""
 
                 # Create the heatmap
                 # print(figsize)
