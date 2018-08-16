@@ -47,9 +47,30 @@ def main(args):
 		else:
 			logger.error("Need to specify kmer size when loading kmer files.")
 
+	if args.baits_index is not None and args.baits_annotation is not None and args.card_annotation is not None:
+		logger.info("adding index and fasta for baits")
+		# load index
+		load_file(args.local_database, args.baits_index, "baits-probes-with-sequence-info.txt")
+		# load annotation files (baits)
+		load_reference_card_and_baits(args.local_database, args.card_annotation, args.baits_annotation, "card_baits_reference.fasta")
+
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
 	logger.info("loaded card only for 'rgi bwt'.")
+
+def load_reference_card_and_baits(local_db, card_fasta_file, wildcard_fasta_file, filename):
+	db = get_location(local_db)
+
+	filenames = []
+	filenames.append(card_fasta_file)
+	filenames.append(wildcard_fasta_file)
+
+	# combine the two fastas
+	import fileinput
+	with open(os.path.join(db, filename), 'w') as fout, fileinput.input(filenames) as fin:
+		for line in fin:
+			fout.write(line)
+	logger.info("loaded card and baits annotations for 'rgi bwt'.")
 
 def load_reference_card_and_wildcard(local_db, card_fasta_file, wildcard_fasta_file, filename):
 
@@ -99,6 +120,9 @@ def create_parser():
 
 	parser.add_argument('--wildcard_annotation', required=False, help="annotated reference FASTA")
 	parser.add_argument('--wildcard_index', required=False, help="wildcard index file (index-for-model-sequences.txt)")
+
+	parser.add_argument('--baits_annotation', required=False, help="annotated reference FASTA")
+	parser.add_argument('--baits_index', required=False, help="baits index file (baits-probes-with-sequence-info.txt)")
 
 	parser.add_argument('--kmer_database', required=False, help="json of kmer database")
 	parser.add_argument('--amr_kmers', required=False, help="txt file of all amr kmers")

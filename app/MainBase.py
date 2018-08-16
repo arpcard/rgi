@@ -242,6 +242,7 @@ class MainBase(object):
         obj = BWT(
             args.aligner,
             args.include_wildcard,
+            args.include_baits,
             args.read_one,
             args.read_two,
             args.threads,
