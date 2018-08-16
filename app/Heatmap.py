@@ -162,6 +162,7 @@ class Heatmap(object):
             cols.insert(0, 'index')
         freq_df = freq_df[cols]
 
+        # Create .txt file of grouped samples
         with open(outfile + str(n) + '-frequency.txt', 'w') as f:
             fcsv = csv.writer(f, delimiter='\t')
             fcsv.writerow(['Frequency', 'Samples'])
@@ -170,12 +171,13 @@ class Heatmap(object):
                     fcsv.writerow([len(samples[s])] + [', '.join(map(str, samples[s]))])
         return freq_df, freq_dict
 
-    def draw_barplot(self, freq_dict, ax2):
+    def draw_barplot(self, freq_dict, ax2, order):
         """Draws the frequency barplot"""
         from matplotlib.ticker import MaxNLocator
         y = list(freq_dict.values())
         yint = range(min(y), math.ceil(max(y)))
-        bp = ax2.bar(range(len(freq_dict)), sorted(freq_dict.values(), reverse=True), color="k", align="edge")
+        order_values = [freq_dict[x] for x in order]
+        bp = ax2.bar(range(len(freq_dict)), order_values, color="k", align="edge")
         ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax2.set_ylabel("Profile Frequency", rotation=0, va='center', labelpad=150, fontsize='xx-large')
 
@@ -186,6 +188,7 @@ class Heatmap(object):
             global clustered_col
             clustered_col = cm.dendrogram_col.reordered_ind
             df = df.iloc[:, clustered_col]
+            # clustered_col is a list of indexes
         elif option == "genes":
             cm = sns.clustermap(df, row_cluster=True, col_cluster=False)
             clustered_row = cm.dendrogram_row.reordered_ind
@@ -470,22 +473,23 @@ class Heatmap(object):
             unique_ids = list(complete_class_df.index.values)
             df = df.reindex(index=unique_ids)
 
-            # Modifies dataframe if cluster option chosen
-            if self.cluster == "samples":
-                df_copy = df.drop(["index"], axis=1)
-                df_copy = self.cluster_data(self.cluster, df_copy)
-                df = df.set_index("index", append=True)
-                df = df.iloc[:, clustered_col]
-                df = df.reset_index().set_index("uID")
-            elif self.cluster == "both" or self.cluster == "genes":
-                logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
-                exit()
-
             # Figure parameters if frequency option chosen
             if self.frequency:
                 df, freq_dict = self.create_frequency_df(df, self.output)
                 df = df.reindex(index=unique_ids)
                 df = df.set_index("index")
+                column_order = list(df)
+
+                if self.cluster == "samples":
+                    # df_copy = df.drop(["index"], axis=1)
+                    df_copy = self.cluster_data(self.cluster, df)
+                    # df = df.set_index("index", append=True)
+                    df = df.iloc[:, clustered_col]
+                    column_order = list(df)
+                    # df = df.reset_index().set_index("uID")
+                elif self.cluster == "both" or self.cluster == "genes":
+                    logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
+                    exit()
 
                 # Set the figure size
                 fig_width,fig_length,fig,figsize = self.get_figure_dimensions(jsons, unique_ids)
@@ -528,7 +532,10 @@ class Heatmap(object):
                         """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
                         # print('BASE AXIS TOO SMALL')
-                        desired_width = desired_width*2
+                        try:
+                            desired_width = desired_width*2
+                        except:
+                            desired_width = fig_width
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
@@ -575,7 +582,7 @@ class Heatmap(object):
                 self.draw_categories(ax1, ranges, cat, ax0, self.display, df)
 
                 # Draw barplot
-                self.draw_barplot(freq_dict,ax2)
+                self.draw_barplot(freq_dict,ax2, column_order)
 
                 # Save figure
                 gs.tight_layout(fig)
@@ -604,6 +611,17 @@ class Heatmap(object):
 
             # Categories, but no frequency
             else:
+                # Modifies dataframe if cluster option chosen
+                if self.cluster == "samples":
+                    df_copy = df.drop(["index"], axis=1)
+                    df_copy = self.cluster_data(self.cluster, df_copy)
+                    df = df.set_index("index", append=True)
+                    df = df.iloc[:, clustered_col]
+                    df = df.reset_index().set_index("uID")
+                elif self.cluster == "both" or self.cluster == "genes":
+                    logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
+                    exit()
+
                 df = df.set_index("index")
 
                 # Set the dimension parameters
@@ -647,8 +665,11 @@ class Heatmap(object):
                         # print('updated figsize', figsize)
                         """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
-                        print('BASE AXIS TOO SMALL')
-                        desired_width = desired_width*2
+                        # print('BASE AXIS TOO SMALL')
+                        try:
+                            desired_width = desired_width*2
+                        except:
+                            desired_width = fig_width
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
@@ -724,9 +745,12 @@ class Heatmap(object):
         # No categories
         else:
             if self.frequency:
-                from matplotlib.ticker import MaxNLocator
+                df,freq_dict = self.create_frequency_df(df, self.output)
+                column_order = list(df)
+
                 if self.cluster:
                     df = self.cluster_data(self.cluster, df)
+                    column_order = list(df)
 
                 # Set the dimension parameters
                 fig_width,fig_length,fig,figsize = self.get_figure_dimensions(jsons, genelist)
@@ -736,11 +760,8 @@ class Heatmap(object):
                     sns.set(font_scale=1.7)
                 # if df.shape[0] > 200:
                 #     sns.set(font_scale=1.0)
-
                 sns.set_style("white")
                 ax0,ax2,gs = self.create_plot('f', 0)
-                df,freq_dict = self.create_frequency_df(df, self.output)
-
                 # """FOR DEBUGGING"""
                 # print('final ax0', self.get_axis_size(fig,ax0))
                 # print('final ax2', self.get_axis_size(fig,ax2))
@@ -758,7 +779,7 @@ class Heatmap(object):
                 g.set_xlabel(" ")
 
                 # Draw barplot
-                self.draw_barplot(freq_dict,ax2)
+                self.draw_barplot(freq_dict,ax2, column_order)
 
                 # Save figure
                 try:
@@ -794,7 +815,7 @@ class Heatmap(object):
                     g.set_xlabel(" ")
 
                     # Draw barplot
-                    self.draw_barplot(freq_dict,ax2)
+                    self.draw_barplot(freq_dict,ax2, column_order)
                     gs.tight_layout(fig)
 
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
