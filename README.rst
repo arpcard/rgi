@@ -21,6 +21,7 @@ Table of Contents
 - `Run RGI`_
 - `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
+- `RGI Heatmap`_
 - `Run RGI from docker`_
 - `Tab-delimited results file`_
 - `Support & Bug Reports`_
@@ -82,15 +83,24 @@ Usage
 
 .. code-block:: sh
 
-   usage: rgi <command> [<args>] 
-            commands are:
-               main     Runs rgi application
-               tab      Creates a Tab-delimited from rgi results
-               parser   Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
-               load     Loads CARD database json file
-               clean    Removes BLAST databases and temporary files
-               galaxy   Galaxy project wrapper
-               database Information on installed card database
+      usage: rgi <command> [<args>]
+                  commands are:
+                  main     Runs rgi application
+                  tab      Creates a Tab-delimited from rgi results
+                  parser   Creates categorical JSON files RGI wheel visualization
+                  load     Loads CARD database JSON file
+                  clean    Removes BLAST databases and temporary files
+                  galaxy   Galaxy project wrapper
+                  database Information on installed card database
+                  heatmap  Heatmap for multiple analysis
+                  ---------------------------------------------------------------------------------------
+                  bwt                   Metagenomics resistomes (Experimental)
+                  card_annotation       Create fasta files with annotations from card.json (Experimental)
+                  wildcard_annotation   Create fasta files with annotations from variants (Experimental)
+                  baits_annotation      Create fasta files with annotations from baits (Experimental)
+                  remove_duplicates     Removes duplicate sequences (Experimental)
+                  kmer_build            Build CARD*kmer database (Experimental)
+                  kmer_query            Query sequences through CARD*kmers (Experimental)
 
    Resistance Gene Identifier - <version_number>
 
@@ -183,6 +193,58 @@ Clean previous or old databases
    .. code-block:: sh 
    
       rgi clean      
+
+RGI Heatmap
+------------
+
+- Default Heatmap
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+       
+- Heatmap with `AMR Gene Family` categorization
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family
+
+- Heatmap with `AMR Gene Family` categorization and fill display
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family --display fill
+
+- Heatmap with `AMR Gene Family` categorization and coloured y-axis labels display
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family --display text
+
+
+- Heatmap with frequency display enabled
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --frequency
+
+- Heatmap with drug class category and frequency enabled
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category drug_class --frequency --display text
+
+- Heatmap with samples and genes clustered
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --cluster both
+
+- Heatmap with resistance mechanism categorization and clustered samples
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --cluster samples --category resistance_mechanism --display fill
 
 
 Run RGI from docker

@@ -23,19 +23,21 @@ class MainBase(object):
             commands are:
                main     Runs rgi application
                tab      Creates a Tab-delimited from rgi results
-               parser   Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.
-               load     Loads CARD database json file
+               parser   Creates categorical JSON files RGI wheel visualization
+               load     Loads CARD database JSON file
                clean    Removes BLAST databases and temporary files
                galaxy   Galaxy project wrapper
-               bwt      Metagenomics resistomes (Experimental)
-               card_annotation create fasta files with annotations from card.json (Experimental)
-               wildcard_annotation create fasta files with annotations from variants (Experimental)
-               baits_annotation create fasta files with annotations from baits (Experimental)
-               remove_duplicates removes duplicate sequences (Experimental)
-               heatmap  heatmap for multiple analysis (Experimental)
-               kmer_build     Build CARD*kmer database (Experimental)
-               kmer_query     Query sequences through CARD*kmers (Experimental)
-               database Information on installed card database'''
+               database Information on installed card database
+               heatmap  Heatmap for multiple analysis
+               ---------------------------------------------------------------------------------------
+               bwt                   Metagenomics resistomes (Experimental)
+               card_annotation       Create fasta files with annotations from card.json (Experimental)
+               wildcard_annotation   Create fasta files with annotations from variants (Experimental)
+               baits_annotation      Create fasta files with annotations from baits (Experimental)
+               remove_duplicates     Removes duplicate sequences (Experimental)
+               kmer_build            Build CARD*kmer database (Experimental)
+               kmer_query            Query sequences through CARD*kmers (Experimental)
+               '''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
