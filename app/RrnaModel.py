@@ -140,6 +140,7 @@ class Rrna(BaseModel):
 											sinsidedict["query"] = hsp.query
 											sinsidedict["match"] = hsp.match
 											sinsidedict["sbjct"] = hsp.sbjct
+											sinsidedict["sequence_from_db"] = ""
 											sinsidedict["orf_dna_sequence"] = hsp.sbjct
 											sinsidedict["orf_prot_sequence"] = ""
 
@@ -185,6 +186,7 @@ class Rrna(BaseModel):
 											slinsidedict["cvterm_id"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["NCBI_taxonomy"]["NCBI_taxonomy_cvterm_id"]
 											slinsidedict["query"] = hsp.query
 											slinsidedict["match"] = hsp.match
+											slinsidedict["sequence_from_db"] = ""
 											slinsidedict["sbjct"] = hsp.sbjct
 											slinsidedict["orf_dna_sequence"] = hsp.sbjct
 											slinsidedict["orf_prot_sequence"] = ""
