@@ -32,22 +32,20 @@ class CARDkmers(object):
         self.amr_kmers = os.path.join(self.data, "amr_{}mer.txt".format(k))
 
         # files
-        if self.bwt:
-            self.input_bam_file = input
-            self.bam_directory = os.path.dirname(self.input_bam_file)
-            # use bam directory to search for .txt idx stats output
-        if self.rgi:
-            self.input_json_file = input
-        if self.fasta:
-            self.input_fasta_file = input
-
-        # outputs
         self.working_directory = os.path.join(os.getcwd())
         self.base_name = os.path.basename(self.input_file)
         self.fasta_file = os.path.join(self.working_directory, "{}.fasta".format(self.base_name))
         self.output_json_file = os.path.join(self.working_directory, "{o}_{k}mer_analysis.json".format(o=self.output, k=self.k))
-        self.output_allele_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis.allele.txt".format(o=self.output, k=self.k))
-        self.output_gene_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis.gene.txt".format(o=self.output, k=self.k))
+        if self.bwt:
+            self.input_bam_file = input
+            self.bam_directory = os.path.dirname(self.input_bam_file)
+            self.output_allele_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis.allele.txt".format(o=self.output, k=self.k))
+            self.output_gene_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis.gene.txt".format(o=self.output, k=self.k))
+        if self.rgi:
+            self.input_rgi_file = input
+            self.output_rgi_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis_rgi_summary.txt".format(o=self.output, k=self.k))
+        if self.fasta:
+            self.input_fasta_file = input
 
         self.debug = debug
         if self.debug:
@@ -78,7 +76,8 @@ class CARDkmers(object):
 
     def get_rgi_sequences(self):
         logger.info("getting sequences")
-        with open(self.input_json_file) as j:
+        orf_list = []
+        with open(self.input_rgi_file) as j:
             rgi_data = json.load(j)
         try:
             del rgi_data["_metadata"]
@@ -89,17 +88,21 @@ class CARDkmers(object):
             try:
                 for key,value in rgi_data.items():
                     if isinstance(value, dict):
-                        contig_id = key.split()[0]
+                        orf_id = key
+                        orf_list.append(orf_id)
+                        contig_id = orf_id.split()[0]
                         hsp = max(value.keys(), key=(lambda key: value[key]["bit_score"]))
                         model = value[hsp]["model_name"].replace(" ","_")
                         type_hit = value[hsp]["type_match"]
                         dna = value[hsp]["orf_dna_sequence"]
 
-                        fasta.write(">{node}__{hsp}__{model}__{type_hit}\n{dna}\n"
-                                    .format(node=contig_id, hsp=hsp, model=model, type_hit=type_hit, dna=dna))
+                        fasta.write(">{orf}__{hsp}__{model}__{type_hit}\n{dna}\n"
+                                    .format(orf=contig_id, hsp=hsp, model=model, type_hit=type_hit, dna=dna))
 
             except Exception as e:
                 print(e)
+
+        return orf_list
 
     def get_bwt_sequences(self):
         """
@@ -122,25 +125,25 @@ class CARDkmers(object):
             read = qname
         return read, model, flag, mapq
 
-    def get_rgi_data(self, header):
-        orf, hsp, model, type_hit = header.split("__")
-        return orf, hsp, model, type_hit
+    # def get_rgi_data(self, header):
+    #     orf, hsp, model, type_hit = header.split("__")
+    #     return orf, hsp, model, type_hit
 
     def populate_rgi_json(self, orf, hsp, model, type_hit, num_kmers, amr_c, tax, gen, o):
-        o[orf] = {'ORF': orf, 'HSP': hsp, 'ARO_model': model.replace("_", " "), \
-        'type_hit': type_hit, '# of kmers in sequence': num_kmers, \
-        '# of AMR kmers': amr_c, 'taxonomic info': tax, 'genomic info': gen}
+        o[orf] = {'ORF': orf, 'contig': orf.split()[0], 'HSP': hsp, 'ARO_model': model.replace("_", " "), \
+        'type_hit': type_hit, '#_of_kmers_in_sequence': num_kmers, \
+        '#_of_AMR_kmers': amr_c, 'taxonomic_info': tax, 'genomic_info': gen}
 
     def populate_bwt_json(self, read, model, num_kmers, amr_c, flag, mapq, tax, gen, o):
-        o[read] = {'reference': model, '# of kmers in sequence': num_kmers, \
-        '# of AMR kmers': amr_c, 'SAM flag': int(flag), \
-        'MAPQ': int(mapq), 'taxonomic info': tax, \
-        'genomic info': gen}
+        o[read] = {'reference': model, '#_of_kmers_in_sequence': num_kmers, \
+        '#_of_AMR_kmers': amr_c, 'SAM_flag': int(flag), \
+        'MAPQ': int(mapq), 'taxonomic_info': tax, \
+        'genomic_info': gen}
 
     def populate_fasta_json(self, read, num_kmers, amr_c, tax, gen, o):
-        o[read] = {'# of kmers in sequence': num_kmers, \
-        '# of AMR kmers': amr_c, 'taxonomic info': tax, \
-        'genomic info': gen}
+        o[read] = {'#_of_kmers_in_sequence': num_kmers, \
+        '#_of_AMR_kmers': amr_c, 'taxonomic_info': tax, \
+        'genomic_info': gen}
 
     def split_fasta(self, file):
         logger.info("getting sequences")
@@ -195,7 +198,10 @@ class CARDkmers(object):
             dna = str(entry.seq)
             num_kmers = len(dna) - k + 1
             if type == 'rgi':
-                orf, hsp, model, type_hit = self.get_rgi_data(entry.id)
+                contig_id, hsp, model, type_hit = entry.id.split("__")
+                for x in self.orf_list:
+                    if x.split()[0] == contig_id:
+                        orf_id = x
             elif type == 'bwt':
                 read, model, flag, mapq = self.get_bwt_alignment_data(entry.id)
             elif type == "fasta":
@@ -244,7 +250,7 @@ class CARDkmers(object):
                     pass
                 else:
                     if type == "rgi":
-                        self.populate_rgi_json(orf, hsp, model, type_hit, num_kmers, amr_c, tax, gen, o)
+                        self.populate_rgi_json(orf_id, hsp, model, type_hit, num_kmers, amr_c, tax, gen, o)
                     elif type == "bwt":
                         self.populate_bwt_json(read, model, num_kmers, amr_c, flag, mapq, tax, gen, o)
                     elif type == "fasta":
@@ -293,84 +299,175 @@ class CARDkmers(object):
         else:
             d[name] += 1
 
-    def single_species(self, read, path, allele, ss_allele, ssp_allele, ssgi_allele):
-        if not(all(v == 0 for v in read['genomic info'].values())):
-            if read['genomic info']['chr'] > 0:
-                if read['genomic info']['plasmid'] + read['genomic info']['chr + plasmid'] > self.min-1:
-                    self.get_taxon_data(allele, ssgi_allele, path)
+    def single_species_bwt(self, read, path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele):
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
+                    self.get_taxon_data(allele, sscp_allele, path)
                 else:
-                    self.get_taxon_data(allele, ss_allele, path)
+                    self.get_taxon_data(allele, ssc_allele, path)
             else: # no chr kmers (only look at plasmid and genomic islands)
-                if read['genomic info']['plasmid'] > self.min-1:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
+                if read['genomic_info']['plasmid'] > self.min-1:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        self.get_taxon_data(allele, ssgi_allele, path)
+                        self.get_taxon_data(allele, sscp_allele, path)
                     else:
                         # plasmid kmers present - plasmid
                         self.get_taxon_data(allele, ssp_allele, path)
                 else:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
-                        self.get_taxon_data(allele, ssgi_allele, path)
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
+                        self.get_taxon_data(allele, sscp_allele, path)
                     else: # everything falls below cutoff
-                        self.get_taxon_data(allele, ss_allele, path)
+                        self.get_taxon_data(allele, ssu_allele, path)
 
         else:
             # no genomic kmers, but single species kmers
-            self.get_taxon_data(allele, ss_allele, path)
+            self.get_taxon_data(allele, ssu_allele, path)
 
-    def single_genus(self, read, genus, allele, sggi_allele, sg_allele, sgp_allele):
-        if not(all(v == 0 for v in read['genomic info'].values())):
-            if read['genomic info']['chr'] > 0:
-                if read['genomic info']['plasmid'] + read['genomic info']['chr + plasmid'] > self.min-1:
+    def single_species_rgi(self, read, path):
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
+                    prediction = "{} (chromosome & plasmid)".format(path)
+                else:
+                    prediction = "{} (chromosome)".format(path)
+            else: # no chr kmers (only look at plasmid and genomic islands)
+                if read['genomic_info']['plasmid'] > self.min-1:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
+                        # chr + plasmid kmers present - GI
+                        prediction = "{} (chromosome & plasmid)".format(path)
+                    else:
+                        # plasmid kmers present - plasmid
+                        prediction = "{} (plasmid)".format(path)
+                else:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
+                        prediction = "{} (chromosome & plasmid)".format(path)
+                    else: # everything falls below cutoff
+                        prediction = "{} (no genomic info)".format(path)
+
+        else:
+            # no genomic kmers, but single species kmers
+            prediction = "{} (no genomic info)".format(path)
+        return prediction
+
+    def single_genus_bwt(self, read, genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele):
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
                     # chr + plasmid kmers present - GI
-                    self.get_taxon_data(allele, sggi_allele, genus)
+                    self.get_taxon_data(allele, sgcp_allele, genus)
                 else:
                     # chr kmers present - genomic
-                    self.get_taxon_data(allele, sg_allele, genus)
+                    self.get_taxon_data(allele, sgc_allele, genus)
             else:
-                if read['genomic info']['plasmid'] > self.min-1:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
+                if read['genomic_info']['plasmid'] > self.min-1:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        self.get_taxon_data(allele, sggi_allele, genus)
+                        self.get_taxon_data(allele, sgcp_allele, genus)
                     else:
                         # plasmid kmers present - plasmid
                         self.get_taxon_data(allele, sgp_allele, genus)
                 else:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        self.get_taxon_data(allele, sggi_allele, genus)
+                        self.get_taxon_data(allele, sgcp_allele, genus)
                     else:
-                        self.get_taxon_data(allele, sg_allele, genus)
+                        self.get_taxon_data(allele, sgu_allele, genus)
         else:
             # no genomic kmers, but single genus kmers
-            self.get_taxon_data(allele, sg_allele, genus)
+            self.get_taxon_data(allele, sgu_allele, genus)
 
-    def abiguous(self, read, allele, gi_allele, a_allele, m_allele):
-        if not(all(v == 0 for v in read['genomic info'].values())):
-            if read['genomic info']['chr'] > 0:
-                if read['genomic info']['plasmid'] + read['genomic info']['chr + plasmid'] > self.min-1:
+    def single_genus_rgi(self, read, genus):
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
+                    # chr + plasmid kmers present - GI
+                    prediction = "{} (chromosome & plasmid)".format(genus)
+                else:
+                    # chr kmers present - genomic
+                    prediction = "{} (chromosome)".format(genus)
+            else:
+                if read['genomic_info']['plasmid'] > self.min-1:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
+                        # chr + plasmid kmers present - GI
+                        prediction = "{} (chromosome & plasmid)".format(genus)
+                    else:
+                        # plasmid kmers present - plasmid
+                        prediction = "{} (plasmid)".format(genus)
+                else:
+                    if read['genomic_info']['chr + plasmid'] > self.min-1:
+                        # chr + plasmid kmers present - GI
+                        prediction = "{} (chromosome & plasmid)".format(genus)
+                    else:
+                        prediction = "{} (no genomic info)".format(genus)
+        else:
+            # no genomic kmers, but single genus kmers
+            prediction = "{} (no genomic info)".format(genus)
+        return prediction
+
+    def ambiguous_bwt(self, read, allele, cp_allele, a_allele, m_allele, c_allele, taxon):
+        # taxon - if
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
                     # differnt species and genus, but chr + plasmid kmer
-                    self.get_ambiguous_data(allele, gi_allele)
+                    self.get_ambiguous_data(allele, cp_allele)
                 else:
                     # different species and genus only chr kmer (not mobile)
-                    self.get_ambiguous_data(allele, a_allele)
-            else:
-                if read['genomic info']['plasmid'] > self.min-1:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
-                        # different species and genus, but chr + plasmid
-                        self.get_ambiguous_data(allele, gi_allele)
-                    else:
-                        # different species and genus, but plasmid
-                        self.get_ambiguous_data(allele, m_allele)
+                    self.get_ambiguous_data(allele, c_allele)
+            elif read['genomic_info']['plasmid'] > self.min-1:
+                if read['genomic_info']['chr + plasmid'] > self.min-1:
+                    # different species and genus, but chr + plasmid
+                    self.get_ambiguous_data(allele, cp_allele)
                 else:
-                    if read['genomic info']['chr + plasmid'] > self.min-1:
-                        # different species and genus, but chr + plasmid
-                        self.get_ambiguous_data(allele, gi_allele)
-                    else:
-                        self.get_ambiguous_data(allele, a_allele)
+                    # different species and genus, but plasmid
+                    self.get_ambiguous_data(allele, m_allele)
+            elif read['genomic_info']['chr + plasmid'] > self.min-1:
+                # different species and genus, but chr + plasmid
+                self.get_ambiguous_data(allele, cp_allele)
+            else:
+                # different species and genus, not enough genomic info
+                if taxon:
+                    self.get_ambiguous_data(allele, a_allele)
+                # else:
+                #     print("not enough info to make classification")
         else:
-            # different species and genus, no genomic info
-            self.get_ambiguous_data(allele, a_allele)
+            if taxon:
+                self.get_ambiguous_data(allele, a_allele)
+            # else:
+            #     print("not enough info to make classification")
+
+    def ambiguous_rgi(self, read, taxon):
+        # taxon - if
+        if not(all(v == 0 for v in read['genomic_info'].values())):
+            if read['genomic_info']['chr'] > self.min-1:
+                if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
+                    prediction = "Unknown taxonomy (chromosome & plasmid)"
+                else:
+                    # different species and genus only chr kmer (not mobile)
+                    prediction = "Unknown taxonomy (chromosome)"
+            elif read['genomic_info']['plasmid'] > self.min-1:
+                if read['genomic_info']['chr + plasmid'] > self.min-1:
+                    # different species and genus, but chr + plasmid
+                    prediction = "Unknown taxonomy (chromosome & plasmid)"
+                else:
+                    # different species and genus, but plasmid
+                    prediction = "Unknown taxonomy (plasmid)"
+            elif read['genomic_info']['chr + plasmid'] > self.min-1:
+                # different species and genus, but chr + plasmid
+                prediction = "Unknown taxonomy (chromosome & plasmid)"
+            else:
+                # different species and genus, not enough genomic info
+                if taxon:
+                    prediction = "Unknown taxonomy and genomic context"
+                else:
+                    prediction = "No info"
+        else:
+            if taxon:
+                prediction = "Unknown taxonomy and genomic context"
+            else:
+                prediction = "No info"
+        return prediction
 
     def organize_summary_data(self, i, d):
         hits = 0
@@ -380,8 +477,8 @@ class CARDkmers(object):
             hits += int(d[i][path])
             ss.append((path, int(d[i][path])))
         sorted_ss = sorted(ss, key = lambda x: x[1], reverse=True)
-        for tup in ss:
-            str =  str + "{p}: {c};".format(p=tup[0],c=tup[1])
+        for tup in sorted_ss:
+            str =  str + "{p}: {c}; ".format(p=tup[0],c=tup[1])
         return str, hits
 
 
@@ -407,219 +504,421 @@ class CARDkmers(object):
             else:
                 gd[gene] += ad[allele]
 
-    def make_summaries(self, d, ss, ssgi, ssp, sg, sggi, sgp, m, gi, ad):
+    def make_summaries(self, d, ssc, sscp, ssp, ssu, sgc, sgcp, sgp, sgu, cd, m, cp, ad):
         summary = []
         for a in d:
             total_hits = 0
 
-            if a in ss:
-                ss_str, ss_hits = self.organize_summary_data(a, ss)
+            if a in ssc:
+                ssc_str, ssc_hits = self.organize_summary_data(a, ssc)
             else:
-                ss_str = ""
-                ss_hits = 0
-            if a in ssgi:
-                ssgi_str, ssgi_hits =self.organize_summary_data(a, ssgi)
+                ssc_str = ""
+                ssc_hits = 0
+            if a in sscp:
+                sscp_str, sscp_hits =self.organize_summary_data(a, sscp)
             else:
-                ssgi_str = ""
-                ssgi_hits = 0
+                sscp_str = ""
+                sscp_hits = 0
             if a in ssp:
                 ssp_str, ssp_hits =self.organize_summary_data(a, ssp)
             else:
                 ssp_str = ""
                 ssp_hits = 0
-            if a in sg:
-                sg_str, sg_hits =self.organize_summary_data(a, sg)
+            if a in ssu:
+                ssu_str, ssu_hits =self.organize_summary_data(a, ssu)
             else:
-                sg_str = ""
-                sg_hits = 0
-            if a in sggi:
-                sggi_str, sggi_hits =self.organize_summary_data(a, sggi)
+                ssu_str = ""
+                ssu_hits = 0
+            if a in sgc:
+                sgc_str, sgc_hits =self.organize_summary_data(a, sgc)
             else:
-                sggi_str = ""
-                sggi_hits = 0
+                sgc_str = ""
+                sgc_hits = 0
+            if a in sgcp:
+                sgcp_str, sgcp_hits =self.organize_summary_data(a, sgcp)
+            else:
+                sgcp_str = ""
+                sgcp_hits = 0
             if a in sgp:
                 sgp_str, sgp_hits =self.organize_summary_data(a, sgp)
             else:
                 sgp_str = ""
                 sgp_hits = 0
+            if a in sgu:
+                sgu_str, sgu_hits =self.organize_summary_data(a, sgu)
+            else:
+                sgu_str = ""
+                sgu_hits = 0
+            if a in cd:
+                cc = cd[a]
+            else:
+                cc = 0
             if a in m:
                 mc = m[a]
             else:
                 mc = 0
-            if a in gi:
-                gic = gi[a]
+            if a in cp:
+                cpc = cp[a]
             else:
-                gic = 0
+                cpc = 0
             if a in ad:
                 ambc = ad[a]
             else:
                 ambc = 0
-            total_hits = ss_hits + ssgi_hits + ssp_hits + sg_hits + sggi_hits + sgp_hits + mc + gic + ambc
+            total_hits = ssc_hits + sscp_hits + ssp_hits + ssu_hits + sgc_hits + sgcp_hits + sgp_hits + sgu_hits + mc + cpc + ambc + cc
 
             summary.append({
                 "id" : a,
                 "mapped_reads_with_kmer_hits": total_hits,
-                'ss': ss_str,
-                'ssgi': ssgi_str,
+                'ssc': ssc_str,
+                'sscp': sscp_str,
                 'ssp': ssp_str,
-                'sg': sg_str,
-                'sggi': sggi_str,
+                'ssu': ssu_str,
+                'sgc': sgc_str,
+                'sgcp': sgcp_str,
                 'sgp': sgp_str,
+                'sgu': sgu_str,
+                'c': cc,
                 'm': mc,
-                'gi': gic,
+                'cp': cpc,
                 'a': ambc,
                 })
 
         return summary
 
-    def parse_bwt_kmer_json(self):
+
+    def parse_kmer_json(self, type):
         with open(self.output_json_file) as f:
             j = json.load(f)
 
         # counters = 0
-        all_alleles = []
-        num_reads = 0
-        ss_allele = {} # key: ref seq, value: pathogen
-        ssp_allele = {} # plasmid
-        ssgi_allele = {} # genomic island
-        sg_allele = {} # single genus
-        sgp_allele = {} # single genus plasmid
-        sggi_allele = {} # single genus genomic island
-        m_allele = {} # promiscuous plasmid
-        gi_allele = {} # genomic island
-        a_allele = {} # ambiguous
-        u = 0 # unknown - no hits/info
+        if type == "bwt":
+            all_alleles = []
+            ssc_allele = {} # key: ref seq, value: pathogen
+            ssp_allele = {} # plasmid
+            sscp_allele = {} # genomic island
+            ssu_allele = {} # no genomic data
+            sgc_allele = {} # single genus
+            sgp_allele = {} # single genus plasmid
+            sgcp_allele = {} # single genus genomic island
+            sgu_allele = {}
+            c_allele = {}
+            m_allele = {} # promiscuous plasmid
+            cp_allele = {} # genomic island
+            a_allele = {} # ambiguous
+            u = 0 # unknown - no hits/info
+        elif type == "rgi":
+            rgi_summary = []
+
         hits = 0
 
         for read in j:
-            if j[read]['# of kmers in sequence'] > 0:
-                num_reads += 1
-                if j[read]['reference'] != '*': # not unmapped
+            if j[read]['#_of_kmers_in_sequence'] > 0:
+                if type == "bwt":
                     allele = j[read]['reference']
                     if allele not in all_alleles:
                         all_alleles.append(allele)
+                elif type == "rgi":
+                    orf_id = j[read]["ORF"]
+                    contig = j[read]["contig"]
+                    model = j[read]["ARO_model"]
+                    type_hit = j[read]["type_hit"]
+                # elif type == "fasta":
+                if j[read]['#_of_kmers_in_sequence'] > 0:
                     # single species kmers
-                    if len(j[read]['taxonomic info']['species']) == 1:
-                        path = set(j[read]['taxonomic info']['species'].keys()).pop()
-                        if not j[read]['taxonomic info']['genus']:
-                            if j[read]['taxonomic info']['species'][path] > self.min-1:
+                    if len(j[read]['taxonomic_info']['species']) == 1:
+                        path = set(j[read]['taxonomic_info']['species'].keys()).pop()
+                        if not j[read]['taxonomic_info']['genus']:
+                            if j[read]['taxonomic_info']['species'][path] > self.min-1:
                                 hits += 1
-                                self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
+                                if type == "bwt":
+                                    self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                elif type == "rgi":
+                                    prediction = self.single_species_rgi(j[read], path)
                             else:
-                                print("Not enough single species kmers to make the call.")
-
+                                if type == "bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                elif type =="rgi":
+                                    prediction =self.ambiguous_rgi(j[read], False)
                         else:
-                            if len(j[read]['taxonomic info']['genus']) == 1:
-                                genus = set(j[read]['taxonomic info']['genus'].keys()).pop()
+                            if len(j[read]['taxonomic_info']['genus']) == 1:
+                                genus = set(j[read]['taxonomic_info']['genus'].keys()).pop()
                                 if genus == path.split()[0]:
-                                    if j[read]['taxonomic info']['species'][path] + j[read]['taxonomic info']['genus'][genus] > self.min-1:
+                                    if j[read]['taxonomic_info']['species'][path] + j[read]['taxonomic_info']['genus'][genus] > self.min-1:
                                     # genus of single species kmers match genus kmers
                                         hits += 1
-                                        self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
+                                        if type == "bwt":
+                                            self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                        elif type =="rgi":
+                                            prediction = self.single_species_rgi(j[read], path)
                                     else:
-                                        print("Not enough single species or genus kmers")
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                        elif type =="rgi":
+                                            prediction = self.ambiguous_rgi(j[read], False)
                                 else:
-                                    if j[read]['taxonomic info']['genus'][genus] > self.min-1 and j[read]['taxonomic info']['species'][path] > self.min-1:
+                                    if j[read]['taxonomic_info']['genus'][genus] > self.min-1 and j[read]['taxonomic_info']['species'][path] > self.min-1:
                                         hits += 1
-                                        self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                                    elif j[read]['taxonomic info']['genus'][genus] < self.min and j[read]['taxonomic info']['species'][path] > self.min-1:
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                        elif type =="rgi":
+                                            prediction = self.ambiguous_rgi(j[read], True)
+                                    elif j[read]['taxonomic_info']['genus'][genus] < self.min and j[read]['taxonomic_info']['species'][path] > self.min-1:
                                         hits += 1
-                                        self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
-                                    elif j[read]['taxonomic info']['genus'][genus] > self.min-1  and j[read]['taxonomic info']['species'][path] < self.min:
+                                        if type == "bwt":
+                                            self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                        elif type == "rgi":
+                                            prediction = self.single_species_rgi(j[read], path)
+                                    elif j[read]['taxonomic_info']['genus'][genus] > self.min-1  and j[read]['taxonomic_info']['species'][path] < self.min:
                                         hits += 1
-                                        self.single_genus(j[read], genus, allele, sggi_allele, sg_allele, sgp_allele)
+                                        if type == "bwt":
+                                            self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                        elif type =="rgi":
+                                            prediction = self.single_genus_rgi(j[read], genus)
                                     else:
-                                        print("Not enough single species or genus kmers")
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                        elif type =="rgi":
+                                            prediction = self.ambiguous_rgi(j[read], False)
 
                             else: # multiple genera
                                 # at least 2 genera have kmer counts > 10
-                                max_genus = max(j[read]['taxonomic info']['genus'].keys(), key=(lambda key: j[read]['taxonomic info']['genus'][key]))
-                                if sum(int(c) > self.min-1 for c in j[read]['taxonomic info']['genus'].values()) > 1:
+                                max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
+                                if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
                                     hits += 1
-                                    self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                                elif j[read]['taxonomic info']['genus'][max_genus] > self.min-1:
+                                    if type =="bwt":
+                                        self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                    elif type =="rgi":
+                                        prediction = self.ambiguous_rgi(j[read], True)
+                                elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                     if max_genus == path.split()[0]:
-                                        if j[read]['taxonomic info']['species'][path] + j[read]['taxonomic info']['genus'][max_genus] > self.min-1:
+                                        if j[read]['taxonomic_info']['species'][path] + j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                         # genus of single species kmers match genus kmers
                                             hits += 1
-                                            self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
+                                            if type == "bwt":
+                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                            elif type =="rgi":
+                                                prediction = self.single_species_rgi(j[read], path)
                                         else:
-                                            print("Not enough single species or genus kmers")
+                                            # this should never be called; debug
+                                            print("this should never be called")
+                                            if type =="bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                            elif type =="rgi":
+                                                prediction = self.ambiguous_rgi(j[read], False)
                                     else:
-                                        if j[read]['taxonomic info']['species'][path] > self.min-1:
+                                        if j[read]['taxonomic_info']['species'][path] > self.min-1:
                                             hits += 1
-                                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                                        elif j[read]['taxonomic info']['species'][path] < self.min:
+                                            if type == "bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                            elif type =="rgi":
+                                                prediction = self.ambiguous_rgi(j[read], True)
+                                        elif j[read]['taxonomic_info']['species'][path] < self.min:
                                             hits += 1
-                                            self.single_genus(j[read], genus, allele, sggi_allele, sg_allele, sgp_allele)
-
-                    elif len(j[read]['taxonomic info']['species']) > 1:
-                        hits += 1
-                        max_species = max(j[read]['taxonomic info']['species'].keys(), key=(lambda key: j[read]['taxonomic info']['species'][key]))
-                        # multiple single species
-                        if sum(int(c) > self.min-1 for c in j[read]['taxonomic info']['species'].values()) > 1:
-                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                        elif j[read]['taxonomic info']['species'][max_species] > self.min - 1:
-                            if not j[read]['taxonomic info']['genus']:
-                                self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
-                            else:
-                                if len(j[read]['taxonomic info']['genus']) == 1:
-                                    genus = set(j[read]['taxonomic info']['genus'].keys()).pop()
-                                    if genus == max_species.split()[0]:
-                                        self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
-                                    else:
-                                        if j[read]['taxonomic info']['genus'][genus] > self.min-1:
-                                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                                        elif j[read]['taxonomic info']['genus'][genus] < self.min:
-                                            self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
+                                            if type == "bwt":
+                                                self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                            elif type == "rgi":
+                                                prediction = self.single_genus_rgi(j[read], genus)
                                 else:
-                                    max_genus = max(j[read]['taxonomic info']['genus'].keys(), key=(lambda key: j[read]['taxonomic info']['genus'][key]))
-                                    # at least 2 genera have kmer counts > 10
-                                    if sum(int(c) > self.min-1 for c in j[read]['taxonomic info']['genus'].values()) > 1:
-                                        self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                                    elif j[read]['taxonomic info']['genus'][max_genus] > self.min-1:
-                                        if max_genus == max_species.split()[0]:
-                                            self.single_species(j[read], path, allele, ss_allele, ssp_allele, ssgi_allele)
+                                    if max_genus == path.split()[0]:
+                                        if j[read]['taxonomic_info']['species'][path] + j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
+                                            hits += 1
+                                            if type =="bwt":
+                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                            elif type =="rgi":
+                                                prediction = self.single_species_rgi(j[read], path)
                                         else:
-                                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                        else:
-                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
+                                            if type =="bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                            elif type =="rgi":
+                                                prediction = self.ambiguous_rgi(j[read], False)
+                                    else:
+                                        if type =="bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                        elif type =="rgi":
+                                            prediction = self.ambiguous_rgi(j[read], False)
 
-                    elif not j[read]['taxonomic info']['species']:
-                        # no species info, single genus info
-                        if len(j[read]['taxonomic info']['genus']) == 1:
-                            hits += 1
-                            genus = set(j[read]['taxonomic info']['genus'].keys()).pop()
-                            self.single_genus(j[read], genus, allele, sggi_allele, sg_allele, sgp_allele)
-
-                        elif len(j[read]['taxonomic info']['genus']) > 1:
-                            hits += 1
-                            max_genus = max(j[read]['taxonomic info']['genus'].keys(), key=(lambda key: j[read]['taxonomic info']['genus'][key]))
-                            if sum(int(c) > self.min-1 for c in j[read]['taxonomic info']['genus'].values()) > 1:
-                                self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
-                            elif j[read]['taxonomic info']['genus'][max_genus] > self.min-1:
-                                self.single_genus(j[read], genus, allele, sggi_allele, sg_allele, sgp_allele)
+                    elif len(j[read]['taxonomic_info']['species']) > 1:
+                        hits += 1
+                        max_species = max(j[read]['taxonomic_info']['species'].keys(), key=(lambda key: j[read]['taxonomic_info']['species'][key]))
+                        # multiple single species
+                        if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['species'].values()) > 1:
+                            if type =="bwt":
+                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                            elif type =="rgi":
+                                prediction = self.ambiguous_rgi(j[read], True)
+                        elif j[read]['taxonomic_info']['species'][max_species] > self.min - 1:
+                            if not j[read]['taxonomic_info']['genus']:
+                                if type == "bwt":
+                                    self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                elif type =="rgi":
+                                    prediction = self.single_species_rgi(j[read], path)
                             else:
-                                self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
+                                if len(j[read]['taxonomic_info']['genus']) == 1:
+                                    genus = set(j[read]['taxonomic_info']['genus'].keys()).pop()
+                                    if genus == max_species.split()[0]:
+                                        if type == "bwt":
+                                            self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                        elif type == "rgi":
+                                            prediction = self.single_species_rgi(j[read], path)
+                                    else:
+                                        if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
+                                            if type == "bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                            elif type == "rgi":
+                                                prediction = self.ambiguous_rgi(j[read], True)
+                                        elif j[read]['taxonomic_info']['genus'][genus] < self.min:
+                                            if type == "bwt":
+                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                            elif type == "rgi":
+                                                prediction = self.single_species_rgi(j[read], path)
+                                else:
+                                    max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
+                                    # at least 2 genera have kmer counts > 10
+                                    if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                        elif type == "rgi":
+                                            prediction = self.ambiguous_rgi(j[read], True)
+                                    else:
+                                        if j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
+                                            if max_genus == max_species.split()[0]:
+                                                if type == "bwt":
+                                                    self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                                elif type == "rgi":
+                                                    prediction = self.single_species_rgi(j[read], path)
+                                            else:
+                                                if type == "bwt":
+                                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                                elif type == "rgi":
+                                                    prediction = self.ambiguous_rgi(j[read], True)
+                                        elif j[read]['taxonomic_info']['genus'][max_genus] < self.min:
+                                            if type == "bwt":
+                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                            elif type == "rgi":
+                                                prediction = self.single_species_rgi(j[read], path)
+                        else:
+                            if not j[read]['taxonomic_info']['genus']:
+                                if type == "bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                elif type =="rgi":
+                                    prediction = self.ambiguous_rgi(j[read], False)
 
-                        elif not j[read]['taxonomic info']['genus']:
+                            else:
+                                if len(j[read]['taxonomic_info']['genus']) == 1:
+                                    genus = set(j[read]['taxonomic_info']['genus'].keys()).pop()
+                                    if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
+                                        if type == "bwt":
+                                            self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                        elif type == "rgi":
+                                            prediction = self.single_genus_rgi(j[read], genus)
+                                    else:
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                        elif type == "rgi":
+                                            self.ambiguous_rgi(j[read], False)
+                                elif len(j[read]['taxonomic_info']['genus']) > 1:
+                                    max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
+                                    if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                        elif type == "rgi":
+                                            prediction = self.ambiguous_rgi(j[read], True)
+                                    elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
+                                        if type == "bwt":
+                                            self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                        elif type == "rgi":
+                                            prediction = self.single_genus_rgi(j[read], genus)
+                                    else:
+                                        if type == "bwt":
+                                            self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                        elif type == "rgi":
+                                            prediction = self.ambiguous_rgi(j[read], False)
+
+                    elif not j[read]['taxonomic_info']['species']:
+                        # no species info, single genus info
+                        if len(j[read]['taxonomic_info']['genus']) == 1:
                             hits += 1
-                            self.abiguous(j[read], allele, gi_allele, a_allele, m_allele)
+                            genus = set(j[read]['taxonomic_info']['genus'].keys()).pop()
+                            if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
+                                if type == "bwt":
+                                    self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                elif type == "rgi":
+                                    prediction = self.single_genus_rgi(j[read], genus)
+                            else:
+                                if type == "bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                elif type == "rgi":
+                                    prediction = self.ambiguous_rgi(j[read], False)
+                        elif len(j[read]['taxonomic_info']['genus']) > 1:
+                            hits += 1
+                            max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
+                            if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
+                                if type == "bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                elif type == "rgi":
+                                    prediction = self.ambiguous_rgi(j[read], True)
+                            elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
+                                if type == "bwt":
+                                    self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                elif type == "rgi":
+                                    prediction = self.single_genus_rgi(j[read], genus)
+                            else:
+                                if type == "bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                                elif type == "rgi":
+                                    prediction = self.ambiguous_rgi(j[read], False)
+                        elif not j[read]['taxonomic_info']['genus']:
+                            hits += 1
+                            if type == "bwt":
+                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
+                            elif type == "rgi":
+                                prediction = self.ambiguous_rgi(j[read], False)
                         else:
                             print('error --->',  read)
                     else:
                         print('error --->',  read)
 
+            if type == "rgi":
+                tax_str = ""
+                gen_str = ""
+                for k,v in j[read]['taxonomic_info'].items():
+                    for k2, v2 in v.items():
+                        tax_str = tax_str + "{p}: {c}; ".format(p=k2, c=v2)
+                for k,v in j[read]['genomic_info'].items():
+                    gen_str = gen_str + "{g}: {c}; ".format(g=k, c=v)
+
+                rgi_summary.append({
+                    "orf": orf_id,
+                    "contig": contig,
+                    "type_hit": type_hit,
+                    "model": model,
+                    "prediction": prediction,
+                    "taxonomic kmers": tax_str,
+                    "genomic kmers": gen_str
+                    })
+
+        if type == "bwt":
+            return all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele
+        if type == "rgi":
+            return rgi_summary
+
+
+    def make_bwt_summary(self, all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele):
+
         # parse allele data for genes
         all_genes = []
-        ss_gene = {}
+        ssc_gene = {}
         ssp_gene = {}
-        ssgi_gene = {}
-        sg_gene = {}
+        sscp_gene = {}
+        ssu_gene = {}
+        sgc_gene = {}
         sgp_gene = {}
-        sggi_gene = {}
+        sgcp_gene = {}
+        sgu_gene = {}
+        c_gene = {}
         m_gene = {}
-        gi_gene = {}
+        cp_gene = {}
         a_gene = {}
 
         for a in all_alleles:
@@ -628,22 +927,24 @@ class CARDkmers(object):
             if gene not in all_genes:
                 all_genes.append(gene)
 
-        self.parse_taxonomy_alleles_to_genes(ss_allele, ss_gene)
+        self.parse_taxonomy_alleles_to_genes(ssc_allele, ssc_gene)
         self.parse_taxonomy_alleles_to_genes(ssp_allele, ssp_gene)
-        self.parse_taxonomy_alleles_to_genes(ssgi_allele, ssgi_gene)
-        self.parse_taxonomy_alleles_to_genes(sg_allele, sg_gene)
+        self.parse_taxonomy_alleles_to_genes(sscp_allele, sscp_gene)
+        self.parse_taxonomy_alleles_to_genes(ssu_allele, ssu_gene)
+        self.parse_taxonomy_alleles_to_genes(sgc_allele, sgc_gene)
         self.parse_taxonomy_alleles_to_genes(sgp_allele, sgp_gene)
-        self.parse_taxonomy_alleles_to_genes(sggi_allele, sggi_gene)
-
+        self.parse_taxonomy_alleles_to_genes(sgcp_allele, sgcp_gene)
+        self.parse_taxonomy_alleles_to_genes(sgu_allele, sgu_gene)
+        self.parse_non_taxonomy_alleles_to_genes(c_allele, c_gene)
         self.parse_non_taxonomy_alleles_to_genes(m_allele, m_gene)
-        self.parse_non_taxonomy_alleles_to_genes(gi_allele, gi_gene)
+        self.parse_non_taxonomy_alleles_to_genes(cp_allele, cp_gene)
         self.parse_non_taxonomy_alleles_to_genes(a_allele, a_gene)
 
         # make summaries
-        allele_summary = self.make_summaries(all_alleles, ss_allele, ssgi_allele, \
-            ssp_allele, sg_allele, sggi_allele, sgp_allele, m_allele, gi_allele, a_allele)
-        gene_summary = self.make_summaries(all_genes, ss_gene, ssgi_gene, \
-            ssp_gene, sg_gene, sggi_gene, sgp_gene, m_gene, gi_gene, a_gene)
+        allele_summary = self.make_summaries(all_alleles, ssc_allele, sscp_allele, \
+            ssp_allele, ssu_allele, sgc_allele, sgcp_allele, sgp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele)
+        gene_summary = self.make_summaries(all_genes, ssc_gene, sscp_gene, \
+            ssp_gene, ssu_allele, sgc_gene, sgcp_gene, sgp_gene, sgu_gene, c_gene, m_gene, cp_gene, a_gene)
 
         # write summaries to txt files
         with open(self.output_allele_summary, "w") as allele_output:
@@ -651,28 +952,34 @@ class CARDkmers(object):
             writer.writerow([
                     'Reference Sequence',
                     'Mapped reads with kmer DB hits',
-                    'Single species reads',
-                    'Single species (GI) reads',
-                    'Single species (P) reads',
-                    'Single genus reads',
-                    'Single genus (GI) reads',
-                    'Single genus (P) reads',
+                    'Single species (chromosome) reads',
+                    'Single species (chromosome & plasmid) reads',
+                    'Single species (plasmid) reads',
+                    'Single species (no genomic info) reads',
+                    'Single genus (chromosome) reads',
+                    'Single genus (chromosome & plasmid) reads',
+                    'Single genus (plasmid) reads',
+                    'Single genus (no genomic info) reads',
                     'Promiscuous plasmid reads',
-                    'Genomic island (GI) reads',
-                    'Ambiguous reads',
+                    'Unknown taxonomy (chromosome) reads',
+                    'Unknown taxonomy (chromosome & plasmid) reads',
+                    'Unknown taxonomy (no genomic info) reads',
                         ])
             for r in allele_summary:
                 writer.writerow([
                     r['id'],
                     r["mapped_reads_with_kmer_hits"],
-                    r['ss'],
-                    r['ssgi'],
+                    r['ssc'],
+                    r['sscp'],
                     r['ssp'],
-                    r['sg'],
-                    r['sggi'],
+                    r['ssu'],
+                    r['sgc'],
+                    r['sgcp'],
                     r['sgp'],
+                    r['sgu'],
                     r['m'],
-                    r['gi'],
+                    r['c'],
+                    r['cp'],
                     r['a']
                 ])
 
@@ -681,29 +988,58 @@ class CARDkmers(object):
             writer.writerow([
                     'ARO term',
                     'Mapped reads with kmer DB hits',
-                    'Single species reads',
-                    'Single species (GI) reads',
-                    'Single species (P) reads',
-                    'Single genus reads',
-                    'Single genus (GI) reads',
-                    'Single genus (P) reads',
+                    'Single species (chromosome) reads',
+                    'Single species (chromosome & plasmid) reads',
+                    'Single species (plasmid) reads',
+                    'Single species (no genomic info) reads',
+                    'Single genus (chromosome) reads',
+                    'Single genus (chromosome & plasmid) reads',
+                    'Single genus (plasmid) reads',
+                    'Single genus (no genomic info) reads',
                     'Promiscuous plasmid reads',
-                    'Genomic island (GI) reads',
-                    'Ambiguous reads',
+                    'Unknown taxonomy (chromosome) reads',
+                    'Unknown taxonomy (chromosome & plasmid) reads',
+                    'Unknown taxonomy (no genomic info) reads',
                         ])
             for r in gene_summary:
                 writer.writerow([
                     r['id'],
                     r["mapped_reads_with_kmer_hits"],
-                    r['ss'],
-                    r['ssgi'],
+                    r['ssc'],
+                    r['sscp'],
                     r['ssp'],
-                    r['sg'],
-                    r['sggi'],
+                    r['ssu'],
+                    r['sgc'],
+                    r['sgcp'],
                     r['sgp'],
+                    r['sgu'],
                     r['m'],
-                    r['gi'],
+                    r['c'],
+                    r['cp'],
                     r['a']
+                ])
+
+    def make_rgi_summary(self, summary):
+        with open(self.output_rgi_summary, "w") as rgi_output:
+            writer = csv.writer(rgi_output, delimiter="\t")
+            writer.writerow([
+                    "ORF_ID",
+                    "Contig",
+                    "Cut_Off",
+                    "Best_Hit_ARO",
+                    "CARD*kmer_Prediction",
+                    "Taxonomic_kmers",
+                    "Genomic_kmers"
+                ])
+            for r in summary:
+                writer.writerow([
+                    r["orf"],
+                    r["contig"],
+                    r["type_hit"],
+                    r["model"],
+                    r["prediction"],
+                    r["taxonomic kmers"],
+                    r["genomic kmers"]
                 ])
 
     def run(self):
@@ -722,8 +1058,8 @@ class CARDkmers(object):
         j, amr_kmers = self.load_kmers()
 
         if self.rgi:
-            logger.info("input rgi results file: {}".format(self.input_json_file))
-            self.get_rgi_sequences()
+            logger.info("input rgi results file: {}".format(self.input_rgi_file))
+            self.orf_list = self.get_rgi_sequences()
             iterator = SeqIO.parse(self.fasta_file, "fasta")
             num_seq_total, short_total, o_total = self.query_sequences(self.k, j, amr_kmers, iterator, "rgi")
             with open(self.output_json_file, "w") as oj:
@@ -776,5 +1112,13 @@ class CARDkmers(object):
         print('done querying')
 
         # generate text summaries
-        self.parse_bwt_kmer_json()
-        print("done creating allele and gene kmer summaries")
+        print('creating kmer summaries')
+        if self.bwt:
+            all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, \
+                sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele = self.parse_kmer_json("bwt")
+            self.make_bwt_summary(all_alleles, ssc_allele, ssp_allele, sscp_allele, \
+                ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele)
+        elif self.rgi:
+            rgi_summary = self.parse_kmer_json("rgi")
+            self.make_rgi_summary(rgi_summary)
+        print("done creating kmer summaries")

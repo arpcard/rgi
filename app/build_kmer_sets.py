@@ -318,7 +318,7 @@ def create_parser():
         help="nucleotide_fasta_protein_variant_model_variants.fasta")
     parser.add_argument('-4', dest="fasta_four",
         help="nucleotide_fasta_rRNA_gene_variant_model_variants.fasta")
-    parser.add_argument('-c', '--card', dest="card_fasta",
+    parser.add_argument('-c', '--card', dest="card_fasta", required=True,
         help="fasta file of CARD reference sequences. If missing, run 'rgi card_annotation' to generate.")
     parser.add_argument('-i', '--index', dest="index", required=True,
         help="CARD*R&V Variants index file (index-for-model-sequences.txt)")
