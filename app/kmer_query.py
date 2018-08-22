@@ -46,6 +46,7 @@ class CARDkmers(object):
             self.output_rgi_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis_rgi_summary.txt".format(o=self.output, k=self.k))
         if self.fasta:
             self.input_fasta_file = input
+            self.output_fasta_summary = os.path.join(self.working_directory, "{o}_{k}mer_analysis_fasta_summary.txt".format(o=self.output, k=self.k))
 
         self.debug = debug
         if self.debug:
@@ -461,12 +462,12 @@ class CARDkmers(object):
                 if taxon:
                     prediction = "Unknown taxonomy and genomic context"
                 else:
-                    prediction = "No info"
+                    prediction = "N/A"
         else:
             if taxon:
                 prediction = "Unknown taxonomy and genomic context"
             else:
-                prediction = "No info"
+                prediction = "N/A"
         return prediction
 
     def organize_summary_data(self, i, d):
@@ -609,6 +610,8 @@ class CARDkmers(object):
             u = 0 # unknown - no hits/info
         elif type == "rgi":
             rgi_summary = []
+        elif type == "fasta":
+            fasta_summary = []
 
         hits = 0
 
@@ -633,12 +636,12 @@ class CARDkmers(object):
                                 hits += 1
                                 if type == "bwt":
                                     self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.single_species_rgi(j[read], path)
                             else:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                elif type =="rgi":
+                                else:
                                     prediction =self.ambiguous_rgi(j[read], False)
                         else:
                             if len(j[read]['taxonomic_info']['genus']) == 1:
@@ -649,36 +652,36 @@ class CARDkmers(object):
                                         hits += 1
                                         if type == "bwt":
                                             self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.single_species_rgi(j[read], path)
                                     else:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], False)
                                 else:
                                     if j[read]['taxonomic_info']['genus'][genus] > self.min-1 and j[read]['taxonomic_info']['species'][path] > self.min-1:
                                         hits += 1
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], True)
                                     elif j[read]['taxonomic_info']['genus'][genus] < self.min and j[read]['taxonomic_info']['species'][path] > self.min-1:
                                         hits += 1
                                         if type == "bwt":
                                             self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.single_species_rgi(j[read], path)
                                     elif j[read]['taxonomic_info']['genus'][genus] > self.min-1  and j[read]['taxonomic_info']['species'][path] < self.min:
                                         hits += 1
                                         if type == "bwt":
                                             self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.single_genus_rgi(j[read], genus)
                                     else:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], False)
 
                             else: # multiple genera
@@ -688,7 +691,7 @@ class CARDkmers(object):
                                     hits += 1
                                     if type =="bwt":
                                         self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                    elif type =="rgi":
+                                    else:
                                         prediction = self.ambiguous_rgi(j[read], True)
                                 elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                     if max_genus == path.split()[0]:
@@ -697,27 +700,27 @@ class CARDkmers(object):
                                             hits += 1
                                             if type == "bwt":
                                                 self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                            elif type =="rgi":
+                                            else:
                                                 prediction = self.single_species_rgi(j[read], path)
                                         else:
                                             # this should never be called; debug
                                             print("this should never be called")
                                             if type =="bwt":
                                                 self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                            elif type =="rgi":
+                                            else:
                                                 prediction = self.ambiguous_rgi(j[read], False)
                                     else:
                                         if j[read]['taxonomic_info']['species'][path] > self.min-1:
                                             hits += 1
                                             if type == "bwt":
                                                 self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                            elif type =="rgi":
+                                            else:
                                                 prediction = self.ambiguous_rgi(j[read], True)
                                         elif j[read]['taxonomic_info']['species'][path] < self.min:
                                             hits += 1
                                             if type == "bwt":
                                                 self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                            elif type == "rgi":
+                                            else:
                                                 prediction = self.single_genus_rgi(j[read], genus)
                                 else:
                                     if max_genus == path.split()[0]:
@@ -725,17 +728,17 @@ class CARDkmers(object):
                                             hits += 1
                                             if type =="bwt":
                                                 self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                            elif type =="rgi":
+                                            else:
                                                 prediction = self.single_species_rgi(j[read], path)
                                         else:
                                             if type =="bwt":
                                                 self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                            elif type =="rgi":
+                                            else:
                                                 prediction = self.ambiguous_rgi(j[read], False)
                                     else:
                                         if type =="bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                        elif type =="rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], False)
 
                     elif len(j[read]['taxonomic_info']['species']) > 1:
@@ -743,15 +746,65 @@ class CARDkmers(object):
                         max_species = max(j[read]['taxonomic_info']['species'].keys(), key=(lambda key: j[read]['taxonomic_info']['species'][key]))
                         # multiple single species
                         if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['species'].values()) > 1:
-                            if type =="bwt":
-                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                            elif type =="rgi":
-                                prediction = self.ambiguous_rgi(j[read], True)
+                            passing_species = [path for path in j[read]['taxonomic_info']['species'] if j[read]['taxonomic_info']['species'][path] > self.min-1]
+                            genera = [path.split()[0] for path in passing_species]
+                            if len(set(genera)) == 1:
+                                genus = set(genera).pop()
+                                if not j[read]['taxonomic_info']['genus']:
+                                    if type == "bwt":
+                                        self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                    else:
+                                        prediction = self.single_genus_rgi(j[read], genus)
+                                else:
+                                    if len(j[read]['taxonomic_info']['genus']) == 1:
+                                        if genus == set(j[read]['taxonomic_info']['genus'].keys()).pop():
+                                            if type == "bwt":
+                                                self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                            else:
+                                                prediction = self.single_genus_rgi(j[read], genus)
+                                        else:
+                                            if type =="bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                            else:
+                                                prediction = self.ambiguous_rgi(j[read], True)
+                                    else:
+                                        max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
+                                        if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
+                                            if type =="bwt":
+                                                self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                            else:
+                                                prediction = self.ambiguous_rgi(j[read], True)
+                                        elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
+                                            if max_genus == genus:
+                                                # genus of single species kmers match genus kmers
+                                                if type == "bwt":
+                                                    self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                                else:
+                                                    prediction = self.single_genus_rgi(j[read], genus)
+                                            else:
+                                                # we already know that the # of kmers for the species is > threshold
+                                                if type == "bwt":
+                                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                                else:
+                                                    prediction = self.ambiguous_rgi(j[read], True)
+
+                                        else:
+                                            # aren't enough genus kmers
+                                            if type == "bwt":
+                                                self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                            else:
+                                                prediction = self.single_genus_rgi(j[read], genus)
+                            else:
+                                if type =="bwt":
+                                    self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
+                                else:
+                                    prediction = self.ambiguous_rgi(j[read], True)
+
                         elif j[read]['taxonomic_info']['species'][max_species] > self.min - 1:
                             if not j[read]['taxonomic_info']['genus']:
                                 if type == "bwt":
                                     self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                elif type =="rgi":
+                                else:
                                     prediction = self.single_species_rgi(j[read], path)
                             else:
                                 if len(j[read]['taxonomic_info']['genus']) == 1:
@@ -759,18 +812,18 @@ class CARDkmers(object):
                                     if genus == max_species.split()[0]:
                                         if type == "bwt":
                                             self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.single_species_rgi(j[read], path)
                                     else:
                                         if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
                                             if type == "bwt":
                                                 self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                            elif type == "rgi":
+                                            else:
                                                 prediction = self.ambiguous_rgi(j[read], True)
                                         elif j[read]['taxonomic_info']['genus'][genus] < self.min:
                                             if type == "bwt":
                                                 self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                            elif type == "rgi":
+                                            else:
                                                 prediction = self.single_species_rgi(j[read], path)
                                 else:
                                     max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
@@ -778,30 +831,30 @@ class CARDkmers(object):
                                     if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], True)
                                     else:
                                         if j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                             if max_genus == max_species.split()[0]:
                                                 if type == "bwt":
                                                     self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                                elif type == "rgi":
+                                                else:
                                                     prediction = self.single_species_rgi(j[read], path)
                                             else:
                                                 if type == "bwt":
                                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                                elif type == "rgi":
+                                                else:
                                                     prediction = self.ambiguous_rgi(j[read], True)
                                         elif j[read]['taxonomic_info']['genus'][max_genus] < self.min:
                                             if type == "bwt":
                                                 self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
-                                            elif type == "rgi":
+                                            else:
                                                 prediction = self.single_species_rgi(j[read], path)
                         else:
                             if not j[read]['taxonomic_info']['genus']:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                elif type =="rgi":
+                                else:
                                     prediction = self.ambiguous_rgi(j[read], False)
 
                             else:
@@ -810,29 +863,29 @@ class CARDkmers(object):
                                     if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
                                         if type == "bwt":
                                             self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.single_genus_rgi(j[read], genus)
                                     else:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                        elif type == "rgi":
+                                        else:
                                             self.ambiguous_rgi(j[read], False)
                                 elif len(j[read]['taxonomic_info']['genus']) > 1:
                                     max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
                                     if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], True)
                                     elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                         if type == "bwt":
                                             self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.single_genus_rgi(j[read], genus)
                                     else:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                        elif type == "rgi":
+                                        else:
                                             prediction = self.ambiguous_rgi(j[read], False)
 
                     elif not j[read]['taxonomic_info']['species']:
@@ -843,12 +896,12 @@ class CARDkmers(object):
                             if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
                                 if type == "bwt":
                                     self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.single_genus_rgi(j[read], genus)
                             else:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.ambiguous_rgi(j[read], False)
                         elif len(j[read]['taxonomic_info']['genus']) > 1:
                             hits += 1
@@ -856,30 +909,30 @@ class CARDkmers(object):
                             if sum(int(c) > self.min-1 for c in j[read]['taxonomic_info']['genus'].values()) > 1:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.ambiguous_rgi(j[read], True)
                             elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                 if type == "bwt":
                                     self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.single_genus_rgi(j[read], genus)
                             else:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                                elif type == "rgi":
+                                else:
                                     prediction = self.ambiguous_rgi(j[read], False)
                         elif not j[read]['taxonomic_info']['genus']:
                             hits += 1
                             if type == "bwt":
                                 self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
-                            elif type == "rgi":
+                            else:
                                 prediction = self.ambiguous_rgi(j[read], False)
                         else:
                             print('error --->',  read)
                     else:
                         print('error --->',  read)
 
-            if type == "rgi":
+            if type == "rgi" or type == "fasta":
                 tax_str = ""
                 gen_str = ""
                 for k,v in j[read]['taxonomic_info'].items():
@@ -888,20 +941,36 @@ class CARDkmers(object):
                 for k,v in j[read]['genomic_info'].items():
                     gen_str = gen_str + "{g}: {c}; ".format(g=k, c=v)
 
-                rgi_summary.append({
-                    "orf": orf_id,
-                    "contig": contig,
-                    "type_hit": type_hit,
-                    "model": model,
-                    "prediction": prediction,
-                    "taxonomic kmers": tax_str,
-                    "genomic kmers": gen_str
+                if type == "rgi":
+                    rgi_summary.append({
+                        "orf": orf_id,
+                        "contig": contig,
+                        "type_hit": type_hit,
+                        "model": model,
+                        "prediction": prediction,
+                        "taxonomic_kmers": tax_str,
+                        "genomic_kmers": gen_str
+                        })
+                elif type == "fasta":
+                    fasta_summary.append({
+                        "header": read,
+                        "kmers": j[read]["#_of_kmers_in_sequence"],
+                        "amr": j[read]["#_of_AMR_kmers"],
+                        "prediction": prediction,
+                        "taxonomic_kmers": tax_str,
+                        "genomic_kmers": gen_str
+
                     })
+
 
         if type == "bwt":
             return all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele
-        if type == "rgi":
+        elif type == "rgi":
             return rgi_summary
+        elif type == "fasta":
+            return fasta_summary
+        else:
+            logger.error("error")
 
 
     def make_bwt_summary(self, all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele):
@@ -1038,8 +1107,29 @@ class CARDkmers(object):
                     r["type_hit"],
                     r["model"],
                     r["prediction"],
-                    r["taxonomic kmers"],
-                    r["genomic kmers"]
+                    r["taxonomic_kmers"],
+                    r["genomic_kmers"]
+                ])
+
+    def make_fasta_summary(self, summary):
+        with open(self.output_fasta_summary, "w") as fasta_output:
+            writer = csv.writer(fasta_output, delimiter="\t")
+            writer.writerow([
+                    "Read",
+                    "# kmers in read",
+                    "# of AMR kmers",
+                    "CARD*kmer Prediction",
+                    "Taxonomic kmers",
+                    "Genomic kmers",
+                ])
+            for r in summary:
+                writer.writerow([
+                    r["header"],
+                    r["kmers"],
+                    r["amr"],
+                    r["prediction"],
+                    r["taxonomic_kmers"],
+                    r["genomic_kmers"],
                 ])
 
     def run(self):
@@ -1121,4 +1211,7 @@ class CARDkmers(object):
         elif self.rgi:
             rgi_summary = self.parse_kmer_json("rgi")
             self.make_rgi_summary(rgi_summary)
+        elif self.fasta:
+            fasta_summary = self.parse_kmer_json("fasta")
+            self.make_fasta_summary(fasta_summary)
         print("done creating kmer summaries")
