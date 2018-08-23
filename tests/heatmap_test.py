@@ -18,10 +18,36 @@ def heatmap():
 def validate_heatmap(output_file):
     f = output_file
     if os.path.isfile(f):
-        if os.path.getsize(f) > 100000:
-            return True
-        else:
-            return False
+        if "test_base-4.png" in f:
+            if os.path.getsize(f) == 142779:
+                return True
+            else:
+                return False
+        elif "test_category-4.png" in f:
+            if os.path.getsize(f) == 379737:
+                return True
+            else:
+                return False
+        elif "test_cluster-4.png" in f:
+            if os.path.getsize(f) == 142223:
+                return True
+            else:
+                return False
+        elif "test_frequency-4.png" in f:
+            if os.path.getsize(f) == 137291:
+                return True
+            else:
+                return False
+        elif "test_category_frequency-4.png" in f:
+            if os.path.getsize(f) == 332334:
+                return True
+            else:
+                return False
+        elif "test_category_cluster-4.png" in f:
+            if os.path.getsize(f) == 197107:
+                return True
+            else:
+                return False
     else:
         print("missing file: {}".format(f))
         return False
