@@ -1,4 +1,4 @@
-import os, sys, json, csv, argparse
+import os, sys, json, csv, argparse, glob
 import app.make_kmer_json
 from Bio import SeqIO, Seq
 
@@ -230,23 +230,33 @@ def is_tool(name):
 
 def main(args):
     # check if jellyfish is installed
-    if is_tool("jellyfish") is False:
-        print("Missing dependency: jellyfish.\nPlease install from https://github.com/gmarcais/Jellyfish/releases")
-        exit("Debug")
+    # if is_tool("jellyfish") is False:
+    #     print("Missing dependency: jellyfish.\nPlease install from https://github.com/gmarcais/Jellyfish/releases")
+    #     exit("Debug")
 
-    f1 = args.fasta_one
-    f2 = args.fasta_two
-    f3 = args.fasta_three
-    f4 = args.fasta_four
-    index = args.index
+    prevalence_directory = args.input_directory
     card_fasta = args.card_fasta
     k = args.k
 
+    files = glob.glob(os.path.join(prevalence_directory,"*"))
+    for f in files:
+        if "index" in f:
+            index = f
+        elif "nucleotide_fasta_protein_homolog_model_variants.fasta" in f:
+            f1 = f
+        elif "nucleotide_fasta_protein_overexpression_model_variants.fasta" in f:
+            f2 = f
+        elif "nucleotide_fasta_protein_variant_model_variants.fasta" in f:
+            f3 = f
+        elif "nucleotide_fasta_rRNA_gene_variant_model_variants.fasta" in f:
+            f4 = f
+    # print(f1, f2, f3, f4)
 
     if not args.skip:
-        if all(a is None for a in [f1,f2,f3,f4]):
-            print("ERROR: CARD*R&V fastas needed.")
-            exit()
+        try:
+            index, f1, f2, f3, f4
+        except NameError:
+            exit("ERROR: cannot locate prevalence sequences and/or index-for-model-sequences.txt in directory")
         else:
             print("-- CONCATENATING ALL CARD*R&V SEQUENCES --")
             combine_variant_sequences(f1, f2, f3, f4)
@@ -310,18 +320,10 @@ def main(args):
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Builds the kmer sets for CARD*kmers")
-    parser.add_argument('-1', dest="fasta_one",
-        help="nucleotide_fasta_protein_homolog_model_variants.fasta")
-    parser.add_argument('-2', dest="fasta_two",
-        help="nucleotide_fasta_protein_overexpression_model_variants.fasta")
-    parser.add_argument('-3', dest="fasta_three",
-        help="nucleotide_fasta_protein_variant_model_variants.fasta")
-    parser.add_argument('-4', dest="fasta_four",
-        help="nucleotide_fasta_rRNA_gene_variant_model_variants.fasta")
+    parser.add_argument('-i', '--input_directory', dest="input_directory",
+        help="input directory of prevalence data")
     parser.add_argument('-c', '--card', dest="card_fasta", required=True,
         help="fasta file of CARD reference sequences. If missing, run 'rgi card_annotation' to generate.")
-    parser.add_argument('-i', '--index', dest="index", required=True,
-        help="CARD*R&V Variants index file (index-for-model-sequences.txt)")
     parser.add_argument('-k', dest="k", required=True,
         help="k-mer size (e.g., 61)")
     parser.add_argument('--skip', dest="skip", action='store_true',
