@@ -355,9 +355,15 @@ class BaseModel(object):
 
         logger.info(json.dumps({"strand":strand, "start":start, "stop":stop, "nterminus":nterminus}, indent=2))
         if strand == "-":
-            return str(genes.get_spliced_seq( header, [[stop, stop+nterminus]]))
+            _start = stop + 1
+            _stop = stop + nterminus
+            logger.info("grep sequence from {}|-|{}-{}".format(header,_start, _stop,))
+            return str(genes.get_spliced_seq( header, [[_start, _stop]]))
         elif strand == "+":
-            return str(genes.get_spliced_seq( header, [[start-nterminus, start]]))
+            _start = start-nterminus
+            _stop = start-1
+            logger.info("grep sequence from {}|+|{}-{}".format(header,_start, _stop))
+            return str(genes.get_spliced_seq( header, [[_start, _stop]]))
 
     def nudge_loose_to_strict(self, loose):
         """
