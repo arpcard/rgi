@@ -11,6 +11,15 @@ outputs = "outputs/"
 working_directory = os.getcwd()
 input_directory = os.path.join(working_directory, inputs)
 
+jsons = []
+files = os.listdir(input_directory)
+for thing in files:
+    file_path = os.path.join(input_directory, thing)
+    if thing.endswith(".json") and os.path.isfile(file_path): # Check if it's a file
+        jsons.append(thing)
+
+count = len(jsons)
+
 @pytest.fixture
 def heatmap():
     return MainBase(api=True)
@@ -18,33 +27,35 @@ def heatmap():
 def validate_heatmap(output_file):
     f = output_file
     if os.path.isfile(f):
-        if "test_base-4.png" in f:
-            if os.path.getsize(f) == 142779:
+        filesize = os.path.getsize(f)
+        print("filesize: {}".format(filesize))
+        if "test_base-{}.png".format(count) in f:
+            if filesize >= 95886:
                 return True
             else:
                 return False
-        elif "test_category-4.png" in f:
-            if os.path.getsize(f) == 379737:
+        elif "test_category-{}.png".format(count) in f:
+            if filesize >= 176612:
                 return True
             else:
                 return False
-        elif "test_cluster-4.png" in f:
-            if os.path.getsize(f) == 142223:
+        elif "test_cluster-{}.png".format(count) in f:
+            if filesize >= 95089:
                 return True
             else:
                 return False
-        elif "test_frequency-4.png" in f:
-            if os.path.getsize(f) == 137291:
+        elif "test_frequency-{}.png".format(count) in f:
+            if filesize >= 91983:
                 return True
             else:
                 return False
-        elif "test_category_frequency-4.png" in f:
-            if os.path.getsize(f) == 332334:
+        elif "test_category_frequency-{}.png".format(count) in f:
+            if filesize >= 253262:
                 return True
             else:
                 return False
-        elif "test_category_cluster-4.png" in f:
-            if os.path.getsize(f) == 197107:
+        elif "test_category_cluster-{}.png".format(count) in f:
+            if filesize >= 128615:
                 return True
             else:
                 return False
@@ -103,52 +114,52 @@ def make_category_cluster_heatmap(heatmap, input_directory, category):
 
 def test_base_heatmap(heatmap):
     make_base_heatmap(heatmap, input_directory)
-    output_png = os.path.join(working_directory,outputs,"test_base-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_base-4.eps")
-    os.rename(os.path.join(working_directory,"test_base-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_base-4.eps"), output_eps)
+    output_png = os.path.join(working_directory,outputs,"test_base-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_base-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_base-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_base-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
 def test_category_heatmap(heatmap):
     make_category_heatmap(heatmap, input_directory, "drug_class")
-    output_png = os.path.join(working_directory,outputs,"test_category-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_category-4.eps")
-    os.rename(os.path.join(working_directory,"test_category-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_category-4.eps"), output_eps)
+    output_png = os.path.join(working_directory,outputs,"test_category-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_category-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_category-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_category-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
 def test_cluster_heatmap(heatmap):
     make_cluster_heatmap(heatmap, input_directory)
-    output_png = os.path.join(working_directory,outputs,"test_cluster-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_cluster-4.eps")
-    os.rename(os.path.join(working_directory,"test_cluster-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_cluster-4.eps"), output_eps)
+    output_png = os.path.join(working_directory,outputs,"test_cluster-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_cluster-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_cluster-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_cluster-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
 def test_frequency_heatmap(heatmap):
     make_frequency_heatmap(heatmap, input_directory)
-    output_png = os.path.join(working_directory,outputs,"test_frequency-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_frequency-4.eps")
-    os.rename(os.path.join(working_directory,"test_frequency-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_frequency-4.eps"), output_eps)
-    os.rename(os.path.join(working_directory,"test_frequency4-frequency.txt"),
-        os.path.join(working_directory,outputs,"test_frequency4-frequency.txt"))
+    output_png = os.path.join(working_directory,outputs,"test_frequency-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_frequency-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_frequency-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_frequency-{}.eps".format(count)), output_eps)
+    os.rename(os.path.join(working_directory,"test_frequency{}-frequency.txt".format(count)),
+        os.path.join(working_directory,outputs,"test_frequency{}-frequency.txt".format(count)))
     assert validate_heatmap(output_png) == True
 
 def test_category_frequency_heatmap(heatmap):
     make_category_frequency_heatmap(heatmap, input_directory, "gene_family")
-    output_png = os.path.join(working_directory,outputs,"test_category_frequency-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_category_frequency-4.eps")
-    os.rename(os.path.join(working_directory,"test_category_frequency-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_category_frequency-4.eps"), output_eps)
-    os.rename(os.path.join(working_directory,"test_category_frequency4-frequency.txt"),
-        os.path.join(working_directory,outputs,"test_category_frequency4-frequency.txt"))
+    output_png = os.path.join(working_directory,outputs,"test_category_frequency-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_category_frequency-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_category_frequency-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_category_frequency-{}.eps".format(count)), output_eps)
+    os.rename(os.path.join(working_directory,"test_category_frequency{}-frequency.txt".format(count)),
+        os.path.join(working_directory,outputs,"test_category_frequency{}-frequency.txt".format(count)))
     assert validate_heatmap(output_png) == True
 
 def test_category_cluster_heatmap(heatmap):
     make_category_cluster_heatmap(heatmap, input_directory, "resistance_mechanism")
-    output_png = os.path.join(working_directory,outputs,"test_category_cluster-4.png")
-    output_eps = os.path.join(working_directory,outputs,"test_category_cluster-4.eps")
-    os.rename(os.path.join(working_directory,"test_category_cluster-4.png"), output_png)
-    os.rename(os.path.join(working_directory,"test_category_cluster-4.eps"), output_eps)
+    output_png = os.path.join(working_directory,outputs,"test_category_cluster-{}.png".format(count))
+    output_eps = os.path.join(working_directory,outputs,"test_category_cluster-{}.eps".format(count))
+    os.rename(os.path.join(working_directory,"test_category_cluster-{}.png".format(count)), output_png)
+    os.rename(os.path.join(working_directory,"test_category_cluster-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
