@@ -27,7 +27,7 @@ def heatmap():
 def validate_heatmap(output_file):
     f = output_file
     if os.path.isfile(f):
-        filesize = os.path.getsize(f)
+        filesize = os.stat(f).st_size
         print("filesize: {}".format(filesize))
         if "test_base-{}.png".format(count) in f:
             if filesize >= 95886:

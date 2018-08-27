@@ -19,7 +19,7 @@ Table of Contents
 - `Load card.json`_
 - `Check database version`_
 - `Run RGI`_
-- `Run RGI using GNU parallel_`
+- `Run RGI using GNU parallel`_
 - `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
 - `RGI Heatmap`_
