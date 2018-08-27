@@ -161,6 +161,8 @@ class RGI(RGIBase):
 		for f in files:
 			if os.path.basename(self.input_sequence) + ".temp" in f and os.path.isfile(f):
 				self.remove_file(f)
+			if os.path.basename(self.input_sequence) + ".fai" in f and os.path.isfile(f):
+				self.remove_file(f)
 
 	def remove_file(self, f):
 		"""Removes file."""
