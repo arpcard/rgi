@@ -50,12 +50,12 @@ def validate_heatmap(output_file):
             else:
                 return False
         elif "test_category_frequency-{}.png".format(count) in f:
-            if filesize >= 248756:
+            if filesize >= 248500:
                 return True
             else:
                 return False
         elif "test_category_cluster-{}.png".format(count) in f:
-            if filesize >= 127033:
+            if filesize >= 127000:
                 return True
             else:
                 return False
