@@ -19,6 +19,7 @@ Table of Contents
 - `Load card.json`_
 - `Check database version`_
 - `Run RGI`_
+- `Run RGI using GNU parallel_`
 - `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
 - `RGI Heatmap`_
@@ -161,6 +162,21 @@ Run RGI
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
+
+Run RGI using GNU parallel
+--------------------------------------------
+
+- system wide and writing log files for each input file. (Note add code below to script.sh then run with `./script.sh /path/to/input_files`)
+
+   .. code-block:: sh
+
+      #!/bin/bash
+      DIR=`find . -mindepth 1 -type d`
+      for D in $DIR; do
+            NAME=$(basename $D);
+            parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
+      done
+
 
 
 Running RGI with short contigs to predict partial genes 
