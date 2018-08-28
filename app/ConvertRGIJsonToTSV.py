@@ -82,7 +82,11 @@ class ConvertJsonToTSV(object):
                                 "CARD_Protein_Sequence",
                                 "Percentage Length of Reference Sequence",
                                 "ID",
-                                "Model_ID"])
+                                "Model_ID",
+								"Nudged",
+								"Possible Start",
+								"Possible Stop",
+								"Note"])
 
 				if os.path.isfile(self.filepath):
 					with open(self.filepath) as rgi_file:
@@ -103,6 +107,11 @@ class ConvertJsonToTSV(object):
 						temp3 = []
 						best_snps = ""
 						other_snps = ""
+
+						nudged = ""
+						note =  ""
+						orf_start_possible = ""
+						orf_end_possible = ""
 
 						for hit in rgi_data[hsp]:
 							if rgi_data[hsp][hit]["type_match"] == "Perfect":
@@ -140,6 +149,15 @@ class ConvertJsonToTSV(object):
 							hitID.append(rgi_data[hsp][ordered[0]])
 
 						match_dict = {}
+
+						if "nudged" in rgi_data[hsp][ordered[0]].keys():
+								nudged = rgi_data[hsp][ordered[0]]["nudged"]
+						if "orf_start_possible" in rgi_data[hsp][ordered[0]].keys():
+								orf_start_possible = rgi_data[hsp][ordered[0]]["orf_start_possible"]
+						if "orf_end_possible" in rgi_data[hsp][ordered[0]].keys():
+								orf_end_possible = rgi_data[hsp][ordered[0]]["orf_end_possible"]
+						if "note" in rgi_data[hsp][ordered[0]].keys():
+								note = rgi_data[hsp][ordered[0]]["note"]
 
 						if dna == 1:
 							if len(rgi_data[hsp]) != 0:
@@ -208,7 +226,11 @@ class ConvertJsonToTSV(object):
 								# length of hsps / length reference
 								percentage_length_reference_sequence,
 								ordered[0],
-								rgi_data[hsp][ordered[0]]["model_id"]
+								rgi_data[hsp][ordered[0]]["model_id"],
+								nudged,
+								orf_start_possible,
+								orf_end_possible,
+								note
 								]
 							for key, value in match_dict.items():
 								writer.writerow(value)
@@ -267,7 +289,11 @@ class ConvertJsonToTSV(object):
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
 								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
 								ordered[0],
-								rgi_data[hsp][ordered[0]]["model_id"]
+								rgi_data[hsp][ordered[0]]["model_id"],
+								nudged,
+								orf_start_possible,
+								orf_end_possible,
+								note
 								]
 
 							for key, value in match_dict.items():

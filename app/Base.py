@@ -277,6 +277,7 @@ class BaseModel(object):
                 orf_end_ = ""
                 orf_start_ = ""
                 _partial_protein = ""
+                partial_protein = ""
                 # Missing n-terminus or c-terminus
                 if len(query) < len(reference) and query in reference:
                     length_nucleotides = (len(reference) - len(strict[s]["match"]))*3
@@ -291,7 +292,7 @@ class BaseModel(object):
 
                     # check if partial_bases are multiples of 3
                     if len(partial_bases) % 3 == 0:
-                        logger.info("Missing part: [{}]".format(partial_bases))
+                        # logger.info("Missing part: [{}]".format(partial_bases))
                         if strict[s]["orf_strand"] == "-":
                             # update orf_end
                             strict[s]["orf_end_possible"] = orf_end_ + 1
@@ -307,9 +308,9 @@ class BaseModel(object):
                             partial_protein = str(Seq(partial_bases, generic_dna).translate(table=11))
                             # logger.info("Forward strand: {}".format(partial_protein))
                         
-                        logger.info("Translated protein: [{}]".format(partial_protein))
+                        # logger.info("Translated protein: [{}]".format(partial_protein))
                         # update start codon to M for all other alternate start codons
-                        if len(_partial_protein) > 0:
+                        if len(partial_protein) > 0:
                             _partial_protein = partial_protein[0]
                             if partial_protein[0] in ["L","M","I","V"]:
                                 _partial_protein = "M"+partial_protein[1:]
@@ -445,6 +446,7 @@ class BaseModel(object):
                 loose[i]["type_match"] = "Strict"
                 loose[i]["nudged"] = True
                 nudged = True
+                loose[i]["note"] = "loose hit with at least 95 percent identity pushed strict"
 
         return nudged, loose
 
