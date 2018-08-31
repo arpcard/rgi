@@ -136,7 +136,7 @@ def test_cluster_heatmap(heatmap):
     os.rename(os.path.join(working_directory,"test_cluster-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
-def test_frequency_heatmap(heatmap):
+def _test_frequency_heatmap(heatmap):
     make_frequency_heatmap(heatmap, input_directory)
     output_png = os.path.join(working_directory,outputs,"test_frequency-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_frequency-{}.eps".format(count))
