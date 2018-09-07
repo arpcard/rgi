@@ -8,7 +8,7 @@ from app.Filter import Filter
 import filetype
 from Bio import SeqIO
 import glob
-import time
+import time, shutil
 
 from app.settings import *
 
@@ -163,6 +163,11 @@ class RGI(RGIBase):
 				self.remove_file(f)
 			if os.path.basename(self.input_sequence) + ".fai" in f and os.path.isfile(f):
 				self.remove_file(f)
+			if os.path.basename(f)[:3] == "tmp" in f and os.path.isfile(f) and ".temp." in f:
+				self.remove_file(f)	
+			if ".temp.directory" in f and os.path.isdir(f):
+				logger.info("Removed directory: {}".format(f))
+				shutil.rmtree(f)
 
 	def remove_file(self, f):
 		"""Removes file."""
@@ -213,7 +218,7 @@ class RGI(RGIBase):
 	def process_contig(self):
 		"""Process nuclotide sequence(s)."""
 		file_name = os.path.basename(self.input_sequence)
-		orf_obj = ORF(input_file=self.input_sequence, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality)
+		orf_obj = ORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality)
 		orf_obj.contig_to_orf()
 		contig_fsa_file = os.path.join(self.working_directory,"{}.temp.contig.fsa".format(file_name))
 		blast_results_xml_file = os.path.join(self.working_directory,"{}.temp.contig.fsa.blastRes.xml".format(file_name))

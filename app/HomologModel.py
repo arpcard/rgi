@@ -127,6 +127,10 @@ class Homolog(BaseModel):
 								ppinsidedict["sequence_from_db"] = hsp.sbjct
 								ppinsidedict["sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
 								ppinsidedict["dna_sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
+								if "partial" in json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"].keys():
+									ppinsidedict["partial"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["partial"]
+								else:
+									ppinsidedict["partial"] = "0"
 
 								if self.input_type == 'contig':
 									ppinsidedict["query_start"] = self.extract_nth_hash(orfInfo.decode(), 1) + (hsp.query_start - 1)*3
@@ -183,6 +187,10 @@ class Homolog(BaseModel):
 								insidedict["sequence_from_db"] = hsp.sbjct
 								insidedict["sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
 								insidedict["dna_sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
+								if "partial" in json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"].keys():
+									insidedict["partial"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["partial"]
+								else:
+									insidedict["partial"] = "0"
 
 								if self.input_type == 'contig':
 									insidedict["query_start"] = self.extract_nth_hash(orfInfo.decode(), 1) + (hsp.query_start - 1)*3
@@ -240,6 +248,10 @@ class Homolog(BaseModel):
 								linsidedict["sequence_from_db"] = hsp.sbjct
 								linsidedict["sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"]
 								linsidedict["dna_sequence_from_broadstreet"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["sequence"]
+								if "partial" in json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"].keys():
+									linsidedict["partial"] = json_data[modelID]["model_sequences"]["sequence"][seqinModel]["dna_sequence"]["partial"]
+								else:
+									linsidedict["partial"] = "0"
 
 								if self.input_type == 'contig':
 									linsidedict["query_start"] = self.extract_nth_hash(orfInfo.decode(), 1) + (hsp.query_start - 1)*3

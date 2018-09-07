@@ -150,6 +150,10 @@ class Variant(BaseModel):
 											sinsidedict["sequence_from_db"] = hsp.sbjct
 											sinsidedict["sequence_from_broadstreet"]	= json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
 											sinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
+											if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
+												sinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
+											else:
+												sinsidedict["partial"] = "0"
 											
 											if self.input_type == 'contig':
 												sinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
@@ -207,6 +211,10 @@ class Variant(BaseModel):
 											slinsidedict["sequence_from_db"] = hsp.sbjct
 											slinsidedict["sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
 											slinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
+											if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
+												slinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
+											else:
+												slinsidedict["partial"] = "0"
 
 											if self.input_type == 'contig':
 												slinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
