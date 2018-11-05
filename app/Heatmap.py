@@ -413,6 +413,11 @@ class Heatmap(object):
             exit()
         df = pd.DataFrame.from_dict(genes)
 
+        # Fixed colourmap values (purple, teal, yellow)
+        cmap_values = [0, 1, 2, 3]
+        custom_cmap = matplotlib.colors.ListedColormap(['#4c0057', '#00948f', '#feed00'])
+        norm = matplotlib.colors.BoundaryNorm(cmap_values, custom_cmap.N)
+
         # If the classification option chosen:
         if self.classification:
             global ax0
@@ -497,12 +502,6 @@ class Heatmap(object):
                 # Try to draw plot with default sizing
                 ax0,ax1,ax2,gs = self.create_plot('cf', 4)
 
-                # """FOR DEBUGGING"""
-                # print('before ax0', self.get_axis_size(fig,ax0))
-                # print('before ax1', self.get_axis_size(fig,ax1))
-                # print('before figsize', figsize)
-                # """END DEBUGGING"""
-
                 # Adjust the dimensions
                 while True:
                     if self.get_axis_size(fig,ax0)[1] > 150:
@@ -512,11 +511,6 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,ax2,gs = self.create_plot('cf', 4)
-                        # """FOR DEBUGGING"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        # """END DEBUGGING"""
                     if self.get_axis_size(fig,ax0)[0] < (self.get_axis_size(fig,ax0)[1])/3:
                         # print('LESS THAN 1/3')
                         fig_length = fig_length/2
@@ -525,11 +519,6 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        """DEBUG"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
                         # print('BASE AXIS TOO SMALL')
                         try:
@@ -539,11 +528,6 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        """DEBUG"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[1] < 150:
                         if self.get_axis_size(fig,ax0)[0] > (self.get_axis_size(fig,ax0)[1])/3:
                             if self.get_axis_size(fig,ax0)[0] > 10:
@@ -561,13 +545,7 @@ class Heatmap(object):
                 ax0,ax1,ax2,gs = self.create_plot('cf', ratio_to_use)
 
                 # Create the heatmap
-                # """FOR DEBUGGING"""
-                # print('final ax0', self.get_axis_size(fig,ax0))
-                # print('final ax1', self.get_axis_size(fig,ax1))
-                # print("final figsize", figsize)
-                # """END DEBUGGING"""
-
-                g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
+                g = sns.heatmap(df, cmap=custom_cmap, cbar=False, ax=ax0, norm=norm) #linewidth=0.5
                 plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
                 plt.setp(g.xaxis.get_ticklabels(), visible=False)
                 g.tick_params(bottom=False)
@@ -630,15 +608,8 @@ class Heatmap(object):
                 # Try to draw plot with default sizing
                 ax0,ax1,gs = self.create_plot('c', 4)
 
-                # """FOR DEBUGGING"""
-                # print('before ax0', self.get_axis_size(fig,ax0))
-                # print('before ax1', self.get_axis_size(fig,ax1))
-                # print('before figsize', figsize)
-                # """END DEBUGGING"""
-
                 # Adjust the dimensions
                 while True:
-
                     if self.get_axis_size(fig,ax0)[1] > 150:
                         fig_length = fig_length/2
                         figsize = (fig_width, fig_length)
@@ -646,11 +617,6 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        """DEBUG"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < (self.get_axis_size(fig,ax0)[1])/3:
                         # print('LESS THAN 1/3')
                         fig_length = fig_length/2
@@ -659,13 +625,7 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        """DEBUG"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[0] < 10:
-                        # print('BASE AXIS TOO SMALL')
                         try:
                             desired_width = desired_width*2
                         except:
@@ -673,22 +633,14 @@ class Heatmap(object):
                         figsize = (desired_width, fig_length)
                         fig = plt.figure(figsize = figsize)
                         ax0,ax1,gs = self.create_plot('c', 4)
-                        """DEBUG"""
-                        # print('updated ax0', self.get_axis_size(fig,ax0))
-                        # print('updated ax1', self.get_axis_size(fig,ax1))
-                        # print('updated figsize', figsize)
-                        """END DEBUG"""
                     if self.get_axis_size(fig,ax0)[1] < 150:
                         if self.get_axis_size(fig,ax0)[0] > (self.get_axis_size(fig,ax0)[1])/3:
                             if self.get_axis_size(fig,ax0)[0] > 10:
                                 break
 
                 # Calculate correct categories dimensions to use
-                # print(self.get_axis_size(fig,ax0)[0])
                 ratio_to_use = (self.get_axis_size(fig,ax0)[0])/8
-                # print(ratio_to_use)
 
-                # print(get_axis_size(fig,ax1))
                 if figsize[1] > 100:
                     sns.set(font_scale=1.7)
                 if df.shape[0] > 500:
@@ -698,15 +650,8 @@ class Heatmap(object):
                 sns.set_style("white")
                 ax0,ax1,gs = self.create_plot('c', ratio_to_use)
 
-                # """FOR DEBUGGING"""
-                # print('final ax0', self.get_axis_size(fig,ax0))
-                # print('final ax1', self.get_axis_size(fig,ax1))
-                # print("final figsize", figsize)
-                # """END DEBUGGING"""
-
                 # Create the heatmap
-                # print(figsize)
-                g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
+                g = sns.heatmap(df, cmap=custom_cmap, cbar=False, ax=ax0, norm=norm) #linewidth=0.5
                 plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
                 plt.setp(g.xaxis.get_ticklabels(), rotation=90, fontsize='xx-large')
                 plt.setp(ax1.get_yticklabels(), visible=False)
@@ -762,15 +707,9 @@ class Heatmap(object):
                 #     sns.set(font_scale=1.0)
                 sns.set_style("white")
                 ax0,ax2,gs = self.create_plot('f', 0)
-                # """FOR DEBUGGING"""
-                # print('final ax0', self.get_axis_size(fig,ax0))
-                # print('final ax2', self.get_axis_size(fig,ax2))
-                # print("final figsize", figsize)
-                # """END DEBUGGING"""
 
                 # Create the heatmap
-                # print(figsize)
-                g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
+                g = sns.heatmap(df, cmap=custom_cmap, cbar=False, ax=ax0, norm=norm) #linewidth=0.5
                 plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
                 plt.setp(g.xaxis.get_ticklabels(), visible=False)
                 g.tick_params(bottom=False)
@@ -799,14 +738,8 @@ class Heatmap(object):
                     ax0,ax2,gs = self.create_plot('f', 0)
                     df,freq_dict = self.create_frequency_df(df, self.output)
 
-                    # """FOR DEBUGGING"""
-                    # print('final ax0', self.get_axis_size(fig,ax0))
-                    # print('final ax2', self.get_axis_size(fig,ax2))
-                    # print("final figsize", new_figsize)
-                    # """END DEBUGGING"""
-
                     # Create the heatmap
-                    g = sns.heatmap(df, cmap="viridis", cbar=False, ax=ax0) #linewidth=0.5
+                    g = sns.heatmap(df, cmap=custom_cmap, cbar=False, ax=ax0, norm=norm) #linewidth=0.5
                     plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
                     plt.setp(g.xaxis.get_ticklabels(), visible=False)
                     g.tick_params(bottom=False)
@@ -850,6 +783,8 @@ class Heatmap(object):
                 if self.cluster:
                     df = self.cluster_data(self.cluster, df)
 
+                print(df)
+
                 # Set the dimension parameters
                 fig_width,fig_length,fig,figsize = self.get_figure_dimensions(jsons, genelist)
 
@@ -862,13 +797,8 @@ class Heatmap(object):
 
                 sns.set_style("white")
 
-                # """FOR DEBUGGING"""
-                # print("final figsize", figsize)
-                # """END DEBUGGING"""
-
                 # Create the heatmap
-                # print(figsize)
-                g = sns.heatmap(df, cmap='viridis', cbar=False) #linewidth=0.5
+                g = sns.heatmap(df, cmap=custom_cmap, cbar=False, norm=norm) #linewidth=0.5
                 plt.setp(g.yaxis.get_ticklabels(), rotation=0, fontsize='xx-large')
                 plt.setp(g.xaxis.get_ticklabels(), rotation=90, fontsize='xx-large')
                 g.set_ylabel(" ")
@@ -876,8 +806,6 @@ class Heatmap(object):
 
                 # Save figure
                 file_name = '%s-%s' %(self.output, str(len(jsons)))
-                # print(file_name)
-                # plt.savefig(self.output + '-' + str(len(jsons)) +".eps", bbox_inches="tight", format="eps")
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
