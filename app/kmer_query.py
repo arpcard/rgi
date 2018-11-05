@@ -35,7 +35,8 @@ class CARDkmers(object):
         self.working_directory = os.path.join(os.getcwd())
         self.base_name = os.path.basename(self.input_file)
         self.fasta_file = os.path.join(self.working_directory, "{}.fasta".format(self.base_name))
-        self.output_json_file = os.path.join(self.working_directory, "{o}_{k}mer_analysis.json".format(o=self.output, k=self.k))
+        # self.output_json_file = os.path.join(self.working_directory, "{o}_{k}mer_analysis.json".format(o=self.output, k=self.k))
+        self.output_json_file = "/Users/lau/rgi/nov1_test/rescap_aug21_31mer_analysis.json"
         if self.bwt:
             self.input_bam_file = input
             self.bam_directory = os.path.dirname(self.input_bam_file)
@@ -329,20 +330,20 @@ class CARDkmers(object):
         if not(all(v == 0 for v in read['genomic_info'].values())):
             if read['genomic_info']['chr'] > self.min-1:
                 if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
-                    prediction = "{} (chromosome & plasmid)".format(path)
+                    prediction = "{} (chromosome or plasmid)".format(path)
                 else:
                     prediction = "{} (chromosome)".format(path)
             else: # no chr kmers (only look at plasmid and genomic islands)
                 if read['genomic_info']['plasmid'] > self.min-1:
                     if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        prediction = "{} (chromosome & plasmid)".format(path)
+                        prediction = "{} (chromosome or plasmid)".format(path)
                     else:
                         # plasmid kmers present - plasmid
                         prediction = "{} (plasmid)".format(path)
                 else:
                     if read['genomic_info']['chr + plasmid'] > self.min-1:
-                        prediction = "{} (chromosome & plasmid)".format(path)
+                        prediction = "{} (chromosome or plasmid)".format(path)
                     else: # everything falls below cutoff
                         prediction = "{} (no genomic info)".format(path)
 
@@ -383,7 +384,7 @@ class CARDkmers(object):
             if read['genomic_info']['chr'] > self.min-1:
                 if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
                     # chr + plasmid kmers present - GI
-                    prediction = "{} (chromosome & plasmid)".format(genus)
+                    prediction = "{} (chromosome or plasmid)".format(genus)
                 else:
                     # chr kmers present - genomic
                     prediction = "{} (chromosome)".format(genus)
@@ -391,14 +392,14 @@ class CARDkmers(object):
                 if read['genomic_info']['plasmid'] > self.min-1:
                     if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        prediction = "{} (chromosome & plasmid)".format(genus)
+                        prediction = "{} (chromosome or plasmid)".format(genus)
                     else:
                         # plasmid kmers present - plasmid
                         prediction = "{} (plasmid)".format(genus)
                 else:
                     if read['genomic_info']['chr + plasmid'] > self.min-1:
                         # chr + plasmid kmers present - GI
-                        prediction = "{} (chromosome & plasmid)".format(genus)
+                        prediction = "{} (chromosome or plasmid)".format(genus)
                     else:
                         prediction = "{} (no genomic info)".format(genus)
         else:
@@ -443,20 +444,20 @@ class CARDkmers(object):
         if not(all(v == 0 for v in read['genomic_info'].values())):
             if read['genomic_info']['chr'] > self.min-1:
                 if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
-                    prediction = "Unknown taxonomy (chromosome & plasmid)"
+                    prediction = "Unknown taxonomy (chromosome or plasmid)"
                 else:
                     # different species and genus only chr kmer (not mobile)
                     prediction = "Unknown taxonomy (chromosome)"
             elif read['genomic_info']['plasmid'] > self.min-1:
                 if read['genomic_info']['chr + plasmid'] > self.min-1:
                     # different species and genus, but chr + plasmid
-                    prediction = "Unknown taxonomy (chromosome & plasmid)"
+                    prediction = "Unknown taxonomy (chromosome or plasmid)"
                 else:
                     # different species and genus, but plasmid
                     prediction = "Unknown taxonomy (plasmid)"
             elif read['genomic_info']['chr + plasmid'] > self.min-1:
                 # different species and genus, but chr + plasmid
-                prediction = "Unknown taxonomy (chromosome & plasmid)"
+                prediction = "Unknown taxonomy (chromosome or plasmid)"
             else:
                 # different species and genus, not enough genomic info
                 if taxon:
@@ -470,17 +471,22 @@ class CARDkmers(object):
                 prediction = "N/A"
         return prediction
 
-    def organize_summary_data(self, i, d):
+    def organize_summary_data(self, i, d, class_type):
+        class_list = ["chromosome", "chromosome or plasmid", "plasmid",
+                        "no genomic information"]
         hits = 0
         ss = []
         str = ""
+        summary_str = ""
         for path in d[i]:
             hits += int(d[i][path])
             ss.append((path, int(d[i][path])))
         sorted_ss = sorted(ss, key = lambda x: x[1], reverse=True)
         for tup in sorted_ss:
             str =  str + "{p}: {c}; ".format(p=tup[0],c=tup[1])
-        return str, hits
+            summary_str = summary_str + "{p} ({gen}): {c}; ".format(
+                p=tup[0], gen=class_list[class_type], c=tup[1])
+        return str, hits, summary_str
 
 
     def parse_taxonomy_alleles_to_genes(self, ad, gd):
@@ -511,44 +517,44 @@ class CARDkmers(object):
             total_hits = 0
 
             if a in ssc:
-                ssc_str, ssc_hits = self.organize_summary_data(a, ssc)
+                ssc_str, ssc_hits, ssc_pred_str = self.organize_summary_data(a, ssc, 0)
             else:
-                ssc_str = ""
+                ssc_str, ssc_pred_str = "", ""
                 ssc_hits = 0
             if a in sscp:
-                sscp_str, sscp_hits =self.organize_summary_data(a, sscp)
+                sscp_str, sscp_hits, sscp_pred_str =self.organize_summary_data(a, sscp, 1)
             else:
-                sscp_str = ""
+                sscp_str, sscp_pred_str = "", ""
                 sscp_hits = 0
             if a in ssp:
-                ssp_str, ssp_hits =self.organize_summary_data(a, ssp)
+                ssp_str, ssp_hits, ssp_pred_str =self.organize_summary_data(a, ssp, 2)
             else:
-                ssp_str = ""
+                ssp_str, ssp_pred_str = "", ""
                 ssp_hits = 0
             if a in ssu:
-                ssu_str, ssu_hits =self.organize_summary_data(a, ssu)
+                ssu_str, ssu_hits, ssu_pred_str =self.organize_summary_data(a, ssu, 3)
             else:
-                ssu_str = ""
+                ssu_str, ssu_pred_str = "", ""
                 ssu_hits = 0
             if a in sgc:
-                sgc_str, sgc_hits =self.organize_summary_data(a, sgc)
+                sgc_str, sgc_hits, sgc_pred_str =self.organize_summary_data(a, sgc, 0)
             else:
-                sgc_str = ""
+                sgc_str, sgc_pred_str = "", ""
                 sgc_hits = 0
             if a in sgcp:
-                sgcp_str, sgcp_hits =self.organize_summary_data(a, sgcp)
+                sgcp_str, sgcp_hits, sgcp_pred_str =self.organize_summary_data(a, sgcp, 1)
             else:
-                sgcp_str = ""
+                sgcp_str, sgcp_pred_str = "", ""
                 sgcp_hits = 0
             if a in sgp:
-                sgp_str, sgp_hits =self.organize_summary_data(a, sgp)
+                sgp_str, sgp_hits, sgp_pred_str=self.organize_summary_data(a, sgp, 2)
             else:
-                sgp_str = ""
+                sgp_str, sgp_pred_str = "", ""
                 sgp_hits = 0
             if a in sgu:
-                sgu_str, sgu_hits =self.organize_summary_data(a, sgu)
+                sgu_str, sgu_hits, sgu_pred_str =self.organize_summary_data(a, sgu, 3)
             else:
-                sgu_str = ""
+                sgu_str, sgu_pred_str = "", ""
                 sgu_hits = 0
             if a in cd:
                 cc = cd[a]
@@ -568,9 +574,13 @@ class CARDkmers(object):
                 ambc = 0
             total_hits = ssc_hits + sscp_hits + ssp_hits + ssu_hits + sgc_hits + sgcp_hits + sgp_hits + sgu_hits + mc + cpc + ambc + cc
 
+            prediction_str = ssc_pred_str + sscp_pred_str + ssp_pred_str + ssu_pred_str + sgc_pred_str + sgcp_pred_str + sgp_pred_str + sgu_pred_str
+
+
             summary.append({
                 "id" : a,
                 "mapped_reads_with_kmer_hits": total_hits,
+                "prediction": prediction_str,
                 'ssc': ssc_str,
                 'sscp': sscp_str,
                 'ssp': ssp_str,
@@ -1012,6 +1022,7 @@ class CARDkmers(object):
         # make summaries
         allele_summary = self.make_summaries(all_alleles, ssc_allele, sscp_allele, \
             ssp_allele, ssu_allele, sgc_allele, sgcp_allele, sgp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele)
+
         gene_summary = self.make_summaries(all_genes, ssc_gene, sscp_gene, \
             ssp_gene, ssu_allele, sgc_gene, sgcp_gene, sgp_gene, sgu_gene, c_gene, m_gene, cp_gene, a_gene)
 
@@ -1021,23 +1032,25 @@ class CARDkmers(object):
             writer.writerow([
                     'Reference Sequence',
                     'Mapped reads with kmer DB hits',
+                    'CARD*kmer Prediction',
                     'Single species (chromosome) reads',
-                    'Single species (chromosome & plasmid) reads',
+                    'Single species (chromosome or plasmid) reads',
                     'Single species (plasmid) reads',
                     'Single species (no genomic info) reads',
                     'Single genus (chromosome) reads',
-                    'Single genus (chromosome & plasmid) reads',
+                    'Single genus (chromosome or plasmid) reads',
                     'Single genus (plasmid) reads',
                     'Single genus (no genomic info) reads',
                     'Promiscuous plasmid reads',
                     'Unknown taxonomy (chromosome) reads',
-                    'Unknown taxonomy (chromosome & plasmid) reads',
+                    'Unknown taxonomy (chromosome or plasmid) reads',
                     'Unknown taxonomy (no genomic info) reads',
                         ])
             for r in allele_summary:
                 writer.writerow([
                     r['id'],
                     r["mapped_reads_with_kmer_hits"],
+                    r["prediction"],
                     r['ssc'],
                     r['sscp'],
                     r['ssp'],
@@ -1057,23 +1070,25 @@ class CARDkmers(object):
             writer.writerow([
                     'ARO term',
                     'Mapped reads with kmer DB hits',
+                    'CARD*kmer Prediction',
                     'Single species (chromosome) reads',
-                    'Single species (chromosome & plasmid) reads',
+                    'Single species (chromosome or plasmid) reads',
                     'Single species (plasmid) reads',
                     'Single species (no genomic info) reads',
                     'Single genus (chromosome) reads',
-                    'Single genus (chromosome & plasmid) reads',
+                    'Single genus (chromosome or plasmid) reads',
                     'Single genus (plasmid) reads',
                     'Single genus (no genomic info) reads',
                     'Promiscuous plasmid reads',
                     'Unknown taxonomy (chromosome) reads',
-                    'Unknown taxonomy (chromosome & plasmid) reads',
+                    'Unknown taxonomy (chromosome or plasmid) reads',
                     'Unknown taxonomy (no genomic info) reads',
                         ])
             for r in gene_summary:
                 writer.writerow([
                     r['id'],
                     r["mapped_reads_with_kmer_hits"],
+                    r["prediction"],
                     r['ssc'],
                     r['sscp'],
                     r['ssp'],
@@ -1147,65 +1162,67 @@ class CARDkmers(object):
         # load kmers
         j, amr_kmers = self.load_kmers()
 
-        if self.rgi:
-            logger.info("input rgi results file: {}".format(self.input_rgi_file))
-            self.orf_list = self.get_rgi_sequences()
-            iterator = SeqIO.parse(self.fasta_file, "fasta")
-            num_seq_total, short_total, o_total = self.query_sequences(self.k, j, amr_kmers, iterator, "rgi")
-            with open(self.output_json_file, "w") as oj:
-                json.dump(o_total, oj)
-        elif self.bwt:
-            logger.info("input RGI*BWT bam file: {}".format(self.input_bam_file))
-            self.get_bwt_sequences()
-            # split sequences for threading
-            split_sequences = self.split_fasta(self.fasta_file)
-            # Threading
-            results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
+        # if self.rgi:
+        #     logger.info("input rgi results file: {}".format(self.input_rgi_file))
+        #     self.orf_list = self.get_rgi_sequences()
+        #     iterator = SeqIO.parse(self.fasta_file, "fasta")
+        #     num_seq_total, short_total, o_total = self.query_sequences(self.k, j, amr_kmers, iterator, "rgi")
+        #     with open(self.output_json_file, "w") as oj:
+        #         json.dump(o_total, oj)
+        # elif self.bwt:
+        #     logger.info("input RGI*BWT bam file: {}".format(self.input_bam_file))
+        #     self.get_bwt_sequences()
+        #     # split sequences for threading
+        #     split_sequences = self.split_fasta(self.fasta_file)
+        #     # Threading
+        #     results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
+        #
+        #     o_total = {}
+        #     num_seq_total = 0
+        #     short_total = 0
+        #
+        #     for i in range(len(results)):
+        #         o_total.update(results[i][2])
+        #         num_seq_total += results[i][0]
+        #         short_total += results[i][1]
+        #
+        #     with open(self.output_json_file, "w") as oj:
+        #         json.dump(o_total, oj)
+        # elif self.fasta:
+        #     logger.info("input fasta file: {}".format(self.input_fasta_file))
+        #     # split sequences for threading
+        #     split_sequences = self.split_fasta(self.input_fasta_file)
+        #     # Threading
+        #     results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
+        #
+        #     o_total = {}
+        #     num_seq_total = 0
+        #     short_total = 0
+        #
+        #     for i in range(len(results)):
+        #         o_total.update(results[i][2])
+        #         num_seq_total += results[i][0]
+        #         short_total += results[i][1]
+        #
+        #     with open(self.output_json_file, "w") as oj:
+        #         json.dump(o_total, oj)
+        # else:
+        #     logger.error("please specify an input file type")
+        #     exit()
 
-            o_total = {}
-            num_seq_total = 0
-            short_total = 0
-
-            for i in range(len(results)):
-                o_total.update(results[i][2])
-                num_seq_total += results[i][0]
-                short_total += results[i][1]
-
-            with open(self.output_json_file, "w") as oj:
-                json.dump(o_total, oj)
-        elif self.fasta:
-            logger.info("input fasta file: {}".format(self.input_fasta_file))
-            # split sequences for threading
-            split_sequences = self.split_fasta(self.input_fasta_file)
-            # Threading
-            results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
-
-            o_total = {}
-            num_seq_total = 0
-            short_total = 0
-
-            for i in range(len(results)):
-                o_total.update(results[i][2])
-                num_seq_total += results[i][0]
-                short_total += results[i][1]
-
-            with open(self.output_json_file, "w") as oj:
-                json.dump(o_total, oj)
-        else:
-            logger.error("please specify an input file type")
-            exit()
-
-        print("# of sequences queried: {}".format(num_seq_total))
-        print("# of sequences with hits: {}".format(len(o_total)))
-        print("# of sequences too short: {}".format(short_total))
-        print("output json file: {}".format(self.output_json_file))
-        print('done querying')
+        # print("# of sequences queried: {}".format(num_seq_total))
+        # print("# of sequences with hits: {}".format(len(o_total)))
+        # print("# of sequences too short: {}".format(short_total))
+        # print("output json file: {}".format(self.output_json_file))
+        # print('done querying')
 
         # generate text summaries
+
         print('creating kmer summaries')
         if self.bwt:
             all_alleles, ssc_allele, ssp_allele, sscp_allele, ssu_allele, sgc_allele, \
                 sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele = self.parse_kmer_json("bwt")
+
             self.make_bwt_summary(all_alleles, ssc_allele, ssp_allele, sscp_allele, \
                 ssu_allele, sgc_allele, sgp_allele, sgcp_allele, sgu_allele, c_allele, m_allele, cp_allele, a_allele)
         elif self.rgi:
