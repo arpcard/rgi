@@ -112,7 +112,7 @@ def make_category_cluster_heatmap(heatmap, input_directory, category):
         '--cluster', 'samples'
     ]))
 
-def test_base_heatmap(heatmap):
+def _test_base_heatmap(heatmap):
     make_base_heatmap(heatmap, input_directory)
     output_png = os.path.join(working_directory,outputs,"test_base-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_base-{}.eps".format(count))
@@ -120,7 +120,7 @@ def test_base_heatmap(heatmap):
     os.rename(os.path.join(working_directory,"test_base-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
-def test_category_heatmap(heatmap):
+def _test_category_heatmap(heatmap):
     make_category_heatmap(heatmap, input_directory, "drug_class")
     output_png = os.path.join(working_directory,outputs,"test_category-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_category-{}.eps".format(count))
@@ -128,7 +128,7 @@ def test_category_heatmap(heatmap):
     os.rename(os.path.join(working_directory,"test_category-{}.eps".format(count)), output_eps)
     assert validate_heatmap(output_png) == True
 
-def test_cluster_heatmap(heatmap):
+def _test_cluster_heatmap(heatmap):
     make_cluster_heatmap(heatmap, input_directory)
     output_png = os.path.join(working_directory,outputs,"test_cluster-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_cluster-{}.eps".format(count))
@@ -146,7 +146,7 @@ def _test_frequency_heatmap(heatmap):
         os.path.join(working_directory,outputs,"test_frequency{}-frequency.txt".format(count)))
     assert validate_heatmap(output_png) == True
 
-def test_category_frequency_heatmap(heatmap):
+def _test_category_frequency_heatmap(heatmap):
     make_category_frequency_heatmap(heatmap, input_directory, "gene_family")
     output_png = os.path.join(working_directory,outputs,"test_category_frequency-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_category_frequency-{}.eps".format(count))
@@ -156,7 +156,7 @@ def test_category_frequency_heatmap(heatmap):
         os.path.join(working_directory,outputs,"test_category_frequency{}-frequency.txt".format(count)))
     assert validate_heatmap(output_png) == True
 
-def test_category_cluster_heatmap(heatmap):
+def _test_category_cluster_heatmap(heatmap):
     make_category_cluster_heatmap(heatmap, input_directory, "resistance_mechanism")
     output_png = os.path.join(working_directory,outputs,"test_category_cluster-{}.png".format(count))
     output_eps = os.path.join(working_directory,outputs,"test_category_cluster-{}.eps".format(count))
