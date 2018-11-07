@@ -26,9 +26,6 @@ class Heatmap(object):
         if self.debug:
             logger.setLevel(10)
 
-        # print(self.frequency)
-        # exit()
-
     def __repr__(self):
         """Returns Heatmap class full object."""
         return "Heatmap({}".format(self.__dict__)
@@ -163,7 +160,7 @@ class Heatmap(object):
         freq_df = freq_df[cols]
 
         # Create .txt file of grouped samples
-        with open(outfile + str(n) + '-frequency.txt', 'w') as f:
+        with open('{o}-{n}-frequency.txt'.format(o=outfile, n=n), 'w') as f:
             fcsv = csv.writer(f, delimiter='\t')
             fcsv.writerow(['Frequency', 'Samples'])
             for s in cols:
@@ -278,6 +275,22 @@ class Heatmap(object):
         width, height = bbox.width, bbox.height
         return width, height
 
+    def write_csv(self, category, df, class_series, output):
+        """Produces a tab-delimited file of heatmap matrix"""
+        # Convert series to dataframe
+        class_frame = class_series.to_frame()
+        # Inner join between series and df on unique IDs, rename gene column
+        merged_df = pd.merge(df, class_frame, left_index=True, right_index=True)
+        merged_df.rename(columns={'index':'gene'}, inplace=True)
+        # Moves classification column to the front
+        col_list = merged_df.columns.tolist()
+        if self.classification in col_list:
+            reordered_columns = [self.classification] + [v for i,v in enumerate(col_list) if i != col_list.index(self.classification)]
+        else:
+            logger.warning("Couldn't create csv of heatmap matrix. " +
+            "The category {} did not exist.".format(self.classification))
+        merged_df = merged_df[reordered_columns]
+        merged_df.to_csv('{}.csv'.format(output), index=False)
 
     def run(self):
         # print args
@@ -300,7 +313,7 @@ class Heatmap(object):
         excluded = [] # incompletely curated models
         for jsonfile in jsons:
             # {json file: {Model: type_hit}}
-            accession = jsonfile.split(".")[0]
+            accession = jsonfile.split(".json")[0]
             shortened.append(accession) # Don't take whole file name
             genes[accession] = {}
             with open(os.path.join(directory, jsonfile)) as data: # Use os.path.join
@@ -470,11 +483,11 @@ class Heatmap(object):
                     counted[v] = 0
                     new_index.append(v+"_0")
 
+            # Assign new column to dataframe called uID with unique identifiers
             complete_class_df = complete_class_df.assign(uID=new_index)
             complete_class_df = complete_class_df.reset_index().set_index("uID")
-            s = complete_class_df.loc[:,self.classification]
-
             complete_class_df = complete_class_df.sort_values(by=[self.classification, 'model_name'])
+            s = complete_class_df.loc[:,self.classification]
             unique_ids = list(complete_class_df.index.values)
             df = df.reindex(index=unique_ids)
 
@@ -482,16 +495,27 @@ class Heatmap(object):
             if self.frequency:
                 df, freq_dict = self.create_frequency_df(df, self.output)
                 df = df.reindex(index=unique_ids)
+                df_for_merging = df.copy()
+                # Write csv before removing unique IDs
+                if not self.cluster:
+                    file_name = '{}-{}'.format(self.output, str(len(jsons)))
+                    self.write_csv(self.classification, df, s, file_name)
+                # Set index as labels, not unique IDs
                 df = df.set_index("index")
                 column_order = list(df)
 
                 if self.cluster == "samples":
-                    # df_copy = df.drop(["index"], axis=1)
-                    df_copy = self.cluster_data(self.cluster, df)
+                    df = self.cluster_data(self.cluster, df)
                     # df = df.set_index("index", append=True)
-                    df = df.iloc[:, clustered_col]
+                    # Remove unique ids, cluster, add back unique ids, merge
+                    unique_id_values = df_for_merging.index.values
+                    df_for_merging = df_for_merging.set_index("index")
+                    df_for_merging = df_for_merging.iloc[:,clustered_col]
+                    test_df = df_for_merging.assign(TEMP_COLUMN = unique_id_values)
+                    test_df = test_df.reset_index().set_index("TEMP_COLUMN")
+                    file_name = '{}-{}'.format(self.output, str(len(jsons)))
+                    self.write_csv(self.classification, test_df, s, file_name)
                     column_order = list(df)
-                    # df = df.reset_index().set_index("uID")
                 elif self.cluster == "both" or self.cluster == "genes":
                     logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
                     exit()
@@ -564,8 +588,6 @@ class Heatmap(object):
 
                 # Save figure
                 gs.tight_layout(fig)
-                file_name = '%s-%s' %(self.output, str(len(jsons)))
-
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
@@ -600,6 +622,9 @@ class Heatmap(object):
                     logger.error("Error: Unable to cluster genes because the categorization option was chosen. No heatmap will be generated. Closing program now.")
                     exit()
 
+                # Write csv before removing unique IDs
+                file_name = '{}-{}'.format(self.output, str(len(jsons)))
+                self.write_csv(self.classification, df, s, file_name)
                 df = df.set_index("index")
 
                 # Set the dimension parameters
@@ -661,13 +686,10 @@ class Heatmap(object):
                 ax1_dim = self.get_axis_size(fig, ax1)
 
                 cat, ranges = self.calculate_categories(s, ax1_dim[0])
-
                 self.draw_categories(ax1, ranges, cat, ax0, self.display, df)
-                # print(figsize)
 
                 # Save figure
                 gs.tight_layout(fig)
-                file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
@@ -696,6 +718,11 @@ class Heatmap(object):
                 if self.cluster:
                     df = self.cluster_data(self.cluster, df)
                     column_order = list(df)
+
+                file_name = '{}-{}'.format(self.output, str(len(jsons)))
+                # Write matrix to csv
+                df.index.name='gene'
+                df.to_csv('{}.csv'.format(file_name))
 
                 # Set the dimension parameters
                 fig_width,fig_length,fig,figsize = self.get_figure_dimensions(jsons, genelist)
@@ -729,13 +756,18 @@ class Heatmap(object):
                     new_figsize = (fig_width*3, fig_length)
                     fig = plt.figure(figsize = new_figsize)
                     # Try to draw plot with default sizing
+                    ax0,ax2,gs = self.create_plot('f', 0)
+                    temp_w, temp_h = self.get_axis_size(fig, ax0)
+                    # Check if width too small
+                    if temp_h/temp_w > 7:
+                        new_figsize = (fig_width*5, fig_length)
+                        fig = plt.figure(figsize = new_figsize)
+                        ax0,ax2,gs = self.create_plot('f', 0)
                     if figsize[1] > 100:
                         sns.set(font_scale=1.7)
                     # if df.shape[0] > 200:
                     #     sns.set(font_scale=1.0)
-
                     sns.set_style("white")
-                    ax0,ax2,gs = self.create_plot('f', 0)
                     df,freq_dict = self.create_frequency_df(df, self.output)
 
                     # Create the heatmap
@@ -751,7 +783,6 @@ class Heatmap(object):
                     self.draw_barplot(freq_dict,ax2, column_order)
                     gs.tight_layout(fig)
 
-                file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
@@ -783,7 +814,11 @@ class Heatmap(object):
                 if self.cluster:
                     df = self.cluster_data(self.cluster, df)
 
-                print(df)
+                file_name = '{}-{}'.format(self.output, str(len(jsons)))
+
+                # Write matrix to csv
+                df.index.name='gene'
+                df.to_csv('{}.csv'.format(file_name))
 
                 # Set the dimension parameters
                 fig_width,fig_length,fig,figsize = self.get_figure_dimensions(jsons, genelist)
@@ -805,7 +840,6 @@ class Heatmap(object):
                 g.set_xlabel(" ")
 
                 # Save figure
-                file_name = '%s-%s' %(self.output, str(len(jsons)))
                 print("Rendering EPS")
                 plt.savefig(file_name + '.eps', bbox_inches="tight", format="eps", pad_inches=0.5)
                 print("Rendering PNG")
