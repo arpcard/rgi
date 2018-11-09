@@ -27,8 +27,6 @@ Table of Contents
 - `Tab-delimited results file`_
 - `Support & Bug Reports`_
 
-
-
 License
 --------
 Use or reproduction of these materials, in whole or in part, by any non-academic organization whether or not for non-commercial (including research) or commercial purposes is prohibited, except with written permission of McMaster University. Commercial uses are offered only pursuant to a written license and user fee. To obtain permission and begin the licensing process, see `CARD website <https://card.mcmaster.ca/about>`_
@@ -36,19 +34,35 @@ Use or reproduction of these materials, in whole or in part, by any non-academic
 Requirements
 --------------------
 
-- `Prodigal v2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
-- `NCBI BLAST v2.6.0+ <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
-- `DIAMOND v0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
 - `Python 3.6 <https://www.python.org/>`_
+- `NCBI BLAST 2.6.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
+- `six 1.7.0+ <https://bitbucket.org/gutworth/six>`_
+- `zlib <https://bitbucket.org/gutworth/six>`_
+- `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
+- `DIAMOND 0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
+- `Biopython 1.60+ <https://biopython.org/>`_
+- `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
+- `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
+- `mock 2.0.0 <https://pypi.org/project/mock/>`_
+- `pandas 0.15.0+ <https://pandas.pydata.org/>`_
+- `Matplotlib 2.1.2+ <https://matplotlib.org/>`_
+- `seaborn 0.8.1+ <https://matplotlib.org/>`_
+- `pyfaidx 0.5.4.1+ <https://pypi.org/project/pyfaidx/>`_
+- `pyahocorasick 1.1.7+ <https://pypi.org/project/pyahocorasick/>`_
 
 Install dependencies
 --------------------
 
+- pip3 install six
 - pip3 install biopython
 - pip3 install filetype
-- pip3 install pandas
 - pip3 install pytest
 - pip3 install mock
+- pip3 install pandas
+- pip3 install matplotlib
+- pip3 install seaborn
+- pip3 install pyfaidx
+- pip3 install pyahocorasick
 
 Install RGI from project root
 -----------------------------
@@ -125,13 +139,13 @@ Load card.json
 
    .. code-block:: sh
    
-      rgi load --afile /path/to/card.json --local
+      rgi load --card_json /path/to/card.json --local
 
 - system wide 
 
    .. code-block:: sh
 
-      rgi load --afile /path/to/card.json
+      rgi load --card_json /path/to/card.json
 
 Check database version
 -----------------------
