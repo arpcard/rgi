@@ -25,8 +25,8 @@ def main(args):
 	with open(os.path.join(working_directory, "card_database_v{}.fasta".format(version)), 'w') as fout:
 		for i in data:
 			if i.isdigit():
-				# use homolog and variants models only
-				if data[i]['model_type_id'] in ['40292', '40293']:
+				# use homolog models only
+				if data[i]['model_type_id'] in ['40292']:
 
 					drug_class = []
 					mechanism = []
