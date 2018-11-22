@@ -15,10 +15,10 @@ def validate_file(filename):
 
 def main(args):
 	# print args
-	logger.info(json.dumps(args.__dict__, indent=2))
 	if args.debug:
 		logger.setLevel(10)
-
+	logger.info(json.dumps(args.__dict__, indent=2))
+	
 	if args.card_json is not None:
 		# validate json
 		if validate_file(args.card_json) == False:
@@ -54,22 +54,46 @@ def main(args):
 		# load annotation files (baits)
 		load_reference_card_and_baits(args.local_database, args.card_annotation, args.baits_annotation, "card_baits_reference.fasta")
 
+	if args.card_annotation is not None and args.wildcard_index is not None and args.wildcard_annotation is not None and args.baits_index is not None and args.baits_annotation is not None:
+		# load annotations files for CARD, VARIANTS and BAITS
+		load_reference_card_and_wilcard_and_baits(args.local_database, args.card_annotation, args.baits_annotation, args.wildcard_annotation,  "card_wildcard_baits_reference.fasta")
+
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
 	logger.info("loaded card only for 'rgi bwt'.")
 
-def load_reference_card_and_baits(local_db, card_fasta_file, wildcard_fasta_file, filename):
+def load_reference_baits_only(local_db, fasta_file):
+	load_file(local_db, fasta_file, "baits_reference.fasta")
+	logger.info("loaded baits only for 'rgi bwt'.")
+
+def load_reference_card_and_wilcard_and_baits(local_db, card_fasta_file, baits_fasta_file, wildcard_fasta_file, filename):
+	db = get_location(local_db)
+	filenames = []
+	filenames.append(card_fasta_file)
+	filenames.append(wildcard_fasta_file)
+	filenames.append(baits_fasta_file)
+
+	# combine the three fastas
+	import fileinput
+	with open(os.path.join(db, filename), 'w') as fout, fileinput.input(filenames) as fin:
+		for line in fin:
+			fout.write(line)
+	logger.info("loaded card, wildcard and baits annotations for 'rgi bwt'.")
+
+def load_reference_card_and_baits(local_db, card_fasta_file, baits_fasta_file, filename):
 	db = get_location(local_db)
 
 	filenames = []
 	filenames.append(card_fasta_file)
-	filenames.append(wildcard_fasta_file)
+	filenames.append(baits_fasta_file)
 
 	# combine the two fastas
 	import fileinput
 	with open(os.path.join(db, filename), 'w') as fout, fileinput.input(filenames) as fin:
 		for line in fin:
 			fout.write(line)
+	# load baits only file
+	load_reference_baits_only(local_db, baits_fasta_file)
 	logger.info("loaded card and baits annotations for 'rgi bwt'.")
 
 def load_reference_card_and_wildcard(local_db, card_fasta_file, wildcard_fasta_file, filename):
