@@ -238,6 +238,11 @@ class MainBase(object):
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
         parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits")
+
+        parser.add_argument('--mapq', dest="mapq", help="filter reads based on MAPQ score")
+        parser.add_argument('--mapped', dest="mapped", help="filter reads based on mapped reads")
+        parser.add_argument('--coverage', dest="coverage", help="filter reads based on coverage of reference sequence")
+
         return parser
 
     def bwt_run(self, args):
@@ -250,7 +255,10 @@ class MainBase(object):
             args.threads,
             args.output_file,
             args.debug,
-            args.local_database
+            args.local_database,
+            args.mapq,
+            args.mapped,
+            args.coverage
         )
         obj.run()
 
