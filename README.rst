@@ -49,6 +49,7 @@ Requirements
 - `seaborn 0.8.1+ <https://matplotlib.org/>`_
 - `pyfaidx 0.5.4.1+ <https://pypi.org/project/pyfaidx/>`_
 - `pyahocorasick 1.1.7+ <https://pypi.org/project/pyahocorasick/>`_
+- `OligoArrayAux 3.8 <http://unafold.rna.albany.edu/?q=DINAMelt/OligoArrayAux>`_
 
 Install dependencies
 --------------------
@@ -110,6 +111,7 @@ Usage
                   heatmap  Heatmap for multiple analysis
                   ---------------------------------------------------------------------------------------
                   bwt                   Metagenomics resistomes (Experimental)
+                  tm                    Baits Melting Temperature (Experimental)
                   card_annotation       Create fasta files with annotations from card.json (Experimental)
                   wildcard_annotation   Create fasta files with annotations from variants (Experimental)
                   baits_annotation      Create fasta files with annotations from baits (Experimental)

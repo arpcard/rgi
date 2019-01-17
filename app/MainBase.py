@@ -14,6 +14,7 @@ import app.remove_duplicates
 from app.kmer_query import CARDkmers
 from app.BWT import BWT
 from app.Heatmap import Heatmap
+from app.Baits import Baits
 
 class MainBase(object):
     def __init__(self, api=False):
@@ -31,6 +32,7 @@ class MainBase(object):
                heatmap  Heatmap for multiple analysis
                ---------------------------------------------------------------------------------------
                bwt                   Metagenomics resistomes (Experimental)
+               tm                    Baits Melting Temperature (Experimental)
                card_annotation       Create fasta files with annotations from card.json (Experimental)
                wildcard_annotation   Create fasta files with annotations from variants (Experimental)
                baits_annotation      Create fasta files with annotations from baits (Experimental)
@@ -41,7 +43,7 @@ class MainBase(object):
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
-                                                'clean', 'galaxy', 'database', 'bwt', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'tm', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -259,6 +261,31 @@ class MainBase(object):
             args.mapq,
             args.mapped,
             args.coverage
+        )
+        obj.run()
+
+    def tm(self):
+        parser = self.tm_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.tm_run(args)
+
+    def tm_args(self):
+        parser = argparse.ArgumentParser(prog="rgi tm",description='TM')
+        parser.add_argument('-i', '--input_file', dest="input_file", help="input_file")
+        parser.add_argument('-o', '--output_file', dest="output_file", help="output_file")
+        parser.add_argument('-t', '--filter_temperature', dest="filter_temperature", default=65,
+            help="desired melting temperature (default=65).")
+        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        return parser
+
+    def tm_run(self, args):
+        obj = Baits(
+            args.input_file,
+            args.output_file,
+            args.filter_temperature,
+            args.clean,
+            args.debug
         )
         obj.run()
 
