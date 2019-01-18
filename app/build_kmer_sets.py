@@ -299,7 +299,7 @@ def main(args):
 
     os.system(
         "cat {card} {variants} > card_and_prevalence.fasta"
-        .format(card=args.card, variants=variant_sequences)
+        .format(card=args.card_fasta, variants=variant_sequences)
     )
 
     os.system(
