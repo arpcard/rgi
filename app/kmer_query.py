@@ -35,8 +35,7 @@ class CARDkmers(object):
         self.working_directory = os.path.join(os.getcwd())
         self.base_name = os.path.basename(self.input_file)
         self.fasta_file = os.path.join(self.working_directory, "{}.fasta".format(self.base_name))
-        # self.output_json_file = os.path.join(self.working_directory, "{o}_{k}mer_analysis.json".format(o=self.output, k=self.k))
-        self.output_json_file = "/Users/lau/rgi/nov1_test/rescap_aug21_31mer_analysis.json"
+        self.output_json_file = os.path.join(self.working_directory, "{o}_{k}mer_analysis.json".format(o=self.output, k=self.k))
         if self.bwt:
             self.input_bam_file = input
             self.bam_directory = os.path.dirname(self.input_bam_file)
@@ -1162,53 +1161,53 @@ class CARDkmers(object):
         # load kmers
         j, amr_kmers = self.load_kmers()
 
-        # if self.rgi:
-        #     logger.info("input rgi results file: {}".format(self.input_rgi_file))
-        #     self.orf_list = self.get_rgi_sequences()
-        #     iterator = SeqIO.parse(self.fasta_file, "fasta")
-        #     num_seq_total, short_total, o_total = self.query_sequences(self.k, j, amr_kmers, iterator, "rgi")
-        #     with open(self.output_json_file, "w") as oj:
-        #         json.dump(o_total, oj)
-        # elif self.bwt:
-        #     logger.info("input RGI*BWT bam file: {}".format(self.input_bam_file))
-        #     self.get_bwt_sequences()
-        #     # split sequences for threading
-        #     split_sequences = self.split_fasta(self.fasta_file)
-        #     # Threading
-        #     results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
-        #
-        #     o_total = {}
-        #     num_seq_total = 0
-        #     short_total = 0
-        #
-        #     for i in range(len(results)):
-        #         o_total.update(results[i][2])
-        #         num_seq_total += results[i][0]
-        #         short_total += results[i][1]
-        #
-        #     with open(self.output_json_file, "w") as oj:
-        #         json.dump(o_total, oj)
-        # elif self.fasta:
-        #     logger.info("input fasta file: {}".format(self.input_fasta_file))
-        #     # split sequences for threading
-        #     split_sequences = self.split_fasta(self.input_fasta_file)
-        #     # Threading
-        #     results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
-        #
-        #     o_total = {}
-        #     num_seq_total = 0
-        #     short_total = 0
-        #
-        #     for i in range(len(results)):
-        #         o_total.update(results[i][2])
-        #         num_seq_total += results[i][0]
-        #         short_total += results[i][1]
-        #
-        #     with open(self.output_json_file, "w") as oj:
-        #         json.dump(o_total, oj)
-        # else:
-        #     logger.error("please specify an input file type")
-        #     exit()
+        if self.rgi:
+            logger.info("input rgi results file: {}".format(self.input_rgi_file))
+            self.orf_list = self.get_rgi_sequences()
+            iterator = SeqIO.parse(self.fasta_file, "fasta")
+            num_seq_total, short_total, o_total = self.query_sequences(self.k, j, amr_kmers, iterator, "rgi")
+            with open(self.output_json_file, "w") as oj:
+                json.dump(o_total, oj)
+        elif self.bwt:
+            logger.info("input RGI*BWT bam file: {}".format(self.input_bam_file))
+            self.get_bwt_sequences()
+            # split sequences for threading
+            split_sequences = self.split_fasta(self.fasta_file)
+            # Threading
+            results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
+        
+            o_total = {}
+            num_seq_total = 0
+            short_total = 0
+        
+            for i in range(len(results)):
+                o_total.update(results[i][2])
+                num_seq_total += results[i][0]
+                short_total += results[i][1]
+        
+            with open(self.output_json_file, "w") as oj:
+                json.dump(o_total, oj)
+        elif self.fasta:
+            logger.info("input fasta file: {}".format(self.input_fasta_file))
+            # split sequences for threading
+            split_sequences = self.split_fasta(self.input_fasta_file)
+            # Threading
+            results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
+        
+            o_total = {}
+            num_seq_total = 0
+            short_total = 0
+        
+            for i in range(len(results)):
+                o_total.update(results[i][2])
+                num_seq_total += results[i][0]
+                short_total += results[i][1]
+        
+            with open(self.output_json_file, "w") as oj:
+                json.dump(o_total, oj)
+        else:
+            logger.error("please specify an input file type")
+            exit()
 
         # print("# of sequences queried: {}".format(num_seq_total))
         # print("# of sequences with hits: {}".format(len(o_total)))
