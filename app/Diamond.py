@@ -28,8 +28,8 @@ class Diamond(object):
 
 	def run(self):
 		"""Runs DIAMOND algorithm.""" 
-		# logger.info("run diamond")
-		os.system('diamond {program} --in {in_ref} --db {db} \
+		# TODO:: for versions of diamond > 0.8.36 use --xml-blord-format
+		cmd = ('diamond {program} --in {in_ref} --db {db} \
 				   --query {input} --outfmt {outfmt} --out {output_file}  \
 				   --threads {num_threads}  --index-chunks {index_chunks} \
 				   --block-size {block_size}  \
@@ -46,3 +46,8 @@ class Diamond(object):
 						outfmt=self.outfmt
 					)
 				)
+
+		logger.info(cmd)
+		os.system(cmd)
+		logger.info("done running diamond {} -> {}".format(self.program, self.db))
+	

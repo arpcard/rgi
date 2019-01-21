@@ -40,7 +40,7 @@ class Blast(object):
 	def run_custom(self, db ):
 		"""Runs DIAMOND algorithm.""" 
 		# logger.info("run diamond")
-		os.system('{program} -query {input} -db {db} -num_threads {num_threads} \
+		cmd = ('{program} -query {input} -db {db} -num_threads {num_threads} \
 					-outfmt {outfmt} -out {output_file} -perc_identity {perc_identity} \
 					-strand {strand}' \
 					.format(
@@ -54,6 +54,8 @@ class Blast(object):
 						strand="both"
 					)
 				)
+		logger.info(cmd)
+		os.system(cmd)
 		logger.info("done running {} -> {}".format(self.program, db))
 
 
