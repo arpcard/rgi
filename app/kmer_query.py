@@ -812,17 +812,17 @@ class CARDkmers(object):
                         elif j[read]['taxonomic_info']['species'][max_species] > self.min - 1:
                             if not j[read]['taxonomic_info']['genus']:
                                 if type == "bwt":
-                                    self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                    self.single_species_bwt(j[read], max_species, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
                                 else:
-                                    prediction = self.single_species_rgi(j[read], path)
+                                    prediction = self.single_species_rgi(j[read], max_species)
                             else:
                                 if len(j[read]['taxonomic_info']['genus']) == 1:
                                     genus = set(j[read]['taxonomic_info']['genus'].keys()).pop()
                                     if genus == max_species.split()[0]:
                                         if type == "bwt":
-                                            self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                            self.single_species_bwt(j[read], max_species, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
                                         else:
-                                            prediction = self.single_species_rgi(j[read], path)
+                                            prediction = self.single_species_rgi(j[read], max_species)
                                     else:
                                         if j[read]['taxonomic_info']['genus'][genus] > self.min-1:
                                             if type == "bwt":
@@ -831,9 +831,9 @@ class CARDkmers(object):
                                                 prediction = self.ambiguous_rgi(j[read], True)
                                         elif j[read]['taxonomic_info']['genus'][genus] < self.min:
                                             if type == "bwt":
-                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                                self.single_species_bwt(j[read], max_species, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
                                             else:
-                                                prediction = self.single_species_rgi(j[read], path)
+                                                prediction = self.single_species_rgi(j[read], max_species)
                                 else:
                                     max_genus = max(j[read]['taxonomic_info']['genus'].keys(), key=(lambda key: j[read]['taxonomic_info']['genus'][key]))
                                     # at least 2 genera have kmer counts > 10
@@ -846,9 +846,9 @@ class CARDkmers(object):
                                         if j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                             if max_genus == max_species.split()[0]:
                                                 if type == "bwt":
-                                                    self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                                    self.single_species_bwt(j[read], max_species, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
                                                 else:
-                                                    prediction = self.single_species_rgi(j[read], path)
+                                                    prediction = self.single_species_rgi(j[read], max_species)
                                             else:
                                                 if type == "bwt":
                                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, True)
@@ -856,9 +856,9 @@ class CARDkmers(object):
                                                     prediction = self.ambiguous_rgi(j[read], True)
                                         elif j[read]['taxonomic_info']['genus'][max_genus] < self.min:
                                             if type == "bwt":
-                                                self.single_species_bwt(j[read], path, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
+                                                self.single_species_bwt(j[read], max_species, allele, ssc_allele, ssp_allele, sscp_allele, ssu_allele)
                                             else:
-                                                prediction = self.single_species_rgi(j[read], path)
+                                                prediction = self.single_species_rgi(j[read], max_species)
                         else:
                             if not j[read]['taxonomic_info']['genus']:
                                 if type == "bwt":
@@ -888,9 +888,9 @@ class CARDkmers(object):
                                             prediction = self.ambiguous_rgi(j[read], True)
                                     elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                         if type == "bwt":
-                                            self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                            self.single_genus_bwt(j[read], max_genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
                                         else:
-                                            prediction = self.single_genus_rgi(j[read], genus)
+                                            prediction = self.single_genus_rgi(j[read], max_genus)
                                     else:
                                         if type == "bwt":
                                             self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
@@ -922,9 +922,9 @@ class CARDkmers(object):
                                     prediction = self.ambiguous_rgi(j[read], True)
                             elif j[read]['taxonomic_info']['genus'][max_genus] > self.min-1:
                                 if type == "bwt":
-                                    self.single_genus_bwt(j[read], genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
+                                    self.single_genus_bwt(j[read], max_genus, allele, sgcp_allele, sgc_allele, sgp_allele, sgu_allele)
                                 else:
-                                    prediction = self.single_genus_rgi(j[read], genus)
+                                    prediction = self.single_genus_rgi(j[read], max_genus)
                             else:
                                 if type == "bwt":
                                     self.ambiguous_bwt(j[read], allele, cp_allele, a_allele, m_allele, c_allele, False)
