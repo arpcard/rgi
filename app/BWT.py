@@ -811,6 +811,7 @@ class BWT(object):
 			for i in stats:
 				accession, baits_count, baits_with_reads_count, reads_count, sample = self.get_counts(i, data_out)
 				standard_devitation = 0
+				coefficient_of_variation = 0
 
 				try:
 					standard_devitation = statistics.stdev(sample)
@@ -818,7 +819,9 @@ class BWT(object):
 					print(stats[i]["aro_name"], sample, e)
 
 				mean = statistics.mean(sample)
-				coefficient_of_variation = (standard_devitation / mean) * 100
+
+				if mean > 0:
+					coefficient_of_variation = (standard_devitation / mean) * 100
 
 				writer.writerow([
 					stats[i]["aro_name"], 
