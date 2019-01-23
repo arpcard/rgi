@@ -50,6 +50,9 @@ Requirements
 - `pyfaidx 0.5.4.1+ <https://pypi.org/project/pyfaidx/>`_
 - `pyahocorasick 1.1.7+ <https://pypi.org/project/pyahocorasick/>`_
 - `OligoArrayAux 3.8 <http://unafold.rna.albany.edu/?q=DINAMelt/OligoArrayAux>`_
+- `samtools 1.9 <https://github.com/samtools/samtools>`_
+- `bamtools 2.5.1 <https://github.com/pezmaster31/bamtools>`_
+- `bedtools 2.27.1 <https://github.com/arq5x/bedtools2>`_
 
 Install dependencies
 --------------------

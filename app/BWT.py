@@ -45,36 +45,13 @@ class BWT(object):
 			self.index_directory_bowtie2_baits = os.path.join(self.db, self.indecies_directory, "baits_reference", "{}".format("bowtie2_baits"))
 			self.index_directory_bwa_baits = os.path.join(self.db, self.indecies_directory, "baits_reference", "{}".format("bwa_baits"))
 
-		'''
-		# card only
-		if self.include_wildcard == False and self.include_baits == False:
-			logger.info("card only")
-			self.reference_genome = os.path.join(self.data, "card_reference.fasta")
-			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bowtie2"))
-			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bwa"))
-
 		# card and variants
-		if self.include_wildcard == True and self.include_baits == False:
-			logger.info("card and variants")
+		if self.include_wildcard == True:
+			logger.info("card variants")
 			self.reference_genome = os.path.join(self.data, "card_wildcard_reference.fasta")
 			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bowtie2"))
 			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bwa"))
 		
-		# card and baits
-		if self.include_wildcard == False and self.include_baits == True:
-			logger.info("card and baits")
-			self.reference_genome = os.path.join(self.data, "card_baits_reference.fasta")
-			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_baits_reference", "{}".format("bowtie2"))
-			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_baits_reference", "{}".format("bwa"))
-
-		# card, variants and baits
-		if self.include_wildcard == True and self.include_baits == True:
-			logger.info("card, variants and baits")
-			self.reference_genome = os.path.join(self.data, "card_wildcard_baits_reference.fasta")
-			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_wildcard_baits_reference", "{}".format("bowtie2"))
-			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_wildcard_baits_reference", "{}".format("bwa"))
-		'''
-
 		# outputs
 		self.working_directory = os.path.join(os.getcwd())
 		self.output_sam_file = os.path.join(self.working_directory, "{}.sam".format(self.output_file))
@@ -90,7 +67,6 @@ class BWT(object):
 		self.mapping_artifacts_stats = os.path.join(self.working_directory, "{}.artifacts_mapping_stats.txt".format(self.output_file))
 		self.mapping_reference_stats = os.path.join(self.working_directory, "{}.reference_mapping_stats.txt".format(self.output_file))
 		self.mapping_baits_stats = os.path.join(self.working_directory, "{}.baits_mapping_stats.txt".format(self.output_file))
-
 
 		self.baits_reads_count = os.path.join(self.working_directory, "{}.baits_reads_count.txt".format(self.output_file))
 		self.reads_baits_count = os.path.join(self.working_directory, "{}.reads_baits_count.txt".format(self.output_file))
@@ -269,8 +245,6 @@ class BWT(object):
 		)
 
 	def convert_sam_to_bam(self, input_sam_file, output_bam_file):
-		"""
-		"""
 		os.system("samtools view --threads {threads} -b  {input_sam_file} > {output_bam_file}".format(
 			threads=self.threads,
 			output_bam_file=output_bam_file,
@@ -279,8 +253,6 @@ class BWT(object):
 		)
 
 	def sort_bam(self):
-		"""
-		"""
 		os.system("samtools sort --threads {threads} -T /tmp/aln.sorted -o {sorted_bam_file} {unsorted_bam_file}".format(
 			threads=self.threads,
 			unsorted_bam_file=self.output_bam_file,
@@ -289,27 +261,20 @@ class BWT(object):
 		)
 
 	def index_bam(self, bam_file):
-		"""
-		"""
 		os.system("samtools index {input_bam}".format(input_bam=bam_file))
 
 	def extract_alignments_with_length(self, length=10, map_quality=2):
-		"""
-		-length {length} -mapQuality {map_quality}
-		"""
 		cmd="bamtools filter -in {input_bam} -out {output_bam}".format(
 			input_bam=self.output_bam_sorted_file,
 			output_bam=self.sorted_bam_sorted_file_length_100,
 			length=length,
 			map_quality=map_quality
 		)
-
 		os.system(cmd)
 
 	def get_aligned(self):
 		"""
 		Get stats for aligned reads using 'samtools idxstats'
-		| awk '$3 != 0'
 		"""
 		cmd = "samtools idxstats {input_bam} > {output_tab}".format(
 			input_bam=self.sorted_bam_sorted_file_length_100,
@@ -327,7 +292,6 @@ class BWT(object):
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_sequences
 			)
-
 		os.system(cmd)
 
 	def get_coverage(self):
@@ -855,8 +819,14 @@ class BWT(object):
 	def count_probes(self, cmd):
 		return os.popen(cmd).readlines()[0].strip("\n")
 	
-	def amos(self, accession):
-
+	def baits_reads_counts(self, accession):
+		"""
+		Returns
+		number_of_mapped_baits, 
+		number_of_mapped_baits_with_reads, 
+		average_bait_coverage, 
+		bait_coverage_coefficient_of_variation
+		"""
 		if self.include_baits == True:
 			with open(self.mapping_baits_stats, "r") as f2:
 				reader=csv.reader(f2,delimiter='\t')
@@ -921,7 +891,8 @@ class BWT(object):
 
 			if self.include_baits == True:
 				database.append("Baits")
-			elif self.include_wildcard == True:
+
+			if self.include_wildcard == True:
 				database.append("Resistomes & Variants")
 
 			if variants and "Resistomes & Variants" in database:
@@ -949,7 +920,7 @@ class BWT(object):
 							)
 						except Exception as e:
 							reference_allele_source = ""
-							logger.warning("missing key with prev_id {} , {}, db: {}".format(prevalence_sequence_id, e, database))
+							logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {}".format(prevalence_sequence_id, e, database))
 
 				else:
 					# provide info from model
@@ -967,7 +938,7 @@ class BWT(object):
 			elapsed = stop - start
 			# logger.info("time lapsed: {} - {}".format(elapsed, alignment_hit))
 			self.async_print(alignment_hit, start, stop, elapsed)
-			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.amos(aro_accession)
+			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(aro_accession)
 
 			return {
 				"id": alignment_hit,
@@ -1309,7 +1280,10 @@ class BWT(object):
 							"Number of Mapped Baits with Reads",
 							"Average Number of reads per Bait",
 							"Number of reads per Bait Coefficient of Variation (%)",
+							"Number of reads mapping to baits and mapping to complete gene",
+							"Number of reads mapping to baits and mapping to complete gene (%)",
 							"Mate Pair Linkage (# reads)",
+							"Reference Length",
 							"AMR Gene Family",
 							"Drug Class",
 							"Resistance Mechanism"
@@ -1364,13 +1338,14 @@ class BWT(object):
 					format(average_percent_coverage,'.2f'),
 					format(average_length_coverage,'.2f'),
 					format(average_mapq,'.2f'),
-
 					mapping_summary[i]["number_of_mapped_baits"][-1],
 					mapping_summary[i]["number_of_mapped_baits_with_reads"][-1],
 					mapping_summary[i]["average_bait_coverage"][-1],
 					mapping_summary[i]["bait_coverage_coefficient_of_variation"][-1],
-
+					"?",
+					"?",
 					"; ".join(mate_pairs),
+					"?",
 					"; ".join(mapping_summary[i]["AMR Gene Family"]),
 					"; ".join(mapping_summary[i]["Drug Class"]),
 					"; ".join(mapping_summary[i]["Resistance Mechanism"])
