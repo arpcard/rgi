@@ -144,7 +144,8 @@ def main(args):
 									"reference_length": info[row[1]]["length"],
 									"variant_gc": gc,
 									"variant_length": seq_len,
-									"nruns": nruns
+									"nruns": nruns,
+									"ncbi_accession": row[6]
 									# "sequence": sequence
 									})
 					except Exception as e:

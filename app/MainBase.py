@@ -22,23 +22,50 @@ class MainBase(object):
         self.cpu_count = os.cpu_count()
         USAGE='''%(prog)s <command> [<args>]
             commands are:
+               ---------------------------------------------------------------------------------------
+               Database
+               ---------------------------------------------------------------------------------------
+
+               load     Loads CARD database, annotations and k-mer database
+               clean    Removes BLAST databases and temporary files
+               database Information on installed card database
+               galaxy   Galaxy project wrapper
+
+               ---------------------------------------------------------------------------------------
+               Genomic
+               ---------------------------------------------------------------------------------------
+
                main     Runs rgi application
                tab      Creates a Tab-delimited from rgi results
                parser   Creates categorical JSON files RGI wheel visualization
-               load     Loads CARD database JSON file
-               clean    Removes BLAST databases and temporary files
-               galaxy   Galaxy project wrapper
-               database Information on installed card database
                heatmap  Heatmap for multiple analysis
+
                ---------------------------------------------------------------------------------------
-               bwt                   Metagenomics resistomes (Experimental)
-               tm                    Baits Melting Temperature (Experimental)
-               card_annotation       Create fasta files with annotations from card.json (Experimental)
-               wildcard_annotation   Create fasta files with annotations from variants (Experimental)
+               Metagenomic
+               ---------------------------------------------------------------------------------------
+               bwt                   Align reads to CARD and in silico predicted allelic variants
+               
+               ---------------------------------------------------------------------------------------
+               Baits validation
+               ---------------------------------------------------------------------------------------
+               tm                    Baits Melting Temperature
+
+               ---------------------------------------------------------------------------------------
+               Annotations
+               ---------------------------------------------------------------------------------------
+               card_annotation       Create fasta files with annotations from card.json
+               wildcard_annotation   Create fasta files with annotations from variants
                baits_annotation      Create fasta files with annotations from baits (Experimental)
                remove_duplicates     Removes duplicate sequences (Experimental)
-               kmer_build            Build CARD*kmer database (Experimental)
-               kmer_query            Query sequences through CARD*kmers (Experimental)
+
+
+               ---------------------------------------------------------------------------------------
+               Pathogen of origin
+               ---------------------------------------------------------------------------------------
+               
+               kmer_build            Build AMR specific k-mers database used for pathogen of origin
+               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
+
                '''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
@@ -48,10 +75,8 @@ class MainBase(object):
 
         if api == False:
             args=parser.parse_args(sys.argv[1:2])
-            # """
             if not hasattr(self, args.command):
                 logger.info("Unrecognized command: {}".format(args.command))
-                # parser.print_help()
                 exit("Error: Unrecognized command: {}".format(args.command))
             getattr(self, args.command)()
 
@@ -240,7 +265,6 @@ class MainBase(object):
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
         parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits")
-
         parser.add_argument('--mapq', dest="mapq", help="filter reads based on MAPQ score")
         parser.add_argument('--mapped', dest="mapped", help="filter reads based on mapped reads")
         parser.add_argument('--coverage', dest="coverage", help="filter reads based on coverage of reference sequence")

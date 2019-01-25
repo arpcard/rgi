@@ -105,6 +105,7 @@ class BWT(object):
 
 	def create_index(self, index_directory, reference_genome):
 		"""
+		Create bwa or bowtie2 index for reference genome
 		"""
 		if self.aligner == "bowtie2":
 			if not os.path.exists(index_directory):
@@ -130,21 +131,15 @@ class BWT(object):
 
 	def align_bowtie2_unpaired(self, reference_genome, index_directory, output_sam_file):
 		"""
-		Preset options in --end-to-end mode:
-			--very-fast == -D 5 -R 1 -N 0 -L 22 -i S,0,2.50
-			--fast == -D 10 -R 2 -N 0 -L 22 -i S,0,2.50
-			--sensitive == -D 15 -R 2 -L 22 -i S,1,1.15
-			--very-sensitive == -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+		Align unpaired reads to card or wildcard
 		"""
 
 		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 
 		cmd = "bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} -U {unpaired_reads}  -S {output_sam_file}".format(
 			threads=self.threads,
-			# index_directory=self.index_directory_bowtie2,
 			index_directory=index_directory,
 			unpaired_reads=self.read_one,
-			# output_sam_file=self.output_sam_file
 			output_sam_file=output_sam_file
 		)
 
@@ -152,12 +147,7 @@ class BWT(object):
 
 	def align_bowtie2(self, reference_genome, index_directory, output_sam_file):
 		"""
-		Preset options in --end-to-end mode:
-			--very-fast == -D 5 -R 1 -N 0 -L 22 -i S,0,2.50
-			--fast == -D 10 -R 2 -N 0 -L 22 -i S,0,2.50
-			--sensitive == -D 15 -R 2 -L 22 -i S,1,1.15
-			--very-sensitive == -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-			--very-sensitive-local
+		Align paired reads to card or wildcard
 		"""
 		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 
@@ -175,12 +165,7 @@ class BWT(object):
 
 	def align_bowtie2_baits_to_genes(self, reference_genome, index_directory, output_sam_file):
 		"""
-		Preset options in --end-to-end mode:
-			--very-fast == -D 5 -R 1 -N 0 -L 22 -i S,0,2.50
-			--fast == -D 10 -R 2 -N 0 -L 22 -i S,0,2.50
-			--sensitive == -D 15 -R 2 -L 22 -i S,1,1.15
-			--very-sensitive == -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-			--very-sensitive-local
+		Align baits to genes
 		"""
 		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 
@@ -195,34 +180,9 @@ class BWT(object):
 
 		os.system(cmd)
 
-	'''
-	def align_bowtie2_baits(self, reference_genome, index_directory, output_sam_file):
-		"""
-		Preset options in --end-to-end mode:
-			--very-fast == -D 5 -R 1 -N 0 -L 22 -i S,0,2.50
-			--fast == -D 10 -R 2 -N 0 -L 22 -i S,0,2.50
-			--sensitive == -D 15 -R 2 -L 22 -i S,1,1.15
-			--very-sensitive == -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-			--very-sensitive-local
-			--no-mixed
-			index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file
-		"""
-		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
-
-		logger.info("align baits -f {} to {}".format(self.reference_genome_baits, reference_genome))
-
-		os.system("bowtie2 --quiet--no-discordant --no-mixed --very-sensitive-local --threads {threads} -x {index_directory} -1 {read_one} -2 {read_two}  -S {output_sam_file}".format(
-			threads=self.threads,
-			index_directory=index_directory,
-			read_one=self.read_one,
-			read_two=self.read_two,
-			output_sam_file=output_sam_file
-		))
-	'''
-
-
 	def align_bwa_single_end_mapping(self):
 		"""
+		Align unpaired reads to reference genome using bwa
 		"""
 		os.system("bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}".format(
 			threads=self.threads,
@@ -234,6 +194,7 @@ class BWT(object):
 
 	def align_bwa_paired_end_mapping(self):
 		"""
+		Align paired reads to reference genome using bwa
 		"""
 		os.system("bwa mem -t {threads} {index_directory} {read_one} {read_two} > {output_sam_file}".format(
 			threads=self.threads,
@@ -245,6 +206,9 @@ class BWT(object):
 		)
 
 	def convert_sam_to_bam(self, input_sam_file, output_bam_file):
+		"""
+		Convert sam file to bam file
+		"""
 		os.system("samtools view --threads {threads} -b  {input_sam_file} > {output_bam_file}".format(
 			threads=self.threads,
 			output_bam_file=output_bam_file,
@@ -253,6 +217,9 @@ class BWT(object):
 		)
 
 	def sort_bam(self):
+		"""
+		Sort bam file
+		"""
 		os.system("samtools sort --threads {threads} -T /tmp/aln.sorted -o {sorted_bam_file} {unsorted_bam_file}".format(
 			threads=self.threads,
 			unsorted_bam_file=self.output_bam_file,
@@ -261,20 +228,28 @@ class BWT(object):
 		)
 
 	def index_bam(self, bam_file):
+		"""
+		Index input bam file using 'samtools index' function
+		"""
 		os.system("samtools index {input_bam}".format(input_bam=bam_file))
 
 	def extract_alignments_with_length(self, length=10, map_quality=2):
+		"""
+		Get alignments from bam file using length as a filter (default length=10, map_quality=2)
+		TODO:: add filters (mapped, length, coverage and map_quality)
+		"""
 		cmd="bamtools filter -in {input_bam} -out {output_bam}".format(
 			input_bam=self.output_bam_sorted_file,
 			output_bam=self.sorted_bam_sorted_file_length_100,
 			length=length,
 			map_quality=map_quality
 		)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_aligned(self):
 		"""
-		Get stats for aligned reads using 'samtools idxstats'
+		Get stats for aligned reads using 'samtools idxstats' function
 		"""
 		cmd = "samtools idxstats {input_bam} > {output_tab}".format(
 			input_bam=self.sorted_bam_sorted_file_length_100,
@@ -296,6 +271,7 @@ class BWT(object):
 
 	def get_coverage(self):
 		"""
+		Get coverage using 'samtools depth' function and write outputs to a tab-delimited file
 		"""
 		cmd="samtools depth {sorted_bam_file} > {output_tab}".format(
 			sorted_bam_file=self.sorted_bam_sorted_file_length_100, 
@@ -305,7 +281,7 @@ class BWT(object):
 
 	def get_coverage_all_positions(self):
 		"""
-		Get converage for all positions using 'genomeCoverageBed'
+		Get converage for all positions using 'genomeCoverageBed -ibam' function
 		BAM file _must_ be sorted by position
 		"""
 
@@ -321,11 +297,14 @@ class BWT(object):
 		)
 
 	def get_baits_count(self):
+		"""
+		TODO:: Get baits count
+		"""
 		pass
 
 	def get_reads_count(self):
 		"""
-		Parse tab-delimited file for counts to a dictionary
+		Parse tab-delimited file for read counts to a dictionary
 		"""
 		sequences = {}
 		
@@ -534,7 +513,10 @@ class BWT(object):
 		return sequences
 
 	def filter_count_reads(self, is_mapped="false", length=""):
-	
+		"""
+		Filter reads using mapQuality, length and isMapped
+		TODO:: Review to remove / include
+		"""
 		read_one=os.path.join(self.working_directory, "{}.R1.fastq".format(self.output_file))
 		read_two=os.path.join(self.working_directory, "{}.R2.fastq".format(self.output_file))
 		options = ""
@@ -577,6 +559,9 @@ class BWT(object):
 		return os.popen(read_one_count_cmd).readlines()[0].strip("\n") ,  os.popen(read_two_count_cmd).readlines()[0].strip("\n")
 
 	def get_stats(self):
+		"""
+		Get stats using 'bamtools stats' and 'samtools flagstat' function
+		"""
 		'''
 		stats = {
 			"mapped": {
@@ -605,7 +590,7 @@ class BWT(object):
 		'''
 		# overall stats for mapping
 		cmd_overall = "bamtools stats -in {} > {}".format(self.sorted_bam_sorted_file_length_100 , self.mapping_overall_stats)
-		logger.info("overall mapping stats using {}".format(cmd_overall))
+		# logger.info("overall mapping stats using {}".format(cmd_overall))
 		os.system(cmd_overall)
 		# stats showing duplicates
 		# write file reference_stats
@@ -615,7 +600,7 @@ class BWT(object):
 			out.write("**********************************************\n")
 			out.write("\n")
 		cmd_artifacts = "samtools flagstat {} >> {}".format(self.sorted_bam_sorted_file_length_100 , self.mapping_artifacts_stats)
-		logger.info("mapping artifacts stats i.e duplicates using {}".format(cmd_artifacts))
+		# logger.info("mapping artifacts stats i.e duplicates using {}".format(cmd_artifacts))
 		os.system(cmd_artifacts)
 
 	def find_between(s, start, end):
@@ -853,7 +838,7 @@ class BWT(object):
 
 	def summary(self, alignment_hit, models, variants, baits, reads, models_by_accession):
 		start = time.time()		
-		logger.debug(alignment_hit)
+		# logger.debug(alignment_hit)
 		coverage = self.get_coverage_details(alignment_hit)
 
 		model_id = ""
@@ -913,18 +898,30 @@ class BWT(object):
 						if "ncbi_plasmid" in observed_data_types:
 							observed_in_plasmids = "YES"
 
-						try:
-							reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
-								rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
-								percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
-							)
-						except Exception as e:
-							reference_allele_source = ""
-							logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {}".format(prevalence_sequence_id, e, database))
+						# get prevalence_sequence_id Prevalence_Sequence_ID:10687|ID:2882|Name:tet(W/N/W)|ARO:3004442
+						if "Prevalence_Sequence_ID" in alignment_hit:
+							# logger.debug(alignment_hit)
+							prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[-1]
+
+							try:
+								# logger.debug(json.dumps(alignments, indent=2))
+								# logger.debug(json.dumps(variants[model_id][prevalence_sequence_id], indent=2))
+								reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
+									rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
+									percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
+								)
+							except Exception as e:
+								reference_allele_source = ""
+								# logger.debug(alignment_hit)
+								# logger.debug(json.dumps(alignments, indent=2))
+								# logger.debug(json.dumps(variants[model_id], indent=2))
+								logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {} for model_id: {}".format(prevalence_sequence_id, e, database, model_id))
+
 
 				else:
 					# provide info from model
 					observed_in_pathogens = models[model_id]["taxon"]
+
 				
 			# check all clases categories
 			if "AMR Gene Family" not in resistomes.keys():
@@ -937,7 +934,7 @@ class BWT(object):
 			stop = time.time()
 			elapsed = stop - start
 			# logger.info("time lapsed: {} - {}".format(elapsed, alignment_hit))
-			self.async_print(alignment_hit, start, stop, elapsed)
+			# self.async_print(alignment_hit, start, stop, elapsed)
 			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(aro_accession)
 
 			return {
