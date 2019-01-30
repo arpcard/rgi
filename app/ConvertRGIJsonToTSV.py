@@ -1,6 +1,7 @@
 import csv
 from app.settings import *
 from operator import itemgetter, attrgetter
+from collections import OrderedDict
 
 class ConvertJsonToTSV(object):
 
@@ -204,6 +205,11 @@ class ConvertJsonToTSV(object):
 												else:
 													temp3.append(x["snp"]["original"] + str(x["snp"]["position"]) + x["snp"]["change"] + ":" + x['model_id'])
 													other_snps = ', '.join(temp3)
+											# add unique snps
+											temp2 = list(OrderedDict.fromkeys(temp2))
+											best_snps = ', '.join(temp2)
+											temp3 = list(OrderedDict.fromkeys(temp3))
+											other_snps = ', '.join(temp3)
 									else:
 										best_snps = "n/a"
 										other_snps = "n/a"
