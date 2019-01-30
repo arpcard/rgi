@@ -88,11 +88,11 @@ class MainBase(object):
     def main_args(self):
         parser = argparse.ArgumentParser(prog="rgi main",description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
         parser.add_argument('-i','--input_sequence', dest="input_sequence", required=True, \
-            help='input file must be in either FASTA (contig and protein), FASTQ(read) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+            help='input file must be in either FASTA (contig and protein) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="output folder and base filename")
         parser.add_argument('-t','--input_type', dest="input_type",
                 type=str.lower,
-                default="contig", choices=['read','contig','protein', 'wgs'],
+                default="contig", choices=['contig','protein'],
                 required=False,
                 help='specify data input type (default = contig)')
         parser.add_argument('-a','--alignment_tool', dest="aligner",

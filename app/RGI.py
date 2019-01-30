@@ -248,10 +248,6 @@ class RGI(RGIBase):
 		with open(os.path.join(self.output_file), 'w') as fout:
 			fout.write(json.dumps({}))
 
-	def process_read(self):
-		"""Process fastq or reads sequence(s)."""
-		logger.info("process read")
-
 	# @profile
 	def filter_process(self):
 		logger.info("run filter")
