@@ -25,12 +25,14 @@ class Homolog(BaseModel):
 	def run(self):
 		"""Runs homolog search."""
 		blastResults = {}
-		
+		# print(json.dumps(self.__dict__, indent=2))
 		predicted_genes_dict = {}
+		predicted_genes_dict_protein = {}
 		submitted_proteins_dict = {}
 
 		if self.input_type == "contig":
 			predicted_genes_dict = self.get_orf_dna_sequence(self.input_sequence,self.input_type)
+			predicted_genes_dict_protein = self.get_orf_protein_sequence(self.input_sequence,self.input_type)
 
 		if self.input_type == "protein":
 			submitted_proteins_dict = self.get_submitted_protein_sequence(self.input_sequence)
@@ -91,12 +93,17 @@ class Homolog(BaseModel):
 							except Exception as e:
 								logger.warning("Exception : {} -> {} -> Model({}) missing in database. Please generate new database.".format(type(e), e, modelID))
 								
-							if predicted_genes_dict:
-								if orfInfo.strip() in predicted_genes_dict.keys():
-									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()], generic_dna).translate(table=11)).strip("*")
+							# if predicted_genes_dict:
+							# 	if orfInfo.strip() in predicted_genes_dict.keys():
+							# 		orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()], generic_dna).translate(table=11)).strip("*")
+							# 	else:
+							# 		orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()[:orfInfo.decode().index(' # ')]], generic_dna).translate(table=11)).strip("*")
+							if predicted_genes_dict_protein:
+								if orfInfo.strip() in predicted_genes_dict_protein.keys():
+									orf_protein_sequence = predicted_genes_dict_protein[orfInfo.decode()].strip("*")
 								else:
-									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()[:orfInfo.decode().index(' # ')]], generic_dna).translate(table=11)).strip("*")
-						
+									orf_protein_sequence = predicted_genes_dict_protein[orfInfo.decode()[:orfInfo.decode().index(' # ')]].strip("*")
+
 							if submitted_proteins_dict:
 								orf_protein_sequence = str(submitted_proteins_dict[orfInfo.decode().split(" ")[0]])
 
@@ -142,7 +149,8 @@ class Homolog(BaseModel):
 
 									if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 										ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
-										ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										# ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										ppinsidedict["orf_prot_sequence"] =  orf_protein_sequence
 									else:
 										ppinsidedict["orf_dna_sequence"] = ""
 										ppinsidedict["orf_prot_sequence"] = ""
@@ -202,7 +210,8 @@ class Homolog(BaseModel):
 									
 									if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 										insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
-										insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										# insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										insidedict["orf_prot_sequence"] = orf_protein_sequence
 									else:
 										insidedict["orf_dna_sequence"] = ""
 										insidedict["orf_prot_sequence"] = ""									
@@ -263,7 +272,8 @@ class Homolog(BaseModel):
 
 									if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 										linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
-										linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										# linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+										linsidedict["orf_prot_sequence"] = orf_protein_sequence
 									else:
 										linsidedict["orf_dna_sequence"] = ""
 										linsidedict["orf_prot_sequence"] = ""

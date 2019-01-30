@@ -25,11 +25,13 @@ class Variant(BaseModel):
 	def run(self):
 		blastResults = {}
 		predicted_genes_dict = {}
+		predicted_genes_dict_protein = {}
 		submitted_proteins_dict = {}
 		orf=0
 
 		if self.input_type == "contig":
 			predicted_genes_dict = self.get_orf_dna_sequence(self.input_sequence,self.input_type)
+			predicted_genes_dict_protein = self.get_orf_protein_sequence(self.input_sequence,self.input_type)
 
 		if self.input_type == "protein":
 			submitted_proteins_dict = (self.get_submitted_protein_sequence(self.input_sequence))
@@ -103,11 +105,17 @@ class Variant(BaseModel):
 								if hsp.sbjct_start < pos and (hsp.sbjct_start + real_sbjct_length) > pos:
 									orf_protein_sequence = ""
 
-									if predicted_genes_dict:
-										if orf_info.strip() in predicted_genes_dict.keys():
-											orf_protein_sequence = str(Seq(predicted_genes_dict[orf_info.decode()], generic_dna).translate(table=11)).strip("*")
+									# if predicted_genes_dict:
+									# 	if orf_info.strip() in predicted_genes_dict.keys():
+									# 		orf_protein_sequence = str(Seq(predicted_genes_dict[orf_info.decode()], generic_dna).translate(table=11)).strip("*")
+									# 	else:
+									# 		orf_protein_sequence = str(Seq(predicted_genes_dict[orf_info.decode()[:orf_info.decode().index(' # ')]], generic_dna).translate(table=11)).strip("*")
+
+									if predicted_genes_dict_protein:
+										if orf_info.strip() in predicted_genes_dict_protein.keys():
+											orf_protein_sequence = predicted_genes_dict_protein[orf_info.decode()].strip("*")
 										else:
-											orf_protein_sequence = str(Seq(predicted_genes_dict[orf_info.decode()[:orf_info.decode().index(' # ')]], generic_dna).translate(table=11)).strip("*")
+											orf_protein_sequence = predicted_genes_dict_protein[orf_info.decode()[:orf_info.decode().index(' # ')]].strip("*")
 
 									if submitted_proteins_dict:
 										orf_protein_sequence = str(submitted_proteins_dict[orf_info.decode().split(" ")[0]])
@@ -120,14 +128,23 @@ class Variant(BaseModel):
 									qry = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 									sbj = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
-									if hsp.query[qry] == chan:	
-										logger.info("runBlast | Model:"+str(model_id) + " pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
-												self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
-												+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))	
+									if hsp.query[qry] == chan:
+										query_snps = {}	
+										# logger.debug("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
+										# 		self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
+										# 		+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
+
+										# get position of mutation in the query sequence
+										d = int(pos) - hsp.sbjct_start - self.find_num_dash(hsp.query, (int(pos) - hsp.sbjct_start))
+										# print("hsp.sbjct_start: ", hsp.sbjct_start)
+										query_snps = {"original": ori, "change": chan ,"position": d+1}
+										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
+
 										if hsp.bits >= true_pass_evalue:		
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
 											sinsidedict["snp"] = eachs
+											sinsidedict["query_snp"] = query_snps
 											sinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
 											sinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)
 											sinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
@@ -165,7 +182,8 @@ class Variant(BaseModel):
 
 												if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
 													sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
-													sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													# sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													sinsidedict["orf_prot_sequence"] = orf_protein_sequence
 												else:
 													sinsidedict["orf_dna_sequence"] = ""
 													sinsidedict["orf_prot_sequence"] = ""	
@@ -189,6 +207,7 @@ class Variant(BaseModel):
 											slinsidedict = {}
 											slinsidedict["type_match"] = "Loose"
 											slinsidedict["snp"] = eachs
+											slinsidedict["query_snp"] = query_snps
 											slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
 											slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)				
 											slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
@@ -226,7 +245,8 @@ class Variant(BaseModel):
 
 												if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
 													slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
-													slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													# slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													slinsidedict["orf_prot_sequence"] = orf_protein_sequence
 												else:
 													slinsidedict["orf_dna_sequence"] = ""
 													slinsidedict["orf_prot_sequence"] = ""	

@@ -99,16 +99,26 @@ class Rrna(BaseModel):
 								chan = eachs["change"]
 
 								if hsp.query_start < pos and (hsp.query_start + real_query_length) > pos:
-									# Report ONLY if the SNPs are present
+									# Report ONLY if the SNPs are present								
 									qry = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 									sbj = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 
-									if hsp.sbjct[sbj] == chan:		
+									if hsp.sbjct[sbj] == chan:
+										query_snps = {}
+										if strand == "+":
+											d = int(pos) - hsp.query_start - self.find_num_dash(hsp.sbjct, (int(pos) - hsp.query_start))
+											query_snps = {"original": hsp.query[d], "change": hsp.sbjct[d], "position": (d + 1)}
+										else:
+											d = int(pos) + hsp.query_start - self.find_num_dash(hsp.sbjct, (int(pos) - hsp.query_start))
+											query_snps = {"original": hsp.query[d], "change": hsp.sbjct[d], "position": (d - 1)}
+
+										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
+
 										if hsp.bits >= true_pass_evalue:
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
 											sinsidedict["snp"] = eachs
-
+											sinsidedict["query_snp"] = query_snps
 											sinsidedict["orf_strand"] = strand
 											sinsidedict["orf_start"] = hsp.sbjct_start
 											sinsidedict["orf_end"] = hsp.sbjct_end
@@ -159,7 +169,7 @@ class Rrna(BaseModel):
 											slinsidedict = {}
 											slinsidedict["type_match"] = "Loose"
 											slinsidedict["snp"] = eachs
-
+											slinsidedict["query_snp"] = query_snps
 											slinsidedict["orf_strand"] = strand
 											slinsidedict["orf_start"] = hsp.sbjct_start
 											slinsidedict["orf_end"] = hsp.sbjct_end
