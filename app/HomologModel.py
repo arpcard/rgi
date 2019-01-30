@@ -61,7 +61,7 @@ class Homolog(BaseModel):
 						else:
 							c += 1
 					orffrom = orfInfo[c:]
-
+				
 					modelTypeID = self.extract_nth_bar(alignTitle, 0)
 					
 					if modelTypeID == 40292:
@@ -223,7 +223,7 @@ class Homolog(BaseModel):
 
 							else:
 								""" Loose hits """
-								# logger.info("Loose hits")
+								# logger.info("Loose hits: {} {}".format(json_data[modelID]["model_name"], self.extract_nth_hash(orfInfo.decode(), 0)))
 								linsidedict = {}
 								linsidedict["type_match"] = "Loose"
 								linsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)

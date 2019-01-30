@@ -16,7 +16,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -44,6 +44,7 @@ class RGI(RGIBase):
 		self.working_directory = o_f_path
 		self.blast_results_xml_file = ''
 		self.debug = debug
+		self.split_prodigal_jobs = split_prodigal_jobs
 
 		if self.debug:
 			logger.setLevel(10)
@@ -77,17 +78,18 @@ class RGI(RGIBase):
 		return cls()
 
 	def validate_inputs(self):
-		"""Validate inputs."""
+		"""Validate inputs.
+
+			- validate input file name and out file name
+			- validation for mutually exclusive options e.g. protein sequence for contig input_type etc
+		"""
 		if not os.path.exists(self.input_sequence):
 			logger.error("input file does not exist: {}".format(self.input_sequence))
 			exit()
 
-                # could add validation for mutually exclusive options e.g.
-                # protein sequence for contig input_type etc
 
-                # otherwise you blow up your input when deleting intermediate
-                # files
-		if self.output == self.input_sequence and self.clean:
+        # otherwise you blow up your input when deleting intermediate files
+		if self.output_file == self.input_sequence and self.clean:
 			logger.error("output path same as input, must specify "
 						 "different path when cleaning to prevent "
 					     "accidental deletion of input files")
@@ -97,7 +99,7 @@ class RGI(RGIBase):
 		kind = filetype.guess(self.input_sequence)
 
 		if kind is None:
-			if self.is_fasta(self.input_sequence) == False:
+			if self.is_fasta() == False:
 				logger.error("invalid fasta")
 				exit()
 		else:
@@ -109,17 +111,61 @@ class RGI(RGIBase):
 			logger.error("Argument num_threads illegal value, expected (>=1 and =<{}):  given `{}`)".format(os.cpu_count(), self.threads))
 			exit()
 
-	@staticmethod
-	def is_fasta(filename):
+	def is_fasta(self):
 		"""Checks for valid fasta format."""
-		with open(filename, "r") as handle:
+		with open(self.input_sequence, "r") as handle:
 			fasta = SeqIO.parse(handle, "fasta")
 			# check each record in the file
 			for record in fasta:
 				if any(record.id) == False or any(record.seq) == False:
 					return False
+				if self.input_type == "contig":
+					return self.is_dna(record.seq)
+				if self.input_type == "protein":
+					return self.is_protein(record.seq)
 			return True
+	
+	@staticmethod
+	def is_dna(sequence):
+		#  dna codes
+		nucleotide_dict = {'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0}
+		for base in sequence:
+			try: 
+				nucleotide_dict[base.upper()] += 1
+			except Exception as e:
+				logger.error("invalid nucleotide fasta due to: {}".format(e))
+				return False
+		logger.info("valid nucleotide fasta: {}".format(nucleotide_dict)) 
+		return True
 
+	@staticmethod
+	def is_protein(sequence):
+		amino_acids_dict = {
+			# common symbols between protein and dna codes
+			'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0, 
+			# other amino acids
+			'R': 0, 'D': 0, 'Q': 0, 'E': 0, 'G': 0, 'H': 0, 'I': 0,
+	        'L': 0, 'K': 0, 'M': 0, 'F': 0, 'P': 0, 'S': 0, 'T': 0,
+		    'W': 0, 'Y': 0, 'V': 0, 'X': 0, 'Z': 0, 'J': 0, 'B': 0
+		}
+		count = 0
+		for amino_acid in sequence:
+			try:
+				amino_acids_dict[amino_acid.upper()] += 1
+			except Exception as e:
+				logger.error("invalid protein fasta due to: {}".format(e))
+				return False
+		
+		for a in amino_acids_dict.keys():
+			if a not in 'ATGCNU':
+				count = count + amino_acids_dict[a]
+
+		if count == 0:
+			logger.error("invalid protein fasta: {}".format(amino_acids_dict)) 
+			return False
+		
+		logger.info("valid protein fasta: {}".format(amino_acids_dict))  
+		return True	
 
 	def __set_xml_filepath(self,fp):
 		"""Sets blast xml filepath."""
@@ -163,17 +209,20 @@ class RGI(RGIBase):
 				self.remove_file(f)
 			if os.path.basename(self.input_sequence) + ".fai" in f and os.path.isfile(f):
 				self.remove_file(f)
-			if os.path.basename(f)[:3] == "tmp" in f and os.path.isfile(f) and ".temp." in f:
-				self.remove_file(f)	
-			if ".temp.directory" in f and os.path.isdir(f):
-				logger.info("Removed directory: {}".format(f))
-				shutil.rmtree(f)
+			#if os.path.basename(f)[:3] == "tmp" in f and os.path.isfile(f) and ".temp." in f:
+			#	self.remove_file(f)	
+			#if ".temp.directory" in f and os.path.isdir(f):
+			#	logger.info("Removed directory: {}".format(f))
+			#	shutil.rmtree(f)
 
 	def remove_file(self, f):
 		"""Removes file."""
 		if os.path.exists(f):
-			logger.info("Removed file: {}".format(f))
-			os.remove(f)
+			try:
+				logger.info("Removed file: {}".format(f))
+				os.remove(f)
+			except Exception as e:
+				raise e
 		else:
 			logger.warning("Missing file: {}".format(f))
 
@@ -188,10 +237,6 @@ class RGI(RGIBase):
 			self.process_protein()
 		elif  self.input_type == "contig":
 			self.process_contig()
-		elif self.input_type == "read":
-			self.process_read()
-			# logger.debug("TODO:: add read functions")
-			exit("")
 		else:
 			logger.error("Invalid input_type: {} ".format(self.input_type))
 			exit()
@@ -218,7 +263,7 @@ class RGI(RGIBase):
 	def process_contig(self):
 		"""Process nuclotide sequence(s)."""
 		file_name = os.path.basename(self.input_sequence)
-		orf_obj = ORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality)
+		orf_obj = ORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality, split_prodigal_jobs=self.split_prodigal_jobs)
 		orf_obj.contig_to_orf()
 		contig_fsa_file = os.path.join(self.working_directory,"{}.temp.contig.fsa".format(file_name))
 		blast_results_xml_file = os.path.join(self.working_directory,"{}.temp.contig.fsa.blastRes.xml".format(file_name))

@@ -1,9 +1,9 @@
 from app.settings import os, SeqIO, logger
-import tempfile, time, fileinput, math, multiprocessing
+import tempfile, time, fileinput, math, multiprocessing, shutil
 
 class ORF(object):
 	"""Class to find open reading frames from nucleotide sequence."""
-	def __init__(self,input_file, threads, clean=True, working_directory=None, low_quality=False, training_file=None):
+	def __init__(self,input_file, threads, clean=True, working_directory=None, low_quality=False, training_file=None, split_prodigal_jobs=False):
 		"""Creates ORF object for finding open reading frames."""
 		self.input_file = input_file
 		self.clean = clean
@@ -11,6 +11,7 @@ class ORF(object):
 		self.low_quality = low_quality
 		self.training_file = training_file
 		self.threads = threads
+		self.split_prodigal_jobs = split_prodigal_jobs
 
 	def __repr__(self):
 		"""Returns ORF class full object."""
@@ -34,11 +35,14 @@ class ORF(object):
 		"""Runs PRODIGAL to find open reading frames."""
 		quality = "-n -p single"
 
-		_min, _max, _count = self.min_max_sequence_length()
-		logger.info("minimum sequence length: {}, maximun sequence length {}, number of sequences: {}".format(_min,_max, _count))
+		minimum_sequence_length, maximum_sequence_length, number_of_sequences = self.min_max_sequence_length()
+		logger.info("minimum sequence length: {}, maximun sequence length {}, number of sequences: {}".format(minimum_sequence_length,maximum_sequence_length, number_of_sequences))
 
-		if _count == 1:
-			if self.low_quality == True or _min < 20000:
+		if number_of_sequences > 1 and self.split_prodigal_jobs == True:
+			# TODO validate if fasta file doesn't contain gaps
+			self.orf_prodigal_multi()
+		else:
+			if self.low_quality == True or minimum_sequence_length < 20000:
 				quality = "-p meta"
 
 			filename = os.path.basename(self.input_file)
@@ -64,8 +68,6 @@ class ORF(object):
 
 			if self.clean == True:
 				os.remove(os.path.join(self.working_directory, "{}.temp.draft".format(filename)))
-		else:
-			self.orf_prodigal_multi()
 
 	def orf_prodigal_multi(self):
 		seq = self.split_fasta()
@@ -88,7 +90,7 @@ class ORF(object):
 			# create directory tmp if it doesn't exist
 			tmp = os.path.join(self.working_directory, "{}.temp.directory".format(o_f_name))
 			if not os.path.exists(tmp):
-				os.makedirs(tmp)
+				os.makedirs(tmp, exist_ok=True)
 			with tempfile.NamedTemporaryFile(mode='w+', dir=tmp, delete=False) as fp:
 				fp.write(">{}\n{}\n".format(entry.id, entry.seq))
 				if fp.closed == False:
@@ -101,6 +103,10 @@ class ORF(object):
 		with open(os.path.join(self.working_directory, output), 'a+') as fout, fileinput.input(filenames) as fin:
 			for line in fin:
 				fout.write(line)
+		if os.path.exists(filenames[0]):
+			if self.clean == True:
+				logger.debug("Removed temp file: {}".format(filenames[0]))
+				os.remove(filenames[0])
 
 	def chunk_list(self, iterator, n):
 		"""
@@ -157,7 +163,12 @@ class ORF(object):
 				self.write_output_file(output_prot_orf, ["{wd}/{tmp_name}.temp.contig.fsa".format(wd=self.working_directory,tmp_name=o_f_name)])
 				self.write_output_file(output_draft, ["{wd}/{tmp_name}.temp.draft".format(wd=self.working_directory,tmp_name=o_f_name)])
 				self.write_output_file(output_potential_genes, ["{wd}/{tmp_name}.temp.potentialGenes".format(wd=self.working_directory,tmp_name=o_f_name)])
-		
+		# remove temps directories
+		tmp = os.path.join(self.working_directory, "{}.temp.directory".format(f_name))
+		if os.path.exists(tmp):
+			if self.clean == True:
+				logger.debug("Removed directory: {}".format(tmp))
+				shutil.rmtree(tmp)
 		return results
 
 	def orf_prodigal_train(self):

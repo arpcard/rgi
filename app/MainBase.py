@@ -111,6 +111,7 @@ class MainBase(object):
                 choices=['wgs', 'plasmid', 'chromosome', 'NA'],
                 help = "specify a data-type (default = NA)")
         parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
+        parser.add_argument('--split_prodigal_jobs', dest="split_prodigal_jobs", action="store_true", help="run multiple prodigal jobs simultaneously for contigs in a fasta file")
         return parser
 
     def main_run(self, args):
