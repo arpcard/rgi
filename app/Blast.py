@@ -54,7 +54,7 @@ class Blast(object):
 						strand="both"
 					)
 				)
-		logger.info(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 		logger.info("done running {} -> {}".format(self.program, db))
 

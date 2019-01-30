@@ -47,7 +47,7 @@ class Diamond(object):
 					)
 				)
 
-		logger.info(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 		logger.info("done running diamond {} -> {}".format(self.program, self.db))
 	

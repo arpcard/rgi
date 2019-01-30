@@ -77,7 +77,7 @@ class Variant(BaseModel):
 						except ValueError:
 							true_pass_evalue = float(pass_value[0:pass_value.find(' ')])
 
-						# logger.info("runBlast | model_type_id = " + str(align_title))				
+						# logger.info("mutation | model_type_id = " + str(align_title))				
 						init = 0
 						evalue_snp = self.extract_nth_bar(align_title, 2)
 						snpl = []
@@ -112,7 +112,7 @@ class Variant(BaseModel):
 									if submitted_proteins_dict:
 										orf_protein_sequence = str(submitted_proteins_dict[orf_info.decode().split(" ")[0]])
 										
-									# logger.info("runBlast | Model:"+str(model_id) + " pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
+									# logger.info("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
 									# 			self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
 									# 			+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
 

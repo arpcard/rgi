@@ -56,7 +56,7 @@ class ORF(object):
 					potential_genes= os.path.join(self.working_directory,  "{}.temp.potentialGenes".format(filename))
 				)
 
-			logger.info(cmd)
+			# logger.debug(cmd)
 			os.system(cmd)
 
 			# format the contig file headers to remove space
@@ -77,7 +77,7 @@ class ORF(object):
 		-a {wd}/{tmp_name}.temp.contig.fsa \
 		-o {wd}/{tmp_name}.temp.draft \
 		-s {wd}/{tmp_name}.temp.potentialGenes 2> /dev/null".format(input_fasta=input_fasta,wd=self.working_directory,tmp_name=o_f_name)
-		logger.info(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def prodigal_run(self, fasta, *o):
@@ -178,7 +178,7 @@ class ORF(object):
 					nuc_file= os.path.join(self.working_directory,  "{}.temp.contigToORF.fsa".format(filename)),
 					potential_genes= os.path.join(self.working_directory,  "{}.temp.potentialGenes".format(filename))
 				)
-			logger.info(cmd)
+			# logger.debug(cmd)
 			os.system(cmd)
 
 			if self.clean == True:

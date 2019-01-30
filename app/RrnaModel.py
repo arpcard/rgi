@@ -57,7 +57,7 @@ class Rrna(BaseModel):
 					orf_from = orf_info[c:]
 					orf_info_str = str(orf_info).split(" | ")
 					model_type_id = int(orf_info_str[1].split(":")[1].strip())
-					logger.info("model_type_id: {} ".format(model_type_id))
+					# logger.debug("model_type_id: {} ".format(model_type_id))
 				
 					space_pos = align_title.index(' ')
 
@@ -70,8 +70,8 @@ class Rrna(BaseModel):
 					seq_in_model = model_info[1].strip()
 					pass_value = orf_info_str[2].split(":")[1].strip()
 
-					logger.info("model_id: {}".format(model_id))
-					logger.info("pass_value: {}".format(pass_value))
+					# logger.debug("model_id: {}".format(model_id))
+					# logger.debug("pass_value: {}".format(pass_value))
 					
 					if model_type_id == 40295:
 						true_pass_evalue = float(pass_value)

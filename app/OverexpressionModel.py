@@ -67,7 +67,7 @@ class Overexpression(BaseModel):
 					modelTypeID = self.extract_nth_bar(alignTitle, 0)
 
 					if modelTypeID == 41091:
-						logger.info("modelTypeID: {} ".format(modelTypeID))
+						# logger.debug("modelTypeID: {} ".format(modelTypeID))
 
 						spacepos = alignTitle.index(' ')
 						hitid = alignTitle[0:spacepos]
@@ -87,8 +87,8 @@ class Overexpression(BaseModel):
 						pass_bitscore = "{}".format(self.extract_nth_bar(alignment.title, 1))
 						pass_evalue = "{}".format("n/a")		
 
-						logger.info("pass_evalue: {}".format(pass_evalue))
-						logger.info("pass_bitscore: {}".format(pass_bitscore))
+						# logger.debug("pass_evalue: {}".format(pass_evalue))
+						# logger.debug("pass_bitscore: {}".format(pass_bitscore))
 
 						for eachsnp in snp:
 							"""Creates a SNP dictionary."""
@@ -118,7 +118,7 @@ class Overexpression(BaseModel):
 
 							if card_sequence.upper() == orf_protein_sequence.upper():
 								"""Perfect hits."""
-								logger.info("Perfect hits")
+								# logger.debug("Perfect hits")
 								ppinsidedict = {}
 								ppinsidedict["type_match"] = "Perfect"
 								ppinsidedict["model_id"] = modelID
@@ -186,13 +186,13 @@ class Overexpression(BaseModel):
 
 									if hsp.sbjct_start < int(pos) and (hsp.sbjct_start + realQueryLength) > int(pos):
 										"""Checks if there is a mutation."""
-										logger.info("Mutation check")
+										# logger.debug("Mutation check")
 
 										qry = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 										sbj = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
 										if hsp.query[qry] == chan:
-											logger.info("Mutation detected")
+											# logger.debug("Mutation detected")
 											snp_counter+=1
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
@@ -255,7 +255,7 @@ class Overexpression(BaseModel):
 								else:
 									if snp_counter == 0:
 										"""If no SNP detected in strict hit."""
-										logger.info("Strict hits - no SNP") 
+										# logger.debug("Strict hits - no SNP") 
 										insidedict = {}
 										insidedict["type_match"] = "Strict"
 										insidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
@@ -316,7 +316,7 @@ class Overexpression(BaseModel):
 
 							else:
 								"""Loose hits."""
-								logger.info("Loose hits")
+								# logger.debug("Loose hits")
 								linsidedict = {}
 								linsidedict["type_match"] = "Loose"
 								linsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
