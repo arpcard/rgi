@@ -847,134 +847,135 @@ class BWT(object):
 		resistomes = {}
 
 		model_id = self.get_model_id(models_by_accession, alignment_hit)
+		try:
+			if model_id:
+				cvterm_name = models[model_id]["model_name"]
+				aro_accession = models[model_id]["ARO_accession"]
+				model_type = models[model_id]["model_type"]
+				resistomes = models[model_id]["categories"]
+				alignments = self.get_alignments(alignment_hit)
+				mapq_l = []
+				mate_pair = []
+				mapq_average = 0
+				for a in alignments:
+					mapq_l.append(int(a["mapq"]))
+					if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
+						mate_pair.append(a["mrnm"])
 
-		if model_id:
-			cvterm_name = models[model_id]["model_name"]
-			aro_accession = models[model_id]["ARO_accession"]
-			model_type = models[model_id]["model_type"]
-			resistomes = models[model_id]["categories"]
-			alignments = self.get_alignments(alignment_hit)
-			mapq_l = []
-			mate_pair = []
-			mapq_average = 0
-			for a in alignments:
-				mapq_l.append(int(a["mapq"]))
-				if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
-					mate_pair.append(a["mrnm"])
+				if len(mapq_l) > 0:
+					mapq_average = sum(mapq_l)/len(mapq_l)
 
-			if len(mapq_l) > 0:
-				mapq_average = sum(mapq_l)/len(mapq_l)
+				observed_in_genomes = "no data"
+				observed_in_plasmids = "no data"
+				prevalence_sequence_id = ""
+				observed_data_types = []
+				# Genus and species level only (only get first two words)
+				observed_in_pathogens = []
+				database = ["CARD"]
+				reference_allele_source = "CARD curation"
 
-			observed_in_genomes = "no data"
-			observed_in_plasmids = "no data"
-			prevalence_sequence_id = ""
-			observed_data_types = []
-			# Genus and species level only (only get first two words)
-			observed_in_pathogens = []
-			database = ["CARD"]
-			reference_allele_source = "CARD curation"
+				if self.include_baits == True:
+					database.append("Baits")
 
-			if self.include_baits == True:
-				database.append("Baits")
+				if self.include_wildcard == True:
+					database.append("Resistomes & Variants")
 
-			if self.include_wildcard == True:
-				database.append("Resistomes & Variants")
+				if variants and "Resistomes & Variants" in database:
+					if model_id in variants.keys():
+						for s in variants[model_id]:
+							if s.isdigit() == False:
+								observed_in_genomes = "NO"
+								observed_in_plasmids = "NO"
+								for d in variants[model_id][s]:
+									if d not in observed_data_types:
+										observed_data_types.append(d)
+								if s not in observed_in_pathogens:
+									observed_in_pathogens.append(s.replace('"', ""))
 
-			if variants and "Resistomes & Variants" in database:
-				if model_id in variants.keys():
-					for s in variants[model_id]:
-						if s.isdigit() == False:
-							observed_in_genomes = "NO"
-							observed_in_plasmids = "NO"
-							for d in variants[model_id][s]:
-								if d not in observed_data_types:
-									observed_data_types.append(d)
-							if s not in observed_in_pathogens:
-								observed_in_pathogens.append(s.replace('"', ""))
+						if "Resistomes & Variants" in database:
+							if "ncbi_chromosome" in observed_data_types:
+								observed_in_genomes = "YES"
+							if "ncbi_plasmid" in observed_data_types:
+								observed_in_plasmids = "YES"
 
-					if "Resistomes & Variants" in database:
-						if "ncbi_chromosome" in observed_data_types:
-							observed_in_genomes = "YES"
-						if "ncbi_plasmid" in observed_data_types:
-							observed_in_plasmids = "YES"
-
-						# get prevalence_sequence_id Prevalence_Sequence_ID:10687|ID:2882|Name:tet(W/N/W)|ARO:3004442
-						if "Prevalence_Sequence_ID" in alignment_hit:
-							# logger.debug(alignment_hit)
-							prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[-1]
-
-							try:
-								# logger.debug(json.dumps(alignments, indent=2))
-								# logger.debug(json.dumps(variants[model_id][prevalence_sequence_id], indent=2))
-								reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
-									rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
-									percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
-								)
-							except Exception as e:
-								reference_allele_source = ""
+							# get prevalence_sequence_id Prevalence_Sequence_ID:10687|ID:2882|Name:tet(W/N/W)|ARO:3004442
+							if "Prevalence_Sequence_ID" in alignment_hit:
 								# logger.debug(alignment_hit)
-								# logger.debug(json.dumps(alignments, indent=2))
-								# logger.debug(json.dumps(variants[model_id], indent=2))
-								logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {} for model_id: {}".format(prevalence_sequence_id, e, database, model_id))
+								prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[-1]
+
+								try:
+									# logger.debug(json.dumps(alignments, indent=2))
+									# logger.debug(json.dumps(variants[model_id][prevalence_sequence_id], indent=2))
+									reference_allele_source = "In silico {rgi_criteria} {percent_identity}% identity".format(
+										rgi_criteria=variants[model_id][prevalence_sequence_id]["rgi_criteria"],
+										percent_identity=variants[model_id][prevalence_sequence_id]["percent_identity"],
+									)
+								except Exception as e:
+									reference_allele_source = ""
+									# logger.debug(alignment_hit)
+									# logger.debug(json.dumps(alignments, indent=2))
+									# logger.debug(json.dumps(variants[model_id], indent=2))
+									logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {} for model_id: {}".format(prevalence_sequence_id, e, database, model_id))
 
 
-				else:
-					# provide info from model
-					observed_in_pathogens = models[model_id]["taxon"]
+					else:
+						# provide info from model
+						observed_in_pathogens = models[model_id]["taxon"]
 
-				
-			# check all clases categories
-			if "AMR Gene Family" not in resistomes.keys():
-				resistomes["AMR Gene Family"] = []
-			if "Drug Class" not in resistomes.keys():
-				resistomes["Drug Class"] = []
-			if "Resistance Mechanism" not in resistomes.keys():
-				resistomes["Resistance Mechanism"] = []
+					
+				# check all clases categories
+				if "AMR Gene Family" not in resistomes.keys():
+					resistomes["AMR Gene Family"] = []
+				if "Drug Class" not in resistomes.keys():
+					resistomes["Drug Class"] = []
+				if "Resistance Mechanism" not in resistomes.keys():
+					resistomes["Resistance Mechanism"] = []
 
-			stop = time.time()
-			elapsed = stop - start
-			# logger.info("time lapsed: {} - {}".format(elapsed, alignment_hit))
-			# self.async_print(alignment_hit, start, stop, elapsed)
-			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(aro_accession)
+				stop = time.time()
+				elapsed = stop - start
+				# logger.info("time lapsed: {} - {}".format(elapsed, alignment_hit))
+				# self.async_print(alignment_hit, start, stop, elapsed)
+				number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(aro_accession)
 
-			return {
-				"id": alignment_hit,
-				"cvterm_name": cvterm_name,
-				"aro_accession": aro_accession,
-				"model_type": model_type,
-				"database": "; ".join(database),
-				"reference_allele_source": reference_allele_source,
-				"observed_in_genomes": observed_in_genomes,
-				"observed_in_plasmids": observed_in_plasmids,
-				"observed_in_pathogens": observed_in_pathogens,
-				"reads": reads[alignment_hit],
-				"alignments": alignments,
-				"mapq_average": format(mapq_average,'.2f'),
+				return {
+					"id": alignment_hit,
+					"cvterm_name": cvterm_name,
+					"aro_accession": aro_accession,
+					"model_type": model_type,
+					"database": "; ".join(database),
+					"reference_allele_source": reference_allele_source,
+					"observed_in_genomes": observed_in_genomes,
+					"observed_in_plasmids": observed_in_plasmids,
+					"observed_in_pathogens": observed_in_pathogens,
+					"reads": reads[alignment_hit],
+					"alignments": alignments,
+					"mapq_average": format(mapq_average,'.2f'),
 
-				"number_of_mapped_baits": number_of_mapped_baits,
-				"number_of_mapped_baits_with_reads": number_of_mapped_baits_with_reads,
-				"average_bait_coverage": average_bait_coverage,
-				"bait_coverage_coefficient_of_variation": bait_coverage_coefficient_of_variation,
-				
-				"mate_pair": mate_pair,
+					"number_of_mapped_baits": number_of_mapped_baits,
+					"number_of_mapped_baits_with_reads": number_of_mapped_baits_with_reads,
+					"average_bait_coverage": average_bait_coverage,
+					"bait_coverage_coefficient_of_variation": bait_coverage_coefficient_of_variation,
+					
+					"mate_pair": mate_pair,
 
-				"percent_coverage": {
-					"covered": format(float(coverage[alignment_hit]["covered"] / coverage[alignment_hit]["length"])*100,'.2f' ),
-					"uncovered": format(float(coverage[alignment_hit]["uncovered"] / coverage[alignment_hit]["length"])*100,'.2f')
-				},
-				"length_coverage": {
-					"covered": "{}".format(coverage[alignment_hit]["covered"]),
-					"uncovered": "{}".format(coverage[alignment_hit]["uncovered"])
-				},
-				"reference": {
-					"sequence_length": "{}".format(coverage[alignment_hit]["length"])
-				},
+					"percent_coverage": {
+						"covered": format(float(coverage[alignment_hit]["covered"] / coverage[alignment_hit]["length"])*100,'.2f' ),
+						"uncovered": format(float(coverage[alignment_hit]["uncovered"] / coverage[alignment_hit]["length"])*100,'.2f')
+					},
+					"length_coverage": {
+						"covered": "{}".format(coverage[alignment_hit]["covered"]),
+						"uncovered": "{}".format(coverage[alignment_hit]["uncovered"])
+					},
+					"reference": {
+						"sequence_length": "{}".format(coverage[alignment_hit]["length"])
+					},
 
-				"mutation": "N/A",
-				"resistomes": resistomes
-				,"predicted_pathogen": "N/A"
-				}
-			
+					"mutation": "N/A",
+					"resistomes": resistomes
+					,"predicted_pathogen": "N/A"
+					}
+		except Exception as e:
+			logger.warning("missing model with id : {}, Exception: {}".format(model_id,e))
 
 	def async_print(self, msg, start, stop, elapsed):
 		logger.debug("{} ::: parent process: {} -> process id: {} ====|{}|{}|{}".format(
