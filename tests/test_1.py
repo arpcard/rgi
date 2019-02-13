@@ -83,7 +83,7 @@ def test_rgi_nucleotide_sequence(rgi):
 
 	assert validate_results(output_file, 100, 'NDM-1', 'Perfect') == True
 	assert validate_results(output_file, 100, "APH(3')-VI", 'Perfect') == True
-	assert validate_results(output_file, 100, 'mphD', 'Perfect') == True
+	assert validate_results(output_file, 100, 'mphE', 'Perfect') == True
 	assert validate_results(output_file, 100, 'msrE', 'Perfect') == True
 
 def test_rgi_homolog_model(rgi):
