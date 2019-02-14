@@ -55,7 +55,7 @@ Requirements
 - `bedtools 2.27.1 <https://github.com/arq5x/bedtools2>`_
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
 - `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
-- `BWA 0.7.17 (r1188)<https://github.com/lh3/bwa>`_
+- `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
 
 Install dependencies
 --------------------
