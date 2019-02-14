@@ -53,6 +53,9 @@ Requirements
 - `samtools 1.9 <https://github.com/samtools/samtools>`_
 - `bamtools 2.5.1 <https://github.com/pezmaster31/bamtools>`_
 - `bedtools 2.27.1 <https://github.com/arq5x/bedtools2>`_
+- `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
+- `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
+- `BWA 0.7.17 (r1188)<https://github.com/lh3/bwa>`_
 
 Install dependencies
 --------------------
@@ -104,23 +107,48 @@ Usage
 
       usage: rgi <command> [<args>]
                   commands are:
+                  ---------------------------------------------------------------------------------------
+                  Database
+                  ---------------------------------------------------------------------------------------
+
+                  load     Loads CARD database, annotations and k-mer database
+                  clean    Removes BLAST databases and temporary files
+                  database Information on installed card database
+                  galaxy   Galaxy project wrapper
+
+                  ---------------------------------------------------------------------------------------
+                  Genomic
+                  ---------------------------------------------------------------------------------------
+
                   main     Runs rgi application
                   tab      Creates a Tab-delimited from rgi results
                   parser   Creates categorical JSON files RGI wheel visualization
-                  load     Loads CARD database JSON file
-                  clean    Removes BLAST databases and temporary files
-                  galaxy   Galaxy project wrapper
-                  database Information on installed card database
                   heatmap  Heatmap for multiple analysis
+
                   ---------------------------------------------------------------------------------------
-                  bwt                   Metagenomics resistomes (Experimental)
-                  tm                    Baits Melting Temperature (Experimental)
-                  card_annotation       Create fasta files with annotations from card.json (Experimental)
-                  wildcard_annotation   Create fasta files with annotations from variants (Experimental)
+                  Metagenomic
+                  ---------------------------------------------------------------------------------------
+                  bwt                   Align reads to CARD and in silico predicted allelic variants
+                  
+                  ---------------------------------------------------------------------------------------
+                  Baits validation
+                  ---------------------------------------------------------------------------------------
+                  tm                    Baits Melting Temperature
+
+                  ---------------------------------------------------------------------------------------
+                  Annotations
+                  ---------------------------------------------------------------------------------------
+                  card_annotation       Create fasta files with annotations from card.json
+                  wildcard_annotation   Create fasta files with annotations from variants
                   baits_annotation      Create fasta files with annotations from baits (Experimental)
                   remove_duplicates     Removes duplicate sequences (Experimental)
-                  kmer_build            Build CARD*kmer database (Experimental)
-                  kmer_query            Query sequences through CARD*kmers (Experimental)
+
+                  ---------------------------------------------------------------------------------------
+                  Pathogen of origin
+                  ---------------------------------------------------------------------------------------
+                  
+                  kmer_build            Build AMR specific k-mers database used for pathogen of origin
+                  kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
 
    Resistance Gene Identifier - <version_number>
 
