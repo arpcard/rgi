@@ -255,6 +255,10 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 
 .. code-block:: sh
 
+   rgi main -h
+
+.. code-block:: sh
+
           usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
                           [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose] [--local]
                           [--clean] [--debug] [--low_quality]
@@ -360,6 +364,9 @@ System wide and writing log files for each input file. Note: add code below to s
 Generating Heat Maps of RGI main Results
 ------------------------------------------------
 
+.. code-block:: sh
+
+   rgi heatmap -h
 
 .. code-block:: sh
 
@@ -390,57 +397,36 @@ Generating Heat Maps of RGI main Results
                                  (deafult=plain).
            --debug               debug mode
 
-
-- Default Heatmap
-
-      .. code-block:: sh
-
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/
-       
-- Heatmap with `AMR Gene Family` categorization
+Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes organized alphabetically:
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family
-
-- Heatmap with `AMR Gene Family` categorization and fill display
-
-      .. code-block:: sh
-
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family --display fill
-
-- Heatmap with `AMR Gene Family` categorization and coloured y-axis labels display
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file
+            
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category gene_family --display text
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat gene_family -clus samples
 
-
-- Heatmap with frequency display enabled
-
-      .. code-block:: sh
-
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --frequency
-
-- Heatmap with drug class category and frequency enabled
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --category drug_class --frequency --display text
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat drug_class -clus samples
 
-- Heatmap with samples and genes clustered
-
-      .. code-block:: sh
-
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --cluster both
-
-- Heatmap with resistance mechanism categorization and clustered samples
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --cluster samples --category resistance_mechanism --display fill
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both
+            
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:            
 
+      .. code-block:: sh
 
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both -f
+            
 Run RGI from Docker
 -------------------
 
