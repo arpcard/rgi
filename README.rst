@@ -15,7 +15,7 @@ If DNA sequences are submitted, RGI first predicts complete open reading frames 
 
 If protein sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly.
 
-The RGI currently supports `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLAST or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present). For more details, see the `Model Ontology <https://card.mcmaster.ca/ontology/40323>`_.
+The RGI currently supports `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLAST or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present).
 
 The RGI analyzes genome or proteome sequences under three paradigms: Perfect, Strict, and Loose (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
 
@@ -364,7 +364,34 @@ Run RGI from docker
   .. code-block:: sh
         
         docker run -v $PWD/rgi_data:/data arpcard/rgi $RGI_ARGS
-       
+
+Install RGI from Conda
+-------------------
+
+Search for RGI package and show available versions:
+
+  .. code-block:: sh
+        
+        $ conda search --channel bioconda rgi
+
+Install RGI package:
+
+  .. code-block:: sh
+        
+        $ conda install --channel bioconda rgi
+
+Install RGI specific version:
+
+  .. code-block:: sh
+        
+        $ conda install --channel bioconda rgi=3.1.1
+
+Remove RGI package:
+
+  .. code-block:: sh
+        
+        $ conda remove --channel bioconda rgi
+
 Tab-delimited results file
 ---------------------------
 
