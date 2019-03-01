@@ -41,9 +41,10 @@ Table of Contents
 - `Usage`_
 - `Load card.json`_
 - `Check Database Version`_
-- `Run RGI`_
-- `Run RGI using GNU Parallel`_
-- `Running RGI with Short Contigs to Predict Partial Genes`_
+- `Running RGI with Genome or Assembly DNA Sequences`_
+- `Running RGI with Protein Sequences`_
+- `Running RGI using GNU Parallel`_
+- `Running RGI with Short or Low Quality Contigs with Partial Gene Prediction`_
 - `Clean Previous or Old Databases`_
 - `RGI Heatmap`_
 - `Run RGI from Docker`_
@@ -205,13 +206,15 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 Load card.json 
 -------------------
 
-- local or working directory
+To start analyses, first acquire the latest AMR reference data from CARD at `https://card.mcmaster.ca/latest/data <https://card.mcmaster.ca/latest/data>`_. CARD data can be installed at the system level or at the local level.
+
+Local or working directory:
 
    .. code-block:: sh
    
       rgi load --card_json /path/to/card.json --local
 
-- system wide 
+System wide:
 
    .. code-block:: sh
 
@@ -220,37 +223,57 @@ Load card.json
 Check Database Version
 -----------------------
 
-- local or working directory
+Local or working directory:
 
    .. code-block:: sh
    
       rgi database --version --local
 
-- system wide 
+System wide :
 
    .. code-block:: sh
 
       rgi database --version
 
-Run RGI 
-----------------------
+Running RGI with Genome or Assembly DNA Sequences
+--------------------------------------------------------
 
-- local or working directory
+Local or working directory:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local 
 
-- system wide 
+      rgi main -h
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local 
+
+System wide:
 
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
 
-Run RGI using GNU Parallel
+Running RGI with Protein Sequences
+--------------------------------------------------------
+
+Local or working directory:
+
+   .. code-block:: sh
+
+      rgi main -h
+   
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local 
+
+System wide:
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein
+
+
+Running RGI using GNU Parallel
 --------------------------------------------
 
-- system wide and writing log files for each input file. (Note add code below to script.sh then run with `./script.sh /path/to/input_files`)
+System wide and writing log files for each input file. Note: add code below to script.sh then run with `./script.sh /path/to/input_files`.
 
    .. code-block:: sh
 
@@ -261,18 +284,16 @@ Run RGI using GNU Parallel
             parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
       done
 
+Running RGI with Short or Low Quality Contigs with Partial Gene Prediction
+----------------------------------------------------------------------------
 
-
-Running RGI with Short Contigs to Predict Partial Genes 
---------------------------------------------------------
-
-- local or working directory
+Local or working directory:
 
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --local --low_quality 
 
-- system wide 
+System wide:
 
    .. code-block:: sh
    
@@ -282,13 +303,13 @@ Running RGI with Short Contigs to Predict Partial Genes
 Clean Previous or Old Databases
 --------------------------------
 
-- local or working directory
+Local or working directory:
 
    .. code-block:: sh
 
       rgi clean --local
 
-- system wide 
+System wide:
 
    .. code-block:: sh 
    
