@@ -1,8 +1,8 @@
-Resistance Gene Identifier (RGI) 
---------------------------------------------
-
 .. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
     :target: https://travis-ci.org/arpcard/rgi
+
+Resistance Gene Identifier (RGI) 
+--------------------------------------------
 
 This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
@@ -11,16 +11,15 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 Analyzing Genomes or Proteomes
 --------------------------------------------
 
-If DNA sequences are submitted, RGI first predicts complete open reading frames using Prodigal (ignoring those less than 30 bp) and analyzes the predicted protein sequences. Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs.
+If DNA sequences are submitted, RGI first predicts complete open reading frames using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs.
 
-If protein sequences are submitted, RGI skips ORF prediction and uses the protein
-sequences directly.
+If protein sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly.
 
-The RGI currently supports protein homolog models (use of sequence similarity cut-offs to detection functional homologs of AMR genes), protein variant models (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on curated SNP matrices), rRNA mutation models (for detection of drug resistant rRNA target sequences), and protein over-expression models (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present). For more details, see the Model Ontology.
+The RGI currently supports protein homolog models (use of BLAST or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detection functional homologs of AMR genes), protein variant models (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), rRNA mutation models (for detection of drug resistant rRNA target sequences), and protein over-expression models (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present). For more details, see the `Model Ontology <https://card.mcmaster.ca/ontology/40323>`_.
 
-The RGI analyzes genome or proteome sequences under three paradigms – Perfect, Strict, and Loose (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
+The RGI analyzes genome or proteome sequences under three paradigms: Perfect, Strict, and Loose (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
 
-All results organized via the Antibiotic Resistance Ontology classification: AMR Gene Family, Drug Class, and Resistance Mechanism. Support added for low quality/coverage assemblies, metagenomic merged reads, small plasmids or assembly contigs.
+All results organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism.
 
 Analyzing Metagenomic Reads
 --------------------------------------------
