@@ -41,6 +41,7 @@ Table of Contents
 - `Help Menus for Subcommands`_
 - `Load card.json`_
 - `Check Database Version`_
+- `RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes`_
 - `Running RGI with Genome or Assembly DNA Sequences`_
 - `Running RGI with Protein Sequences`_
 - `Running RGI using GNU Parallel`_
@@ -235,6 +236,47 @@ System wide :
 
       rgi database --version
 
+RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
+------------------------------------------------------------------------------------------------------
+
+.. code-block:: sh
+
+          usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
+                          [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose] [--local]
+                          [--clean] [--debug] [--low_quality]
+                          [-d {wgs,plasmid,chromosome,NA}] [-v] [--split_prodigal_jobs]
+          
+          Resistance Gene Identifier - 4.2.2 - Main
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
+                                  input file must be in either FASTA (contig and
+                                  protein) or gzip format! e.g myFile.fasta,
+                                  myFasta.fasta.gz
+            -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                                  output folder and base filename
+            -t {contig,protein}, --input_type {contig,protein}
+                                  specify data input type (default = contig)
+            -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
+                                  specify alignment tool (default = BLAST)
+            -n THREADS, --num_threads THREADS
+                                  number of threads (CPUs) to use in the BLAST search
+                                  (default=32)
+            --include_loose       include loose hits in addition to strict and perfect
+                                  hits
+            --local               use local database (default: uses database in
+                                  executable directory)
+            --clean               removes temporary files
+            --debug               debug mode
+            --low_quality         use for short contigs to predict partial genes
+            -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
+                                  specify a data-type (default = NA)
+            -v, --version         prints software version number
+            --split_prodigal_jobs
+                                  run multiple prodigal jobs simultaneously for contigs
+                                  in a fasta file
+
 Running RGI with Genome or Assembly DNA Sequences
 --------------------------------------------------------
 
@@ -298,7 +340,6 @@ System wide:
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --low_quality
-
 
 Clean Previous or Old Databases
 --------------------------------
