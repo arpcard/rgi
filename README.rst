@@ -37,8 +37,8 @@ Table of Contents
 - `Install Dependencies`_
 - `Install RGI from Project Root`_
 - `Running RGI Tests`_
-- `Help Menu`_
-- `Usage`_
+- `Help Menu and Usage`_
+- `Help Menus for Subcommands`_
 - `Load card.json`_
 - `Check Database Version`_
 - `Running RGI with Genome or Assembly DNA Sequences`_
@@ -124,17 +124,14 @@ Running RGI Tests
    cd tests
    pytest -v -rxs
 
-Help Menu
--------------------
+Help Menu and Usage
+----------------------
 
 The following command will bring up RGI's main help menu:
 
 .. code-block:: sh
 
    rgi --help
-
-Usage
--------------------
 
 .. code-block:: sh
 
@@ -196,6 +193,9 @@ Usage
    https://card.mcmaster.ca/download for software and data updates. Receive email
    notification of monthly CARD updates via the CARD Mailing List
    (https://mailman.mcmaster.ca/mailman/listinfo/card-l)
+
+Help Menus for Subcommands
+----------------------------
 
 Help screens for subcommands can be accessed using the -h argument, e.g.
 
