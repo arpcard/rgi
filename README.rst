@@ -1,7 +1,7 @@
 Resistance Gene Identifier (RGI) 
 --------------------------------------------
 
-This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses data from `CARD database <https://card.mcmaster.ca/>`_.
+This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database <https://card.mcmaster.ca/>`_.
 
 .. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
     :target: https://travis-ci.org/arpcard/rgi
