@@ -371,9 +371,9 @@ Install RGI from Conda
 
 Search for RGI package and show available versions:
 
-  .. code-block:: sh
-        
-        $ conda search --channel bioconda rgi
+```
+conda search --channel bioconda rgi
+```
 
 Install RGI package:
 
