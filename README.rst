@@ -1,12 +1,12 @@
 Resistance Gene Identifier (RGI) 
 --------------------------------------------
 
+.. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
+    :target: https://travis-ci.org/arpcard/rgi
+
 This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
 RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of `Galaxy wrapper <https://github.com/arpcard/rgi_wrapper>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, and alternatively installed via `Conda <https://card.mcmaster.ca/download>`_.
-
-.. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
-    :target: https://travis-ci.org/arpcard/rgi
 
 RGI 4.2.2, CARD 3.0.1: Open Reading Frame (ORF) prediction using Prodigal, homolog detection using Diamond, and Strict significance based on CARD curated bitscore cut-offs. Addition of rRNA mutation and efflux over-expression models. Hits of 95% identity or better are automatically listed as Strict. All results organized by revised ARO classification: AMR Gene Family, Drug Class, and Resistance Mechanism. Support added for low quality/coverage assemblies, metagenomic merged reads, small plasmids or assembly contigs.
 
@@ -21,6 +21,7 @@ Table of Contents
 -------------------------------------
 
 - `License`_
+- `Citation`_
 - `Requirements`_
 - `Install dependencies`_
 - `Install RGI from project root`_
@@ -41,6 +42,11 @@ Table of Contents
 License
 --------
 Use or reproduction of these materials, in whole or in part, by any non-academic organization whether or not for non-commercial (including research) or commercial purposes is prohibited, except with written permission of McMaster University. Commercial uses are offered only pursuant to a written license and user fee. To obtain permission and begin the licensing process, see `CARD website <https://card.mcmaster.ca/about>`_
+
+Citation
+--------
+
+Citation: Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573. `[PMID 27789705] <https://www.ncbi.nlm.nih.gov/pubmed/27789705>`_
 
 Requirements
 --------------------
