@@ -46,7 +46,7 @@ Table of Contents
 - `Running RGI main with Genome or Assembly DNA Sequences`_
 - `Running RGI main with Protein Sequences`_
 - `Running RGI main using GNU Parallel`_
-- `RGI Heatmap`_
+- `Generating Heat Maps of RGI main Results`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 - `Tab-delimited Results File`_
@@ -357,8 +357,39 @@ System wide and writing log files for each input file. Note: add code below to s
             parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
       done
 
-RGI Heatmap
-------------
+Generating Heat Maps of RGI main Results
+------------------------------------------------
+
+
+.. code-block:: sh
+
+         usage: rgi heatmap [-h] -i INPUT
+                            [-cat {drug_class,resistance_mechanism,gene_family}] [-f]
+                            [-o OUTPUT] [-clus {samples,genes,both}]
+                            [-d {plain,fill,text}] [--debug]
+         
+         Creates a heatmap when given multiple RGI results.
+         
+         optional arguments:
+           -h, --help            show this help message and exit
+           -i INPUT, --input INPUT
+                                 Directory containing the RGI .json files (REQUIRED)
+           -cat {drug_class,resistance_mechanism,gene_family}, --category {drug_class,resistance_mechanism,gene_family}
+                                 The option to organize resistance genes based on a
+                                 category.
+           -f, --frequency       Represent samples based on resistance profile.
+           -o OUTPUT, --output OUTPUT
+                                 Name for the output EPS and PNG files. The number of
+                                 files run will automatically be appended to the end of
+                                 the file name. (default=RGI_heatmap)
+           -clus {samples,genes,both}, --cluster {samples,genes,both}
+                                 Option to use SciPy's hiearchical clustering algorithm
+                                 to cluster rows (AMR genes) or columns (samples).
+           -d {plain,fill,text}, --display {plain,fill,text}
+                                 Specify display options for categories
+                                 (deafult=plain).
+           --debug               debug mode
+
 
 - Default Heatmap
 
@@ -413,27 +444,26 @@ RGI Heatmap
 Run RGI from Docker
 -------------------
 
-- First you you must either pull the Docker container from dockerhub (latest CARD version automatically installed)
+First you you must either pull the Docker container from dockerhub (latest CARD version automatically installed):
 
   .. code-block:: sh
 
         docker pull finlaymaguire/rgi
 
-- Or Alternatively, build it locally from the Dockerfile (latest CARD version automatically installed)
+Or alternatively, build it locally from the Dockerfile (latest CARD version automatically installed):
 
   .. code-block:: sh
 
         git clone https://github.com/arpcard/rgi
         docker build -t arpcard/rgi rgi
 
-- Then you can either run interactively (mounting a local directory called `rgi_data` in your current directory
-  to `/data/` within the container
+Then you can either run interactively (mounting a local directory called `rgi_data` in your current directory to `/data/` within the container:
 
   .. code-block:: sh
 
         docker run -i -v $PWD/rgi_data:/data -t arpcard/rgi bash
 
-- Or you can directly run the container as an executable with `$RGI_ARGS` being any of the commands described above. Remember paths to input and outputs files are relative to the container (i.e. `/data/` if mounted as above).
+Or you can directly run the container as an executable with `$RGI_ARGS` being any of the commands described above. Remember paths to input and outputs files are relative to the container (i.e. `/data/` if mounted as above):
 
   .. code-block:: sh
         
