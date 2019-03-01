@@ -41,11 +41,11 @@ Table of Contents
 - `Help Menus for Subcommands`_
 - `Load card.json`_
 - `Check Database Version`_
-- `RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes`_
-- `Running RGI with Genome or Assembly DNA Sequences`_
-- `Running RGI with Protein Sequences`_
-- `Running RGI using GNU Parallel`_
 - `Clean Previous or Old Databases`_
+- `RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes`_
+- `Running RGI main with Genome or Assembly DNA Sequences`_
+- `Running RGI main with Protein Sequences`_
+- `Running RGI main using GNU Parallel`_
 - `RGI Heatmap`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
@@ -234,6 +234,21 @@ System wide :
    .. code-block:: sh
 
       rgi database --version
+      
+Clean Previous or Old Databases
+--------------------------------
+
+Local or working directory:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+System wide:
+
+   .. code-block:: sh 
+   
+      rgi clean      
 
 RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 ------------------------------------------------------------------------------------------------------
@@ -276,7 +291,7 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
                                   run multiple prodigal jobs simultaneously for contigs
                                   in a fasta file
 
-Running RGI with Genome or Assembly DNA Sequences
+Running RGI main with Genome or Assembly DNA Sequences
 --------------------------------------------------------
 
 Examples use local database, exclude "--local" flag to use a system wide reference database.
@@ -305,7 +320,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits for 
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs
 
-Running RGI with Protein Sequences
+Running RGI main with Protein Sequences
 --------------------------------------------------------
 
 Examples use local database, exclude "--local" flag to use a system wide reference database.
@@ -328,7 +343,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
    
       rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40
 
-Running RGI using GNU Parallel
+Running RGI main using GNU Parallel
 --------------------------------------------
 
 System wide and writing log files for each input file. Note: add code below to script.sh then run with `./script.sh /path/to/input_files`.
@@ -341,21 +356,6 @@ System wide and writing log files for each input file. Note: add code below to s
             NAME=$(basename $D);
             parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
       done
-
-Clean Previous or Old Databases
---------------------------------
-
-Local or working directory:
-
-   .. code-block:: sh
-
-      rgi clean --local
-
-System wide:
-
-   .. code-block:: sh 
-   
-      rgi clean      
 
 RGI Heatmap
 ------------
