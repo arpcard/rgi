@@ -34,25 +34,26 @@ Table of Contents
 - `License`_
 - `Citation`_
 - `Requirements`_
-- `Install dependencies`_
-- `Install RGI from project root`_
-- `Running RGI tests`_
-- `Help menu`_
+- `Install Dependencies`_
+- `Install RGI from Project Root`_
+- `Running RGI Tests`_
+- `Help Menu`_
 - `Usage`_
 - `Load card.json`_
-- `Check database version`_
+- `Check Database Version`_
 - `Run RGI`_
-- `Run RGI using GNU parallel`_
-- `Running RGI with short contigs to predict partial genes`_
-- `Clean previous or old databases`_
+- `Run RGI using GNU Parallel`_
+- `Running RGI with Short Contigs to Predict Partial Genes`_
+- `Clean Previous or Old Databases`_
 - `RGI Heatmap`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
-- `Tab-delimited results file`_
+- `Tab-delimited Results File`_
 - `Support & Bug Reports`_
 
 License
 --------
+
 Use or reproduction of these materials, in whole or in part, by any non-academic organization whether or not for non-commercial (including research) or commercial purposes is prohibited, except with written permission of McMaster University. Commercial uses are offered only pursuant to a written license and user fee. To obtain permission and begin the licensing process, see the `CARD website <https://card.mcmaster.ca/about>`_.
 
 Citation
@@ -86,7 +87,7 @@ Requirements
 - `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
 - `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
 
-Install dependencies
+Install Dependencies
 --------------------
 
 - pip3 install six
@@ -100,7 +101,7 @@ Install dependencies
 - pip3 install pyfaidx
 - pip3 install pyahocorasick
 
-Install RGI from project root
+Install RGI from Project Root
 -----------------------------
 
 .. code-block:: sh
@@ -115,15 +116,17 @@ or
    python3 setup.py test
    python3 setup.py install
 
-Running RGI tests
+Running RGI Tests
 -------------------
 .. code-block:: sh
    
    cd tests
    pytest -v -rxs
 
-Help menu
+Help Menu
 -------------------
+
+The following command will bring up RGI's main help menu:
 
 .. code-block:: sh
 
@@ -193,6 +196,11 @@ Usage
    notification of monthly CARD updates via the CARD Mailing List
    (https://mailman.mcmaster.ca/mailman/listinfo/card-l)
 
+Help screens for subcommands can be accessed using the -h argument, e.g.
+
+.. code-block:: sh
+
+      rgi load -h
 
 Load card.json 
 -------------------
@@ -209,7 +217,7 @@ Load card.json
 
       rgi load --card_json /path/to/card.json
 
-Check database version
+Check Database Version
 -----------------------
 
 - local or working directory
@@ -239,7 +247,7 @@ Run RGI
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
 
-Run RGI using GNU parallel
+Run RGI using GNU Parallel
 --------------------------------------------
 
 - system wide and writing log files for each input file. (Note add code below to script.sh then run with `./script.sh /path/to/input_files`)
@@ -255,7 +263,7 @@ Run RGI using GNU parallel
 
 
 
-Running RGI with short contigs to predict partial genes 
+Running RGI with Short Contigs to Predict Partial Genes 
 --------------------------------------------------------
 
 - local or working directory
@@ -271,7 +279,7 @@ Running RGI with short contigs to predict partial genes
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --low_quality
 
 
-Clean previous or old databases
+Clean Previous or Old Databases
 --------------------------------
 
 - local or working directory
@@ -395,7 +403,7 @@ Remove RGI package:
         
         $ conda remove --channel bioconda rgi
 
-Tab-delimited results file
+Tab-delimited Results File
 ---------------------------
 
 +----------------------------------------------------------+------------------------------------------------+
