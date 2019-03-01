@@ -45,7 +45,6 @@ Table of Contents
 - `Running RGI with Genome or Assembly DNA Sequences`_
 - `Running RGI with Protein Sequences`_
 - `Running RGI using GNU Parallel`_
-- `Running RGI with Short or Low Quality Contigs with Partial Gene Prediction`_
 - `Clean Previous or Old Databases`_
 - `RGI Heatmap`_
 - `Run RGI from Docker`_
@@ -280,37 +279,54 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 Running RGI with Genome or Assembly DNA Sequences
 --------------------------------------------------------
 
-Local or working directory:
+Examples use local database, exclude "--local" flag to use a system wide reference database.
+
+Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
    .. code-block:: sh
 
-      rgi main -h
-   
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local 
+      
+Include Loose hits:
 
-System wide:
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose
+
+Short or low quality contigs with partial gene prediction, including Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose
+
+High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs
 
 Running RGI with Protein Sequences
 --------------------------------------------------------
 
-Local or working directory:
+Examples use local database, exclude "--local" flag to use a system wide reference database.
+
+Generate Perfect or Strict hits for a set of protein sequences:
 
    .. code-block:: sh
-
-      rgi main -h
    
       rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local 
 
-System wide:
+Include Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose
 
+High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40
 
 Running RGI using GNU Parallel
 --------------------------------------------
@@ -325,21 +341,6 @@ System wide and writing log files for each input file. Note: add code below to s
             NAME=$(basename $D);
             parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
       done
-
-Running RGI with Short or Low Quality Contigs with Partial Gene Prediction
-----------------------------------------------------------------------------
-
-Local or working directory:
-
-   .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --local --low_quality 
-
-System wide:
-
-   .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --low_quality
 
 Clean Previous or Old Databases
 --------------------------------
