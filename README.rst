@@ -6,7 +6,7 @@ Resistance Gene Identifier (RGI)
 
 This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
-RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of `Galaxy wrapper <https://github.com/arpcard/rgi_wrapper>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, and alternatively installed via `Conda <https://card.mcmaster.ca/download>`_. Additional instructions for use of RGI via Docker are provided below.
+RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of `Galaxy wrapper <https://github.com/arpcard/rgi_wrapper>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can `Install RGI from Conda`_ or `Run RGI from Docker`_.
 
 Analyzing Genomes or Proteomes
 --------------------------------------------
@@ -44,7 +44,7 @@ Table of Contents
 - `Running RGI with short contigs to predict partial genes`_
 - `Clean previous or old databases`_
 - `RGI Heatmap`_
-- `Run RGI from docker`_
+- `Run RGI from Docker`_
 - `Install RGI from Conda`_
 - `Tab-delimited results file`_
 - `Support & Bug Reports`_
@@ -337,10 +337,10 @@ RGI Heatmap
             rgi heatmap --input /path/to/rgi_results_json_files_directory/ --cluster samples --category resistance_mechanism --display fill
 
 
-Run RGI from docker
+Run RGI from Docker
 -------------------
 
-- First you you must either pull the docker container from dockerhub (latest CARD version automatically installed)
+- First you you must either pull the Docker container from dockerhub (latest CARD version automatically installed)
 
   .. code-block:: sh
 
