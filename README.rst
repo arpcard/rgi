@@ -46,7 +46,7 @@ Use or reproduction of these materials, in whole or in part, by any non-academic
 Citation
 --------
 
-Citation: Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573. `[PMID 27789705] <https://www.ncbi.nlm.nih.gov/pubmed/27789705>`_
+Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573. [`PMID 27789705 <https://www.ncbi.nlm.nih.gov/pubmed/27789705>`_]
 
 Requirements
 --------------------
