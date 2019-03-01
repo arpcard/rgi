@@ -45,6 +45,7 @@ Table of Contents
 - `Clean previous or old databases`_
 - `RGI Heatmap`_
 - `Run RGI from docker`_
+- `Install RGI from Conda`_
 - `Tab-delimited results file`_
 - `Support & Bug Reports`_
 
