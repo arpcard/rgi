@@ -706,8 +706,7 @@ RGI bwt read mapping results at allele level
 |                                                          | plasmid sequence?                                 |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistomes & Variants: Observed Pathogen(s)           | Allele observed in which CARD Prevalence pathogens|
-|                                                          |?                                                 |
+|    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
 |    Completely Mapped Reads                               | Statistics for reference matches                  |
