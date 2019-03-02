@@ -1,6 +1,9 @@
 .. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
     :target: https://travis-ci.org/arpcard/rgi
 
+Overview 
+---------
+
 Resistance Gene Identifier (RGI) 
 --------------------------------------------
 
@@ -44,6 +47,7 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 Table of Contents
 -------------------------------------
 
+- `Overview`_
 - `License`_
 - `Citation`_
 - `Support & Bug Reports`_
