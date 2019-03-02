@@ -1,10 +1,7 @@
 .. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
     :target: https://travis-ci.org/arpcard/rgi
 
-Overview 
----------
-
-Resistance Gene Identifier (RGI) 
+The Resistance Gene Identifier (RGI) 
 --------------------------------------------
 
 This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
@@ -47,7 +44,6 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 Table of Contents
 -------------------------------------
 
-- `Overview`_
 - `License`_
 - `Citation`_
 - `Support & Bug Reports`_
