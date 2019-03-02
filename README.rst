@@ -63,6 +63,8 @@ Table of Contents
 - `RGI main Tab-Delimited Output`_
 - `Generating Heat Maps of RGI main Results`_
 - `RGI bwt Usage for Metagenomic Reads`_
+- `Load RGI bwt Reference Data`_
+- `Running RGI bwt with FASTQ files`
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -544,7 +546,7 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
 RGI bwt Usage for Metagenomic Reads
 -------------------------------------
 
-**This is an unpublished, beta-testing algorithm**
+**This is an unpublished algorithm undergoing beta-testing.**
 
 .. code-block:: sh
 
@@ -581,7 +583,60 @@ RGI bwt Usage for Metagenomic Reads
             --mapped MAPPED       filter reads based on mapped reads
             --coverage COVERAGE   filter reads based on coverage of reference sequence
 
-**Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) are forthcoming.**
+**Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.**
+
+Load RGI bwt Reference Data
+----------------------------
+
+To start bwt analyses, first acquire the latest AMR reference data from CARD at `https://card.mcmaster.ca/latest/data <https://card.mcmaster.ca/latest/data>`_. CARD data can be installed at the system level or at the local level.
+
+Obtain CARD data:
+
+   .. code-block:: sh
+   
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+
+Local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi card_annotation -i /path/to/card.json
+      rgi load --card_json /path/to/card.json --local
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
+
+System wide (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json
+      rgi load --card_json /path/to/card.json
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta
+
+If you are going to include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ in your analysis, this data will need to be loaded as well:
+
+Obtain WildCARD data:
+
+   .. code-block:: sh
+   
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xvf wildcard_data.tar.bz2 -C wildcard
+      
+Local or working directory:
+
+   .. code-block:: sh
+   
+      rgi load --wildcard_annotation --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --local
+
+System wide:
+
+   .. code-block:: sh
+   
+      rgi load --wildcard_annotation --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
+
+Running RGI bwt with FASTQ files
+--------------------------------------
 
 Run RGI from Docker
 -------------------
