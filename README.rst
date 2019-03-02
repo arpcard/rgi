@@ -697,46 +697,49 @@ RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with 
 |    Reference Allele Source                               | need text                                         |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistomes & Variants: Observed in Genome(s)          | Has this allele been observed in a `CARD Prevalence <https://card.mcmaster.ca/prevalence>`_ genome sequence?    | 
+|    Resistomes & Variants: Observed in Genome(s)          | Has this allele been observed in a CARD Prevalence|
+|                                                          | genome sequence?                                  | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele been observed in a `CARD Prevalence <https://card.mcmaster.ca/prevalence>`_ plasmid sequence?        |
+|    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele been observed in a CARD Prevalence|
+|                                                          | plasmid sequence?                                 |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistomes & Variants: Observed Pathogen(s)           | Allele observed in which `CARD Prevalence <https://card.mcmaster.ca/prevalence>`_ pathogens?    |
+|    Resistomes & Variants: Observed Pathogen(s)           | Allele observed in which CARD Prevalence pathogens|
+|                                                          | ?                                                 |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Completely Mapped Reads                               | Statistics for reference matches               |
+|    Completely Mapped Reads                               | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Mapped Reads with Flanking Sequence                   | RGI bwt read mapping results at allele level   |
+|    Mapped Reads with Flanking Sequence                   | RGI bwt read mapping results at allele level      |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    All Mapped Reads                                      | RGI bwt read mapping results at gene level     | 
+|    All Mapped Reads                                      | RGI bwt read mapping results at gene level        | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Percent Coverage                                      | Statistics for read mapping artifacts          |
+|    Percent Coverage                                      | Statistics for read mapping artifacts             |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Length Coverage (bp)                                  | Statistics for overall read mapping results    |
+|    Length Coverage (bp)                                  | Statistics for overall read mapping results       |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Average MAPQ (Completely Mapped Reads)                | Statistics for reference matches               |
+|    Average MAPQ (Completely Mapped Reads)                | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Mate Pair Linkage                                     | RGI bwt read mapping results at allele level   |
+|    Mate Pair Linkage                                     | RGI bwt read mapping results at allele level      |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Reference Length                                      | RGI bwt read mapping results at gene level     | 
+|    Reference Length                                      | RGI bwt read mapping results at gene level        | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    AMR Gene Family                                       | Statistics for read mapping artifacts          |
+|    AMR Gene Family                                       | Statistics for read mapping artifacts             |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Drug Class                                            | Statistics for overall read mapping results    |
+|    Drug Class                                            | Statistics for overall read mapping results       |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistance Mechanism                                  | Statistics for reference matches               |
+|    Resistance Mechanism                                  | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
 
 **RGI bwt read mapping results at gene level**
