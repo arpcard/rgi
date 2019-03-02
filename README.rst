@@ -33,6 +33,7 @@ Table of Contents
 
 - `License`_
 - `Citation`_
+- `Support & Bug Reports`_
 - `Requirements`_
 - `Install Dependencies`_
 - `Install RGI from Project Root`_
@@ -49,8 +50,7 @@ Table of Contents
 - `Generating Heat Maps of RGI main Results`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
-- `Tab-delimited Results File`_
-- `Support & Bug Reports`_
+- `Overview of Tab-Delimited Output`_
 
 License
 --------
@@ -61,6 +61,13 @@ Citation
 --------
 
 Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573. [`PMID 27789705 <https://www.ncbi.nlm.nih.gov/pubmed/27789705>`_]
+
+Support & Bug Reports
+----------------------
+
+Please log an issue on `github issue <https://github.com/arpcard/rgi/issues>`_.
+
+You can email the CARD curators or developers directly at `card@mcmaster.ca <mailto:card@mcmaster.ca>`_, via Twitter at `@arpcard <http://www.twitter.com/arpcard>`_.
 
 Requirements
 --------------------
@@ -404,6 +411,9 @@ Generating Heat Maps of RGI main Results
                                  (deafult=plain).
            --debug               debug mode
 
+
+RGI heatmap produces EPS and PNG image files.
+
 Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes organized alphabetically:
 
       .. code-block:: sh
@@ -433,7 +443,7 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
       .. code-block:: sh
 
             rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both -f
-            
+
 Run RGI from Docker
 -------------------
 
@@ -489,8 +499,9 @@ Remove RGI package:
         
         $ conda remove --channel bioconda rgi
 
-Tab-delimited Results File
----------------------------
+Overview of Tab-Delimited Output
+-----------------------------------
+
 
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
@@ -565,13 +576,4 @@ Tab-delimited Results File
 | ::                                                       |                                                |
 |    Model_id                                              | CARD detection model id                        |
 +----------------------------------------------------------+------------------------------------------------+
-
-
-
-Support & Bug Reports
-----------------------
-
-Please log an issue on `github issue <https://github.com/arpcard/rgi/issues>`_.
-
-You can email the CARD curators or developers directly at `card@mcmaster.ca <mailto:card@mcmaster.ca>`_, via Twitter at `@arpcard <http://www.twitter.com/arpcard>`_.
 
