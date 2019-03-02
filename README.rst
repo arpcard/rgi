@@ -638,6 +638,20 @@ System wide:
 Running RGI bwt with FASTQ files
 --------------------------------------
 
+Examples use local database, exclude "--local" flag to use a system wide reference database.
+
+Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD only:
+
+   .. code-block:: sh
+   
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --local 
+
+Aligned forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
+
+   .. code-block:: sh
+   
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --include_wildcard --local 
+
 Run RGI from Docker
 -------------------
 
