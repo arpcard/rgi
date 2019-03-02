@@ -544,6 +544,8 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
 RGI bwt Usage for Metagenomic Reads
 -------------------------------------
 
+**This is an unpublished, beta-testing algorithm**
+
 .. code-block:: sh
 
    rgi bwt -h
@@ -579,7 +581,7 @@ RGI bwt Usage for Metagenomic Reads
             --mapped MAPPED       filter reads based on mapped reads
             --coverage COVERAGE   filter reads based on coverage of reference sequence
 
-**Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but are reported for manual filtering). Support for AMR bait capture methods (--include_baits) are forthcoming.**
+**Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) are forthcoming.**
 
 Run RGI from Docker
 -------------------
