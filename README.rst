@@ -614,7 +614,7 @@ Local or working directory (note that the filename *card_database_v3.0.1.fasta* 
 
    .. code-block:: sh
    
-      rgi card_annotation -i /path/to/card.json
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi load --card_json /path/to/card.json --local
       rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
 
@@ -622,7 +622,7 @@ System wide (note that the filename *card_database_v3.0.1.fasta* depends on the 
 
    .. code-block:: sh
 
-      rgi card_annotation -i /path/to/card.json
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi load --card_json /path/to/card.json
       rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta
 
@@ -636,17 +636,19 @@ Obtain WildCARD data:
       mkdir -p wildcard
       tar -xvf wildcard_data.tar.bz2 -C wildcard
       
-Local or working directory:
+Local or working directory (note that the filename *wildcard_database_v3.0.2.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
-      rgi load --wildcard_annotation --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --local
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --local
 
-System wide:
+System wide (note that the filename *wildcard_database_v3.0.2.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
-      rgi load --wildcard_annotation --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
 
 Running RGI bwt with FASTQ files
 --------------------------------------
@@ -730,28 +732,29 @@ RGI bwt read mapping results at allele level
 |    All Mapped Reads                                      | Sum of previous two columns                       | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Percent Coverage                                      | Statistics for read mapping artifacts             |
+|    Percent Coverage                                      | Percent of reference allele covered by reads      |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Length Coverage (bp)                                  | Statistics for overall read mapping results       |
+|    Length Coverage (bp)                                  | Base pairs of reference allele covered by reads   |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
 |    Average MAPQ (Completely Mapped Reads)                | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Mate Pair Linkage                                     | RGI bwt read mapping results at allele level      |
+|    Mate Pair Linkage                                     | For mate pair sequencing, if a sister read maps to|
+|                                                          | a different AMR gene, this is listed              |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Reference Length                                      | RGI bwt read mapping results at gene level        | 
+|    Reference Length                                      | Length (bp) of reference allele                   | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    AMR Gene Family                                       | Statistics for read mapping artifacts             |
+|    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Drug Class                                            | Statistics for overall read mapping results       |
+|    Drug Class                                            | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Resistance Mechanism                                  | Statistics for reference matches                  |
+|    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 
 RGI bwt read mapping results at gene level
