@@ -65,6 +65,7 @@ Table of Contents
 - `RGI bwt Usage for Metagenomic Reads`_
 - `Load RGI bwt Reference Data`_
 - `Running RGI bwt with FASTQ files`_
+- `RGI bwt Tab-Delimited Output`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -651,6 +652,29 @@ Aligned forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.source
    .. code-block:: sh
    
       rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --include_wildcard --local 
+
+RGI bwt Tab-Delimited Output
+------------------------------
+
+RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
+
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     | 
+|                                                          | (i.e. summing allele level results by gene)    |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    output_prefix.artifacts_mapping_stats.txt             | Statistics for read mapping artifacts          |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    output_prefix.overall_mapping_stats.txt               | Statistics for overall read mapping results    |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    output_prefix.reference_mapping_stats.txt             | Statistics for reference matches               |
++----------------------------------------------------------+------------------------------------------------+
 
 Run RGI from Docker
 -------------------
