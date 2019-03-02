@@ -32,7 +32,7 @@ Analyzing Metagenomic Reads (beta-testing)
 
 RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ or `BWA <http://bio-bwa.sourceforge.net>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (support for SNP screening models will be added to future versions). FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended as the allelic diversity for AMR genes is greatly unrepresented in the published literature, hampering high-stringency read mapping (i.e. AMR genes are often only characterized for a single pathogen). Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathgoens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
 
-CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation.
+CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD)were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation.
 
 K-mer Prediction of Pathogen-of-Origin for AMR Genes (beta-testing)
 --------------------------------------------------------------------------
@@ -62,6 +62,7 @@ Table of Contents
 - `Running RGI main using GNU Parallel`_
 - `RGI main Tab-Delimited Output`_
 - `Generating Heat Maps of RGI main Results`_
+- `RGI bwt Usage for Metagenomic Reads`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -539,6 +540,46 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
       .. code-block:: sh
 
             rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both -f
+
+RGI bwt Usage for Metagenomic Reads
+-------------------------------------
+
+.. code-block:: sh
+
+   rgi bwt -h
+
+.. code-block:: sh
+
+          usage: rgi bwt [-h] -1 READ_ONE [-2 READ_TWO] [-a {bowtie2,bwa}] [-n THREADS]
+                         -o OUTPUT_FILE [--debug] [--local] [--include_wildcard]
+                         [--include_baits] [--mapq MAPQ] [--mapped MAPPED]
+                         [--coverage COVERAGE]
+          
+          Aligns metagenomic reads to CARD and wildCARD reference using bowtie or bwa
+          and provide reports.
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -1 READ_ONE, --read_one READ_ONE
+                                  raw read one (qc and trimmied)
+            -2 READ_TWO, --read_two READ_TWO
+                                  raw read two (qc and trimmied)
+            -a {bowtie2,bwa}, --aligner {bowtie2,bwa}
+                                  aligner
+            -n THREADS, --threads THREADS
+                                  number of threads (CPUs) to use (default=32)
+            -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                                  name of output filename(s)
+            --debug               debug mode
+            --local               use local database (default: uses database in
+                                  executable directory)
+            --include_wildcard    include wildcard
+            --include_baits       include baits
+            --mapq MAPQ           filter reads based on MAPQ score
+            --mapped MAPPED       filter reads based on mapped reads
+            --coverage COVERAGE   filter reads based on coverage of reference sequence
+
+**Note: the mapq, mapped, and coverage filters are planned features and do not yet work. Support for AMR bait capture methods (--include_baits) are forthcoming.**
 
 Run RGI from Docker
 -------------------
