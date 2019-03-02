@@ -8,6 +8,8 @@ This application is used to predict resistome(s) from protein or nucleotide data
 
 RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://github.com/arpcard/rgi_wrapper>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can `Install RGI from Conda`_ or `Run RGI from Docker`_. The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
+RGI targets, reference sequences, and significance cut-offs are under constant curation - as CARD curation evolves, the results of the RGI evolve. 
+
 Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 -----------------------------------------------------------------------
 
@@ -25,10 +27,19 @@ All results are organized via the `Antibiotic Resistance Ontology <https://card.
 
 Note on metagenomic assemblies or merged metagenomic reads: this is a computationally expensive approach, since each merged read or contig set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. While not generally recommended, this does allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below). 
 
-Analyzing Metagenomic Reads
+Analyzing Metagenomic Reads (beta-testing)
 --------------------------------------------
 
-Insert text here.
+RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ or `BWA <http://bio-bwa.sourceforge.net>`_. FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended as the allelic diversity for AMR genes is greatly unrepresented in the published literature, hampering high-stringency read mapping (i.e. AMR genes are often only characterized for a single pathogen). Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ into Bowtie2 / BWA results, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
+
+CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of AMR alleles. 
+
+These data were predicted under RGI's Perfect and Strict paradigms of RGI, the former tracking perfect matches to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation.
+
+K-mer Prediction of Pathogen-of-Origin for AMR Genes (beta-testing)
+--------------------------------------------------------------------------
+
+Insert text
 
 Table of Contents
 -------------------------------------
@@ -53,7 +64,6 @@ Table of Contents
 - `Generating Heat Maps of RGI main Results`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
-- `Overview of Tab-Delimited Output`_
 
 License
 --------
@@ -419,12 +429,12 @@ RGI main Tab-Delimited Output
 |    Model_type                                            | CARD detection model type                      |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
-|                                                          | Mutations observed in the ARO term of top hit  |
-|    SNPs_in_Best_Hit_ARO                                  | in CARD (if applicable)                        |
+|    SNPs_in_Best_Hit_ARO                                  | Mutations observed in the ARO term of top hit  |
+|                                                          | in CARD (if applicable)                        |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
-|                                                          | Mutations observed in ARO terms of other hits  |
-|    Other_SNPs                                            | indicated by model id (if applicable)          |
+|    Other_SNPs                                            | Mutations observed in ARO terms of other hits  |
+|                                                          | indicated by model id (if applicable)          |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
 |    Drug Class                                            | ARO Categorization                             |
