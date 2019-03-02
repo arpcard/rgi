@@ -64,7 +64,7 @@ Table of Contents
 - `Generating Heat Maps of RGI main Results`_
 - `RGI bwt Usage for Metagenomic Reads`_
 - `Load RGI bwt Reference Data`_
-- `Running RGI bwt with FASTQ files`
+- `Running RGI bwt with FASTQ files`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
