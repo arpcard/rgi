@@ -586,6 +586,18 @@ RGI bwt Usage for Metagenomic Reads
 
 **Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.**
 
+`BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt:
+
+   .. code-block:: sh
+   
+      bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}
+   
+`Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt:
+ 
+   .. code-block:: sh
+   
+      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} -U {unpaired_reads} -S {output_sam_file}
+
 Load RGI bwt Reference Data
 ----------------------------
 
@@ -709,13 +721,13 @@ RGI bwt read mapping results at allele level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Completely Mapped Reads                               | Statistics for reference matches                  |
+|    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Mapped Reads with Flanking Sequence                   | RGI bwt read mapping results at allele level      |
+|    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to allele     |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    All Mapped Reads                                      | RGI bwt read mapping results at gene level        | 
+|    All Mapped Reads                                      | Sum of previous two columns                       | 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
 |    Percent Coverage                                      | Statistics for read mapping artifacts             |
