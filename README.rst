@@ -396,10 +396,10 @@ RGI main Tab-Delimited Output
 |    Orientation                                           | Strand of ORF                                  |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
-|    Cut_Off                                               | RGI Detection Paradigm                         |
+|    Cut_Off                                               | RGI Detection Paradigm (Perfect, Strict, Loose)|
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
-|    Pass_Bitscore                                         | STRICT detection model bitscore value cut-off  |
+|    Pass_Bitscore                                         | Strict detection model bitscore cut-off        |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
 |    Best_Hit_Bitscore                                     | Bitscore value of match to top hit in CARD     |
@@ -411,7 +411,7 @@ RGI main Tab-Delimited Output
 |    Best_Identities                                       | Percent identity of match to top hit in CARD   |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
-|    ARO                                                   | ARO accession of top hit in CARD               |
+|    ARO                                                   | ARO accession of match to top hit in CARD      |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
 |    Model_type                                            | CARD detection model type                      |
@@ -443,14 +443,20 @@ RGI main Tab-Delimited Output
 |    CARD_Protein_Sequence                                 | Protein sequence of top hit in CARD            |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       | Calculated as percentage                       |
-|                                                          | (length of ORF protein /                       |
-|    Percentage Length of Reference Sequence               | length of CARD reference protein)              |
+|    Percentage Length of Reference Sequence               | (length of ORF protein /                       |
+|                                                          | length of CARD reference protein)              |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
 |    ID                                                    | HSP identifier (internal to RGI)               |
 +----------------------------------------------------------+------------------------------------------------+
 | ::                                                       |                                                |
 |    Model_id                                              | CARD detection model id                        |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    Nudged                                                | TRUE = Hit nudged from Loose to Strict         |
++----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
+|    Note                                                  | Reason for nudge or other notes                |
 +----------------------------------------------------------+------------------------------------------------+
 
 Generating Heat Maps of RGI main Results
