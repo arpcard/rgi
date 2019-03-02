@@ -8,7 +8,7 @@ This application is used to predict resistome(s) from protein or nucleotide data
 
 RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://github.com/arpcard/rgi_wrapper>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can `Install RGI from Conda`_ or `Run RGI from Docker`_. The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
-RGI targets, reference sequences, and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve. 
+CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve. 
 
 Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 -----------------------------------------------------------------------
