@@ -208,6 +208,13 @@ Load card.json
 
 To start analyses, first acquire the latest AMR reference data from CARD at `https://card.mcmaster.ca/latest/data <https://card.mcmaster.ca/latest/data>`_. CARD data can be installed at the system level or at the local level.
 
+Obtain CARD data:
+
+   .. code-block:: sh
+   
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+
 Local or working directory:
 
    .. code-block:: sh
