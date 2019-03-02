@@ -675,7 +675,8 @@ RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with 
 |    output_prefix.reference_mapping_stats.txt             | Statistics for reference matches               |
 +----------------------------------------------------------+------------------------------------------------+
 
-**RGI bwt read mapping results at allele level**
+RGI bwt read mapping results at allele level
+-----------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
@@ -742,7 +743,8 @@ RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with 
 |    Resistance Mechanism                                  | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
 
-**RGI bwt read mapping results at gene level**
+RGI bwt read mapping results at gene level
+--------------------------------------------
 
 Run RGI from Docker
 -------------------
