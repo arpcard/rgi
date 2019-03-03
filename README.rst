@@ -905,9 +905,9 @@ RGI kmer_query Usage to Use K-mer Classifiers
 
 Examples use local database, exclude "--local" flag to use a system wide reference database.
 
-CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.
+CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (FASTA, RGI predicted ORF, metagenomic reads) must pass the *--minimum* coverage value (default of 10, i.e. a minimum of 10 classifier k-mers must map to the sequence). Subsequent classification is based on the following logic tree:
 
-To be considered for a taxonomic prediction, individual sequences (FASTA, RGI predicted ORF, metagenomic reads) must pass the *--minimum* coverage value (default of 10, i.e. a minimum of 10 classifier k-mers must map to the sequence).
+.. image:: ./kmerlogic.jpg
 
 .. code-block:: sh
 
@@ -958,11 +958,6 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 .. code-block:: sh
 
    rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
-
-CARD k-mer Classifier Logic
------------------------------
-
-.. image:: ./kmerlogic.jpg
 
 Run RGI from Docker
 -------------------
