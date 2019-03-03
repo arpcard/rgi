@@ -936,13 +936,40 @@ CARD k-mer Classifier Output for RGI main results
 CARD k-mer Classifier Output for RGI bwt results
 --------------------------------------------------
 
+**Allelic Results:**
+
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
 +==========================================================+====================================================+
-|    CARD kmer Prediction                                  | *Number of reads* classified for each taxon, with  |
+|    Reference Sequence                                    | Reference allele to which reads have been mapped   |
++----------------------------------------------------------+----------------------------------------------------+
+|    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
++----------------------------------------------------------+----------------------------------------------------+
+|    CARD kmer Prediction                                  | **Number of reads** classified for each taxon, with|
 |                                                          | indication if the kmers are known exclusively from |
 |                                                          | chromosomes, exclusively from plasmids, or can be  |
 |                                                          | found in either chromosomes or plasmids            |
++----------------------------------------------------------+----------------------------------------------------+
+|    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
+|                                                          | logic tree                                         |
++----------------------------------------------------------+----------------------------------------------------+
+
+**Gene Summary Results:**
+
++----------------------------------------------------------+----------------------------------------------------+
+|    Field                                                 | Contents                                           |
++==========================================================+====================================================+
+|    ARO term                                              | ARO term                                           |
++----------------------------------------------------------+----------------------------------------------------+
+|    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
++----------------------------------------------------------+----------------------------------------------------+
+|    CARD kmer Prediction                                  | **Number of reads** classified for each taxon, with|
+|                                                          | indication if the kmers are known exclusively from |
+|                                                          | chromosomes, exclusively from plasmids, or can be  |
+|                                                          | found in either chromosomes or plasmids            |
++----------------------------------------------------------+----------------------------------------------------+
+|    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
+|                                                          | logic tree                                         |
 +----------------------------------------------------------+----------------------------------------------------+
 
 Run RGI from Docker
