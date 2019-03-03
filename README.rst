@@ -22,11 +22,11 @@ The RGI currently supports CARD's `protein homolog models <https://card.mcmaster
 +----------------------------------------------------------+---------------------------------------------------+
 |    Example Protein Homolog Model                         | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example Protein Variant Model                         | `*Acinetobacter baumannii* gyrA conferring        |
+|    Example Protein Variant Model                         | `Acinetobacter baumannii gyrA conferring        |
 |                                                          | resistance to fluoroquinolones                    |
 |                                                          | <https://card.mcmaster.ca/ontology/40507>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example rRNA Mutation Model                           | `*Campylobacter jejuni* 23S rRNA with mutation    |
+|    Example rRNA Mutation Model                           | `Campylobacter jejuni 23S rRNA with mutation    |
 |                                                          | conferring resistance to erythromycin             |
 |                                                          | <https://card.mcmaster.ca/ontology/42445>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -412,82 +412,57 @@ RGI main Tab-Delimited Output
 -----------------------------------
 
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    ORF_ID                                                | Open Reading Frame identifier (internal to RGI)|
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Contig                                                | Source Sequence                                |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Start                                                 | Start co-ordinate of ORF                       |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Stop                                                  | End co-ordinate of ORF                         |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Orientation                                           | Strand of ORF                                  |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Cut_Off                                               | RGI Detection Paradigm (Perfect, Strict, Loose)|
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Pass_Bitscore                                         | Strict detection model bitscore cut-off        |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Best_Hit_Bitscore                                     | Bitscore value of match to top hit in CARD     |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Best_Hit_ARO                                          | ARO term of top hit in CARD                    |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Best_Identities                                       | Percent identity of match to top hit in CARD   |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    ARO                                                   | ARO accession of match to top hit in CARD      |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Model_type                                            | CARD detection model type                      |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    SNPs_in_Best_Hit_ARO                                  | Mutations observed in the ARO term of top hit  |
 |                                                          | in CARD (if applicable)                        |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Other_SNPs                                            | Mutations observed in ARO terms of other hits  |
 |                                                          | indicated by model id (if applicable)          |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Drug Class                                            | ARO Categorization                             |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Resistance Mechanism                                  | ARO Categorization                             |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    AMR Gene Family                                       | ARO Categorization                             |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Predicted_DNA                                         | ORF predicted nucleotide sequence              |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Predicted_Protein                                     | ORF predicted protein sequence                 |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    CARD_Protein_Sequence                                 | Protein sequence of top hit in CARD            |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       | Calculated as percentage                       |
 |    Percentage Length of Reference Sequence               | (length of ORF protein /                       |
 |                                                          | length of CARD reference protein)              |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    ID                                                    | HSP identifier (internal to RGI)               |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Model_id                                              | CARD detection model id                        |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Nudged                                                | TRUE = Hit nudged from Loose to Strict         |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    Note                                                  | Reason for nudge or other notes                |
 +----------------------------------------------------------+------------------------------------------------+
 
@@ -691,19 +666,14 @@ RGI bwt Tab-Delimited Output
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     | 
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    output_prefix.artifacts_mapping_stats.txt             | Statistics for read mapping artifacts          |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    output_prefix.overall_mapping_stats.txt               | Statistics for overall read mapping results    |
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
 |    output_prefix.reference_mapping_stats.txt             | Statistics for reference matches               |
 +----------------------------------------------------------+------------------------------------------------+
 
@@ -711,67 +681,47 @@ RGI bwt read mapping results at allele level
 -----------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Sequence                                    | Reference allele to which reads have been mapped  |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    ARO Term                                              | ARO Term                                          | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    ARO Accession                                         | ARO Accession                                     |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Model Type                                  | CARD detection model type                         |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference DB                                          | Reference allele is from either CARD or WildCARD  |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Allele Source                               | See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Genome(s)          | Has this allele been observed in a CARD Prevalence|
 |                                                          | genome sequence?                                  | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele been observed in a CARD Prevalence|
 |                                                          | plasmid sequence?                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to allele     |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    All Mapped Reads                                      | Sum of previous two columns                       | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Percent Coverage                                      | Percent of reference allele covered by reads      |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Length Coverage (bp)                                  | Base pairs of reference allele covered by reads   |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Average MAPQ (Completely Mapped Reads)                | Average MAPQ value                                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Mate Pair Linkage                                     | For mate pair sequencing, if a sister read maps to|
 |                                                          | a different AMR gene, this is listed              |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Length                                      | Length (bp) of reference allele                   | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Drug Class                                            | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 
@@ -783,77 +733,54 @@ RGI bwt read mapping results at gene level
 --------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    ARO Term                                              | ARO Term                                          | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    ARO Accession                                         | ARO Accession                                     |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Model Type                                  | CARD detection model type                         |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference DB                                          | Reference allele(s) are from CARD and/or WildCARD |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Alleles Mapped                                        | # of alleles for this AMR gene with mapped reads  |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Reference Allele(s) Identity to CARD Reference Protein| See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Genome(s)          | Has this gene been observed in a CARD Prevalence  |
 |                                                          | genome sequence?                                  | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Plasmid(s)         | Has this gene been observed in a CARD Prevalence  |
 |                                                          | plasmid sequence?                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this gene       |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Completely Mapped Reads                               | Number of reads mapped completely to gene         |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to gene       |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    All Mapped Reads                                      | Sum of previous two columns                       | 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Average Percent Coverage                              | Average % of reference allele(s) covered by reads |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Average Length Coverage (bp)                          | Average bp of reference allele(s) covered by reads|
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Average MAPQ (Completely Mapped Reads)                | Statistics for reference matches                  |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Number of Mapped Baits                                | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Number of Mapped Baits with Reads                     | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Average Number of reads per Bait                      | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Number of reads per Bait Coefficient of Variation (%) | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Mate Pair Linkage (# reads)                           | For mate pair sequencing, if a sister read maps to|
 |                                                          | a different AMR gene, this is listed (# reads     |
 |                                                          | supporting linkage in parentheses)                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Drug Class                                            | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 
