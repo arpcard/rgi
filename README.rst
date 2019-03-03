@@ -20,18 +20,19 @@ If protein sequences are submitted, RGI skips ORF prediction and uses the protei
 The RGI currently supports CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLASTP or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present).
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
-|    Example Protein Homolog Model                         | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
+|    Example                                               | AMR Gene                                          |
++==========================================================+===================================================+
+|    Protein Homolog Model                                 | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example Protein Variant Model                         | `Acinetobacter baumannii gyrA conferring          |
+|    Protein Variant Model                                 | `Acinetobacter baumannii gyrA conferring          |
 |                                                          | resistance to fluoroquinolones                    |
 |                                                          | <https://card.mcmaster.ca/ontology/40507>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example rRNA Mutation Model                           | `Campylobacter jejuni 23S rRNA with mutation      |
+|    rRNA Mutation Model                                   | `Campylobacter jejuni 23S rRNA with mutation      |
 |                                                          | conferring resistance to erythromycin             |
 |                                                          | <https://card.mcmaster.ca/ontology/42445>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example Protein Over-Expression Model                 | `MexR <https://card.mcmaster.ca/ontology/36645>`_ | 
+|    Protein Over-Expression Model                         | `MexR <https://card.mcmaster.ca/ontology/36645>`_ | 
 +----------------------------------------------------------+---------------------------------------------------+
 
 The RGI analyzes genome or proteome sequences under three paradigms: **Perfect**, **Strict**, and **Loose** (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
@@ -413,7 +414,8 @@ RGI main Tab-Delimited Output
 -----------------------------------
 
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                |
+|    Field                                                 | Contents                                       |
++==========================================================+================================================+
 |    ORF_ID                                                | Open Reading Frame identifier (internal to RGI)|
 +----------------------------------------------------------+------------------------------------------------+
 |    Contig                                                | Source Sequence                                |
@@ -668,7 +670,7 @@ RGI bwt Tab-Delimited Output
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
 +----------------------------------------------------------+------------------------------------------------+
-|    file                                                  | contents                                       |
+|    File                                                  | Contents                                       |
 +==========================================================+================================================+
 |    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
 +----------------------------------------------------------+------------------------------------------------+
@@ -685,7 +687,8 @@ RGI bwt read mapping results at allele level
 -----------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
+|    Field                                                 | Contents                                          |
++==========================================================+===================================================+
 |    Reference Sequence                                    | Reference allele to which reads have been mapped  |
 +----------------------------------------------------------+---------------------------------------------------+
 |    ARO Term                                              | ARO Term                                          | 
@@ -738,7 +741,8 @@ RGI bwt read mapping results at gene level
 --------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
+|    Field                                                 | Contents                                          |
++==========================================================+===================================================+
 |    ARO Term                                              | ARO Term                                          | 
 +----------------------------------------------------------+---------------------------------------------------+
 |    ARO Accession                                         | ARO Accession                                     |
