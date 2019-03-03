@@ -87,8 +87,7 @@ Table of Contents
 - `RGI bwt Tab-Delimited Output`_
 - `RGI kmer_build Usage to Build K-mer Classifiers`_
 - `RGI kmer_query Usage to Use K-mer Classifiers`_
-- `CARD k-mer Classifier Output for RGI main results`_
-- `CARD k-mer Classifier Output for RGI bwt results`_
+- `CARD k-mer Classifier Output`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -915,6 +914,9 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 
    rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
 
+CARD k-mer Classifier Output
+-----------------------------
+
 CARD k-mer Classifier Output for RGI main results
 --------------------------------------------------
 
@@ -936,30 +938,11 @@ CARD k-mer Classifier Output for RGI main results
 CARD k-mer Classifier Output for RGI bwt results
 --------------------------------------------------
 
-**Allelic Results:**
-
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
 +==========================================================+====================================================+
-|    Reference Sequence                                    | Reference allele to which reads have been mapped   |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
-+----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | **Number of reads** classified for each taxon, with|
-|                                                          | indication if the kmers are known exclusively from |
-|                                                          | chromosomes, exclusively from plasmids, or can be  |
-|                                                          | found in either chromosomes or plasmids            |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
-|                                                          | logic tree                                         |
-+----------------------------------------------------------+----------------------------------------------------+
-
-**Gene Summary Results:**
-
-+----------------------------------------------------------+----------------------------------------------------+
-|    Field                                                 | Contents                                           |
-+==========================================================+====================================================+
-|    ARO term                                              | ARO term                                           |
+|    Reference Sequence / ARO term                         | Reference allele or ARO term to which reads have   |
+|                                                          | been mapped                                        |
 +----------------------------------------------------------+----------------------------------------------------+
 |    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
 +----------------------------------------------------------+----------------------------------------------------+
