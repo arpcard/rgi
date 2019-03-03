@@ -668,7 +668,7 @@ RGI bwt Tab-Delimited Output
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
 +----------------------------------------------------------+------------------------------------------------+
-| ::                                                       |                                                   |
+| ::                                                       |                                                |
 |    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
 +----------------------------------------------------------+------------------------------------------------+
 |    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     | 
