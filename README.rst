@@ -757,9 +757,9 @@ RGI bwt read mapping results at allele level
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 
-**Reference Allele Source**
+**Reference Allele Source:**
 
-Add text.
+Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI hits in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
 
 RGI bwt read mapping results at gene level
 --------------------------------------------
@@ -839,9 +839,9 @@ RGI bwt read mapping results at gene level
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
 
-**Reference Allele(s) Identity to CARD Reference Protein**
+**Reference Allele(s) Identity to CARD Reference Protein:**
 
-Add text.
+Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of Percent Identity at the amino acid level of the encoding proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
 
 Run RGI from Docker
 -------------------
