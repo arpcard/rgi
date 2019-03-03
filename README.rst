@@ -66,6 +66,8 @@ Table of Contents
 - `Load RGI bwt Reference Data`_
 - `Running RGI bwt with FASTQ files`_
 - `RGI bwt Tab-Delimited Output`_
+- `RGI kmer_build Usage to Build K-mer Classifiers`_
+- `RGI kmer_query Usage to Use K-mer Classifiers`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -842,6 +844,69 @@ RGI bwt read mapping results at gene level
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
 Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
+
+RGI kmer_build Usage to Build K-mer Classifiers
+---------------------------------------------------------
+
+**This is an unpublished algorithm undergoing beta-testing.**
+
+.. code-block:: sh
+
+   rgi kmer_build -h
+
+.. code-block:: sh
+
+          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
+          
+          Builds the kmer sets for CARD*kmers
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
+                                  input directory of prevalence data
+            -c CARD_FASTA, --card CARD_FASTA
+                                  fasta file of CARD reference sequences. If missing,
+                                  run 'rgi card_annotation' to generate.
+            -k K                  k-mer size (e.g., 61)
+            --skip                Skips the concatenation and splitting of the CARD*R*V
+                                  sequences.
+
+RGI kmer_query Usage to Use K-mer Classifiers
+---------------------------------------------------------
+
+**This is an unpublished algorithm undergoing beta-testing.**
+
+.. code-block:: sh
+
+   rgi kmer_query -h
+
+.. code-block:: sh
+
+          usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
+                     -o OUTPUT [--local] [--debug]
+          
+          Tests sequenes using CARD*k-mers
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -i INPUT, --input INPUT
+                                  Input file (bam file from RGI*BWT, json file of RGI
+                                  results, fasta file of sequences)
+            --bwt                 Specify if the input file for analysis is a bam file
+                                  generated from RGI*BWT
+            --rgi                 Specify if the input file is a RGI results json file
+            --fasta               Specify if the input file is a fasta file of sequences
+            -k K, --kmer_size K   length of k
+            -m MIN, --minimum MIN
+                                  Minimum number of kmers in the called category for the
+                                  classification to be made (default=10).
+            -n THREADS, --threads THREADS
+                                  number of threads (CPUs) to use (default=32)
+            -o OUTPUT, --output OUTPUT
+                                  Output file name.
+            --local               use local database (default: uses database in
+                                  executable directory)
+            --debug               debug mode
 
 Run RGI from Docker
 -------------------
