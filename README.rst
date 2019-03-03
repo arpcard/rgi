@@ -22,17 +22,14 @@ The RGI currently supports CARD's `protein homolog models <https://card.mcmaster
 +----------------------------------------------------------+---------------------------------------------------+
 |    Example Protein Homolog Model                         | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Example Protein Variant Model                         | `*Acinetobacter baumannii* gyrA conferring        |
 |                                                          | resistance to fluoroquinolones                    |
 |                                                          | <https://card.mcmaster.ca/ontology/40507>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Example rRNA Mutation Model                           | `*Campylobacter jejuni* 23S rRNA with mutation    |
 |                                                          | conferring resistance to erythromycin             |
 |                                                          | <https://card.mcmaster.ca/ontology/42445>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Example Protein Over-Expression Model                 | `MexR <https://card.mcmaster.ca/ontology/36645>`_ | 
 +----------------------------------------------------------+---------------------------------------------------+
 
