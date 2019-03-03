@@ -852,7 +852,7 @@ RGI kmer_build Usage to Build K-mer Classifiers
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
-As outlined above, CARD's Resistomes & Variants and Prevalence Data (see above) provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be build from the CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence <https://card.mcmaster.ca/prevalence>`_ data. The default k-mer length is 61 bp (based on unpublished analyses), but users can select their own k-mer length to create any number of k-mer sets.
+As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (see above) provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be build from the CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence <https://card.mcmaster.ca/prevalence>`_ data. The default k-mer length is 61 bp (based on unpublished analyses), but users can select their own k-mer length to create any number of k-mer sets.
 
 .. code-block:: sh
 
