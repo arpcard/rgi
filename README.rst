@@ -87,7 +87,8 @@ Table of Contents
 - `RGI bwt Tab-Delimited Output`_
 - `RGI kmer_build Usage to Build K-mer Classifiers`_
 - `RGI kmer_query Usage to Use K-mer Classifiers`_
-- `CARD k-mer Classifier Output`_
+- `CARD k-mer Classifier Output for RGI main results`_
+- `CARD k-mer Classifier Output for RGI bwt results`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -917,20 +918,38 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 CARD k-mer Classifier Output for RGI main results
 --------------------------------------------------
 
-+----------------------------------------------------------+---------------------------------------------------+
-|    Field                                                 | Contents                                          |
-+==========================================================+===================================================+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the gene |
-|                                                          | is known exclusively from chromosomes, exclusively|
-|                                                          | from plasmids, or can be found either chromosomes |
-|                                                          | or plasmids                                       | 
-+----------------------------------------------------------+---------------------------------------------------+
-|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy      |
-+----------------------------------------------------------+---------------------------------------------------+
-|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,    |
-|                                                          | exclusively to plasmids, or found in either       |
-|                                                          | chromosomes or plasmids                           |
-+----------------------------------------------------------+---------------------------------------------------+
++----------------------------------------------------------+----------------------------------------------------+
+|    Field                                                 | Contents                                           |
++==========================================================+====================================================+
+|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
+|                                                          | are known exclusively from chromosomes, exclusively|
+|                                                          | from plasmids, or can be found in either           |
+|                                                          | chromosomes or plasmids                            | 
++----------------------------------------------------------+----------------------------------------------------+
+|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
++----------------------------------------------------------+----------------------------------------------------+
+|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
+|                                                          | exclusively to plasmids, or found in either        |
+|                                                          | chromosomes or plasmids                            |
++----------------------------------------------------------+----------------------------------------------------+
+
+CARD k-mer Classifier Output for RGI bwt results
+--------------------------------------------------
+
++----------------------------------------------------------+----------------------------------------------------+
+|    Field                                                 | Contents                                           |
++==========================================================+====================================================+
+|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
+|                                                          | are known exclusively from chromosomes, exclusively|
+|                                                          | from plasmids, or can be found in either           |
+|                                                          | chromosomes or plasmids                            | 
++----------------------------------------------------------+----------------------------------------------------+
+|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
++----------------------------------------------------------+----------------------------------------------------+
+|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
+|                                                          | exclusively to plasmids, or found in either        |
+|                                                          | chromosomes or plasmids                            |
++----------------------------------------------------------+----------------------------------------------------+
 
 Run RGI from Docker
 -------------------
