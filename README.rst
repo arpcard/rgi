@@ -23,7 +23,7 @@ The RGI analyzes genome or proteome sequences under three paradigms: **Perfect**
 
 **Note: All Loose hits of 95% identity or better are automatically listed as Strict.**
 
-All results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism.
+All results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism. JSON files created at the command line can be `Uploaded at the CARD Website <https://card.mcmaster.ca/analyze/rgi>`_ for visualization.
 
 Note on metagenomic assemblies or merged metagenomic reads: this is a computationally expensive approach, since each merged read or contig set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. While not generally recommended, this does allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below). 
 
@@ -709,7 +709,7 @@ RGI bwt read mapping results at allele level
 |    Reference DB                                          | Reference allele is from either CARD or WildCARD  |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
-|    Reference Allele Source                               | need text                                         |
+|    Reference Allele Source                               | See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Genome(s)          | Has this allele been observed in a CARD Prevalence|
@@ -756,6 +756,10 @@ RGI bwt read mapping results at allele level
 | ::                                                       |                                                   |
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
+
+**Reference Allele Source**
+
+Add text.
 
 RGI bwt read mapping results at gene level
 --------------------------------------------
