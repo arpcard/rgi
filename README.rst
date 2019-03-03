@@ -939,16 +939,10 @@ CARD k-mer Classifier Output for RGI bwt results
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
 +==========================================================+====================================================+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
-|                                                          | are known exclusively from chromosomes, exclusively|
-|                                                          | from plasmids, or can be found in either           |
-|                                                          | chromosomes or plasmids                            | 
-+----------------------------------------------------------+----------------------------------------------------+
-|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
-|                                                          | exclusively to plasmids, or found in either        |
-|                                                          | chromosomes or plasmids                            |
+|    CARD kmer Prediction                                  | *Number of reads* classified for each taxon, with  |
+|                                                          | indication if the kmers are known exclusively from |
+|                                                          | chromosomes, exclusively from plasmids, or can be  |
+|                                                          | found in either chromosomes or plasmids            |
 +----------------------------------------------------------+----------------------------------------------------+
 
 Run RGI from Docker
