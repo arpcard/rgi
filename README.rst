@@ -41,7 +41,7 @@ The RGI analyzes genome or proteome sequences under three paradigms: **Perfect**
 
 All results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism. JSON files created at the command line can be `Uploaded at the CARD Website <https://card.mcmaster.ca/analyze/rgi>`_ for visualization.
 
-.. image:: ./rgiwheel.jpg
+.. image:: images/rgiwheel.jpg
 `Example visualization of Escherichia coli EC160090 (GenBank MCNL01) <https://card.mcmaster.ca/rgi/results/MCNL01>`_
 
 Note on metagenomic assemblies or merged metagenomic reads: this is a computationally expensive approach, since each merged read or contig set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. While not generally recommended, this does allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below). 
@@ -510,8 +510,9 @@ Generating Heat Maps of RGI main Results
                                  (deafult=plain).
            --debug               debug mode
 
+.. image:: images/heatmap.jpg
 
-RGI heatmap produces EPS and PNG image files.
+RGI heatmap produces EPS and PNG image files. An example where rows are organized by AMR Gene Family and columns clustered by similarity of resistome is shown.
 
 Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes organized alphabetically:
 
@@ -862,7 +863,7 @@ Examples use local database, exclude "--local" flag to use a system wide referen
 
 CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. a minimum of 10 classifier k-mers must map to the sequence). Subsequent classification is based on the following logic tree:
 
-.. image:: ./kmerlogic.jpg
+.. image:: images/kmerlogic.jpg
 
 .. code-block:: sh
 
