@@ -20,13 +20,14 @@ If protein sequences are submitted, RGI skips ORF prediction and uses the protei
 The RGI currently supports CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLASTP or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present).
 
 +----------------------------------------------------------+---------------------------------------------------+
+| ::                                                       |                                                   |
 |    Example Protein Homolog Model                         | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example Protein Variant Model                         | `Acinetobacter baumannii gyrA conferring        |
+|    Example Protein Variant Model                         | `Acinetobacter baumannii gyrA conferring          |
 |                                                          | resistance to fluoroquinolones                    |
 |                                                          | <https://card.mcmaster.ca/ontology/40507>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Example rRNA Mutation Model                           | `Campylobacter jejuni 23S rRNA with mutation    |
+|    Example rRNA Mutation Model                           | `Campylobacter jejuni 23S rRNA with mutation      |
 |                                                          | conferring resistance to erythromycin             |
 |                                                          | <https://card.mcmaster.ca/ontology/42445>`_       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -412,6 +413,7 @@ RGI main Tab-Delimited Output
 -----------------------------------
 
 +----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                |
 |    ORF_ID                                                | Open Reading Frame identifier (internal to RGI)|
 +----------------------------------------------------------+------------------------------------------------+
 |    Contig                                                | Source Sequence                                |
@@ -666,6 +668,7 @@ RGI bwt Tab-Delimited Output
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
 +----------------------------------------------------------+------------------------------------------------+
+| ::                                                       |                                                   |
 |    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
 +----------------------------------------------------------+------------------------------------------------+
 |    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     | 
@@ -681,6 +684,7 @@ RGI bwt read mapping results at allele level
 -----------------------------------------------
 
 +----------------------------------------------------------+---------------------------------------------------+
+| ::                                                       |                                                   |
 |    Reference Sequence                                    | Reference allele to which reads have been mapped  |
 +----------------------------------------------------------+---------------------------------------------------+
 |    ARO Term                                              | ARO Term                                          | 
