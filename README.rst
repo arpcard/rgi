@@ -20,7 +20,6 @@ If protein sequences are submitted, RGI skips ORF prediction and uses the protei
 The RGI currently supports CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLASTP or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present).
 
 +----------------------------------------------------------+---------------------------------------------------+
-| ::                                                       |                                                   |
 |    Example Protein Homolog Model                         | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
