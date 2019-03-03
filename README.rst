@@ -841,7 +841,7 @@ RGI bwt read mapping results at gene level
 
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
-Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoding proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
+Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
 
 Run RGI from Docker
 -------------------
