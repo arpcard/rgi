@@ -781,6 +781,9 @@ RGI bwt read mapping results at gene level
 |    Alleles Mapped                                        | # of alleles for this AMR gene with mapped reads  |
 +----------------------------------------------------------+---------------------------------------------------+
 | ::                                                       |                                                   |
+|    Reference Allele(s) Identity to CARD Reference Protein| See below                                         |
++----------------------------------------------------------+---------------------------------------------------+
+| ::                                                       |                                                   |
 |    Resistomes & Variants: Observed in Genome(s)          | Has this gene been observed in a CARD Prevalence  |
 |                                                          | genome sequence?                                  | 
 +----------------------------------------------------------+---------------------------------------------------+
@@ -835,6 +838,10 @@ RGI bwt read mapping results at gene level
 | ::                                                       |                                                   |
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
+
+**Reference Allele(s) Identity to CARD Reference Protein**
+
+Add text.
 
 Run RGI from Docker
 -------------------
