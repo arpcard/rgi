@@ -672,6 +672,8 @@ Aligned forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.source
 RGI bwt Tab-Delimited Output
 ------------------------------
 
+**This is an unpublished algorithm undergoing beta-testing.**
+
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
 +----------------------------------------------------------+------------------------------------------------+
@@ -850,6 +852,8 @@ RGI kmer_build Usage to Build K-mer Classifiers
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
+As outlined above, CARD's Resistomes & Variants and Prevalence Data (see above) provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be build from the CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence <https://card.mcmaster.ca/prevalence>`_ data. The default k-mer length is 61 bp (based on unpublished analyses), but users can select their own k-mer length to create any number of k-mer sets.
+
 .. code-block:: sh
 
    rgi kmer_build -h
@@ -871,10 +875,39 @@ RGI kmer_build Usage to Build K-mer Classifiers
             --skip                Skips the concatenation and splitting of the CARD*R*V
                                   sequences.
 
+Obtain and format CARD data:
+
+   .. code-block:: sh
+   
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+
+Obtain WildCARD data:
+
+   .. code-block:: sh
+   
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xvf wildcard_data.tar.bz2 -C wildcard
+
+Local build and load of default (61 bp) CARD k-mer Classifiers (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi kmer_build -i wildcard/ -c card_database_v3.0.1.fasta -k 61 > kmer_build.61.log 2>&1
+      rgi load --kmer_database 61_kmer_db.json --amr_kmers all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+
 RGI kmer_query Usage to Use K-mer Classifiers
 ---------------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
+
+Examples use local database, exclude "--local" flag to use a system wide reference database.
+
+CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.
+
+To be considered for a taxonomic prediction, individual sequences (FASTA, RGI predicted ORF, metagenomic reads) must pass the *--minimum* coverage value (default of 10, i.e. a minimum of 10 classifier k-mers must map to the sequence).
 
 .. code-block:: sh
 
@@ -907,6 +940,29 @@ RGI kmer_query Usage to Use K-mer Classifiers
             --local               use local database (default: uses database in
                                   executable directory)
             --debug               debug mode
+
+CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
+
+.. code-block:: sh
+
+   rgi kmer_query --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
+
+CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main results (e.g. using 8 processors, minimum k-mer coverage of 10):
+
+.. code-block:: sh
+
+   rgi kmer_query --rgi -k 61 -n 8 --minimum 10 -i /path/to/rgi_main.json -o /path/to/output_file --local
+   
+CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
+
+.. code-block:: sh
+
+   rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
+
+CARD k-mer Classifier Logic
+-----------------------------
+
+.. image:: ./kmerlogic.jpg
 
 Run RGI from Docker
 -------------------
