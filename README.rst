@@ -704,13 +704,14 @@ RGI bwt read mapping results at allele level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Reference Allele Source                               | See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed in Genome(s)          | Has this allele been observed in a CARD Prevalence|
-|                                                          | genome sequence?                                  | 
+|    Resistomes & Variants: Observed in Genome(s)          | Has this allele sequence been observed in a CARD  |
+|                                                          | Prevalence genome sequence?                       | 
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele been observed in a CARD Prevalence|
-|                                                          | plasmid sequence?                                 |
+|    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele sequence been observed in a CARD  |
+|                                                          | Prevalence plasmid sequence?                      |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
+|                                                          | sequence                                          |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -758,17 +759,18 @@ RGI bwt read mapping results at gene level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Reference Allele(s) Identity to CARD Reference Protein| See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed in Genome(s)          | Has this gene been observed in a CARD Prevalence  |
-|                                                          | genome sequence?                                  | 
+|    Resistomes & Variants: Observed in Genome(s)          | Have these allele sequences been observed in a    |
+|                                                          | CARD Prevalence genome sequence?                  | 
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed in Plasmid(s)         | Has this gene been observed in a CARD Prevalence  |
-|                                                          | plasmid sequence?                                 |
+|    Resistomes & Variants: Observed in Plasmid(s)         | Have these allele sequences been observed in a    |
+|                                                          | CARD Prevalence plasmid sequence?                 |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this gene       |
+|    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing these alleles   |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Completely Mapped Reads                               | Number of reads mapped completely to gene         |
+|    Completely Mapped Reads                               | Number of reads mapped completely to these alleles|
 +----------------------------------------------------------+---------------------------------------------------+
-|    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to gene       |
+|    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to these      |
+|                                                          | alleles                                           |
 +----------------------------------------------------------+---------------------------------------------------+
 |    All Mapped Reads                                      | Sum of previous two columns                       | 
 +----------------------------------------------------------+---------------------------------------------------+
