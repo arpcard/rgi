@@ -788,9 +788,18 @@ RGI bwt read mapping results at gene level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Number of reads per Bait Coefficient of Variation (%) | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
+|    Number of reads mapping to baits and mapping to       | not yet supported                                 |
+|    complete gene                                         |                                                   |
++----------------------------------------------------------+---------------------------------------------------+
+|    Number of reads mapping to baits and mapping to       | not yet supported                                 |
+|    complete gene (%)                                     |                                                   |
++----------------------------------------------------------+---------------------------------------------------+
 |    Mate Pair Linkage (# reads)                           | For mate pair sequencing, if a sister read maps to|
 |                                                          | a different AMR gene, this is listed (# reads     |
 |                                                          | supporting linkage in parentheses)                |
++----------------------------------------------------------+---------------------------------------------------+
+|    Reference Length                                      | Length (bp) of reference sequence in CARD         |
+|                                                          | model                                             |
 +----------------------------------------------------------+---------------------------------------------------+
 |    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
