@@ -512,7 +512,7 @@ Generating Heat Maps of RGI main Results
 
 .. image:: images/heatmap.jpg
 
-RGI heatmap produces EPS and PNG image files. An example where rows are organized by AMR Gene Family and columns clustered by similarity of resistome is shown.
+RGI heatmap produces EPS and PNG image files. An example where rows are organized by AMR Gene Family and columns clustered by similarity of resistome is shown above.
 
 Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes organized alphabetically:
 
