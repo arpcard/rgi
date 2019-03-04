@@ -661,7 +661,7 @@ Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourcefo
    
       rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --local 
 
-Aligned forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
+Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
 
    .. code-block:: sh
    
@@ -669,8 +669,6 @@ Aligned forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.source
 
 RGI bwt Tab-Delimited Output
 ------------------------------
-
-**This is an unpublished algorithm undergoing beta-testing.**
 
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
