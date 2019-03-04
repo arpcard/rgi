@@ -636,19 +636,19 @@ Obtain WildCARD data:
       mkdir -p wildcard
       tar -xvf wildcard_data.tar.bz2 -C wildcard
       
-Local or working directory (note that the filename *wildcard_database_v3.0.2.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+Local or working directory (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --local
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local
 
-System wide (note that the filename *wildcard_database_v3.0.2.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
 
 Running RGI bwt with FASTQ files
 --------------------------------------
