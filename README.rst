@@ -874,7 +874,7 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
           usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
                      -o OUTPUT [--local] [--debug]
           
-          Tests sequenes using CARD*k-mers
+          Tests sequences using CARD*k-mers
           
           optional arguments:
             -h, --help            show this help message and exit
