@@ -711,7 +711,9 @@ RGI bwt read mapping results at allele level
 |                                                          | Prevalence plasmid sequence?                      |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
-|                                                          | sequence                                          |
+|                                                          | sequence. If Reference DB is CARD, pathogen used  |
+|                                                          | as the reference in the CARD detection model will |
+|                                                          | be shown                                          |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -765,7 +767,10 @@ RGI bwt read mapping results at gene level
 |    Resistomes & Variants: Observed in Plasmid(s)         | Have these allele sequences been observed in a    |
 |                                                          | CARD Prevalence plasmid sequence?                 |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing these alleles   |
+|    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
+|                                                          | sequence. If Reference DB is CARD, pathogen used  |
+|                                                          | as the reference in the CARD detection model will |
+|                                                          | be shown                                          |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to these alleles|
 +----------------------------------------------------------+---------------------------------------------------+
@@ -870,7 +875,7 @@ RGI kmer_query Usage to Use K-mer Classifiers
 
 Examples use local database, exclude "--local" flag to use a system wide reference database.
 
-CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. a minimum of 10 classifier k-mers must map to the sequence). Subsequent classification is based on the following logic tree:
+CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
 .. image:: images/kmerlogic.jpg
 
