@@ -13,6 +13,16 @@ def validate_file(filename):
 		logger.error("Invalid json: {}".format(e))
 		return None # or: raise
 
+def get_card_annotation(args_card_annotation, args_local_database):
+	card_annotation = args_card_annotation
+	# check if card annation is already loaded
+	if args_card_annotation is None:
+		db = get_location(args_local_database)
+		if os.path.isfile(os.path.join(db, "card_reference.fasta")):
+			logger.info("card annotation exists")
+			card_annotation = os.path.join(db, "card_reference.fasta")
+	return card_annotation
+
 def main(args):
 	# print args
 	if args.debug:
@@ -26,14 +36,20 @@ def main(args):
 			exit()
 		load_file(args.local_database, args.card_json, "card.json")
 
-	if args.card_annotation is not None and (args.wildcard_index is None or args.wildcard_annotation is None):
-		load_reference_card_only(args.local_database, args.card_annotation, "card_reference.fasta")
+	card_annotation = args.card_annotation
 
-	if args.wildcard_index is not None and args.wildcard_annotation is not None and args.card_annotation is not None:
+	# if args.card_annotation is not None and (args.wildcard_index is None or args.wildcard_annotation is None):
+	if args.card_annotation is not None:
+		load_reference_card_only(args.local_database, args.card_annotation, "card_reference.fasta")
+	else:
+		# check if card annation is already loaded
+		card_annotation = get_card_annotation(args.card_annotation, args.local_database)
+
+	if args.wildcard_index is not None and args.wildcard_annotation is not None:#and args.card_annotation is not None:
 		# load index
 		load_file(args.local_database, args.wildcard_index, "index-for-model-sequences.txt")
 		# load annotation files (card and wildcard)
-		load_reference_card_and_wildcard(args.local_database, args.card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
+		load_reference_card_and_wildcard(args.local_database, card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
 
 	if args.kmer_database is not None:
 		if args.kmer_size is not None:
@@ -47,16 +63,16 @@ def main(args):
 		else:
 			logger.error("Need to specify kmer size when loading kmer files.")
 
-	if args.baits_index is not None and args.baits_annotation is not None and args.card_annotation is not None:
+	if args.baits_index is not None and args.baits_annotation is not None:#and args.card_annotation is not None:
 		logger.info("adding index and fasta for baits")
 		# load index
 		load_file(args.local_database, args.baits_index, "baits-probes-with-sequence-info.txt")
 		# load annotation files (baits)
-		load_reference_card_and_baits(args.local_database, args.card_annotation, args.baits_annotation, "card_baits_reference.fasta")
+		load_reference_card_and_baits(args.local_database, card_annotation, args.baits_annotation, "card_baits_reference.fasta")
 
-	if args.card_annotation is not None and args.wildcard_index is not None and args.wildcard_annotation is not None and args.baits_index is not None and args.baits_annotation is not None:
+	if args.wildcard_index is not None and args.wildcard_annotation is not None and args.baits_index is not None and args.baits_annotation is not None:
 		# load annotations files for CARD, VARIANTS and BAITS
-		load_reference_card_and_wilcard_and_baits(args.local_database, args.card_annotation, args.baits_annotation, args.wildcard_annotation,  "card_wildcard_baits_reference.fasta")
+		load_reference_card_and_wilcard_and_baits(args.local_database, card_annotation, args.baits_annotation, args.wildcard_annotation,  "card_wildcard_baits_reference.fasta")
 
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
@@ -99,6 +115,14 @@ def load_reference_card_and_baits(local_db, card_fasta_file, baits_fasta_file, f
 def load_reference_card_and_wildcard(local_db, card_fasta_file, wildcard_fasta_file, filename):
 
 	db = get_location(local_db)
+	# check files
+	if card_fasta_file is None:
+	# if os.path.isfile(os.path.abspath(card_fasta_file)) == False:
+		logger.error("missing card reference file")
+		exit()
+	if os.path.isfile(os.path.abspath(wildcard_fasta_file)) == False:
+		logger.error("missing wildcard reference file")
+		exit()
 
 	filenames = []
 	filenames.append(card_fasta_file)
