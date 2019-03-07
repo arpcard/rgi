@@ -1358,7 +1358,8 @@ class BWT(object):
 				mp = { item:mapping_summary[i]["mate_pair"].count(item) for item in mapping_summary[i]["mate_pair"]}
 				for k in mp:
 					if k != i.replace(" ", "_"):
-						mate_pairs.append("{} ({})".format(k,mp[k]))
+						if k not in mapping_summary[i]["cvterm_name"]:
+							mate_pairs.append("{} ({})".format(k,mp[k]))
 
 				# identity range
 				min_identity = float(min(mapping_summary[i]["range_of_reference_allele_source"]))
