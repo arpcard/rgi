@@ -263,6 +263,7 @@ class MainBase(object):
         parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
         parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits")
@@ -282,6 +283,7 @@ class MainBase(object):
             args.threads,
             args.output_file,
             args.debug,
+            args.clean,
             args.local_database,
             args.mapq,
             args.mapped,

@@ -9,7 +9,7 @@ class BWT(object):
 	Class to align metagenomic reads to CARD and wildCARD reference using bwa or bowtie2 and 
 	provide reports (gene, allele report and read level reports).
 	"""
-	def __init__(self, aligner, include_wildcard, include_baits, read_one, read_two, threads, output_file, debug, local_database, mapq, mapped, coverage):
+	def __init__(self, aligner, include_wildcard, include_baits, read_one, read_two, threads, output_file, debug, clean, local_database, mapq, mapped, coverage):
 		"""Creates BWT object."""
 		self.aligner = aligner
 		self.read_one = read_one
@@ -54,54 +54,88 @@ class BWT(object):
 		
 		# outputs
 		self.working_directory = os.path.join(os.getcwd())
-		self.output_sam_file = os.path.join(self.working_directory, "{}.sam".format(self.output_file))
-		self.output_sam_file_baits = os.path.join(self.working_directory, "{}.baits.sam".format(self.output_file))
-		self.output_bam_file = os.path.join(self.working_directory, "{}.bam".format(self.output_file))
-		self.output_bam_file_baits = os.path.join(self.working_directory, "{}.baits.bam".format(self.output_file))
-		self.output_bam_sorted_file = os.path.join(self.working_directory, "{}.sorted.bam".format(self.output_file))
-		self.sorted_bam_sorted_file_length_100 = os.path.join(self.working_directory, "{}.sorted.length_100.bam".format(self.output_file))
+		self.output_sam_file = os.path.join(self.working_directory, "{}.temp.sam".format(self.output_file))
+		self.output_sam_file_baits = os.path.join(self.working_directory, "{}.baits.temp.sam".format(self.output_file))
+		self.output_bam_file = os.path.join(self.working_directory, "{}.temp.bam".format(self.output_file))
+		self.output_bam_file_baits = os.path.join(self.working_directory, "{}.baits.temp.bam".format(self.output_file))
+		self.output_bam_sorted_file = os.path.join(self.working_directory, "{}.sorted.temp.bam".format(self.output_file))
+		self.sorted_bam_sorted_file_length_100 = os.path.join(self.working_directory, "{}.sorted.length_100.temp.bam".format(self.output_file))
 
-		self.unmapped = os.path.join(self.working_directory, "{}.unmapped.bam".format(self.output_file))
-		self.mapped = os.path.join(self.working_directory, "{}.mapped.bam".format(self.output_file))
-		self.mapping_overall_stats = os.path.join(self.working_directory, "{}.overall_mapping_stats.txt".format(self.output_file))
-		self.mapping_artifacts_stats = os.path.join(self.working_directory, "{}.artifacts_mapping_stats.txt".format(self.output_file))
-		self.mapping_reference_stats = os.path.join(self.working_directory, "{}.reference_mapping_stats.txt".format(self.output_file))
-		self.mapping_baits_stats = os.path.join(self.working_directory, "{}.baits_mapping_stats.txt".format(self.output_file))
+		self.unmapped = os.path.join(self.working_directory, "{}.unmapped.temp.bam".format(self.output_file))
+		self.mapped = os.path.join(self.working_directory, "{}.mapped.temp.bam".format(self.output_file))
+		self.mapping_overall_stats = os.path.join(self.working_directory, "{}.overall_mapping_stats.temp.txt".format(self.output_file))
+		self.mapping_artifacts_stats = os.path.join(self.working_directory, "{}.artifacts_mapping_stats.temp.txt".format(self.output_file))
+		self.mapping_reference_stats = os.path.join(self.working_directory, "{}.reference_mapping_stats.temp.txt".format(self.output_file))
+		self.mapping_baits_stats = os.path.join(self.working_directory, "{}.baits_mapping_stats.temp.txt".format(self.output_file))
 
-		self.baits_reads_count = os.path.join(self.working_directory, "{}.baits_reads_count.txt".format(self.output_file))
-		self.reads_baits_count = os.path.join(self.working_directory, "{}.reads_baits_count.txt".format(self.output_file))
-		self.aro_term_reads = os.path.join(self.working_directory, "{}.aro_term_reads.txt".format(self.output_file))
+		self.baits_reads_count = os.path.join(self.working_directory, "{}.baits_reads_count.temp.txt".format(self.output_file))
+		self.reads_baits_count = os.path.join(self.working_directory, "{}.reads_baits_count.temp.txt".format(self.output_file))
+		self.aro_term_reads = os.path.join(self.working_directory, "{}.aro_term_reads.temp.txt".format(self.output_file))
 
-		self.output_tab = os.path.join(self.working_directory, "{}.txt".format(self.output_file))
-		self.output_tab_sequences = os.path.join(self.working_directory, "{}.seqs.txt".format(self.output_file))
-		self.output_tab_coverage = os.path.join(self.working_directory, "{}.coverage.txt".format(self.output_file))
-		self.output_tab_coverage_all_positions =  os.path.join(self.working_directory, "{}.coverage_all_positions.txt".format(self.output_file))
-		self.output_tab_coverage_all_positions_summary = os.path.join(self.working_directory, "{}.coverage_all_positions.summary.txt".format(self.output_file))
-		self.model_species_data_type  = os.path.join(self.working_directory, "{}.model_species_data_type.txt".format(self.output_file))
+		self.output_tab = os.path.join(self.working_directory, "{}.temp.txt".format(self.output_file))
+		self.output_tab_sequences = os.path.join(self.working_directory, "{}.seqs.temp.txt".format(self.output_file))
+		self.output_tab_coverage = os.path.join(self.working_directory, "{}.coverage.temp.txt".format(self.output_file))
+		self.output_tab_coverage_all_positions =  os.path.join(self.working_directory, "{}.coverage_all_positions.temp.txt".format(self.output_file))
+		self.output_tab_coverage_all_positions_summary = os.path.join(self.working_directory, "{}.coverage_all_positions.summary.temp.txt".format(self.output_file))
+		self.model_species_data_type  = os.path.join(self.working_directory, "{}.model_species_data_type.temp.txt".format(self.output_file))
 		self.allele_mapping_data_json = os.path.join(self.working_directory, "{}.allele_mapping_data.json".format(self.output_file))
 		self.allele_mapping_data_tab = os.path.join(self.working_directory, "{}.allele_mapping_data.txt".format(self.output_file))
 		self.gene_mapping_data_tab = os.path.join(self.working_directory, "{}.gene_mapping_data.txt".format(self.output_file))
 
-		self.baits_mapping_data_tab = os.path.join(self.working_directory, "{}.baits_mapping_data.txt".format(self.output_file))
-		self.baits_mapping_data_json = os.path.join(self.working_directory, "{}.baits_mapping_data.json".format(self.output_file))
-		self.reads_mapping_data_json = os.path.join(self.working_directory, "{}.reads_mapping_data.json".format(self.output_file))
+		self.baits_mapping_data_tab = os.path.join(self.working_directory, "{}.baits_mapping_data.temp.txt".format(self.output_file))
+		self.baits_mapping_data_json = os.path.join(self.working_directory, "{}.baits_mapping_data.temp.json".format(self.output_file))
+		self.reads_mapping_data_json = os.path.join(self.working_directory, "{}.reads_mapping_data.temp.json".format(self.output_file))
 
 		# map baits to complete genes
-		self.baits_card_sam = os.path.join(self.working_directory, "{}.baits_card.sam".format(self.output_file))
-		self.baits_card_bam = os.path.join(self.working_directory, "{}.baits_card.bam".format(self.output_file))
-		self.baits_card_tab = os.path.join(self.working_directory, "{}.baits_card.txt".format(self.output_file))
-		self.baits_card_json = os.path.join(self.working_directory, "{}.baits_card.json".format(self.output_file))
-		self.baits_card_data_tab = os.path.join(self.working_directory, "{}.baits_card_data.txt".format(self.output_file))
-		self.card_baits_reads_count_json = os.path.join(self.working_directory, "{}.card_baits_reads_count.json".format(self.output_file))
+		self.baits_card_sam = os.path.join(self.working_directory, "{}.baits_card.temp.sam".format(self.output_file))
+		self.baits_card_bam = os.path.join(self.working_directory, "{}.baits_card.temp.bam".format(self.output_file))
+		self.baits_card_tab = os.path.join(self.working_directory, "{}.baits_card.temp.txt".format(self.output_file))
+		self.baits_card_json = os.path.join(self.working_directory, "{}.baits_card.temp.json".format(self.output_file))
+		self.baits_card_data_tab = os.path.join(self.working_directory, "{}.baits_card_data.temp.txt".format(self.output_file))
+		self.card_baits_reads_count_json = os.path.join(self.working_directory, "{}.card_baits_reads_count.temp.json".format(self.output_file))
 
 		self.debug = debug
-
+		self.clean = clean
 		if self.debug:
 			logger.setLevel(10)
 
 	def __repr__(self):
 		"""Returns BWT class full object."""
 		return "BWT({}".format(self.__dict__)
+
+
+	def clean_files(self):
+		"""Cleans temporary files."""
+		if self.clean == True:
+			basename_output_file = os.path.splitext(os.path.basename(self.output_file))[0]
+			logger.info("Cleaning up temporary files...{}".format(basename_output_file))
+			# clean working_directory
+			self.clean_directory(self.working_directory, basename_output_file)
+			d_name, f_name = os.path.split(self.output_file)
+			# clean destination_directory
+			self.clean_directory(d_name, basename_output_file)
+		else:
+			logger.info("Clean up skipped.")
+
+	def clean_directory(self, directory, basename_output_file):
+		"""Cleans files in directory."""
+		logger.info(directory)
+		files = glob.glob(os.path.join(directory, "*"))
+		for f in files:
+			if os.path.basename(self.output_file) in f and ".temp" in f and os.path.isfile(f):
+				self.remove_file(f)
+
+	def remove_file(self, f):
+		"""Removes file."""
+		if os.path.exists(f):
+			try:
+				logger.info("Removed file: {}".format(f))
+				os.remove(f)
+			except Exception as e:
+				raise e
+		else:
+			logger.warning("Missing file: {}".format(f))
+
 
 	def create_index(self, index_directory, reference_genome):
 		"""
@@ -1560,6 +1594,10 @@ class BWT(object):
 		# get stats
 		logger.info("get statistics")
 		self.get_stats()
+
+		# clean temporary files
+		logger.info("clean temporary files")
+		self.clean_files()
 
 		logger.info("Done.")
 
