@@ -13,7 +13,6 @@ loaded_databases example:
       "data_version": "3.0.1"
     },
     "card_kmers": {
-      "data_version": "1.0.0",
       "kmer_sizes": ["31","61"]
     }
   }
@@ -66,7 +65,6 @@ def main(args):
 					"data_version": "N/A"
 				},
 				"card_kmers": {
-					"data_version": "N/A",
 					"kmer_sizes": []
 				}
 			}

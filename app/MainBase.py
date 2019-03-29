@@ -405,10 +405,9 @@ class MainBase(object):
                     kmers_str = ",".join(json_data["card_kmers"]["kmer_sizes"])
                     if kmers_str == "":
                         kmers_str = "N/A"
-                    data_version = ("card_connonical: {} | card_variants: {} | card_kmers: {} | kmers_keys: {}".format(
+                    data_version = ("card_connonical: {} | card_variants: {} | kmer_sizes: {}".format(
                         json_data["card_connonical"]["data_version"],
                         json_data["card_variants"]["data_version"],
-                        json_data["card_kmers"]["data_version"],
                         kmers_str
                         )
                     )
