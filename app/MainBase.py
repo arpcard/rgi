@@ -175,7 +175,7 @@ class MainBase(object):
 
     def kmer_query_args(self):
         parser = argparse.ArgumentParser(
-            description='Tests sequenes using CARD*k-mers')
+            description='Tests sequenes using CARD*kmers')
         parser.add_argument('-i', '--input', dest="input", required=True,
             help="Input file (bam file from RGI*BWT, json file of RGI results, \
             fasta file of sequences)")
