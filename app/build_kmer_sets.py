@@ -104,14 +104,14 @@ def split_variant_sequences(index, fasta):
     print('# of sequences in single genus:', genus_count)
     print('# of sequences in multiple genus:', multi_count)
 
-def count_kmers(k):
+def count_kmers(k, threads):
     # Species
     print("Counting single species kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "species.temp.jf"),
-                fasta=os.path.join(working_directory, "species.fasta"))
+                fasta=os.path.join(working_directory, "species.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     species_kmers = "species_{k}.out".format(k=k)
@@ -128,9 +128,9 @@ def count_kmers(k):
     print("Counting single genus kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "genus.temp.jf"),
-                fasta=os.path.join(working_directory, "genus.fasta"))
+                fasta=os.path.join(working_directory, "genus.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     genus_kmers = "genus_{k}.out".format(k=k)
@@ -147,9 +147,9 @@ def count_kmers(k):
     print("Counting multi genus kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "multi.temp.jf"),
-                fasta=os.path.join(working_directory, "multi.fasta"))
+                fasta=os.path.join(working_directory, "multi.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     multi_kmers = "multi_{k}.out".format(k=k)
@@ -166,9 +166,9 @@ def count_kmers(k):
     print("Counting chr + plasmid kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "both.temp.jf"),
-                fasta=os.path.join(working_directory, "both.fasta"))
+                fasta=os.path.join(working_directory, "both.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     both_kmers = "both_{k}.out".format(k=k)
@@ -185,9 +185,9 @@ def count_kmers(k):
     print("Counting plasmid kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "plasmid.temp.jf"),
-                fasta=os.path.join(working_directory, "plasmid.fasta"))
+                fasta=os.path.join(working_directory, "plasmid.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     plasmid_kmers = "plasmid_{k}.out".format(k=k)
@@ -204,9 +204,9 @@ def count_kmers(k):
     print("Counting chromosome kmers...")
     # Counts kmers
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "chr.temp.jf"),
-                fasta=os.path.join(working_directory, "chr.fasta"))
+                fasta=os.path.join(working_directory, "chr.fasta"), threads=threads)
     )
     # Writes jellyfish output to text file
     chr_kmers = "chr_{k}.out".format(k=k)
@@ -270,7 +270,7 @@ def main(args):
         pass
 
     print("-- COUNTING KMERS --")
-    species_kmers, genus_kmers, multi_kmers, both_kmers, plasmid_kmers, chr_kmers = count_kmers(k)
+    species_kmers, genus_kmers, multi_kmers, both_kmers, plasmid_kmers, chr_kmers = count_kmers(k,args.threads)
     print("DONE \n")
 
     # """DEBUG"""
@@ -303,9 +303,9 @@ def main(args):
     )
 
     os.system(
-        "jellyfish count --mer-len {k} --threads 24 --size 2G --output {jf_out} {fasta}"
+        "jellyfish count --mer-len {k} --threads {threads} --size 2G --output {jf_out} {fasta}"
         .format(k=k, jf_out=os.path.join(working_directory, "all_amr.temp.jf"),
-                fasta=os.path.join(working_directory, "card_and_prevalence.fasta"))
+                fasta=os.path.join(working_directory, "card_and_prevalence.fasta"), threads=args.threads)
     )
 
     amr_kmers = "all_amr_{k}mers.txt".format(k=k)
@@ -328,7 +328,8 @@ def create_parser():
         help="k-mer size (e.g., 61)")
     parser.add_argument('--skip', dest="skip", action='store_true',
         help="Skips the concatenation and splitting of the CARD*R*V sequences.")
-
+    parser.add_argument('-n','--threads', dest="threads", type=int,
+            default=os.cpu_count(), help="number of threads (CPUs) to use (default={})".format(os.cpu_count()))
     return parser
 
 def run():
