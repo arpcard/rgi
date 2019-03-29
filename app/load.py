@@ -2,7 +2,34 @@ import shutil
 import argparse
 from app.settings import *
 
+'''
+loaded_databases example:
+
+{
+    "card_connonical": {
+      "data_version": "3.0.1"
+    },
+    "card_variants": {
+      "data_version": "3.0.1"
+    },
+    "card_kmers": {
+      "data_version": "1.0.0",
+      "kmer_sizes": ["31","61"]
+    }
+  }
+'''
+loaded_databases = {}
+
 # this script is used to load new card.json file to system wide package or local
+def get_card_json_version(card_json_path):
+	data_version = ""
+	if os.path.isfile(card_json_path) == True:
+		with open(card_json_path) as json_file:
+			json_data = json.load(json_file)
+			for item in json_data.keys():
+				if item == "_version":
+					data_version = json_data[item]
+	return data_version
 
 def validate_file(filename):
 	try:
@@ -24,6 +51,26 @@ def get_card_annotation(args_card_annotation, args_local_database):
 	return card_annotation
 
 def main(args):
+	# versions used
+	if os.path.isfile(os.path.join(get_location(args.local_database), "loaded_databases.json")):
+		# file exists load
+		with open(os.path.join(get_location(args.local_database), "loaded_databases.json"), 'r') as fout:
+			loaded_databases = json.load(fout)
+	else:
+		# initialize bwt dict for versions used
+		loaded_databases = {
+				"card_connonical": {
+					"data_version": "N/A"
+				},
+				"card_variants": {
+					"data_version": "N/A"
+				},
+				"card_kmers": {
+					"data_version": "N/A",
+					"kmer_sizes": []
+				}
+			}
+
 	# print args
 	if args.debug:
 		logger.setLevel(10)
@@ -35,6 +82,7 @@ def main(args):
 			logger.error("failed to read json file: {}".format(args.card_json))
 			exit()
 		load_file(args.local_database, args.card_json, "card.json")
+		loaded_databases["card_connonical"]["data_version"] = get_card_json_version(os.path.join(get_location(args.local_database), "card.json"))
 
 	card_annotation = args.card_annotation
 
@@ -50,16 +98,21 @@ def main(args):
 		load_file(args.local_database, args.wildcard_index, "index-for-model-sequences.txt")
 		# load annotation files (card and wildcard)
 		load_reference_card_and_wildcard(args.local_database, card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
+		loaded_databases["card_variants"]["data_version"] = args.wildcard_version
 
 	if args.kmer_database is not None:
 		if args.kmer_size is not None:
 			load_file(args.local_database, args.kmer_database, "{}mer_database.json".format(str(args.kmer_size)))
+			if args.kmer_size not in loaded_databases["card_kmers"]["kmer_sizes"]:
+				loaded_databases["card_kmers"]["kmer_sizes"].append(args.kmer_size)
 		else:
 			logger.error("Need to specify kmer size when loading kmer files.")
 
 	if args.amr_kmers is not None:
 		if args.kmer_size is not None:
 			load_file(args.local_database, args.amr_kmers, "amr_{}mer.txt".format(str(args.kmer_size)))
+			if args.kmer_size not in loaded_databases["card_kmers"]["kmer_sizes"]:
+				loaded_databases["card_kmers"]["kmer_sizes"].append(args.kmer_size)
 		else:
 			logger.error("Need to specify kmer size when loading kmer files.")
 
@@ -73,6 +126,13 @@ def main(args):
 	if args.wildcard_index is not None and args.wildcard_annotation is not None and args.baits_index is not None and args.baits_annotation is not None:
 		# load annotations files for CARD, VARIANTS and BAITS
 		load_reference_card_and_wilcard_and_baits(args.local_database, card_annotation, args.baits_annotation, args.wildcard_annotation,  "card_wildcard_baits_reference.fasta")
+		loaded_databases["card_variants"]["data_version"] = args.wildcard_version
+
+	# write versions used
+	with open(os.path.join(get_location(args.local_database), "loaded_databases.json"), 'w') as fout:
+		json.dump(loaded_databases, fout)
+	# print out loaded databases
+	logger.info(json.dumps(loaded_databases, indent=2))
 
 def load_reference_card_only(local_db, fasta_file, filename):
 	load_file(local_db, fasta_file, "card_reference.fasta")
@@ -168,6 +228,7 @@ def create_parser():
 
 	parser.add_argument('--wildcard_annotation', required=False, help="annotated reference FASTA")
 	parser.add_argument('--wildcard_index', required=False, help="wildcard index file (index-for-model-sequences.txt)")
+	parser.add_argument('--wildcard_version', required=False, help="specify variants version used")
 
 	parser.add_argument('--baits_annotation', required=False, help="annotated reference FASTA")
 	parser.add_argument('--baits_index', required=False, help="baits index file (baits-probes-with-sequence-info.txt)")

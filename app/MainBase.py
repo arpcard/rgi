@@ -377,13 +377,14 @@ class MainBase(object):
 
     def database_args(self):
         parser = argparse.ArgumentParser(prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))
-        parser.add_argument('-v','--version',action='store_true', help = "prints data version number")
+        parser.add_argument('-v','--version',action='store_true', required=True, help = "prints data version number")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--all', dest="all", action='store_true', help="data version number used for `rgi bwt` and `rgi main` (default: rgi main)")
         return parser
 
     def database_run(self, args):
         data_version = ""
-        # path to card.json file and database files
+        # path to loaded database files
         if args.local_database:
             db = LOCAL_DATABASE
             # error if it doesn't exist
@@ -394,16 +395,32 @@ class MainBase(object):
                 exit()
         else:
             db = data_path
-        card_json_path = os.path.join(db,"card.json")
-        if os.path.isfile(card_json_path) == True:
-            with open(card_json_path) as json_file:
+
+        indecies_directory = os.path.join(db,"loaded_databases.json")
+
+        if os.path.isfile(indecies_directory) == True:
+            with open(indecies_directory) as json_file:
                 json_data = json.load(json_file)
-                for item in json_data.keys():
-                    if item == "_version":
-                        data_version = json_data[item]
+                if args.all == True:
+                    kmers_str = ",".join(json_data["card_kmers"]["kmer_sizes"])
+                    if kmers_str == "":
+                        kmers_str = "N/A"
+                    data_version = ("card_connonical: {} | card_variants: {} | card_kmers: {} | kmers_keys: {}".format(
+                        json_data["card_connonical"]["data_version"],
+                        json_data["card_variants"]["data_version"],
+                        json_data["card_kmers"]["data_version"],
+                        kmers_str
+                        )
+                    )
+                else:
+                    data_version = json_data["card_connonical"]["data_version"]
+        else:
+            print('\nError: no databases found in data path: {}. \nSee `rgi load --help`\n'.format(os.path.abspath(db)))
+            exit()
+
         if data_version == "":
-            # logger.error('data file card.json not found in data path: {}. \nPlease download card.json from https://card.mcmaster.ca/download. \nSee `rgi load --help` to upload the card.json to rgi application.\n'.format(os.path.abspath(db)))
-            print('\nError: data file card.json not found in data path: {}. \nPlease download card.json from https://card.mcmaster.ca/download. \nSee `rgi load --help` to upload the card.json to rgi application.\n'.format(os.path.abspath(db)))
+            print('\nError: no databases found in data path: {}. \nSee `rgi load --help`\n'.format(os.path.abspath(db)))
+
         return data_version
 
 if __name__ == '__main__':
