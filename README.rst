@@ -375,7 +375,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits for 
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs --clean
 
 Running RGI main with Protein Sequences
 --------------------------------------------------------
