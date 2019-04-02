@@ -6,7 +6,7 @@ from app.settings import *
 loaded_databases example:
 
 {
-    "card_connonical": {
+    "card_canonical": {
       "data_version": "3.0.1"
     },
     "card_variants": {
@@ -58,7 +58,7 @@ def main(args):
 	else:
 		# initialize bwt dict for versions used
 		loaded_databases = {
-				"card_connonical": {
+				"card_canonical": {
 					"data_version": "N/A"
 				},
 				"card_variants": {
@@ -80,7 +80,7 @@ def main(args):
 			logger.error("failed to read json file: {}".format(args.card_json))
 			exit()
 		load_file(args.local_database, args.card_json, "card.json")
-		loaded_databases["card_connonical"]["data_version"] = get_card_json_version(os.path.join(get_location(args.local_database), "card.json"))
+		loaded_databases["card_canonical"]["data_version"] = get_card_json_version(os.path.join(get_location(args.local_database), "card.json"))
 
 	card_annotation = args.card_annotation
 

@@ -48,7 +48,7 @@ class Filter(BaseModel):
 		# results = {}
 		try:
 			if model_type == "homolog":
-				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database)
+				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.exclude_nudge)
 			if model_type == "variant":
 				obj = Variant(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database)
 			if model_type == "overexpression":

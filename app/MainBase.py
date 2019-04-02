@@ -103,6 +103,7 @@ class MainBase(object):
         parser.add_argument('-n','--num_threads', dest="threads", type=int,
                 default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
         parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
+        parser.add_argument('--exclude_nudge', dest="exclude_nudge", action='store_false', help="exclude hits nudged from loose to strict hits")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
@@ -379,7 +380,7 @@ class MainBase(object):
         parser = argparse.ArgumentParser(prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))
         parser.add_argument('-v','--version',action='store_true', required=True, help = "prints data version number")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--all', dest="all", action='store_true', help="data version number used for `rgi bwt` and `rgi main` (default: rgi main)")
+        parser.add_argument('--all', action='store_true', help="data version number used for `rgi bwt` and `rgi main` (default: rgi main)")
         return parser
 
     def database_run(self, args):
@@ -405,14 +406,14 @@ class MainBase(object):
                     kmers_str = ",".join(json_data["card_kmers"]["kmer_sizes"])
                     if kmers_str == "":
                         kmers_str = "N/A"
-                    data_version = ("card_connonical: {} | card_variants: {} | kmer_sizes: {}".format(
-                        json_data["card_connonical"]["data_version"],
+                    data_version = ("card_canonical: {} | card_variants: {} | kmer_sizes: {}".format(
+                        json_data["card_canonical"]["data_version"],
                         json_data["card_variants"]["data_version"],
                         kmers_str
                         )
                     )
                 else:
-                    data_version = json_data["card_connonical"]["data_version"]
+                    data_version = json_data["card_canonical"]["data_version"]
         else:
             print('\nError: no databases found in data path: {}. \nSee `rgi load --help`\n'.format(os.path.abspath(db)))
             exit()

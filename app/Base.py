@@ -251,7 +251,7 @@ class BaseModel(object):
 
         return predicted_genes_dict
 
-    def results(self, blast_results, query_id, perfect, strict , loose):
+    def results(self, blast_results, query_id, perfect, strict , loose, exclude_nudge=True):
         """
         Sort results to perfect, strict, loose paradigm
 
@@ -267,17 +267,20 @@ class BaseModel(object):
 
         Returns:
             blast_results (dict): dictionary of sorted results
-        """     
+        """
+    
         nudged = False
         if len(perfect) == 0 and len(strict) == 0 and len(loose) > 0:
-            nudged , loose = self.nudge_loose_to_strict(loose)
+            if exclude_nudge is True:
+                nudged , loose = self.nudge_loose_to_strict(loose)
+
             if nudged is True and self.loose is False:
                 blast_results[query_id] = loose
             elif self.loose is True:
                 blast_results[query_id] = loose
 
         elif len(perfect) == 0:
-            if len(strict) > 0: 
+            if len(strict) > 0:
                 # TODO:: add try catch here
                 try:
                     nudged , strict = self.nudge_strict_to_perfect(strict)
