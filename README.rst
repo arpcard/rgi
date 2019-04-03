@@ -13,7 +13,9 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 -----------------------------------------------------------------------
 
-If DNA sequences are submitted, RGI first predicts complete open reading frames (ORFs) using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs.
+If DNA sequences are submitted, RGI first predicts complete open reading frames (ORFs) using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. This includes a secondary correction by RGI if Prodigal undercalls the correct start codon to ensure complete AMR genes are predicted. However, if Prodigal fails to predict an AMR ORF, this will produce a false negative result. 
+
+Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs.
 
 If protein sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly.
 
@@ -37,7 +39,7 @@ The RGI currently supports CARD's `protein homolog models <https://card.mcmaster
 
 The RGI analyzes genome or proteome sequences under three paradigms: **Perfect**, **Strict**, and **Loose** (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
 
-**Note: All Loose hits of 95% identity or better are automatically listed as Strict.**
+**By default, all Loose hits of 95% identity or better are automatically listed as Strict, regardless of alignment length (see --exclude_nudge).**
 
 All results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism. JSON files created at the command line can be `Uploaded at the CARD Website <https://card.mcmaster.ca/analyze/rgi>`_ for visualization.
 
@@ -85,9 +87,9 @@ Table of Contents
 - `Load RGI bwt Reference Data`_
 - `Running RGI bwt with FASTQ files`_
 - `RGI bwt Tab-Delimited Output`_
-- `RGI kmer_build Usage to Build K-mer Classifiers`_
-- `RGI kmer_query Usage to Use K-mer Classifiers`_
+- `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
 - `CARD k-mer Classifier Output`_
+- `RGI kmer_build Usage to Build Custom K-mer Taxonomic Classifiers`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -182,49 +184,50 @@ The following command will bring up RGI's main help menu:
 .. code-block:: sh
 
       usage: rgi <command> [<args>]
-                  commands are:
-                  ---------------------------------------------------------------------------------------
-                  Database
-                  ---------------------------------------------------------------------------------------
+            commands are:
+               ---------------------------------------------------------------------------------------
+               Database
+               ---------------------------------------------------------------------------------------
 
-                  load     Loads CARD database, annotations and k-mer database
-                  clean    Removes BLAST databases and temporary files
-                  database Information on installed card database
-                  galaxy   Galaxy project wrapper
+               load     Loads CARD database, annotations and k-mer database
+               clean    Removes BLAST databases and temporary files
+               database Information on installed card database
+               galaxy   Galaxy project wrapper
 
-                  ---------------------------------------------------------------------------------------
-                  Genomic
-                  ---------------------------------------------------------------------------------------
+               ---------------------------------------------------------------------------------------
+               Genomic
+               ---------------------------------------------------------------------------------------
 
-                  main     Runs rgi application
-                  tab      Creates a Tab-delimited from rgi results
-                  parser   Creates categorical JSON files RGI wheel visualization
-                  heatmap  Heatmap for multiple analysis
+               main     Runs rgi application
+               tab      Creates a Tab-delimited from rgi results
+               parser   Creates categorical JSON files RGI wheel visualization
+               heatmap  Heatmap for multiple analysis
 
-                  ---------------------------------------------------------------------------------------
-                  Metagenomic
-                  ---------------------------------------------------------------------------------------
-                  bwt                   Align reads to CARD and in silico predicted allelic variants
-                  
-                  ---------------------------------------------------------------------------------------
-                  Baits validation
-                  ---------------------------------------------------------------------------------------
-                  tm                    Baits Melting Temperature
+               ---------------------------------------------------------------------------------------
+               Metagenomic
+               ---------------------------------------------------------------------------------------
+               bwt                   Align reads to CARD and in silico predicted allelic variants
+               
+               ---------------------------------------------------------------------------------------
+               Baits validation
+               ---------------------------------------------------------------------------------------
+               tm                    Baits Melting Temperature
 
-                  ---------------------------------------------------------------------------------------
-                  Annotations
-                  ---------------------------------------------------------------------------------------
-                  card_annotation       Create fasta files with annotations from card.json
-                  wildcard_annotation   Create fasta files with annotations from variants
-                  baits_annotation      Create fasta files with annotations from baits (Experimental)
-                  remove_duplicates     Removes duplicate sequences (Experimental)
+               ---------------------------------------------------------------------------------------
+               Annotations
+               ---------------------------------------------------------------------------------------
+               card_annotation       Create fasta files with annotations from card.json
+               wildcard_annotation   Create fasta files with annotations from variants
+               baits_annotation      Create fasta files with annotations from baits (Experimental)
+               remove_duplicates     Removes duplicate sequences (Experimental)
 
-                  ---------------------------------------------------------------------------------------
-                  Pathogen of origin
-                  ---------------------------------------------------------------------------------------
-                  
-                  kmer_build            Build AMR specific k-mers database used for pathogen of origin
-                  kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
+
+               ---------------------------------------------------------------------------------------
+               Pathogen of origin
+               ---------------------------------------------------------------------------------------
+               
+               kmer_build            Build AMR specific k-mers database used for pathogen of origin
+               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
 
    Resistance Gene Identifier - <version_number>
 
@@ -336,6 +339,7 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
                                   (default=32)
             --include_loose       include loose hits in addition to strict and perfect
                                   hits
+            --exclude_nudge       exclude hits nudged from loose to strict hits
             --local               use local database (default: uses database in
                                   executable directory)
             --clean               removes temporary files
@@ -347,6 +351,8 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
             --split_prodigal_jobs
                                   run multiple prodigal jobs simultaneously for contigs
                                   in a fasta file
+
+By default, all Loose RGI hits of 95% identity or better are automatically listed as Strict, regardless of alignment length, unless the --exclude_nudge flag is used.
 
 Running RGI main with Genome or Assembly DNA Sequences
 --------------------------------------------------------
@@ -364,12 +370,24 @@ Include Loose hits:
    .. code-block:: sh
 
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose
+      
+Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --exclude_nudge
 
 Short or low quality contigs with partial gene prediction, including Loose hits:
 
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose
+
+Short or low quality contigs with partial gene prediction, including Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --exclude_nudge
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
 
@@ -393,6 +411,13 @@ Include Loose hits:
    .. code-block:: sh
    
       rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose
+
+Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+
+   .. code-block:: sh
+   
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --exclude_nudge
+
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
 
@@ -576,6 +601,7 @@ RGI bwt Usage for Metagenomic Reads
             -o OUTPUT_FILE, --output_file OUTPUT_FILE
                                   name of output filename(s)
             --debug               debug mode
+            --clean               removes temporary files
             --local               use local database (default: uses database in
                                   executable directory)
             --include_wildcard    include wildcard
@@ -817,63 +843,14 @@ RGI bwt read mapping results at gene level
 
 Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
 
-RGI kmer_build Usage to Build K-mer Classifiers
+RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
 ---------------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
-As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be built from CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_. The default k-mer length is 61 bp (based on unpublished analyses), but users can select their own k-mer length to create any number of k-mer sets.
+Examples use local database, exclude "--local" flag to use a system wide reference database. Examples also use the pre-compiled 61 bp k-mers available at the CARD website.
 
-.. code-block:: sh
-
-   rgi kmer_build -h
-
-.. code-block:: sh
-
-          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
-          
-          Builds the kmer sets for CARD*kmers
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
-                                  input directory of prevalence data
-            -c CARD_FASTA, --card CARD_FASTA
-                                  fasta file of CARD reference sequences. If missing,
-                                  run 'rgi card_annotation' to generate.
-            -k K                  k-mer size (e.g., 61)
-            --skip                Skips the concatenation and splitting of the CARD*R*V
-                                  sequences.
-
-Obtain and format CARD data:
-
-   .. code-block:: sh
-   
-      wget https://card.mcmaster.ca/latest/data
-      tar -xvf data ./card.json
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-
-Obtain WildCARD data:
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
-
-Local build and load of default (61 bp) CARD k-mer Classifiers (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi kmer_build -i wildcard/ -c card_database_v3.0.1.fasta -k 61 > kmer_build.61.log 2>&1
-      rgi load --kmer_database 61_kmer_db.json --amr_kmers all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
-
-RGI kmer_query Usage to Use K-mer Classifiers
----------------------------------------------------------
-
-**This is an unpublished algorithm undergoing beta-testing.**
-
-Examples use local database, exclude "--local" flag to use a system wide reference database.
+As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be built from CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can select their own k-mer length to create any number of k-mer sets (see below).
 
 CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
@@ -911,6 +888,20 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
                                   executable directory)
             --debug               debug mode
 
+Obtain WildCARD data:
+
+   .. code-block:: sh
+   
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xvf wildcard_data.tar.bz2 -C wildcard
+
+Load the default (61 bp) CARD k-mer Classifiers:
+
+   .. code-block:: sh
+   
+      rgi load --kmer_database 61_kmer_db.json --amr_kmers all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+
 CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
@@ -931,6 +922,8 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 
 CARD k-mer Classifier Output
 -----------------------------
+
+CARD k-mer classifier output differs between genome/gene and metagenomic data:
 
 CARD k-mer Classifier Output for RGI main results
 --------------------------------------------------
@@ -969,6 +962,55 @@ CARD k-mer Classifier Output for RGI bwt results
 |    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
 |                                                          | logic tree                                         |
 +----------------------------------------------------------+----------------------------------------------------+
+
+RGI kmer_build Usage to Build Custom K-mer Taxonomic Classifiers
+------------------------------------------------------------------
+
+**This is an unpublished algorithm undergoing beta-testing.**
+
+.. code-block:: sh
+
+   rgi kmer_build -h
+
+.. code-block:: sh
+
+          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
+          
+          Builds the kmer sets for CARD*kmers
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
+                                  input directory of prevalence data
+            -c CARD_FASTA, --card CARD_FASTA
+                                  fasta file of CARD reference sequences. If missing,
+                                  run 'rgi card_annotation' to generate.
+            -k K                  k-mer size (e.g., 61)
+            --skip                Skips the concatenation and splitting of the CARD*R*V
+                                  sequences.
+
+Obtain and format CARD data:
+
+   .. code-block:: sh
+   
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+
+Obtain WildCARD data:
+
+   .. code-block:: sh
+   
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xvf wildcard_data.tar.bz2 -C wildcard
+
+Example local build and load of custom (57 bp) CARD k-mer Classifiers (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi kmer_build -i wildcard/ -c card_database_v3.0.1.fasta -k 57 > kmer_build.57.log 2>&1
+      rgi load --kmer_database 57_kmer_db.json --amr_kmers all_amr_57mers.txt --kmer_size 57 --local --debug > kmer_load.57.log 2>&1
 
 Run RGI from Docker
 -------------------
