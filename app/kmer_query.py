@@ -1110,9 +1110,9 @@ class CARDkmers(object):
                     "Contig",
                     "Cut_Off",
                     "Best_Hit_ARO",
-                    "CARD*kmer_Prediction",
-                    "Taxonomic_kmers",
-                    "Genomic_kmers"
+                    "CARD*kmer Prediction",
+                    "Taxonomic kmers",
+                    "Genomic kmers"
                 ])
             for r in summary:
                 writer.writerow([
@@ -1129,8 +1129,8 @@ class CARDkmers(object):
         with open(self.output_fasta_summary, "w") as fasta_output:
             writer = csv.writer(fasta_output, delimiter="\t")
             writer.writerow([
-                    "Read",
-                    "# kmers in read",
+                    "Sequence",
+                    "Total # kmers",
                     "# of AMR kmers",
                     "CARD*kmer Prediction",
                     "Taxonomic kmers",
