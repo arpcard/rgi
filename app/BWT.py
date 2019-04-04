@@ -1336,7 +1336,7 @@ class BWT(object):
 							"ARO Accession",
 							"Reference Model Type",
 							"Reference DB",
-							"Alleles Mapped",
+							"Alleles with Mapped Reads",
 							"Reference Allele(s) Identity to CARD Reference Protein (%)",
 							"Resistomes & Variants: Observed in Genome(s)",
 							"Resistomes & Variants: Observed in Plasmid(s)",
