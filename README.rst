@@ -738,7 +738,7 @@ RGI bwt read mapping results at allele level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown                                          |
+|                                                          | be shown. Use kmers to verify pathogen-of-origin. |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -766,7 +766,7 @@ RGI bwt read mapping results at allele level
 
 **Reference Allele Source:**
 
-Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI hits in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
+Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI hits in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
 RGI bwt read mapping results at gene level
 --------------------------------------------
@@ -782,7 +782,7 @@ RGI bwt read mapping results at gene level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Reference DB                                          | Reference allele(s) are from CARD and/or WildCARD |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Alleles Mapped                                        | # of alleles for this AMR gene with mapped reads  |
+|    Alleles with Mapped Reads                             | # of alleles for this AMR gene with mapped reads  |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Reference Allele(s) Identity to CARD Reference Protein| See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -795,7 +795,7 @@ RGI bwt read mapping results at gene level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown                                          |
+|                                                          | be shown. Use kmers to verify pathogen-of-origin. |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to these alleles|
 +----------------------------------------------------------+---------------------------------------------------+
@@ -828,8 +828,7 @@ RGI bwt read mapping results at gene level
 |                                                          | a different AMR gene, this is listed (# reads     |
 |                                                          | supporting linkage in parentheses)                |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Reference Length                                      | Length (bp) of reference sequence in CARD         |
-|                                                          | model                                             |
+|    Reference Length                                      | Length (bp) of reference sequences                |
 +----------------------------------------------------------+---------------------------------------------------+
 |    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -840,7 +839,7 @@ RGI bwt read mapping results at gene level
 
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
-Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted low identity AMR homologs.
+Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
 RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
 ---------------------------------------------------------
@@ -924,12 +923,42 @@ CARD k-mer Classifier Output
 
 CARD k-mer classifier output differs between genome/gene and metagenomic data:
 
+CARD k-mer Classifier Output for a FASTA file
+----------------------------------------------
+
++----------------------------------------------------------+----------------------------------------------------+
+|    Field                                                 | Contents                                           |
++==========================================================+====================================================+
+|    Sequence                                              | Sequence defline in the FASTA file                 |
++----------------------------------------------------------+----------------------------------------------------+
+|    Total # kmers                                         | Total # kmers in the sequence                      |
++----------------------------------------------------------+----------------------------------------------------+
+|    # of AMR kmers                                        | Total # AMR kmers in the sequence                  |
++----------------------------------------------------------+----------------------------------------------------+
+|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
+|                                                          | are known exclusively from chromosomes, exclusively|
+|                                                          | from plasmids, or can be found in either           |
+|                                                          | chromosomes or plasmids                            | 
++----------------------------------------------------------+----------------------------------------------------+
+|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
++----------------------------------------------------------+----------------------------------------------------+
+|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
+|                                                          | exclusively to plasmids, or found in either        |
+|                                                          | chromosomes or plasmids                            |
++----------------------------------------------------------+----------------------------------------------------+
+
 CARD k-mer Classifier Output for RGI main results
 --------------------------------------------------
 
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
 +==========================================================+====================================================+
+|    ORF_ID                                                | Open Reading Frame identifier (from RGI results)   |
++----------------------------------------------------------+----------------------------------------------------+
+|    Contig                                                | Source Sequence (from RGI results)                 |
++----------------------------------------------------------+----------------------------------------------------+
+|    Cut_Off                                               | RGI Detection Paradigm (from RGI results)          |
++----------------------------------------------------------+----------------------------------------------------+
 |    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
 |                                                          | are known exclusively from chromosomes, exclusively|
 |                                                          | from plasmids, or can be found in either           |
@@ -945,18 +974,20 @@ CARD k-mer Classifier Output for RGI main results
 CARD k-mer Classifier Output for RGI bwt results
 --------------------------------------------------
 
+As with RGI bwt analysis, output is produced at both the allele and gene level:
+
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
 +==========================================================+====================================================+
-|    Reference Sequence / ARO term                         | Reference allele or ARO term to which reads have   |
-|                                                          | been mapped                                        |
+|    Reference Sequence / ARO term                         | Reference allele or gene ARO term to which reads   |
+|                                                          | have been mapped                                   |
 +----------------------------------------------------------+----------------------------------------------------+
 |    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
 +----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | **Number of reads** classified for each taxon, with|
-|                                                          | indication if the kmers are known exclusively from |
-|                                                          | chromosomes, exclusively from plasmids, or can be  |
-|                                                          | found in either chromosomes or plasmids            |
+|    CARD kmer Prediction                                  | **Number of reads** classified for each allele or  |
+|                                                          | gene, with indication if the kmers are known       |
+|                                                          | exclusively from chromosomes, exclusively from     |
+|                                                          | plasmids, or can be found in either                |
 +----------------------------------------------------------+----------------------------------------------------+
 |    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
 |                                                          | logic tree                                         |
