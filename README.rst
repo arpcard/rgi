@@ -363,31 +363,31 @@ Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local 
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --clean
       
 Include Loose hits:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --clean
       
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --exclude_nudge
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --exclude_nudge --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --exclude_nudge
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
 
@@ -404,26 +404,25 @@ Generate Perfect or Strict hits for a set of protein sequences:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local 
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --clean
 
 Include Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --clean
 
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --exclude_nudge
-
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40
+      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40 --clean
 
 Running RGI main using GNU Parallel
 --------------------------------------------
