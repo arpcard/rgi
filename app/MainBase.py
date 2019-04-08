@@ -191,7 +191,7 @@ class MainBase(object):
         parser.add_argument('-m', '--minimum', dest="min", default=10,
             help="Minimum number of kmers in the called category for the classification to be made (default=10).")
         parser.add_argument('-n','--threads', dest="threads", type=int,
-            default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
+            default=1, help="number of threads (CPUs) to use (default={})".format(1))
         parser.add_argument('-o', '--output', dest="output", required=True,
             help="Output file name.")
         parser.add_argument('--local', dest="local_database", action='store_true',

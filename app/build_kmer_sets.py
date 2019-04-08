@@ -292,7 +292,7 @@ def main(args):
 
     print("-- CREATING KMER SETS --")
     app.make_kmer_json.make_json(plasmid_file, chr_file, both_file, genus_file, \
-    species_file, multi_file, variant_sequences, index, k)
+    species_file, multi_file, variant_sequences, index, k, args.threads)
     print("DONE \n")
 
     print("-- CREATING AMR {}-MER SET --".format(k))
@@ -329,7 +329,7 @@ def create_parser():
     parser.add_argument('--skip', dest="skip", action='store_true',
         help="Skips the concatenation and splitting of the CARD*R*V sequences.")
     parser.add_argument('-n','--threads', dest="threads", type=int,
-            default=os.cpu_count(), help="number of threads (CPUs) to use (default={})".format(os.cpu_count()))
+            default=1, help="number of threads (CPUs) to use (default={})".format(1))
     return parser
 
 def run():

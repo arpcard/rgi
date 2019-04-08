@@ -94,7 +94,7 @@ def get_genomic_kmers(plasmid_file, chr_file, both_file):
 
         return list(pf), list(cf), list(bkmers) # type: sets
 
-def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, type):
+def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, type, threads):
     """Gets taxonomic kmer sets"""
     global id_path
     id_path = {}
@@ -122,7 +122,7 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
     print('Discarding shared single- and multi-species kmers...')
     sf = list(skmers.difference(mkmers)) # kmers in only the single set
     print('Remaining unique kmers:', len(sf))
-    list_size = math.ceil(len(sf)/24) # For 24 threads
+    list_size = math.ceil(len(sf)/threads) # For 'n' threads
     l = list(split_list(sf, list_size))
 
     print('Querying kmers...')
@@ -198,11 +198,11 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
     return f
 
 def make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
-                multi_file, variant_sequences, index_file, k):
+                multi_file, variant_sequences, index_file, k, threads):
 
     p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file)
-    s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species")
-    g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus")
+    s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species", threads)
+    g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus", threads)
 
     final = {"p": p, "c": c, "b": b, "s": s, "g": g}
 
@@ -220,9 +220,10 @@ def main(args):
     variant_sequences = args.variants
     k = int(args.k)
     index_file = args.index
+    threads = args.threads
 
     make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
-    multi_file, variant_sequences, index_file, k)
+    multi_file, variant_sequences, index_file, k, threads)
 
 def run():
     parser = argparse.ArgumentParser(
@@ -245,6 +246,8 @@ def run():
         help="CARD*Resitomes&Variants index (index-for-model-sequences.txt)")
     parser.add_argument('-k', dest="k", required=True,
         help="kmer length")
+    parser.add_argument('-n','--threads', dest="threads", type=int,
+            default=1, help="number of threads (CPUs) to use (default={})".format(1))        
     args = parser.parse_args()
     main(args)
 
