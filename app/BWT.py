@@ -929,17 +929,12 @@ class BWT(object):
 			percent_identity = 0.0
 			# Genus and species level only (only get first two words)
 			observed_in_pathogens = []
-			database = ["CARD"]
+			database = "CARD"
 			reference_allele_source = "CARD curation"
-
-			if self.include_baits == True:
-				database.append("Baits")
-
-			if self.include_wildcard == True:
-				database.append("Resistomes & Variants")
 
 			# if variants and "Resistomes & Variants" in database and "ARO:" not in alignment_hit:
 			if "Prevalence_Sequence_ID" in alignment_hit:
+				database = "Resistomes & Variants"
 				logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				if model_id in variants.keys():
 					_accession = ""
@@ -986,6 +981,9 @@ class BWT(object):
 			else:
 				logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				observed_in_pathogens = models[model_id]["taxon"]
+				logger.debug(coverage)
+				# assumption card canonical
+				percent_identity = 100.0
 
 			# check all clases categories
 			if "AMR Gene Family" not in resistomes.keys():
@@ -1006,7 +1004,7 @@ class BWT(object):
 				"cvterm_name": cvterm_name,
 				"aro_accession": aro_accession,
 				"model_type": model_type,
-				"database": "; ".join(database),
+				"database": database,
 				"reference_allele_source": reference_allele_source,
 				"observed_in_genomes": observed_in_genomes,
 				"observed_in_plasmids": observed_in_plasmids,
