@@ -89,7 +89,6 @@ Table of Contents
 - `RGI bwt Tab-Delimited Output`_
 - `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
 - `CARD k-mer Classifier Output`_
-- `RGI kmer_build Usage to Build Custom K-mer Taxonomic Classifiers`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -848,7 +847,7 @@ RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
 
 Examples use local database, exclude "--local" flag to use a system wide reference database. Examples also use the pre-compiled 61 bp k-mers available at the CARD website.
 
-As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. Before k-mer analyses can be performed, the k-mer set(s) need to be built from CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can select their own k-mer length to create any number of k-mer sets (see below).
+As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website.
 
 CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
@@ -886,19 +885,31 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
                                   executable directory)
             --debug               debug mode
 
-Obtain WildCARD data:
+Obtain and Load CARD data (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      rgi load --card_json /path/to/card.json --local
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
+
+Obtain and Load WildCARD data (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
       wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
       mkdir -p wildcard
       tar -xvf wildcard_data.tar.bz2 -C wildcard
+      rgi wildcard_annotation -i /path/to/wildcard --card_json /path/to/card.json -v 3.0.2
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local --debug
 
 Load the default (61 bp) CARD k-mer Classifiers:
 
    .. code-block:: sh
    
-      rgi load --kmer_database 61_kmer_db.json --amr_kmers all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
 
 CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
 
@@ -992,55 +1003,6 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 |    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
 |                                                          | logic tree                                         |
 +----------------------------------------------------------+----------------------------------------------------+
-
-RGI kmer_build Usage to Build Custom K-mer Taxonomic Classifiers
-------------------------------------------------------------------
-
-**This is an unpublished algorithm undergoing beta-testing.**
-
-.. code-block:: sh
-
-   rgi kmer_build -h
-
-.. code-block:: sh
-
-          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
-          
-          Builds the kmer sets for CARD*kmers
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
-                                  input directory of prevalence data
-            -c CARD_FASTA, --card CARD_FASTA
-                                  fasta file of CARD reference sequences. If missing,
-                                  run 'rgi card_annotation' to generate.
-            -k K                  k-mer size (e.g., 61)
-            --skip                Skips the concatenation and splitting of the CARD*R*V
-                                  sequences.
-
-Obtain and format CARD data:
-
-   .. code-block:: sh
-   
-      wget https://card.mcmaster.ca/latest/data
-      tar -xvf data ./card.json
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-
-Obtain WildCARD data:
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
-
-Example local build and load of custom (57 bp) CARD k-mer Classifiers (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi kmer_build -i wildcard/ -c card_database_v3.0.1.fasta -k 57 > kmer_build.57.log 2>&1
-      rgi load --kmer_database 57_kmer_db.json --amr_kmers all_amr_57mers.txt --kmer_size 57 --local --debug > kmer_load.57.log 2>&1
 
 Run RGI from Docker
 -------------------
