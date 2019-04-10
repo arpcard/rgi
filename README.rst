@@ -51,16 +51,9 @@ Note on metagenomic assemblies or merged metagenomic reads: this is a computatio
 Analyzing Metagenomic Reads (beta-testing)
 --------------------------------------------
 
-RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ or `BWA <http://bio-bwa.sourceforge.net>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (support for SNP screening models will be added to future versions). FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended as the allelic diversity for AMR genes is greatly unrepresented in the published literature, hampering high-stringency read mapping (i.e. AMR genes are often only characterized for a single pathogen). Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
+RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ or `BWA <http://bio-bwa.sourceforge.net>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (support for SNP screening models will be added to future versions). FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended as the allelic diversity for AMR genes is greatly unrepresented in the published literature, hampering high-stringency read mapping (i.e. AMR genes are often only characterized for a single pathogen). Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (in development).
 
 CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD) were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation.
-
-K-mer Prediction of Pathogen-of-Origin for AMR Genes (beta-testing)
---------------------------------------------------------------------------
-
-CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (see above) provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for hits found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
-
-**CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** As above, the reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
 
 Table of Contents
 -------------------------------------
@@ -87,8 +80,6 @@ Table of Contents
 - `Load RGI bwt Reference Data`_
 - `Running RGI bwt with FASTQ files`_
 - `RGI bwt Tab-Delimited Output`_
-- `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
-- `CARD k-mer Classifier Output`_
 - `Run RGI from Docker`_
 - `Install RGI from Conda`_
 
@@ -219,14 +210,6 @@ The following command will bring up RGI's main help menu:
                wildcard_annotation   Create fasta files with annotations from variants
                baits_annotation      Create fasta files with annotations from baits (Experimental)
                remove_duplicates     Removes duplicate sequences (Experimental)
-
-
-               ---------------------------------------------------------------------------------------
-               Pathogen of origin
-               ---------------------------------------------------------------------------------------
-               
-               kmer_build            Build AMR specific k-mers database used for pathogen of origin
-               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
 
    Resistance Gene Identifier - <version_number>
 
@@ -839,170 +822,6 @@ RGI bwt read mapping results at gene level
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
 Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
-
-RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
----------------------------------------------------------
-
-**This is an unpublished algorithm undergoing beta-testing.**
-
-Examples use local database, exclude "--local" flag to use a system wide reference database. Examples also use the pre-compiled 61 bp k-mers available at the CARD website.
-
-As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website.
-
-CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
-
-.. image:: images/kmerlogic.jpg
-
-.. code-block:: sh
-
-   rgi kmer_query -h
-
-.. code-block:: sh
-
-          usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
-                     -o OUTPUT [--local] [--debug]
-          
-          Tests sequences using CARD*k-mers
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT, --input INPUT
-                                  Input file (bam file from RGI*BWT, json file of RGI
-                                  results, fasta file of sequences)
-            --bwt                 Specify if the input file for analysis is a bam file
-                                  generated from RGI*BWT
-            --rgi                 Specify if the input file is a RGI results json file
-            --fasta               Specify if the input file is a fasta file of sequences
-            -k K, --kmer_size K   length of k
-            -m MIN, --minimum MIN
-                                  Minimum number of kmers in the called category for the
-                                  classification to be made (default=10).
-            -n THREADS, --threads THREADS
-                                  number of threads (CPUs) to use (default=32)
-            -o OUTPUT, --output OUTPUT
-                                  Output file name.
-            --local               use local database (default: uses database in
-                                  executable directory)
-            --debug               debug mode
-
-Obtain and Load CARD data (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      wget https://card.mcmaster.ca/latest/data
-      tar -xvf data ./card.json
-      rgi load --card_json /path/to/card.json --local
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
-
-Obtain and Load WildCARD data (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
-      rgi wildcard_annotation -i /path/to/wildcard --card_json /path/to/card.json -v 3.0.2
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local --debug
-
-Load the default (61 bp) CARD k-mer Classifiers:
-
-   .. code-block:: sh
-   
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
-
-CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
-
-.. code-block:: sh
-
-   rgi kmer_query --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
-
-CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main results (e.g. using 8 processors, minimum k-mer coverage of 10):
-
-.. code-block:: sh
-
-   rgi kmer_query --rgi -k 61 -n 8 --minimum 10 -i /path/to/rgi_main.json -o /path/to/output_file --local
-   
-CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
-
-.. code-block:: sh
-
-   rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
-
-CARD k-mer Classifier Output
------------------------------
-
-CARD k-mer classifier output differs between genome/gene and metagenomic data:
-
-CARD k-mer Classifier Output for a FASTA file
-----------------------------------------------
-
-+----------------------------------------------------------+----------------------------------------------------+
-|    Field                                                 | Contents                                           |
-+==========================================================+====================================================+
-|    Sequence                                              | Sequence defline in the FASTA file                 |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Total # kmers                                         | Total # kmers in the sequence                      |
-+----------------------------------------------------------+----------------------------------------------------+
-|    # of AMR kmers                                        | Total # AMR kmers in the sequence                  |
-+----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
-|                                                          | are known exclusively from chromosomes, exclusively|
-|                                                          | from plasmids, or can be found in either           |
-|                                                          | chromosomes or plasmids                            | 
-+----------------------------------------------------------+----------------------------------------------------+
-|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
-|                                                          | exclusively to plasmids, or found in either        |
-|                                                          | chromosomes or plasmids                            |
-+----------------------------------------------------------+----------------------------------------------------+
-
-CARD k-mer Classifier Output for RGI main results
---------------------------------------------------
-
-+----------------------------------------------------------+----------------------------------------------------+
-|    Field                                                 | Contents                                           |
-+==========================================================+====================================================+
-|    ORF_ID                                                | Open Reading Frame identifier (from RGI results)   |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Contig                                                | Source Sequence (from RGI results)                 |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Cut_Off                                               | RGI Detection Paradigm (from RGI results)          |
-+----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
-|                                                          | are known exclusively from chromosomes, exclusively|
-|                                                          | from plasmids, or can be found in either           |
-|                                                          | chromosomes or plasmids                            | 
-+----------------------------------------------------------+----------------------------------------------------+
-|    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Genomic kmers                                         | Number of k-mer hits exclusive to chromosomes,     |
-|                                                          | exclusively to plasmids, or found in either        |
-|                                                          | chromosomes or plasmids                            |
-+----------------------------------------------------------+----------------------------------------------------+
-
-CARD k-mer Classifier Output for RGI bwt results
---------------------------------------------------
-
-As with RGI bwt analysis, output is produced at both the allele and gene level:
-
-+----------------------------------------------------------+----------------------------------------------------+
-|    Field                                                 | Contents                                           |
-+==========================================================+====================================================+
-|    Reference Sequence / ARO term                         | Reference allele or gene ARO term to which reads   |
-|                                                          | have been mapped                                   |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
-+----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | **Number of reads** classified for each allele or  |
-|                                                          | gene, with indication if the kmers are known       |
-|                                                          | exclusively from chromosomes, exclusively from     |
-|                                                          | plasmids, or can be found in either                |
-+----------------------------------------------------------+----------------------------------------------------+
-|    Subsequent fields                                     | Detected k-mers within the context of the k-mer    |
-|                                                          | logic tree                                         |
-+----------------------------------------------------------+----------------------------------------------------+
 
 Run RGI from Docker
 -------------------
