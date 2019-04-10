@@ -67,7 +67,7 @@ Table of Contents
 - `Running RGI Tests`_
 - `Help Menu and Usage`_
 - `Help Menus for Subcommands`_
-- `Load card.json`_
+- `Load CARD Reference Data`_
 - `Check Database Version`_
 - `Clean Previous or Old Databases`_
 - `RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes`_
@@ -77,7 +77,6 @@ Table of Contents
 - `RGI main Tab-Delimited Output`_
 - `Generating Heat Maps of RGI main Results`_
 - `RGI bwt Usage for Metagenomic Reads`_
-- `Load RGI bwt Reference Data`_
 - `Running RGI bwt with FASTQ files`_
 - `RGI bwt Tab-Delimited Output`_
 - `Run RGI from Docker`_
@@ -234,10 +233,10 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 
       rgi load -h
 
-Load card.json 
--------------------
+Load CARD Reference Data
+--------------------------
 
-To start analyses, first acquire the latest AMR reference data from CARD at `https://card.mcmaster.ca/latest/data <https://card.mcmaster.ca/latest/data>`_. CARD data can be installed at the system level or at the local level.
+To start analyses, first acquire the latest AMR reference data from CARD. CARD data can be installed at the system level or at the local level:
 
 Obtain CARD data:
 
@@ -257,6 +256,44 @@ System wide:
    .. code-block:: sh
 
       rgi load --card_json /path/to/card.json
+
+Metagenomics analyses may additionally require CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data, which can also be installed at the system level or at the local level once the CARD data has been loaded:
+
+Additional CARD data pre-processing using a local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
+
+System wide additional CARD data pre-processing(note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta
+
+Obtain WildCARD data:
+
+   .. code-block:: sh
+   
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xvf wildcard_data.tar.bz2 -C wildcard
+      
+Local or working directory (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local
+
+System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+   
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
 
 Check Database Version
 -----------------------
@@ -339,7 +376,7 @@ By default, all Loose RGI hits of 95% identity or better are automatically liste
 Running RGI main with Genome or Assembly DNA Sequences
 --------------------------------------------------------
 
-Examples use local database, exclude "--local" flag to use a system wide reference database.
+You must `Load CARD Reference Data`_ for these command to work. These examples use local database, exclude "--local" flag to use a system wide reference database.
 
 Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
@@ -380,7 +417,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits for 
 Running RGI main with Protein Sequences
 --------------------------------------------------------
 
-Examples use local database, exclude "--local" flag to use a system wide reference database.
+You must `Load CARD Reference Data`_ for these command to work. These examples use local database, exclude "--local" flag to use a system wide reference database.
 
 Generate Perfect or Strict hits for a set of protein sequences:
 
@@ -605,62 +642,10 @@ RGI bwt Usage for Metagenomic Reads
    
       bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} -U {unpaired_reads} -S {output_sam_file}
 
-Load RGI bwt Reference Data
-----------------------------
-
-To start bwt analyses, first acquire the latest AMR reference data from CARD at `https://card.mcmaster.ca/latest/data <https://card.mcmaster.ca/latest/data>`_. CARD data can be installed at the system level or at the local level.
-
-Obtain CARD data:
-
-   .. code-block:: sh
-   
-      wget https://card.mcmaster.ca/latest/data
-      tar -xvf data ./card.json
-
-Local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load --card_json /path/to/card.json --local
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
-
-System wide (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load --card_json /path/to/card.json
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta
-
-If you are going to include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ in your analysis, this data will need to be loaded as well:
-
-Obtain WildCARD data:
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
-      
-Local or working directory (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local
-
-System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
-
 Running RGI bwt with FASTQ files
 --------------------------------------
 
-Examples use local database, exclude "--local" flag to use a system wide reference database.
+You must `Load CARD Reference Data`_ for these command to work. These examples use local database, exclude "--local" flag to use a system wide reference database.
 
 Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD only:
 
