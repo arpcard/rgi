@@ -257,16 +257,16 @@ System wide:
 
       rgi load --card_json /path/to/card.json
 
-Metagenomics analyses may additionally require CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data, which can also be installed at the system level or at the local level once the CARD data has been loaded:
+Metagenomics analyses may additionally require CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data, which can also be installed at the system level or at the local level once the CARD data has been loaded.
 
-Additional CARD data pre-processing using a local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+Additional CARD data pre-processing for metagenomics using a local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
       rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
 
-System wide additional CARD data pre-processing(note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+System wide additional CARD data pre-processing for metagenomics (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
 
