@@ -226,16 +226,17 @@ class BWT(object):
 			)
 		)
 
-	def align_bwa_paired_end_mapping(self):
+	def align_bwa_paired_end_mapping(self, reference_genome, index_directory, output_sam_file):
 		"""
 		Align paired reads to reference genome using bwa
 		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 		os.system("bwa mem -t {threads} {index_directory} {read_one} {read_two} > {output_sam_file}".format(
 			threads=self.threads,
-			index_directory=self.index_directory_bwa,
+			index_directory=index_directory,
 			read_one=self.read_one,
 			read_two=self.read_two,
-			output_sam_file=self.output_sam_file
+			output_sam_file=output_sam_file
 			)
 		)
 
@@ -1489,7 +1490,7 @@ class BWT(object):
 			if self.read_two == None:
 				self.align_bwa_single_end_mapping()
 			else:
-				self.align_bwa_paired_end_mapping()
+				self.align_bwa_paired_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa,  output_sam_file=self.output_sam_file)
 		
 		# convert SAM file to BAM file
 		logger.info("convert SAM file to BAM file")
