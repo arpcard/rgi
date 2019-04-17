@@ -1267,7 +1267,7 @@ class BWT(object):
 					for m in r["mate_pair"]:
 						if m not in ["*"]:
 							arr = m.split("|")
-							if len(arr) == 3:
+							if len(arr) == 4:
 								mapping_summary[r[index]]["mate_pair"].append("{}".format(m.split("|")[2].split(":")[1]))
 							elif len(arr) == 7:
 								mapping_summary[r[index]]["mate_pair"].append("{}".format(m.split("|")[5]))
@@ -1311,7 +1311,7 @@ class BWT(object):
 					for m in r["mate_pair"]:
 						if m not in ["*"]:
 							arr = m.split("|")
-							if len(arr) == 3:
+							if len(arr) == 4:
 								mapping_summary[r[index]]["mate_pair"].append("{}".format(m.split("|")[2].split(":")[1]))
 							elif len(arr) == 7:
 								mapping_summary[r[index]]["mate_pair"].append("{}".format(m.split("|")[5]))
