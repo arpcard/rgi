@@ -916,7 +916,8 @@ class BWT(object):
 			for a in alignments:
 				mapq_l.append(int(a["mapq"]))
 				if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
-					mate_pair.append(a["mrnm"])
+					if "ARO:{}".format(aro_accession) not in a["mrnm"]:
+						mate_pair.append(a["mrnm"])
 
 			if len(mapq_l) > 0:
 				mapq_average = sum(mapq_l)/len(mapq_l)
