@@ -63,8 +63,8 @@ class MainBase(object):
                Pathogen of origin
                ---------------------------------------------------------------------------------------
                
-               kmer_build            Build AMR specific k-mers database used for pathogen of origin
-               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin
+               kmer_build            Build AMR specific k-mers database used for pathogen of origin (Experimental)
+               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin (Experimental)
 
                '''
 
