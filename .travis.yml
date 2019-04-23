@@ -13,7 +13,7 @@ before_install:
 
   # samtools
   - wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-  - tar xzf 1.9.tar.gz
+  - tar xzf samtools-1.9.tar.bz2
   - cd samtools-1.9
   - ./configure
   - make
