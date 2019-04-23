@@ -2,7 +2,6 @@ language: python
 
 python:
   - "3.6"
-  - "3.7.2"
 
 before_install:
   - sudo apt-get -qq update
@@ -36,13 +35,13 @@ before_install:
   - sudo make DESTDIR=/usr/bin install
 
   # bowtie2
-  - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
-  - tar xzf v2.3.5.1.tar.gz
-  - cd bowtie2-2.3.5.1
-  - mkdir build && cd build
-  - cmake ..
-  - make
-  - sudo make DESTDIR=/usr/bin install
+  # - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
+  # - tar xzf v2.3.5.1.tar.gz
+  # - cd bowtie2-2.3.5.1
+  # - mkdir build && cd build
+  # - cmake ..
+  # - make
+  # - sudo make DESTDIR=/usr/bin install
 
   # bwa
   - git clone https://github.com/lh3/bwa.git
