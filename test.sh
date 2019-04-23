@@ -5,14 +5,14 @@
 set -e
 
 # check if rgi is installed
-rgi --help
-diamond --version
-bowtie2 --version
-bedtools --help
-samtools --help
-bamtools --help
-jellyfish --help
-prodigal --help
+# rgi --help
+# diamond --version
+# bowtie2 --version
+# bedtools --help
+# samtools --help
+# bamtools --help
+# jellyfish --help
+# prodigal --help
 # bwa
 
 # get latest card database
