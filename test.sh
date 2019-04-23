@@ -4,6 +4,9 @@
 # exit on failure of any command
 set -e
 
+# check if rgi is installed
+rgi --help
+
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
 mkdir -p card_data
@@ -29,8 +32,11 @@ rgi clean --debug
 # load
 rgi load --card_json card_data/card.json --card_annotation card_database_v*.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v*.fasta --debug
 
+# check database
+rgi database -v --all
+
 # for test_1.py
-# cp card_data/card.json app/_data
+cp card_data/card.json app/_data
 
 # for test_3.py
 cp card_data/card.json tests/inputs
