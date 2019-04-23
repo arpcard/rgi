@@ -2,7 +2,7 @@ language: python
 
 python:
   - "3.6"
-  - "3.7"
+  - "3.7.2"
 
 before_install:
   - sudo apt-get -qq update
@@ -17,7 +17,7 @@ before_install:
   - cd samtools-1.9
   - ./configure
   - make
-  - make DESTDIR=/usr/bin install
+  - sudo make DESTDIR=/usr/bin install
 
   # bamtools
   - wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
@@ -26,14 +26,14 @@ before_install:
   - mkdir build && cd build
   - cmake ..
   - make
-  - make DESTDIR=/usr/bin install
+  - sudo make DESTDIR=/usr/bin install
 
   # bedtools
   - wget https://github.com/arq5x/bedtools2/archive/v2.28.0.tar.gz
   - tar xzf v2.28.0.tar.gz
   - cd bedtools2-2.28.0
   - make
-  - make DESTDIR=/usr/bin install
+  - sudo make DESTDIR=/usr/bin install
 
   # bowtie2
   - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
@@ -42,7 +42,7 @@ before_install:
   - mkdir build && cd build
   - cmake ..
   - make
-  - make DESTDIR=/usr/bin install
+  - sudo make DESTDIR=/usr/bin install
 
   # bwa
   - git clone https://github.com/lh3/bwa.git
