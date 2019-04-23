@@ -13,7 +13,7 @@ samtools --help
 bamtools --help
 jellyfish --help
 prodigal --help
-bwa
+# bwa
 
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
