@@ -21,7 +21,7 @@ before_install:
   # bamtools
   - wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
   - tar xzf v2.5.1.tar.gz
-  - pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make DESTDIR=/usr/bin install && popd
+  - pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
   # bedtools
   # - wget https://github.com/arq5x/bedtools2/archive/v2.28.0.tar.gz
