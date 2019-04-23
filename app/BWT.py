@@ -320,7 +320,7 @@ class BWT(object):
 		BAM file _must_ be sorted by position
 		"""
 
-		cmd = "genomeCoverageBed -ibam {sorted_bam_file} > {output_tab}".format(
+		cmd = "bedtools genomecov -ibam {sorted_bam_file} > {output_tab}".format(
 			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_coverage_all_positions
 		)
