@@ -4,17 +4,6 @@
 # exit on failure of any command
 set -e
 
-# check if rgi is installed
-# rgi --help
-# diamond --version
-# bowtie2 --version
-# bedtools --help
-# samtools --help
-# bamtools --help
-# jellyfish --help
-# prodigal --help
-# bwa
-
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
 mkdir -p card_data
