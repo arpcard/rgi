@@ -43,7 +43,7 @@ before_install:
 
   # jellyfish
   - wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
-  - sudo mv jellyfish-linux /usr/bin/jellyfish
+  - mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
  
 install:
   - pip install -r requirements.txt
