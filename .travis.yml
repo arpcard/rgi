@@ -8,7 +8,7 @@ python:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y ncbi-blast+ prodigal
+  - sudo apt-get install -y ncbi-blast+ prodigal bowtie2
   
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
@@ -34,14 +34,6 @@ before_install:
   # bedtools linux executable
   - wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
   - chmod +x bedtools && sudo mv bedtools /usr/bin
-
-  # bowtie2
-  # - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
-  # - unzip bowtie2-2.3.5.1-linux-x86_64.zip
-  # - pushd bowtie2-2.3.5.1-linux-x86_64 && sudo mv bowtie2-inspect /usr/bin && sudo mv bowtie2-build /usr/bin && sudo mv bowtie2 /usr/bin && sudo mv bowtie2-build-s /usr/bin && sudo mv bowtie2-build-l /usr/bin && sudo mv bowtie2-inspect-s /usr/bin && sudo mv bowtie2-inspect-l /usr/bin && sudo mv bowtie2-build-s-debug /usr/bin && sudo mv bowtie2-build-l-debug /usr/bin && sudo mv bowtie2-align-s /usr/bin && sudo mv bowtie2-align-l /usr/bin && sudo mv bowtie2-inspect-s-debug /usr/bin && sudo mv bowtie2-inspect-l-debug /usr/bin && sudo mv bowtie2-align-s-debug /usr/bin && sudo mv bowtie2-align-l-debug /usr/bin && popd 
-  # - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
-  # - tar xvf v2.3.5.1.tar.gz
-  # - pushd bowtie2-2.3.5.1 && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
   # bwa
   - git clone https://github.com/lh3/bwa.git
