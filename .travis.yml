@@ -12,12 +12,9 @@ before_install:
   - sudo apt-get install -y libtbb-dev
   
   # bowtie2
-  # - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
-  # - unzip bowtie2-2.3.5.1-linux-x86_64.zip
-  # - sudo mv bowtie2-2.3.5.1-linux-x86_64/* /usr/bin
-  - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
-  - tar xvf v2.3.5.1.tar.gz
-  - pushd bowtie2-2.3.5.1 && mkdir build && cd build && cmake .. && make && sudo make install && popd
+  - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip
+  - tar xvf bowtie2-2.3.4.3-linux-x86_64.zip
+  - sudo mv bowtie2-2.3.4.3-linux-x86_64/bowtie2* /usr/bin
 
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
@@ -27,7 +24,6 @@ before_install:
   # samtools
   - wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
   - tar jxf samtools-1.9.tar.bz2
-  # - pushd samtools-1.9 && ./configure && make && sudo make DESTDIR=/usr/bin install && popd
   - pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
 
   # bamtools
@@ -36,11 +32,6 @@ before_install:
   - pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
   # bedtools
-  # - wget https://github.com/arq5x/bedtools2/archive/v2.28.0.tar.gz
-  # - tar xzf v2.28.0.tar.gz
-  # - pushd bedtools2-2.28.0 && make && sudo make DESTDIR=/usr/bin install && popd
-
-  # bedtools linux executable
   - wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
   - chmod +x bedtools && sudo mv bedtools /usr/bin
 
