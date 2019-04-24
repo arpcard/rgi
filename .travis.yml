@@ -8,7 +8,7 @@ python:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y ncbi-blast+ prodigal
+  # - sudo apt-get install -y ncbi-blast+ prodigal
   - sudo apt-get install -y libtbb-dev
   
   # bowtie2
@@ -16,32 +16,32 @@ before_install:
   - unzip bowtie2-2.3.4.3-linux-x86_64.zip
   - sudo mv bowtie2-2.3.4.3-linux-x86_64/bowtie2* /usr/bin
 
-  # diamond
-  - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
-  - tar xzf diamond-linux64.tar.gz
-  - sudo mv diamond /usr/bin
+  # # diamond
+  # - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
+  # - tar xzf diamond-linux64.tar.gz
+  # - sudo mv diamond /usr/bin
 
-  # samtools
-  - wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-  - tar jxf samtools-1.9.tar.bz2
-  - pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
+  # # samtools
+  # - wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+  # - tar jxf samtools-1.9.tar.bz2
+  # - pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
 
-  # bamtools
-  - wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
-  - tar xzf v2.5.1.tar.gz
-  - pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
+  # # bamtools
+  # - wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
+  # - tar xzf v2.5.1.tar.gz
+  # - pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
-  # bedtools
-  - wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
-  - chmod +x bedtools && sudo mv bedtools /usr/bin
+  # # bedtools
+  # - wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
+  # - chmod +x bedtools && sudo mv bedtools /usr/bin
 
-  # bwa
-  - git clone https://github.com/lh3/bwa.git
-  - pushd bwa && make && sudo mv bwa /usr/bin && popd
+  # # bwa
+  # - git clone https://github.com/lh3/bwa.git
+  # - pushd bwa && make && sudo mv bwa /usr/bin && popd
 
-  # jellyfish
-  - wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
-  - mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
+  # # jellyfish
+  # - wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
+  # - mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
  
 install:
   - pip install -r requirements.txt

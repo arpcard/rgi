@@ -3,6 +3,7 @@
 
 # exit on failure of any command
 set -e
+bowtie2-build --help
 
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
@@ -38,9 +39,13 @@ cp card_data/card.json app/_data
 # for test_3.py
 cp card_data/card.json tests/inputs
 
+ls -lhatr app/_data
+ls -lhatr app/_db
+
 # run unit tests
 cd tests
-pytest -v -rxs
+# pytest -v -rxs
+pytest test_4.py -v -rxs --color=auto --durations=0
 
 # exit with the exitcode thrown by pytest
 exit $?
