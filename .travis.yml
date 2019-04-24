@@ -13,7 +13,7 @@ before_install:
   
   # bowtie2
   - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip
-  - tar xvf bowtie2-2.3.4.3-linux-x86_64.zip
+  - unzip bowtie2-2.3.4.3-linux-x86_64.zip
   - sudo mv bowtie2-2.3.4.3-linux-x86_64/bowtie2* /usr/bin
 
   # diamond
