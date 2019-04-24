@@ -38,17 +38,9 @@ cp card_data/card.json app/_data
 # for test_3.py
 cp card_data/card.json tests/inputs
 
-echo "============================= PWD =============================="
-echo "${PWD}"
-echo "============================= DATA FOLDER =============================="
-ls -lhatr app/_data
-echo "============================= DB FOLDER =============================="
-ls -lhatr app/_db
-
 # run unit tests
 cd tests
-# pytest -v -rxs
-pytest test_4.py -v -rxs --color=auto --durations=0
+pytest -v -rxs
 
 # exit with the exitcode thrown by pytest
 exit $?
