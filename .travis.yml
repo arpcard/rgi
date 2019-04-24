@@ -9,8 +9,13 @@ python:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y ncbi-blast+ prodigal
-  - sudo apt-get install -y libtbb-dev bowtie2
+  - sudo apt-get install -y libtbb-dev
   
+  # bowtie2
+  - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
+  - unzip bowtie2-2.3.5.1-linux-x86_64.zip
+  - pushd sudo mv bowtie2-2.3.5.1-linux-x86_64/* /usr/bin && popd 
+
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
   - tar xzf diamond-linux64.tar.gz
