@@ -3,7 +3,6 @@
 
 # exit on failure of any command
 set -e
-bowtie2-build --help
 
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
@@ -16,22 +15,22 @@ mkdir -p card_variants
 tar xvf prevalence-v3.0.4.tar.gz -C card_variants
 
 # create fasta files with annotations from card.json
-rgi card_annotation --input card_data/card.json
+python3 ./rgi card_annotation --input card_data/card.json
 
 data_version=`echo card_database_v*.fasta | sed 's/.*card_database_v\(.*\).fasta/\1/'`
 variants_version=`echo prevalence-v*.tar.gz | sed 's/.*prevalence-v\(.*\).tar.gz/\1/'`
 
 # create fasta files with annotations from variants
-rgi wildcard_annotation --input_directory card_variants --version "$variants_version" --card_json card_data/card.json
+python3 ./rgi wildcard_annotation --input_directory card_variants --version "$variants_version" --card_json card_data/card.json
 
 # clean
-rgi clean --debug
+python3 ./rgi clean --debug
 
 # load
-rgi load --card_json card_data/card.json --card_annotation card_database_v*.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v*.fasta --debug
+python3 ./rgi load --card_json card_data/card.json --card_annotation card_database_v*.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v*.fasta --debug
 
 # check database
-rgi database -v --all
+python3 ./rgi database -v --all
 
 # for test_1.py
 cp card_data/card.json app/_data
@@ -39,7 +38,11 @@ cp card_data/card.json app/_data
 # for test_3.py
 cp card_data/card.json tests/inputs
 
+echo "============================= PWD =============================="
+echo "${PWD}"
+echo "============================= DATA FOLDER =============================="
 ls -lhatr app/_data
+echo "============================= DB FOLDER =============================="
 ls -lhatr app/_db
 
 # run unit tests
