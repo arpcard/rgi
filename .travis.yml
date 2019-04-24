@@ -14,7 +14,7 @@ before_install:
   # bowtie2
   - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
   - unzip bowtie2-2.3.5.1-linux-x86_64.zip
-  - pushd sudo mv bowtie2-2.3.5.1-linux-x86_64/* /usr/bin && popd 
+  - pushd bowtie2-2.3.5.1-linux-x86_64 && sudo mv bowtie2* /usr/bin && popd
 
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
