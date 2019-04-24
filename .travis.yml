@@ -12,9 +12,12 @@ before_install:
   - sudo apt-get install -y libtbb-dev
   
   # bowtie2
-  - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
-  - unzip bowtie2-2.3.5.1-linux-x86_64.zip
-  - sudo mv bowtie2-2.3.5.1-linux-x86_64/* /usr/bin
+  # - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
+  # - unzip bowtie2-2.3.5.1-linux-x86_64.zip
+  # - sudo mv bowtie2-2.3.5.1-linux-x86_64/* /usr/bin
+  - wget https://github.com/BenLangmead/bowtie2/archive/v2.3.5.1.tar.gz
+  - tar xvf v2.3.5.1.tar.gz
+  - pushd bowtie2-2.3.5.1 && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
