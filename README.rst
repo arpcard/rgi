@@ -647,6 +647,8 @@ Running RGI bwt with FASTQ files
 
 You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
 
+RGI will take FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI.
+
 Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD only:
 
    .. code-block:: sh
