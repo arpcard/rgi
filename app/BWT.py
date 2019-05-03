@@ -369,8 +369,6 @@ class BWT(object):
 		Parse card.json to get each model details
 		"""
 		models = {}
-		categories = {}
-		model_name = ""
 		try:
 			with open(os.path.join(self.data, "card.json"), 'r') as jfile:
 				data = json.load(jfile)
@@ -381,7 +379,6 @@ class BWT(object):
 		for i in data:
 			if i.isdigit():
 				categories = {}
-				model_name = data[i]["model_name"]
 				taxon = []
 
 				if "model_sequences" in data[i]:
@@ -395,6 +392,7 @@ class BWT(object):
 						categories[data[i]["ARO_category"][c]["category_aro_class_name"]] = []
 					if data[i]["ARO_category"][c]["category_aro_name"] not in categories[data[i]["ARO_category"][c]["category_aro_class_name"]]:
 						categories[data[i]["ARO_category"][c]["category_aro_class_name"]].append(data[i]["ARO_category"][c]["category_aro_name"])
+						
 				if by_accession == False:
 					models[data[i]["model_id"]] = {
 						"model_id": data[i]["model_id"],
@@ -895,21 +893,9 @@ class BWT(object):
 		start = time.time()		
 		# logger.debug(alignment_hit)
 		coverage = self.get_coverage_details(alignment_hit)
-
-		model_id = ""
-		cvterm_name = ""
-		model_type = ""
-		resistomes = {}
-
 		model_id = self.get_model_id(models_by_accession, alignment_hit)
-		# logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
-		
+
 		try:
-			# if model_id:
-			cvterm_name = models[model_id]["model_name"]
-			aro_accession = models[model_id]["ARO_accession"]
-			model_type = models[model_id]["model_type"]
-			resistomes = models[model_id]["categories"]
 			alignments = self.get_alignments(alignment_hit)
 			mapq_l = []
 			mate_pair = []
@@ -917,7 +903,7 @@ class BWT(object):
 			for a in alignments:
 				mapq_l.append(int(a["mapq"]))
 				if a["mrnm"] != "=" and a["mrnm"] not in mate_pair:
-					if "ARO:{}".format(aro_accession) not in a["mrnm"]:
+					if "ARO:{}".format(models[model_id]["ARO_accession"]) not in a["mrnm"]:
 						mate_pair.append(a["mrnm"])
 
 			if len(mapq_l) > 0:
@@ -937,7 +923,7 @@ class BWT(object):
 			# if variants and "Resistomes & Variants" in database and "ARO:" not in alignment_hit:
 			if "Prevalence_Sequence_ID" in alignment_hit:
 				database = "Resistomes & Variants"
-				logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
+				# logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				if model_id in variants.keys():
 					_accession = ""
 					for s in variants[model_id]:
@@ -981,13 +967,14 @@ class BWT(object):
 					# provide info from model
 					observed_in_pathogens = models[model_id]["taxon"]
 			else:
-				logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
+				# logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				observed_in_pathogens = models[model_id]["taxon"]
-				logger.debug(coverage)
+				# logger.debug(coverage)
 				# assumption card canonical
 				percent_identity = 100.0
 
 			# check all clases categories
+			resistomes = models[model_id]["categories"]
 			if "AMR Gene Family" not in resistomes.keys():
 				resistomes["AMR Gene Family"] = []
 			if "Drug Class" not in resistomes.keys():
@@ -997,15 +984,15 @@ class BWT(object):
 
 			stop = time.time()
 			elapsed = stop - start
-			# logger.info("time lapsed: {} - {}".format(elapsed, alignment_hit))
+			logger.info("time lapsed: {} - {}".format(format(elapsed,'.3f'), alignment_hit))
 			# self.async_print(alignment_hit, start, stop, elapsed)
-			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(aro_accession)
-
+			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(models[model_id]["ARO_accession"])
+			# logger.debug(">>> {}".format(alignment_hit))
 			return {
 				"id": alignment_hit,
-				"cvterm_name": cvterm_name,
-				"aro_accession": aro_accession,
-				"model_type": model_type,
+				"cvterm_name": models[model_id]["model_name"],
+				"aro_accession": models[model_id]["ARO_accession"],
+				"model_type": models[model_id]["model_type"],
 				"database": database,
 				"reference_allele_source": reference_allele_source,
 				"observed_in_genomes": observed_in_genomes,
@@ -1107,13 +1094,7 @@ class BWT(object):
 		reads = self.get_reads_count()
 		logger.info("get_model_details ...")
 		models = self.get_model_details()
-		# debug
-		# with open("models.json", "w") as outfile1:
-		# 	json.dump(models, outfile1)
 		models_by_accession = self.get_model_details(True)
-		# debug
-		# with open("models_by_accession.json", "w") as outfile3:
-		# 	json.dump(models_by_accession, outfile3)
 		if self.include_wildcard:
 			logger.info("get_variant_details ...")
 			variants = self.get_variant_details()
@@ -1126,18 +1107,17 @@ class BWT(object):
 			baits = self.get_baits_details()
 
 		mapq_average = 0
+		t0 = time.time()
 
 		jobs = []
 		for alignment_hit in reads.keys():
 			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,))
-		# logger.info(json.dumps(jobs, indent=2))
-		# t0 = time.time()
 
-		with Pool(processes=self.threads) as p:
-			summary = p.map(self.jobs, jobs)
-			
-		# logger.info(time.time() - t0)
-		
+		# with Pool(processes=self.threads) as p:
+		# 	summary = p.map(self.jobs, jobs)
+
+		summary = list(self.jobs(job) for job in jobs)
+		logger.info("Time: {}".format( format(time.time() - t0, '.3f')))
 		# write json
 		with open(self.allele_mapping_data_json, "w") as af:
 			af.write(json.dumps(summary,sort_keys=True))
@@ -1399,7 +1379,7 @@ class BWT(object):
 				min_identity = float(min(mapping_summary[i]["range_of_reference_allele_source"]))
 				max_identity = float(max(mapping_summary[i]["range_of_reference_allele_source"]))
 				identity_range = ""
-				logger.debug("percent identity range for {} : {} => ({} - {})".format("; ".join(mapping_summary[i]["cvterm_name"]), mapping_summary[i]["range_of_reference_allele_source"], min_identity, max_identity))
+				# logger.debug("percent identity range for {} : {} => ({} - {})".format("; ".join(mapping_summary[i]["cvterm_name"]), mapping_summary[i]["range_of_reference_allele_source"], min_identity, max_identity))
 
 				if min_identity == 0.0 and max_identity > 0.0:
 					identity_range = "{}".format(max_identity)
