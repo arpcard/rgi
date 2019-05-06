@@ -79,7 +79,8 @@ Table of Contents
 - `RGI bwt Usage for Metagenomic Reads`_
 - `Running RGI bwt with FASTQ files`_
 - `RGI bwt Tab-Delimited Output`_
-- `Run RGI from Docker`_
+- `Run RGI from Docker - via biocontainers or quay`_
+- `Run RGI from Docker - via dockerhub`_
 - `Install RGI from Conda`_
 
 License
@@ -810,8 +811,18 @@ RGI bwt read mapping results at gene level
 
 Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
-Run RGI from Docker
--------------------
+Run RGI from Docker - via biocontainers or quay
+----------------------------------------------
+
+See all tags at `quay <https://quay.io/repository/biocontainers/rgi?tab=tags>`_ 
+
+Run the container with tag `4.2.2--py35ha92aebf_1` using the following:
+
+.. code-block:: sh
+   docker run quay.io/biocontainers/rgi:4.2.2--py35ha92aebf_1 rgi --help
+
+Run RGI from Docker - via dockerhub
+----------------------------------
 
 First you you must either pull the Docker container from dockerhub (latest CARD version automatically installed):
 
