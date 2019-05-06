@@ -818,8 +818,9 @@ See all tags at `quay <https://quay.io/repository/biocontainers/rgi?tab=tags>`_
 
 Run the container with tag `4.2.2--py35ha92aebf_1` using the following:
 
-.. code-block:: sh
-   docker run quay.io/biocontainers/rgi:4.2.2--py35ha92aebf_1 rgi --help
+  .. code-block:: sh
+
+      docker run quay.io/biocontainers/rgi:4.2.2--py35ha92aebf_1 rgi --help
 
 Run RGI from Docker - via dockerhub
 ----------------------------------
