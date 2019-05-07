@@ -1114,10 +1114,10 @@ class BWT(object):
 		for alignment_hit in reads.keys():
 			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,))
 
-		# with Pool(processes=self.threads) as p:
-		# 	summary = p.map(self.jobs, jobs)
+		with Pool(processes=self.threads) as p:
+			results = p.map_async(self.jobs, jobs)
+			summary = results.get()
 
-		summary = list(self.jobs(job) for job in jobs)
 		logger.info("Time: {}".format( format(time.time() - t0, '.3f')))
 		# write json
 		with open(self.allele_mapping_data_json, "w") as af:
