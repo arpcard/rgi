@@ -255,8 +255,9 @@ class BWT(object):
 		"""
 		Sort bam file
 		"""
-		os.system("samtools sort --threads {threads} -T /tmp/aln.sorted -o {sorted_bam_file} {unsorted_bam_file}".format(
+		os.system("samtools sort --threads {threads} -T {output_file}.sorted -o {sorted_bam_file} {unsorted_bam_file}".format(
 			threads=self.threads,
+			output_file=self.output_file,
 			unsorted_bam_file=self.output_bam_file,
 			sorted_bam_file=self.output_bam_sorted_file
 			)
