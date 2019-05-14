@@ -876,4 +876,3 @@ Remove RGI package:
   .. code-block:: sh
         
         $ conda remove --channel bioconda rgi
-
