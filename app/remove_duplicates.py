@@ -24,7 +24,8 @@ def main(args):
             cl = card_cannonical_lengths[accession]
             pl = len(record.seq)
             perc = int((pl/cl)*100)
-            if cl > pl and (int(perc) < 90):
+            # if cl > pl and (int(perc) < 90):
+            if cl != pl:
                 logger.info("remove: {} -- {} > {} ({})".format(record.id, cl, pl, perc))
                 if record.id not in remove:
                     remove.append(record.id)
