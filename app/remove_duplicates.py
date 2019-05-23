@@ -2,7 +2,6 @@ import os, argparse
 from Bio import SeqIO
 from Bio.SeqUtils.CheckSum import seguid
 from app.settings import *
-import json, psutil
 from collections import defaultdict
 
 def main(args):
@@ -38,45 +37,10 @@ def main(args):
         for seq in dedup_records:
             fout.write(">{}\n{}\n".format(dedup_records[seq][-1], seq))
 
-    # exit("STOP")
-    # process = psutil.Process(os.getpid())
-    # # logger.warning('{:,.0f} MB'.format(float(process.memory_info().rss) / (1024*1024)))
-
-    # logger.info("start")
-
-    # # remove duplicates
-    # logger.info("remove duplicates ...")
-    # records = remove_duplicate_sequences(SeqIO.parse(os.path.join(args.input_fasta_file), "fasta"))
-    # logger.warning('{:,.0f} MB'.format(float(process.memory_info().rss) / (1024*1024)))
-    
-    # # remove sub-sequences
-    # logger.info("remove sub-sequences ...")
-    # final_records = remove_sub_sequences(records)
-    # logger.warning('{:,.0f} MB'.format(float(process.memory_info().rss) / (1024*1024)))
-
-    # # write FASTA file
-    # logger.info("write FASTA file ...")
-    # with open(args.output_fasta_file, 'w') as fout:
-    #     for header in final_records:
-    #         fout.write(">{}\n{}\n".format(header, final_records[header]))
-
     logger.info("Number of card cannonical records: {}".format(len(card_cannonical_lengths.keys())))
     logger.info("Number of prevalence sequences removed based on length of reference: {}".format(len(remove)))
     logger.info("Saved {} records".format(len(dedup_records)))
     logger.info("Done.")
-    # logger.warning('{:,.0f} MB'.format(float(process.memory_info().rss) / (1024*1024)))
-
-    '''
-    final_records = records
-
-    # write FASTA file
-    with open(args.output_fasta_file, 'w') as fout:
-        for header in final_records:
-            fout.write(">{}\n{}\n".format(header.id, str(header.seq)))
-
-    # logger.info("Saved {} records".format(len(final_records)))
-    # logger.info("Done.")
-    '''
 
 def remove_sub_sequences(records):
     """
@@ -98,7 +62,6 @@ def remove_sub_sequences(records):
     for s in records:
         recs[s.id] = str(s.seq)
         if s.seq not in seqs:
-            # logger.info(s.id)
             seqs.append(str(s.seq))
 
     logger.info("1: {}".format(len(recs.keys())))
@@ -127,18 +90,14 @@ def remove_duplicate_sequences(records):
     for record in records:
         all_seqs.append(record.seq)
         checksum = seguid(record.seq)
-        # checksum = str(record.seq)
         if checksum in checksums:
             logger.warning("Ignoring {}".format(record.id))
             continue
-        # logger.debug("-> {}".format(record.id))
         checksums.add(checksum)
 
         yield record
     
     logger.info("Number of sequences: {}".format(len(all_seqs)))
-    # logger.info("Number of 'unique' records: {}".format(len(uniq_seqs)))
-    # print(uniq_seqs)
 
 def create_parser():
     parser = argparse.ArgumentParser(prog="rgi remove_duplicates", description='Removes duplicates sequences from annotationed fasta file')
