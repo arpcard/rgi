@@ -6,7 +6,7 @@ set -e
 cmd="COMMAND"
 echo "=================================== DOWNLOAD CARD CANNONICAL DATA ==================================="
 # get latest card database
-wget -O card_data.tar.bz2 http://card.mcmaster.ca/latest/data
+wget -O card_data.tar.bz2 https://card.mcmaster.ca/download/0/broadstreet-v3.0.2.tar.gz
 mkdir -p card_data
 tar xf card_data.tar.bz2 -C card_data
 
