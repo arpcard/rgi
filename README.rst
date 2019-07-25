@@ -1,6 +1,15 @@
-.. image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
-    :target: https://travis-ci.org/arpcard/rgi
+|build-status| |docs|
 
+.. |build-status| image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
+    :alt: build status
+    :scale: 100%
+    :target: https://travis-ci.org/arpcard/rgi 
+
+.. |docs| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
+    :alt: Documentation
+    :scale: 100%
+    :target: http://bioconda.github.io/recipes/rgi/README.html
+    
 The Resistance Gene Identifier (RGI) 
 --------------------------------------------
 
