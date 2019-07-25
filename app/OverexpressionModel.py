@@ -185,7 +185,7 @@ class Overexpression(BaseModel):
 								perfect["{}|hsp_num:{}".format(hitid.decode(),init)] = ppinsidedict
 								init += 1
 
-							elif hsp.bits >= float(pass_bitscore):
+							elif float(hsp.bits) >= float(pass_bitscore):
 								snp_counter = 0
 								for eachs in snpdictlist:
 									"""SNP detection for strict hit."""

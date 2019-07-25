@@ -140,7 +140,7 @@ class Variant(BaseModel):
 										query_snps = {"original": ori, "change": chan ,"position": d+1}
 										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
 
-										if hsp.bits >= true_pass_evalue:		
+										if float(hsp.bits) >= float(true_pass_evalue):		
 											sinsidedict = {}
 											sinsidedict["type_match"] = "Strict"
 											sinsidedict["snp"] = eachs

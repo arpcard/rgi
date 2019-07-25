@@ -170,7 +170,7 @@ class Homolog(BaseModel):
 								perfect["{}|hsp_num:{}".format(hitid.decode(),init)] = ppinsidedict
 								init += 1
 
-							elif hsp.bits >= float(pass_bitscore):
+							elif float(hsp.bits) >= float(pass_bitscore):
 								""" Strict hits """
 								# logger.info("Strict hits")
 								insidedict = {}

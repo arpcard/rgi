@@ -125,6 +125,7 @@ def make_json(m,j,f,t,s):
             else:
                 cdict = {'name': crit, 'children': []}
                 for i in dc[crit]:
+                    temp = {}
                     temp = {'name': i, 'children': []}
                     innerdict = {}
                     for hit in dc[crit][i]:
