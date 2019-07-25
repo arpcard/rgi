@@ -3,8 +3,14 @@
 
 # exit on failure of any command
 set -e
+
 cmd="COMMAND"
-echo "=================================== DOWNLOAD CARD CANNONICAL DATA ==================================="
+
+echo "=================================== RGI EXECUTABLE LOCATION ==================================="
+which rgi
+rgi -h
+
+echo "=================================== DOWNLOAD CARD CANONICAL DATA ==================================="
 # get latest card database
 wget -O card_data.tar.bz2 https://card.mcmaster.ca/download/0/broadstreet-v3.0.2.tar.gz
 mkdir -p card_data
@@ -16,7 +22,7 @@ wget -O prevalence-v3.0.4.tar.gz https://card.mcmaster.ca/download/6/prevalence-
 mkdir -p card_variants 
 tar xf prevalence-v3.0.4.tar.gz -C card_variants
 
-echo "=================================== CARD CANNONICAL ANNOTATIONS ==================================="
+echo "=================================== CARD CANONICAL ANNOTATIONS ==================================="
 # create fasta files with annotations from card.json
 echo "$cmd python3 ./rgi card_annotation --input card_data/card.json"
 python3 ./rgi card_annotation --input card_data/card.json
@@ -65,6 +71,10 @@ echo "$cmd pytest -v -rxs"
 pytest -v -rxs
 
 echo "=================================== DONE ==================================="
+
+rm -r card_data*
+rm prevalence-v*.tar.gz
+rm wildcard_database_v*
 
 # exit with the exitcode thrown by pytest
 exit $?
