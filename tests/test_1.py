@@ -47,8 +47,8 @@ def validate_results(filepath,perc_identity=0, ARO_name='', type_match=''):
 							pi = json_data[str(i)][str(j)]["perc_identity"]
 							name = json_data[str(i)][str(j)]["ARO_name"]
 							tm = json_data[str(i)][str(j)]["type_match"]
-						# print(pi, name, tm)
 						if pi == perc_identity and name == ARO_name and tm == type_match:
+							#print(pi, name, tm)
 							return True
 			return False
 	else:
@@ -64,7 +64,8 @@ def run_rgi(rgi, input_type, input_sequence, output_file):
 		'--alignment_tool', alignment_tool,
 		'--clean',
 		'--include_loose',
-		'--low_quality'
+		'--low_quality',
+		'--debug'
     ]))
 
 def test_rgi_protein_sequence(rgi):

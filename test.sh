@@ -12,7 +12,7 @@ rgi -h
 
 echo "=================================== DOWNLOAD CARD CANONICAL DATA ==================================="
 # get latest card database
-wget -O card_data.tar.bz2 https://card.mcmaster.ca/download/0/broadstreet-v3.0.2.tar.gz
+wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
 mkdir -p card_data
 tar xf card_data.tar.bz2 -C card_data
 
@@ -67,14 +67,16 @@ echo "=================================== RUN TESTS ============================
 # run unit tests
 echo "$cmd cd tests"
 cd tests
-echo "$cmd pytest -v -rxs"
-pytest -v -rxs
+echo "$cmd pytest --capture=no -v -rxs"
+pytest --capture=no -v -rxs
+
+pwd
+
+rm -r ../card_*
+rm ../prevalence-v*.gz
+rm ../wildcard_database_v*
 
 echo "=================================== DONE ==================================="
-
-rm -r card_data*
-rm prevalence-v*.tar.gz
-rm wildcard_database_v*
 
 # exit with the exitcode thrown by pytest
 exit $?
