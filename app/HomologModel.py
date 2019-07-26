@@ -295,8 +295,8 @@ class Homolog(BaseModel):
 
 									init += 1
 							except Exception as e:
-								logger.warning("??Exception : {} -> {} -> Model({})".format(type(e), e, modelID))
-								logger.warning("{} ---> hsp.bits: {} ? {}".format(json_data[modelID]["model_name"],type(hsp.bits), type(pass_bitscore)))
+								logger.warning("Exception : {} -> {} -> Model({})".format(type(e), e, modelID))
+								logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[modelID]["model_name"],hsp.bits, type(hsp.bits), type(pass_bitscore)))
 
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose, self.exclude_nudge)
 
