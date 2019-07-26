@@ -140,130 +140,134 @@ class Variant(BaseModel):
 										query_snps = {"original": ori, "change": chan ,"position": d+1}
 										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
 
-										if float(hsp.bits) >= float(true_pass_evalue):		
-											sinsidedict = {}
-											sinsidedict["type_match"] = "Strict"
-											sinsidedict["snp"] = eachs
-											sinsidedict["query_snp"] = query_snps
-											sinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
-											sinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)
-											sinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
-											sinsidedict["orf_from"] = orf_from.decode()
-											sinsidedict["model_name"] = json_data[model_id]["model_name"]
-											sinsidedict["model_type"] = json_data[model_id]["model_type"]
-											sinsidedict["model_type_id"] = model_type_id
-											sinsidedict["model_id"] = model_id
-											sinsidedict["pass_evalue"] = "n/a"
-											sinsidedict["pass_bitscore"] = pass_value
-											sinsidedict["ARO_accession"] = json_data[model_id]["ARO_accession"]
-											sinsidedict["ARO_name"] = json_data[model_id]["ARO_name"]
-											sinsidedict["ARO_category"] = json_data[model_id]["ARO_category"]
-											sinsidedict["evalue"] = hsp.expect
-											sinsidedict["max_identities"] = hsp.identities
-											sinsidedict["bit_score"] = hsp.bits
-											sinsidedict["cvterm_id"]  = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["NCBI_taxonomy"]["NCBI_taxonomy_cvterm_id"]
-											sinsidedict["query"] = hsp.query
-											sinsidedict["match"] = hsp.match
-											sinsidedict["sequence_from_db"] = hsp.sbjct
-											sinsidedict["sequence_from_broadstreet"]	= json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
-											sinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
-											if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
-												sinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
-											else:
-												sinsidedict["partial"] = "0"
-											
-											if self.input_type == 'contig':
-												sinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
-												sinsidedict["query_end"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3 + real_query_length*3 - 1
-												sinsidedict["orf_strand"] = self.extract_nth_hash(orf_info.decode(), 3)
-												sinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
-												sinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
-												sinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
+										try:
+											if float(hsp.bits) >= float(true_pass_evalue):		
+												sinsidedict = {}
+												sinsidedict["type_match"] = "Strict"
+												sinsidedict["snp"] = eachs
+												sinsidedict["query_snp"] = query_snps
+												sinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
+												sinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)
+												sinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
+												sinsidedict["orf_from"] = orf_from.decode()
+												sinsidedict["model_name"] = json_data[model_id]["model_name"]
+												sinsidedict["model_type"] = json_data[model_id]["model_type"]
+												sinsidedict["model_type_id"] = model_type_id
+												sinsidedict["model_id"] = model_id
+												sinsidedict["pass_evalue"] = "n/a"
+												sinsidedict["pass_bitscore"] = pass_value
+												sinsidedict["ARO_accession"] = json_data[model_id]["ARO_accession"]
+												sinsidedict["ARO_name"] = json_data[model_id]["ARO_name"]
+												sinsidedict["ARO_category"] = json_data[model_id]["ARO_category"]
+												sinsidedict["evalue"] = hsp.expect
+												sinsidedict["max_identities"] = hsp.identities
+												sinsidedict["bit_score"] = hsp.bits
+												sinsidedict["cvterm_id"]  = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["NCBI_taxonomy"]["NCBI_taxonomy_cvterm_id"]
+												sinsidedict["query"] = hsp.query
+												sinsidedict["match"] = hsp.match
+												sinsidedict["sequence_from_db"] = hsp.sbjct
+												sinsidedict["sequence_from_broadstreet"]	= json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
+												sinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
+												if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
+													sinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
+												else:
+													sinsidedict["partial"] = "0"
+												
+												if self.input_type == 'contig':
+													sinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
+													sinsidedict["query_end"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3 + real_query_length*3 - 1
+													sinsidedict["orf_strand"] = self.extract_nth_hash(orf_info.decode(), 3)
+													sinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
+													sinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
+													sinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
 
-												if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
-													sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
-													# sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
+														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
+														# sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+														sinsidedict["orf_prot_sequence"] = orf_protein_sequence
+													else:
+														sinsidedict["orf_dna_sequence"] = ""
+														sinsidedict["orf_prot_sequence"] = ""	
+
+
+												elif self.input_type == 'protein':
+													sinsidedict["query_start"] = hsp.query_start
+													sinsidedict["query_end"] = hsp.query_start + real_query_length
+													sinsidedict["query_from"] = blast_record.query
 													sinsidedict["orf_prot_sequence"] = orf_protein_sequence
-												else:
-													sinsidedict["orf_dna_sequence"] = ""
-													sinsidedict["orf_prot_sequence"] = ""	
 
+												elif self.input_type == 'read':
+													pass
 
-											elif self.input_type == 'protein':
-												sinsidedict["query_start"] = hsp.query_start
-												sinsidedict["query_end"] = hsp.query_start + real_query_length
-												sinsidedict["query_from"] = blast_record.query
-												sinsidedict["orf_prot_sequence"] = orf_protein_sequence
+												sinsidedict["perc_identity"] = float(format(float(sinsidedict["max_identities"]*100) / len(sinsidedict["query"]),'.2f'))
 
-											elif self.input_type == 'read':
-												pass
+												strict["{}|hsp_num:{}".format(hit_id.decode(),init)] = sinsidedict
+												init += 1
 
-											sinsidedict["perc_identity"] = float(format(float(sinsidedict["max_identities"]*100) / len(sinsidedict["query"]),'.2f'))
-
-											strict["{}|hsp_num:{}".format(hit_id.decode(),init)] = sinsidedict
-											init += 1
-
-										else:
-											slinsidedict = {}
-											slinsidedict["type_match"] = "Loose"
-											slinsidedict["snp"] = eachs
-											slinsidedict["query_snp"] = query_snps
-											slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
-											slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)				
-											slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
-											slinsidedict["orf_from"] = orf_from.decode()
-											slinsidedict["model_name"] = json_data[model_id]["model_name"]
-											slinsidedict["model_type"] = json_data[model_id]["model_type"]
-											slinsidedict["model_type_id"] = model_type_id
-											slinsidedict["pass_evalue"] = "n/a"
-											slinsidedict["pass_bitscore"] = pass_value
-											slinsidedict["model_id"] = model_id
-											slinsidedict["ARO_accession"] = json_data[model_id]["ARO_accession"]
-											slinsidedict["ARO_name"] = json_data[model_id]["ARO_name"]
-											slinsidedict["ARO_category"] = json_data[model_id]["ARO_category"]
-											slinsidedict["evalue"] = hsp.expect
-											slinsidedict["bit_score"] = hsp.bits
-											slinsidedict["max_identities"] = hsp.identities
-											slinsidedict["cvterm_id"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["NCBI_taxonomy"]["NCBI_taxonomy_cvterm_id"]
-											slinsidedict["query"] = hsp.query
-											slinsidedict["match"] = hsp.match
-											slinsidedict["sequence_from_db"] = hsp.sbjct
-											slinsidedict["sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
-											slinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
-											if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
-												slinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
 											else:
-												slinsidedict["partial"] = "0"
-
-											if self.input_type == 'contig':
-												slinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
-												slinsidedict["query_end"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3 + real_query_length*3 - 1
-												slinsidedict["orf_strand"] = self.extract_nth_hash(orf_info.decode(), 3)
-												slinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
-												slinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
-												slinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
-
-												if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
-													slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
-													# slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
-													slinsidedict["orf_prot_sequence"] = orf_protein_sequence
+												slinsidedict = {}
+												slinsidedict["type_match"] = "Loose"
+												slinsidedict["snp"] = eachs
+												slinsidedict["query_snp"] = query_snps
+												slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
+												slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)				
+												slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
+												slinsidedict["orf_from"] = orf_from.decode()
+												slinsidedict["model_name"] = json_data[model_id]["model_name"]
+												slinsidedict["model_type"] = json_data[model_id]["model_type"]
+												slinsidedict["model_type_id"] = model_type_id
+												slinsidedict["pass_evalue"] = "n/a"
+												slinsidedict["pass_bitscore"] = pass_value
+												slinsidedict["model_id"] = model_id
+												slinsidedict["ARO_accession"] = json_data[model_id]["ARO_accession"]
+												slinsidedict["ARO_name"] = json_data[model_id]["ARO_name"]
+												slinsidedict["ARO_category"] = json_data[model_id]["ARO_category"]
+												slinsidedict["evalue"] = hsp.expect
+												slinsidedict["bit_score"] = hsp.bits
+												slinsidedict["max_identities"] = hsp.identities
+												slinsidedict["cvterm_id"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["NCBI_taxonomy"]["NCBI_taxonomy_cvterm_id"]
+												slinsidedict["query"] = hsp.query
+												slinsidedict["match"] = hsp.match
+												slinsidedict["sequence_from_db"] = hsp.sbjct
+												slinsidedict["sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
+												slinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
+												if "partial" in json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"].keys():
+													slinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
 												else:
-													slinsidedict["orf_dna_sequence"] = ""
-													slinsidedict["orf_prot_sequence"] = ""	
+													slinsidedict["partial"] = "0"
 
-											elif self.input_type == 'protein':
-												slinsidedict["query_start"] = hsp.query_start
-												slinsidedict["query_end"] = hsp.query_start + real_query_length
-												slinsidedict["query_from"] = blast_record.query
-												slinsidedict["orf_prot_sequence"] = orf_protein_sequence
+												if self.input_type == 'contig':
+													slinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
+													slinsidedict["query_end"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3 + real_query_length*3 - 1
+													slinsidedict["orf_strand"] = self.extract_nth_hash(orf_info.decode(), 3)
+													slinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
+													slinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
+													slinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
 
-											elif self.input_type == 'read':
-												pass
+													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
+														slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
+														# slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+														slinsidedict["orf_prot_sequence"] = orf_protein_sequence
+													else:
+														slinsidedict["orf_dna_sequence"] = ""
+														slinsidedict["orf_prot_sequence"] = ""	
 
-											slinsidedict["perc_identity"] = float(format(float(slinsidedict["max_identities"]*100) / len(slinsidedict["query"]),'.2f'))
-											loose["{}|hsp_num:{}".format(hit_id.decode(),init)] = slinsidedict
+												elif self.input_type == 'protein':
+													slinsidedict["query_start"] = hsp.query_start
+													slinsidedict["query_end"] = hsp.query_start + real_query_length
+													slinsidedict["query_from"] = blast_record.query
+													slinsidedict["orf_prot_sequence"] = orf_protein_sequence
 
-											init += 1
+												elif self.input_type == 'read':
+													pass
+
+												slinsidedict["perc_identity"] = float(format(float(slinsidedict["max_identities"]*100) / len(slinsidedict["query"]),'.2f'))
+												loose["{}|hsp_num:{}".format(hit_id.decode(),init)] = slinsidedict
+
+												init += 1
+										except Exception as e:
+											logger.warning("??Exception : {} -> {} -> Model({})".format(type(e), e, model_id))
+											logger.warning("{} ---> hsp.bits: {} ? {}".format(json_data[model_id]["model_name"],type(hsp.bits), type(true_pass_evalue)))
 
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose)
 						
