@@ -68,7 +68,7 @@ echo "=================================== RUN TESTS ============================
 echo "$cmd cd tests"
 cd tests
 echo "$cmd pytest --capture=no -v -rxs"
-pytest --capture=no -v -rxs
+pytest --capture=no -v -rxs -k test_rgi_protein_sequence
 
 pwd
 

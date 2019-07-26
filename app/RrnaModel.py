@@ -217,7 +217,7 @@ class Rrna(BaseModel):
 												init += 1
 										except Exception as e:
 											logger.warning("Exception : {} -> {} -> Model({})".format(type(e), e, model_id))
-											logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[model_id]["model_name"],hsp.bits,type(hsp.bits), type(pass_bitscore)))
+											logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[model_id]["model_name"],hsp.bits,type(hsp.bits), type(true_pass_evalue)))
 
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose)
 
