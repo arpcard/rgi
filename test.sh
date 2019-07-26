@@ -67,8 +67,8 @@ echo "=================================== RUN TESTS ============================
 # run unit tests
 echo "$cmd cd tests"
 cd tests
-echo "$cmd pytest --capture=no -v -rxs"
-pytest --capture=no -v -rxs -k test_rgi_protein_sequence
+echo "$cmd pytest --capture=fd -v -rxs"
+pytest --capture=fd -v -rxs
 
 pwd
 
