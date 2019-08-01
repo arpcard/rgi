@@ -125,11 +125,24 @@ class RGI(RGIBase):
 				if self.input_type == "protein":
 					return self.is_protein(record.seq)
 			return True
-	
+
 	@staticmethod
 	def is_dna(sequence):
 		#  dna codes
-		nucleotide_dict = {'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0}
+		nucleotide_dict = {'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0,
+		#  other dna codes
+		'W': 0, # W = A or T
+		'S': 0, # S = C or G
+		'M': 0, # M = A or C
+		'K': 0, # K = G or T
+		'R': 0, # R = A or G
+		'Y': 0, # Y = C or T
+		'B': 0, # B = C, G, or T
+		'D': 0, # D = A, G, or T
+		'H': 0, # H = A, C, or T
+		'V': 0 # V = A, C, or G
+		}
+
 		for base in sequence:
 			try: 
 				nucleotide_dict[base.upper()] += 1
