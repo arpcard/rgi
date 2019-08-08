@@ -255,7 +255,7 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 Load CARD Reference Data
 --------------------------
 
-**Required Reference Data**
+**Required CARD Reference Data**
 
 To start analyses, first acquire the latest AMR reference data from CARD. CARD data can be installed at the system level or at the local level:
 
@@ -317,6 +317,22 @@ System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_
    
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
       rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
+
+**Additional Reference Data for Kmer Pathogen-of-Origin Analyses**
+
+Complete all the above steps for **Required CARD Reference Data** and **Additional Reference Data for Metagenomics Analyses**, then load the kmer reference data:
+
+Local or working directory (example uses the pre-compiled 61 bp kmers):
+
+   .. code-block:: sh
+   
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+
+System wide (example uses the pre-compiled 61 bp kmers):
+
+   .. code-block:: sh
+   
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --debug > kmer_load.61.log 2>&1
 
 Check Database Version
 -----------------------
@@ -877,32 +893,6 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
             --local               use local database (default: uses database in
                                   executable directory)
             --debug               debug mode
-
-Obtain and Load CARD data (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      wget https://card.mcmaster.ca/latest/data
-      tar -xvf data ./card.json
-      rgi load --card_json /path/to/card.json --local
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
-
-Obtain and Load WildCARD data (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
-      rgi wildcard_annotation -i /path/to/wildcard --card_json /path/to/card.json -v 3.0.2
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local --debug
-
-Load the default (61 bp) CARD k-mer Classifiers:
-
-   .. code-block:: sh
-   
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
 
 CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
 
