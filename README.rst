@@ -318,17 +318,17 @@ System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
       rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
 
-**Additional Reference Data for Kmer Pathogen-of-Origin Analyses**
+**Additional Reference Data for K-mer Pathogen-of-Origin Analyses**
 
-Complete all the above steps for **Required CARD Reference Data** and **Additional Reference Data for Metagenomics Analyses**, then load the kmer reference data:
+Complete all the above steps for **Required CARD Reference Data** and **Additional Reference Data for Metagenomics Analyses**, then load the k-mer reference data:
 
-Local or working directory (example uses the pre-compiled 61 bp kmers):
+Local or working directory (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
       rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
 
-System wide (example uses the pre-compiled 61 bp kmers):
+System wide (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
@@ -746,7 +746,7 @@ RGI bwt read mapping results at allele level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown. Use kmers to verify pathogen-of-origin. |
+|                                                          | be shown. Use k-mers to verify pathogen-of-origin.|
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -803,7 +803,7 @@ RGI bwt read mapping results at gene level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown. Use kmers to verify pathogen-of-origin. |
+|                                                          | be shown. Use k-mers to verify pathogen-of-origin.|
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to these alleles|
 +----------------------------------------------------------+---------------------------------------------------+
@@ -925,11 +925,11 @@ CARD k-mer Classifier Output for a FASTA file
 +==========================================================+====================================================+
 |    Sequence                                              | Sequence defline in the FASTA file                 |
 +----------------------------------------------------------+----------------------------------------------------+
-|    Total # kmers                                         | Total # kmers in the sequence                      |
+|    Total # kmers                                         | Total # k-mers in the sequence                     |
 +----------------------------------------------------------+----------------------------------------------------+
-|    # of AMR kmers                                        | Total # AMR kmers in the sequence                  |
+|    # of AMR kmers                                        | Total # AMR k-mers in the sequence                 |
 +----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
+|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the k-mers|
 |                                                          | are known exclusively from chromosomes, exclusively|
 |                                                          | from plasmids, or can be found in either           |
 |                                                          | chromosomes or plasmids                            | 
@@ -953,7 +953,7 @@ CARD k-mer Classifier Output for RGI main results
 +----------------------------------------------------------+----------------------------------------------------+
 |    Cut_Off                                               | RGI Detection Paradigm (from RGI results)          |
 +----------------------------------------------------------+----------------------------------------------------+
-|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the kmers |
+|    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the k-mers|
 |                                                          | are known exclusively from chromosomes, exclusively|
 |                                                          | from plasmids, or can be found in either           |
 |                                                          | chromosomes or plasmids                            | 
@@ -979,7 +979,7 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 |    Mapped reads with kmer DB hits                        | **Number of reads** classified                     |
 +----------------------------------------------------------+----------------------------------------------------+
 |    CARD kmer Prediction                                  | **Number of reads** classified for each allele or  |
-|                                                          | gene, with indication if the kmers are known       |
+|                                                          | gene, with indication if the k-mers are known      |
 |                                                          | exclusively from chromosomes, exclusively from     |
 |                                                          | plasmids, or can be found in either                |
 +----------------------------------------------------------+----------------------------------------------------+
