@@ -255,6 +255,8 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 Load CARD Reference Data
 --------------------------
 
+**Required Reference Data**
+
 To start analyses, first acquire the latest AMR reference data from CARD. CARD data can be installed at the system level or at the local level:
 
 Obtain CARD data:
@@ -275,6 +277,8 @@ System wide:
    .. code-block:: sh
 
       rgi load --card_json /path/to/card.json
+
+**Additional Reference Data for Metagenomics Analyses**
 
 Metagenomics analyses may additionally require CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data, which can also be installed at the system level or at the local level once the CARD data has been loaded.
 
