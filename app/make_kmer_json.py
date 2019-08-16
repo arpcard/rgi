@@ -1,6 +1,7 @@
-import csv, re, argparse, multiprocessing, math, json, ahocorasick, os
+import csv, re, argparse, multiprocessing, math, json, ahocorasick, os, sqlite3
 from Bio import Seq, SeqIO
-
+from app.settings import logger
+import itertools
 """
 This scripts creates the JSON to hold all kmer sets.
 """
@@ -9,54 +10,66 @@ def split_list(l,n):
     for i in range(0, len(l), n):
         yield l[i:i+n]
 
-def query_kmers(l, t, fasta, o):
+def query_kmers(temp_l, t, fasta, o, batch_size):
     """Finds kmers in variant sequences"""
-    try:
-        print('THREAD {t}: Adding kmers'.format(t=t))
-        A = ahocorasick.Automaton()
-        for k in l:
-            A.add_word(k,k)
-        print('THREAD {t}: Making automaton'.format(t=t))
-        A.make_automaton()
+    ### The fasta being referenced is "nucleotide_prevalence_all.fasta"
+    list_size = math.ceil(len(temp_l)/(math.ceil(len(temp_l)/batch_size)))
+    temp_l = (split_list(temp_l, list_size))
+    # print("Total # of indexes:", len(temp_l))
 
-        f = {}
-        r = {}
-        seq_num = 0
-        for entry in SeqIO.parse(fasta, "fasta"):
-            seq_num += 1
-            if seq_num % 25000 == 0:
-                print('THREAD {t}: Done querying {n} sequences'.format(t=t, n=seq_num))
-            prev_id = entry.id.split(":")[1].split("|")[0]
-            pathogens = id_path[prev_id] # get a list of pathogens that prev sequence is found in
-            for tup in A.iter(str(entry.seq)):
-                kmer = tup[1]
-                rev_kmer = str(Seq.Seq(kmer).reverse_complement())
-                if kmer not in f:
-                    f[kmer] = []
-                if rev_kmer not in r:
-                    r[rev_kmer] = []
-                for p in pathogens:
-                    if p not in f[kmer]:
-                        f[kmer].append(p)
-                    if p not in r[rev_kmer]:
-                        r[rev_kmer].append(p)
-        print(t, 'Done')
+    f = {}
+    r = {}
+    for i, l in enumerate(temp_l):
+        try:
 
-    except Exception as e:
-        print(e)
+            logger.info('PROCESS {t}.{i}: Adding kmers'.format(t=t, i=i))
+            A = ahocorasick.Automaton()
+            for k in l:
+                A.add_word(k,k)
+            logger.info('PROCESS {t}.{i}: Making automaton'.format(t=t, i=i))
+            A.make_automaton()
+
+            seq_num = 0
+            for entry in SeqIO.parse(fasta, "fasta"):
+                seq_num += 1
+                if seq_num % 25000 == 0:
+                    logger.info('PROCESS {t}.{i}: Done querying {n} sequences'.format(t=t, n=seq_num, i=i))
+
+
+                prev_id = entry.id.split(":")[1].split("|")[0]
+                pathogens = id_path[prev_id] # get a list of pathogens that prev sequence is found in
+                for tup in A.iter(str(entry.seq)):
+                    kmer = tup[1]
+                    rev_kmer = str(Seq.Seq(kmer).reverse_complement())
+                    if kmer not in f:
+                        f[kmer] = []
+                    if rev_kmer not in r:
+                        r[rev_kmer] = []
+                    for p in pathogens:
+                        if p not in f[kmer]:
+                            f[kmer].append(p)
+                        if p not in r[rev_kmer]:
+                            r[rev_kmer].append(p)
+                
+            logger.info('PROCESS {t}.{i}: Done'.format(t=t, i=i))
+
+
+        except Exception as e:
+            logger.error(e)
+
     o.put((t, f, r))
 
 def get_genomic_kmers(plasmid_file, chr_file, both_file):
     with open(plasmid_file, 'r') as f1:
-        print('Getting plasmid kmers...')
+        logger.info('Getting plasmid kmers...')
         p = csv.reader(f1, delimiter='\t')
         pkmers = {row[0] for row in p}
     with open(chr_file, 'r') as f2:
-        print('Getting chromosome kmers...')
+        logger.info('Getting chromosome kmers...')
         np = csv.reader(f2, delimiter='\t')
         nkmers = {row[0] for row in np}
     with open(both_file, 'r') as f3:
-        print('Getting both (plasmid + chr) kmers...')
+        logger.info('Getting both (plasmid + chr) kmers...')
         b = csv.reader(f3, delimiter='\t')
         bkmers = {row[0] for row in b}
 
@@ -71,7 +84,7 @@ def get_genomic_kmers(plasmid_file, chr_file, both_file):
         for kmer in both_separate:
             bkmers.add(kmer)
 
-        print('Reverse complementing kmers...')
+        logger.info('Reverse complementing kmers...')
         # Reverse complement non-plasmid kmers
         rev_chr = {str(Seq.Seq(ck).reverse_complement()) for ck in cf}
         rev_plas = {str(Seq.Seq(pk).reverse_complement()) for pk in pf}
@@ -92,13 +105,13 @@ def get_genomic_kmers(plasmid_file, chr_file, both_file):
             cf.remove(false_hit)
             bkmers.add(false_hit)
 
-        return list(pf), list(cf), list(bkmers) # type: sets
+        return list(pf), list(cf), list(bkmers) ## type: sets
 
-def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, type, threads):
+def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, type, threads, batch_size):
     """Gets taxonomic kmer sets"""
     global id_path
     id_path = {}
-    print('Getting pathogen metadata...')
+    logger.info('Getting pathogen metadata...')
     with open(index_file, 'r') as index:
         i = csv.reader(index, delimiter='\t')
         for line in i:
@@ -108,46 +121,48 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
                 if line[5] not in id_path[line[0]]:
                     id_path[line[0]].append(line[5])
             else:
-                print('Error')
+                logger.error('Error')
 
     with open(single_file, 'r') as f1:
-        print('Getting single species kmers...')
+        logger.info('Getting single species kmers...')
         single = csv.reader(f1, delimiter='\t')
         skmers = {row[0] for row in single}
     with open(multi_file, 'r') as f2:
-        print('Getting multi species kmers...')
+        logger.info('Getting multi species kmers...')
         multi = csv.reader(f2, delimiter='\t')
         mkmers = {row[0] for row in multi}
 
-    print('Discarding shared single- and multi-species kmers...')
+    logger.info('Discarding shared single- and multi-species kmers...')
     sf = list(skmers.difference(mkmers)) # kmers in only the single set
-    print('Remaining unique kmers:', len(sf))
+    logger.info('Remaining unique kmers: {}'.format(len(sf)))
     list_size = math.ceil(len(sf)/threads) # For 'n' threads
     l = list(split_list(sf, list_size))
 
-    print('Querying kmers...')
-    # Threading
+    logger.info('Querying kmers...')
+    # Multiprocessing
     output = multiprocessing.Queue()
     processes = []
     for ind in range(len(l)):
-        process = multiprocessing.Process(target=query_kmers, args=(l[ind], ind, variant_sequences, output))
+        process = multiprocessing.Process(target=query_kmers, args=(l[ind], ind, variant_sequences, output, batch_size))
         process.start()
         processes.append(process)
         # print(processes)
+
     results = [output.get() for process in processes]
     for process in processes:
         process.join()
 
-    print('Concatenating all data from all threads')
+    logger.info('Concatenating all data from all processes')
     f = {}
     r = {}
     for i in range(len(results)):
         f = {**f, **results[i][1]}
         r = {**r, **results[i][2]}
 
-    # Filters kmers that are not unique
     to_delete = []
-    for k,v in f.items():
+    # Filters kmers that are not unique
+    for k in f:
+        v = f[k]
         if type == "species":
             if len(v) > 1:
                 to_delete.append(k)
@@ -156,14 +171,15 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
             if len(set(genus)) > 1:
                 to_delete.append(k)
         else:
-            print("Error")
+            logger.error("Error")
 
-    print('before:', len(f))
-    print('to delete:', len(to_delete))
+    logger.info('before: {}'.format(len(f)))
+    logger.info('to delete: {}'.format(len(to_delete)))
     for k in to_delete:
+        rev_kmer = Seq.Seq(k).reverse_complement()
         del f[k]
-        del r[Seq.Seq(k).reverse_complement()]
-    print('after:', len(f))
+        del r[rev_kmer]
+    logger.info('after: {}'.format(len(f)))
 
     rev_multi = {Seq.Seq(mk).reverse_complement() for mk in mkmers}
     rev_temp = {Seq.Seq(tk).reverse_complement() for tk in to_delete}
@@ -174,6 +190,7 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
     forward = 0
     reverse = 0
     to_also_delete = []
+
     for k in r:
         if k in f:
             shared += 1
@@ -198,11 +215,11 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
     return f
 
 def make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
-                multi_file, variant_sequences, index_file, k, threads):
+                multi_file, variant_sequences, index_file, k, threads, batch_size):
 
-    p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file)
-    s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species", threads)
-    g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus", threads)
+    p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file) 
+    s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species", threads, batch_size)
+    g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus", threads, batch_size)
 
     final = {"p": p, "c": c, "b": b, "s": s, "g": g}
 
@@ -221,9 +238,10 @@ def main(args):
     k = int(args.k)
     index_file = args.index
     threads = args.threads
+    batch_size = args.batch_size
 
     make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
-    multi_file, variant_sequences, index_file, k, threads)
+    multi_file, variant_sequences, index_file, k, threads, batch_size)
 
 def run():
     parser = argparse.ArgumentParser(
@@ -247,7 +265,8 @@ def run():
     parser.add_argument('-k', dest="k", required=True,
         help="kmer length")
     parser.add_argument('-n','--threads', dest="threads", type=int,
-            default=1, help="number of threads (CPUs) to use (default={})".format(1))        
+            default=1, help="number of threads (CPUs) to use (default={})".format(1))
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='Number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
     args = parser.parse_args()
     main(args)
 

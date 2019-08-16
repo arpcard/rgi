@@ -237,6 +237,7 @@ def main(args):
     prevalence_directory = args.input_directory
     card_fasta = args.card_fasta
     k = args.k
+    batch_size = args.batch_size
 
     files = glob.glob(os.path.join(prevalence_directory,"*"))
     for f in files:
@@ -292,7 +293,7 @@ def main(args):
 
     print("-- CREATING KMER SETS --")
     app.make_kmer_json.make_json(plasmid_file, chr_file, both_file, genus_file, \
-    species_file, multi_file, variant_sequences, index, k, args.threads)
+    species_file, multi_file, variant_sequences, index, k, args.threads, batch_size)
     print("DONE \n")
 
     print("-- CREATING AMR {}-MER SET --".format(k))
@@ -330,6 +331,7 @@ def create_parser():
         help="Skips the concatenation and splitting of the CARD*R*V sequences.")
     parser.add_argument('-n','--threads', dest="threads", type=int,
             default=1, help="number of threads (CPUs) to use (default={})".format(1))
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='Number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
     return parser
 
 def run():
