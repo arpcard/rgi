@@ -214,7 +214,7 @@ The following command will bring up RGI's main help menu:
                ---------------------------------------------------------------------------------------
                Metagenomic
                ---------------------------------------------------------------------------------------
-               bwt                   Align reads to CARD and in silico predicted allelic variants
+               bwt                   Align reads to CARD and in silico predicted allelic variants (beta)
                
                ---------------------------------------------------------------------------------------
                Baits validation
@@ -226,8 +226,15 @@ The following command will bring up RGI's main help menu:
                ---------------------------------------------------------------------------------------
                card_annotation       Create fasta files with annotations from card.json
                wildcard_annotation   Create fasta files with annotations from variants
-               baits_annotation      Create fasta files with annotations from baits (Experimental)
-               remove_duplicates     Removes duplicate sequences (Experimental)
+               baits_annotation      Create fasta files with annotations from baits (experimental)
+               remove_duplicates     Removes duplicate sequences (experimental)
+
+               ---------------------------------------------------------------------------------------
+               Pathogen of origin
+               ---------------------------------------------------------------------------------------
+               
+               kmer_build            Build AMR specific k-mers database used for pathogen of origin (beta)
+               kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin (beta)
 
    Resistance Gene Identifier - <version_number>
 
