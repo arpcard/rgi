@@ -1004,31 +1004,27 @@ Build Custom k-mer Classifiers
 
 .. code-block:: sh
 
-          usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
-                     -o OUTPUT [--local] [--debug]
+          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip] [-n THREADS]
+                     [--batch_size BATCH_SIZE]
           
           Builds the kmer sets for CARD*kmers
           
           optional arguments:
             -h, --help            show this help message and exit
-            -i INPUT, --input INPUT
-                                  Input file (bam file from RGI*BWT, json file of RGI
-                                  results, fasta file of sequences)
-            --bwt                 Specify if the input file for analysis is a bam file
-                                  generated from RGI*BWT
-            --rgi                 Specify if the input file is a RGI results json file
-            --fasta               Specify if the input file is a fasta file of sequences
-            -k K, --kmer_size K   length of k
-            -m MIN, --minimum MIN
-                                  Minimum number of kmers in the called category for the
-                                  classification to be made (default=10).
+            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
+                                  input directory of prevalence data
+            -c CARD_FASTA, --card CARD_FASTA
+                                  fasta file of CARD reference sequences. If missing,
+                                  run 'rgi card_annotation' to generate.
+            -k K                  k-mer size (e.g., 61)
+            --skip                Skips the concatenation and splitting of the CARD*R*V
+                                  sequences.
             -n THREADS, --threads THREADS
-                                  number of threads (CPUs) to use (default=32)
-            -o OUTPUT, --output OUTPUT
-                                  Output file name.
-            --local               use local database (default: uses database in
-                                  executable directory)
-            --debug               debug mode
+                                  number of threads (CPUs) to use (default=1)
+            --batch_size BATCH_SIZE
+                                  Number of kmers to query at a time using pyahocorasick
+                                  --the greater the number the more memory usage
+                                  (default=100,000)
 
 Run RGI from Docker - via biocontainers or quay
 ------------------------------------------------
