@@ -328,10 +328,10 @@ def create_parser():
     parser.add_argument('-k', dest="k", required=True,
         help="k-mer size (e.g., 61)")
     parser.add_argument('--skip', dest="skip", action='store_true',
-        help="Skips the concatenation and splitting of the CARD*R*V sequences.")
+        help="skips the concatenation and splitting of the CARD*R*V sequences.")
     parser.add_argument('-n','--threads', dest="threads", type=int,
             default=1, help="number of threads (CPUs) to use (default={})".format(1))
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='Number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
     return parser
 
 def run():

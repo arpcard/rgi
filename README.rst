@@ -1023,20 +1023,26 @@ As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genom
                                   fasta file of CARD reference sequences. If missing,
                                   run 'rgi card_annotation' to generate.
             -k K                  k-mer size (e.g., 61)
-            --skip                Skips the concatenation and splitting of the CARD*R*V
+            --skip                skips the concatenation and splitting of the CARD*R*V
                                   sequences.
             -n THREADS, --threads THREADS
                                   number of threads (CPUs) to use (default=1)
             --batch_size BATCH_SIZE
-                                  Number of kmers to query at a time using pyahocorasick
+                                  number of kmers to query at a time using pyahocorasick
                                   --the greater the number the more memory usage
                                   (default=100,000)
 
-Example generation of 31 bp k-mers:
+Example generation of 31 bp k-mers using 20 processors (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
 .. code-block:: sh
 
-   rgi kmer_build --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
+   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
+
+The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+.. code-block:: sh
+
+   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
 
 Run RGI from Docker - via biocontainers or quay
 ------------------------------------------------
