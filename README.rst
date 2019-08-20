@@ -97,6 +97,7 @@ Table of Contents
 - `RGI bwt Tab-Delimited Output`_
 - `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
 - `CARD k-mer Classifier Output`_
+- `Build Custom k-mer Classifiers`_
 - `Run RGI from Docker - via biocontainers or quay`_
 - `Run RGI from Docker - via dockerhub`_
 - `Install RGI from Conda`_
@@ -994,8 +995,43 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 |                                                          | logic tree                                         |
 +----------------------------------------------------------+----------------------------------------------------+
 
+Build Custom k-mer Classifiers
+--------------------------------
+
+.. code-block:: sh
+
+   rgi kmer_build -h
+
+.. code-block:: sh
+
+          usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
+                     -o OUTPUT [--local] [--debug]
+          
+          Builds the kmer sets for CARD*kmers
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -i INPUT, --input INPUT
+                                  Input file (bam file from RGI*BWT, json file of RGI
+                                  results, fasta file of sequences)
+            --bwt                 Specify if the input file for analysis is a bam file
+                                  generated from RGI*BWT
+            --rgi                 Specify if the input file is a RGI results json file
+            --fasta               Specify if the input file is a fasta file of sequences
+            -k K, --kmer_size K   length of k
+            -m MIN, --minimum MIN
+                                  Minimum number of kmers in the called category for the
+                                  classification to be made (default=10).
+            -n THREADS, --threads THREADS
+                                  number of threads (CPUs) to use (default=32)
+            -o OUTPUT, --output OUTPUT
+                                  Output file name.
+            --local               use local database (default: uses database in
+                                  executable directory)
+            --debug               debug mode
+
 Run RGI from Docker - via biocontainers or quay
-----------------------------------------------
+------------------------------------------------
 
 See all tags at `quay <https://quay.io/repository/biocontainers/rgi?tab=tags>`_ 
 
