@@ -97,7 +97,7 @@ Table of Contents
 - `RGI bwt Tab-Delimited Output`_
 - `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
 - `CARD k-mer Classifier Output`_
-- `Build Custom k-mer Classifiers`_
+- `Building Custom k-mer Classifiers`_
 - `Run RGI from Docker - via biocontainers or quay`_
 - `Run RGI from Docker - via dockerhub`_
 - `Install RGI from Conda`_
@@ -995,8 +995,14 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 |                                                          | logic tree                                         |
 +----------------------------------------------------------+----------------------------------------------------+
 
-Build Custom k-mer Classifiers
+Building Custom k-mer Classifiers
 --------------------------------
+
+**This is an unpublished algorithm undergoing beta-testing.**
+
+You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database. 
+
+As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can also use RGI to create k-mers of any length. 
 
 .. code-block:: sh
 
@@ -1025,6 +1031,12 @@ Build Custom k-mer Classifiers
                                   Number of kmers to query at a time using pyahocorasick
                                   --the greater the number the more memory usage
                                   (default=100,000)
+
+Example generation of 31 bp k-mers:
+
+.. code-block:: sh
+
+   rgi kmer_build --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
 
 Run RGI from Docker - via biocontainers or quay
 ------------------------------------------------
