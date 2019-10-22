@@ -128,7 +128,7 @@ Requirements
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
 - `DIAMOND 0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
-- `Biopython 1.60+ <https://biopython.org/>`_
+- `Biopython 1.72 <https://biopython.org/>`_
 - `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
 - `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
 - `mock 2.0.0 <https://pypi.org/project/mock/>`_
