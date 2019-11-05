@@ -105,14 +105,23 @@ class Rrna(BaseModel):
 
 									if hsp.sbjct[sbj] == chan:
 										query_snps = {}
+										logger.info("hsp.query_start: {}".format(hsp.query_start))
+										logger.info("hsp.query_end: {}".format(hsp.query_end))
+										logger.info("hsp.sbjct_start: {}".format(hsp.sbjct_start))
+										logger.info("hsp.sbjct_end: {}".format(hsp.sbjct_end))
+										d = 0
 										if strand == "+":
 											d = int(pos) - hsp.query_start - self.find_num_dash(hsp.sbjct, (int(pos) - hsp.query_start))
+											# d = -1*(hsp.query_start - pos)
 											query_snps = {"original": hsp.query[d], "change": hsp.sbjct[d], "position": (d + 1)}
 										else:
-											d = int(pos) + hsp.query_start - self.find_num_dash(hsp.sbjct, (int(pos) - hsp.query_start))
-											query_snps = {"original": hsp.query[d], "change": hsp.sbjct[d], "position": (d - 1)}
+											d = int(pos) - hsp.query_start - self.find_num_dash(hsp.sbjct, (int(pos) - hsp.query_start))
+											# d = -1*(hsp.query_start - pos)
+											query_snps = {"original": hsp.query[d], "change": hsp.sbjct[d], "position": (d + 1)}
 
-										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
+										logger.info("position in the query (3'->5') : {}".format(d))
+
+										# logger.info("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
 										try:
 											if float(hsp.bits) >= float(true_pass_evalue):
 												sinsidedict = {}
