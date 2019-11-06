@@ -6,19 +6,6 @@ set -e
 
 cmd="COMMAND"
 
-echo "=================================== TOOLS INSTALLED ==================================="
-
-python3 --version
-blastp -version
-bowtie2 --version
-bwa
-diamond --version
-samtools --version
-bamtools --version
-bedtools --version
-jellyfish --version
-prodigal -v
-
 echo "=================================== RGI EXECUTABLE LOCATION ==================================="
 which rgi
 rgi -h
