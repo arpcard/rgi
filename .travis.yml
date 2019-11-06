@@ -6,11 +6,19 @@ notifications:
 python:
   - "3.6"
 
+env:
+  - BLAST_VERSION=2.9.0
+
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y ncbi-blast+ prodigal
+  - sudo apt-get install -y prodigal
   - sudo apt-get install -y libtbb-dev
-  
+
+  # blast
+  - wget http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
+  - tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
+  - sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
+
   # bowtie2
   - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip
   - unzip bowtie2-2.3.4.3-linux-x86_64.zip
