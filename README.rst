@@ -123,7 +123,7 @@ Requirements
 --------------------
 
 - `Python 3.6 <https://www.python.org/>`_
-- `NCBI BLAST 2.6.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
+- `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
 - `six 1.7.0+ <https://bitbucket.org/gutworth/six>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
