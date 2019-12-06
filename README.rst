@@ -110,7 +110,7 @@ Use or reproduction of these materials, in whole or in part, by any non-academic
 Citation
 --------
 
-Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573. [`PMID 27789705 <https://www.ncbi.nlm.nih.gov/pubmed/27789705>`_]
+Alcock et al. 2019. CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database. Nucleic Acids Research, gkz935. [Epub ahead of print]  [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
 
 Support & Bug Reports
 ----------------------
@@ -164,7 +164,7 @@ Install RGI from Project Root
 
 .. code-block:: sh
 
-   pip3 install .
+   pip3 install git+https://github.com/arpcard/rgi.git 
 
 or
 
@@ -1092,20 +1092,26 @@ Search for RGI package and show available versions:
         
         $ conda search --channel bioconda rgi
 
+Create a new conda environment
+
+  .. code-block:: sh
+        
+        $ conda create --name rgi --channel bioconda --channel conda-forge rgi
+
 Install RGI package:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda rgi
+        $ conda install --channel bioconda --channel conda-forge rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda rgi=3.1.1
+        $ conda install --channel bioconda --channel conda-forge rgi=3.1.1
 
 Remove RGI package:
 
   .. code-block:: sh
         
-        $ conda remove --channel bioconda rgi
+        $ conda remove rgi
