@@ -163,14 +163,15 @@ class Database(object):
 									% (j[i]['model_id'], j[i]['model_name']))
 								logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
 							else:
-								snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-								for s in snpList:
-									if "16S" in j[i]['ARO_name']:
-										if s not in snpList_16s:
-											snpList_16s.append(s)
-									if "23S" in j[i]['ARO_name']:
-										if s not in snpList_23s:
-											snpList_23s.append(s)
+								if "snp" in j[i]['model_param'].keys():
+									snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
+									for s in snpList:
+										if "16S" in j[i]['ARO_name']:
+											if s not in snpList_16s:
+												snpList_16s.append(s)
+										if "23S" in j[i]['ARO_name']:
+											if s not in snpList_23s:
+												snpList_23s.append(s)
 
 								for seq in j[i]['model_sequences']['sequence']:
 									if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
