@@ -21,17 +21,14 @@ RUN apt-get update && apt-get install -y wget && conda init bash
 # install rgi and system dependencies
 RUN conda create --name rgi --channel conda-forge --channel bioconda rgi 
 
-SHELL ["conda", "run", "-n", "rgi", "rgi", "-h"]
-
-# move to workdir 
-WORKDIR /card_data/
-
-# sort the database path issue
+# download latest card database
+RUN mkdir -p /card_data
+WORKDIR /card_data
 RUN wget -O data.tar.bz2 https://card.mcmaster.ca/latest/data && \
-        tar xvf data.tar.bz2
+        tar xvf data.tar.bz2 && pwd && ls
+# install database
+SHELL ["conda", "run", "-n", "rgi", "rgi", "load", "-i", "/card_data/card.json"]
 
-RUN ["conda", "run", "-n", "rgi", "rgi", "load", "-i", "card.json"]
-
+WORKDIR /data
 # set rgi executable as cmd to allow overriding
 ENTRYPOINT ["conda", "run", "-n", "rgi", "rgi"]
-
