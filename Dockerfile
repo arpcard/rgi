@@ -1,11 +1,11 @@
 # base image (stripped down ubuntu for Docker)
-FROM phusion/baseimage
+FROM continuumio/miniconda3
 
 # metadata
-LABEL base.image="ubuntu"
+LABEL base.image="miniconda3"
 LABEL version="1"
 LABEL software="RGI"
-LABEL software.version="4.0.3"
+LABEL software.version="5.1.0"
 LABEL description="Tool to identify resistance genes using the CARD database"
 LABEL website="https://card.mcmaster.ca/"
 LABEL documentation="https://github.com/arpcard/rgi/blob/master/README.rst"
@@ -15,29 +15,20 @@ LABEL tags="Genomics"
 # maintainer
 MAINTAINER Finlay Maguire <finlaymaguire@gmail.com>
 
-# install system dependencies
-RUN \
-    apt-get update && \
-    apt-get install -y git python3 python3-dev python3-pip ncbi-blast+ prodigal wget && \
-    wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz && \
-    tar xvf diamond-linux64.tar.gz && \
-    mv diamond /usr/bin
+# get some system essentials
+RUN apt-get update && apt-get install -y wget && conda init bash
 
-# install and test rgi
-RUN git clone https://github.com/arpcard/rgi
-WORKDIR rgi/
-RUN pip3 install -r requirements.txt && \
-    pip3 install . && \
-    bash test.sh
+# install rgi and system dependencies
+RUN conda create --name rgi --channel conda-forge --channel bioconda rgi 
 
-# sort the database path issue
-RUN pwd
-WORKDIR /usr
-RUN cp /rgi/card_data/card.json /usr/local/lib/python3.5/dist-packages/app/_data/card.json
+# download latest card database
+RUN mkdir -p /card_data
+WORKDIR /card_data
+RUN wget -O data.tar.bz2 https://card.mcmaster.ca/latest/data && \
+        tar xvf data.tar.bz2 && pwd && ls
+# install database
+SHELL ["conda", "run", "-n", "rgi", "rgi", "load", "-i", "/card_data/card.json"]
 
-# move to workdir 
-WORKDIR /data/
-
+WORKDIR /data
 # set rgi executable as cmd to allow overriding
-CMD ["rgi"]
-
+ENTRYPOINT ["conda", "run", "-n", "rgi", "rgi"]
