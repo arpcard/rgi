@@ -37,6 +37,7 @@ class BWT(object):
 		logger.info("card")
 		self.reference_genome = os.path.join(self.data, "card_reference.fasta")
 		self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bowtie2"))
+		self.index_directory_kma = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("kma"))
 		self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bwa"))
 
 		if self.include_baits == True:
@@ -152,6 +153,15 @@ class BWT(object):
 				threads=self.threads
 				)
 			)
+		elif self.aligner == "kma":
+			if not os.path.exists(index_directory):
+				os.makedirs(index_directory)
+				logger.info("created index at {}".format(index_directory))
+			os.system("kma index -i {reference_genome} -o {index_directory}".format(
+				index_directory=index_directory,
+				reference_genome=reference_genome
+				)
+			)
 		else:
 			if not os.path.exists(index_directory):
 				os.makedirs(index_directory)
@@ -162,6 +172,40 @@ class BWT(object):
 				reference_genome=reference_genome
 				)
 			)
+
+	def align_kma(self, reference_genome, index_directory, output_sam_file):
+		"""
+		Align paired reads to card or wildcard
+		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
+
+		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
+
+		cmd = "kma -ex_mode -1t1 -ipe {read_one} {read_two} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+			threads=self.threads,
+			index_directory=index_directory,
+			read_one=self.read_one,
+			read_two=self.read_two,
+			output_sam_file=output_sam_file
+		)
+		os.system(cmd)
+
+	def align_kma_interleaved(self, reference_genome, index_directory, output_sam_file):
+		"""
+		Align paired reads to card or wildcard
+		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
+
+		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
+
+		cmd = "kma -ex_mode -1t1 -int {read_one} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+			threads=self.threads,
+			index_directory=index_directory,
+			read_one=self.read_one,
+			read_two=self.read_two,
+			output_sam_file=output_sam_file
+		)
+		os.system(cmd)
 
 	def align_bowtie2_unpaired(self, reference_genome, index_directory, output_sam_file):
 		"""
@@ -214,15 +258,16 @@ class BWT(object):
 
 		os.system(cmd)
 
-	def align_bwa_single_end_mapping(self):
+	def align_bwa_single_end_mapping(self, reference_genome, index_directory, output_sam_file):
 		"""
 		Align unpaired reads to reference genome using bwa
 		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 		os.system("bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}".format(
 			threads=self.threads,
-			index_directory=self.index_directory_bwa,
+			index_directory=index_directory,
 			read_one=self.read_one,
-			output_sam_file=self.output_sam_file
+			output_sam_file=output_sam_file
 			)
 		)
 
@@ -319,6 +364,14 @@ class BWT(object):
 		"""
 		Get converage for all positions using 'genomeCoverageBed -ibam' function
 		BAM file _must_ be sorted by position
+		By default, bedtools genomecov will compute a histogram of coverage for the genome file provided. The default output format is as follows:
+
+		1. chromosome (or entire genome)
+		2. depth of coverage from features in input file
+		3. number of bases on chromosome (or genome) with depth equal to column 2.
+		4. size of chromosome (or entire genome) in base pairs
+		5. fraction of bases on chromosome (or entire genome) with depth equal to column 2.
+
 		"""
 
 		cmd = "bedtools genomecov -ibam {sorted_bam_file} > {output_tab}".format(
@@ -1437,6 +1490,17 @@ class BWT(object):
 				self.create_index(index_directory=index_directory,reference_genome=reference_genome)
 			else:
 				logger.info("index already exists for reference: {} using aligner: {}".format(reference_genome,self.aligner))
+		elif self.aligner == "kma":
+			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
+			logger.info(json.dumps(files, indent=2))
+			if (("kma.comp.b" in files) and \
+				("kma.index.b" in files) and \
+				("kma.length.b" in files) and \
+				("kma.seq.b" in files) and \
+				("kma.name" in files)) == False:
+				# create index and save results in ./db from reference genome: (.fasta)
+				logger.info("create index for reference: {} using aligner: {} ".format(reference_genome, self.aligner))
+				self.create_index(index_directory=index_directory,reference_genome=reference_genome)
 		else:
 			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
 			logger.info(json.dumps(files, indent=2))
@@ -1467,9 +1531,14 @@ class BWT(object):
 				self.align_bowtie2_unpaired(reference_genome=self.reference_genome, index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file)
 			else:
 				self.align_bowtie2(reference_genome=self.reference_genome, index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file)
+		elif self.aligner == "kma":
+			if self.read_two == None:
+				self.align_kma_interleaved(reference_genome=self.reference_genome, index_directory=self.index_directory_kma, output_sam_file=self.output_sam_file)
+			else:
+				self.align_kma(reference_genome=self.reference_genome, index_directory=self.index_directory_kma, output_sam_file=self.output_sam_file)
 		else:
 			if self.read_two == None:
-				self.align_bwa_single_end_mapping()
+				self.align_bwa_single_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa, output_sam_file=self.output_sam_file)
 			else:
 				self.align_bwa_paired_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa,  output_sam_file=self.output_sam_file)
 		
