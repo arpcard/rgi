@@ -50,6 +50,10 @@ before_install:
   # jellyfish
   - wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
   - mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
+
+  # kma
+  - git clone https://bitbucket.org/genomicepidemiology/kma.git
+  - pushd kma && make && sudo mv kma /usr/bin && popd
  
 install:
   - pip install -r requirements.txt
