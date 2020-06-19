@@ -12,13 +12,13 @@ rgi -h
 
 echo "=================================== DOWNLOAD CARD CANONICAL DATA ==================================="
 # get latest card database
-wget -O card_data.tar.bz2 https://card.mcmaster.ca/latest/data
+wget -O card_data.tar.bz2 --no-check-certificate https://card.mcmaster.ca/latest/data
 mkdir -p card_data
 tar xf card_data.tar.bz2 -C card_data
 
 echo "=================================== DOWNLOAD CARD VARIANTS DATA ==================================="
 # get latest card variants
-wget -O prevalence-v3.0.4.tar.gz https://card.mcmaster.ca/download/6/prevalence-v3.0.4.tar.gz
+wget -O prevalence-v3.0.4.tar.gz --no-check-certificate https://card.mcmaster.ca/download/6/prevalence-v3.0.4.tar.gz
 mkdir -p card_variants 
 tar xf prevalence-v3.0.4.tar.gz -C card_variants
 
