@@ -311,7 +311,8 @@ Obtain WildCARD data:
    
       wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
       mkdir -p wildcard
-      tar -xvf wildcard_data.tar.bz2 -C wildcard
+      tar -xjf wildcard_data.tar.bz2 -C wildcard
+      gunzip wildcard/*.gz
       
 Local or working directory (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
