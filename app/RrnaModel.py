@@ -228,6 +228,6 @@ class Rrna(BaseModel):
 											logger.warning("Exception : {} -> {} -> Model({})".format(type(e), e, model_id))
 											logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[model_id]["model_name"],hsp.bits,type(hsp.bits), type(true_pass_evalue)))
 
-				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose)
+					blastResults = self.results(blastResults, blast_record.query + " | QUERY: " + alignment.hit_def, perfect, strict , loose)
 
 			return blastResults
