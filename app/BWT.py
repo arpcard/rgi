@@ -181,7 +181,7 @@ class BWT(object):
 
 		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
 
-		cmd = "kma -ex_mode -1t1 -ipe {read_one} {read_two} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+		cmd = "kma -ex_mode -1t1 -ipe {read_one} {read_two} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,
@@ -198,7 +198,7 @@ class BWT(object):
 
 		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
 
-		cmd = "kma -ex_mode -1t1 -int {read_one} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+		cmd = "kma -ex_mode -1t1 -int {read_one} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,

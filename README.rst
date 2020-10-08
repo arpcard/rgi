@@ -145,6 +145,7 @@ Requirements
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
 - `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
 - `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
+- `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 Install Dependencies
 --------------------
@@ -159,6 +160,7 @@ Install Dependencies
 - pip3 install seaborn
 - pip3 install pyfaidx
 - pip3 install pyahocorasick
+- pip3 install pysam
 
 Install RGI from Project Root
 -----------------------------
@@ -661,7 +663,7 @@ RGI bwt Usage for Metagenomic Reads
                                   raw read one (qc and trimmied)
             -2 READ_TWO, --read_two READ_TWO
                                   raw read two (qc and trimmied)
-            -a {bowtie2,bwa}, --aligner {bowtie2,bwa}
+            -a {bowtie2,bwa,kma}, --aligner {bowtie2,bwa,kma}
                                   aligner
             -n THREADS, --threads THREADS
                                   number of threads (CPUs) to use (default=32)
@@ -1209,25 +1211,25 @@ Search for RGI package and show available versions:
 
   .. code-block:: sh
         
-        $ conda search --channel bioconda rgi
+        $ conda search --channel bioconda --channel conda-forge --channel defaults rgi
 
 Create a new conda environment
 
   .. code-block:: sh
         
-        $ conda create --name rgi --channel bioconda --channel conda-forge rgi
+        $ conda create --name rgi --channel bioconda --channel conda-forge --channel defaults rgi
 
 Install RGI package:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda --channel conda-forge rgi
+        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda --channel conda-forge rgi=3.1.1
+        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi=5.1.1
 
 Remove RGI package:
 
