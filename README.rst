@@ -200,7 +200,7 @@ The following command will bring up RGI's main help menu:
                ---------------------------------------------------------------------------------------
                Database
                ---------------------------------------------------------------------------------------
-
+               auto_load Automatically loads CARD database, annotations and k-mer database
                load     Loads CARD database, annotations and k-mer database
                clean    Removes BLAST databases and temporary files
                database Information on installed card database

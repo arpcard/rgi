@@ -5,6 +5,7 @@ from app.ConvertRGIJsonToTSV import ConvertJsonToTSV
 from app.Galaxy import Galaxy
 import app.Parser
 import app.load
+import app.auto_load
 import app.clean
 import app.build_kmer_sets
 import app.card_annotation
@@ -25,11 +26,11 @@ class MainBase(object):
                ---------------------------------------------------------------------------------------
                Database
                ---------------------------------------------------------------------------------------
-
-               load     Loads CARD database, annotations and k-mer database
-               clean    Removes BLAST databases and temporary files
-               database Information on installed card database
-               galaxy   Galaxy project wrapper
+               auto_load Automatically loads CARD database, annotations and k-mer database
+               load      Loads CARD database, annotations and k-mer database
+               clean     Removes BLAST databases and temporary files
+               database  Information on installed card database
+               galaxy    Galaxy project wrapper
 
                ---------------------------------------------------------------------------------------
                Genomic
@@ -69,7 +70,7 @@ class MainBase(object):
                '''
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
-        parser.add_argument('command', choices=['main', 'tab', 'parser', 'load',
+        parser.add_argument('command', choices=['main', 'tab', 'parser', 'load', 'auto_load',
                                                 'clean', 'galaxy', 'database', 'bwt', 'tm', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
                                                 help='Subcommand to run')
 
@@ -156,6 +157,18 @@ class MainBase(object):
 
     def load_run(self, args):
         app.load.main(args)
+
+    def auto_load(self):
+        parser = self.auto_load_args()
+        args = parser.parse_args(sys.argv[2:])
+        self.auto_load_run(args)
+
+    def auto_load_args(self):
+        parser = app.auto_load.create_parser()
+        return parser
+
+    def auto_load_run(self, args):
+        app.auto_load.main(args)
 
     def kmer_build(self):
         parser = self.kmer_build_args()
