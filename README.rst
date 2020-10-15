@@ -162,6 +162,7 @@ Install Dependencies
 - pip3 install pyahocorasick
 - pip3 install pysam
 - pip3 install beautifulsoup4
+- pip3 install requests
 
 Install RGI from Project Root
 -----------------------------
