@@ -8,3 +8,4 @@ seaborn>=0.8.1
 pyfaidx>=0.5.4.1
 pyahocorasick==1.1.8
 pysam==0.16.0.1
+beautifulsoup4==4.9.3

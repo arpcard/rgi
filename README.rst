@@ -161,6 +161,7 @@ Install Dependencies
 - pip3 install pyfaidx
 - pip3 install pyahocorasick
 - pip3 install pysam
+- pip3 install beautifulsoup4
 
 Install RGI from Project Root
 -----------------------------
