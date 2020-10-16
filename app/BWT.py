@@ -183,7 +183,7 @@ class BWT(object):
 
 		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
 
-		cmd = "kma -ex_mode -1t1 -verbose -vcf -bcd 10 -ipe {read_one} {read_two} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+		cmd = "kma -ex_mode -1t1 -vcf -ipe {read_one} {read_two} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,
@@ -200,7 +200,7 @@ class BWT(object):
 
 		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
 
-		cmd = "kma -ex_mode -1t1 -verbose -vcf -bcd 10 -int {read_one} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+		cmd = "kma -ex_mode -1t1 -vcf -int {read_one} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,
@@ -327,7 +327,7 @@ class BWT(object):
 			length=length,
 			map_quality=map_quality
 		)
-		logger.debug(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_aligned(self):
@@ -338,7 +338,7 @@ class BWT(object):
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab
 			)
-		logger.debug(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_qname_rname_sequence(self):
@@ -350,7 +350,7 @@ class BWT(object):
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_sequences
 			)
-		logger.debug(cmd)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_coverage(self):
@@ -950,7 +950,7 @@ class BWT(object):
 		# *.sam.temp.vcf.gz
 		results = {}
 		mutation_file_compressed = os.path.join(self.working_directory, "{}.temp.sam.temp.vcf.gz".format(self.output_file))
-		logger.debug("mutation_file_compressed: {}".format(mutation_file_compressed))
+		# logger.debug("mutation_file_compressed: {}".format(mutation_file_compressed))
 
 		with gzip.open(mutation_file_compressed, "rt") as m1:
 			reader=csv.reader(m1,delimiter='\t')
@@ -971,7 +971,7 @@ class BWT(object):
 
 	def get_read_coverage(self):
 		read_coverage_file = os.path.join(self.working_directory, "{}.temp.sam.temp.res".format(self.output_file))
-		logger.debug("read_coverage_file: {}".format(read_coverage_file))
+		# logger.debug("read_coverage_file: {}".format(read_coverage_file))
 		results = {}
 		with open(read_coverage_file, "r") as c1:
 				reader=csv.reader(c1,delimiter='\t')
@@ -983,7 +983,7 @@ class BWT(object):
 
 	def get_consensus_sequence(self):
 		consensus_sequence_file = os.path.join(self.working_directory, "{}.temp.sam.temp.fsa".format(self.output_file))
-		logger.debug("consensus_sequence_file: {}".format(consensus_sequence_file))
+		# logger.debug("consensus_sequence_file: {}".format(consensus_sequence_file))
 		result = []
 		with open(consensus_sequence_file, "r") as c1:
 			result = SeqIO.to_dict(SeqIO.parse(c1, "fasta"))
@@ -1093,7 +1093,7 @@ class BWT(object):
 			consensus_sequence_protein = ""
 			read_coverage_depth = ""
 			snps = ""
-			
+
 			if self.aligner == "kma":
 				try:
 					# if alignment_hit in consensus_sequence.keys():
@@ -1238,11 +1238,11 @@ class BWT(object):
 		models_by_accession = self.get_model_details(True)
 
 		if self.aligner == "kma":
-			logger.debug("get_mutation_details ...")
+			logger.info("get_mutation_details ...")
 			mutation = self.get_mutation_details()
-			logger.debug("get_read_coverage ...")
+			logger.info("get_read_coverage ...")
 			read_coverage = self.get_read_coverage()
-			logger.debug("get_consensus_sequence ...")
+			logger.info("get_consensus_sequence ...")
 			consensus_sequence = self. get_consensus_sequence()
 
 		if self.include_wildcard:

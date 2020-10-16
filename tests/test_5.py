@@ -46,7 +46,7 @@ def check_gene(gene):
     else:
         return False
 
-def test_rgi_bwt(rgi):
+def test_rgi_bwt_bwa(rgi):
     read_one = "10_R1.fastq.gz"
     read_two = "10_R2.fastq.gz"
     filename = "output_bwt"
