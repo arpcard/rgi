@@ -9,7 +9,8 @@ import filetype
 from Bio import SeqIO
 import glob
 import time, shutil
-
+import gzip, zlib
+import bz2
 from app.settings import *
 
 class RGI(RGIBase):
@@ -46,6 +47,7 @@ class RGI(RGIBase):
 		self.debug = debug
 		self.split_prodigal_jobs = split_prodigal_jobs
 		self.exclude_nudge = exclude_nudge
+		self.umcompressed_file = ""
 
 		if self.debug:
 			logger.setLevel(10)
@@ -88,7 +90,6 @@ class RGI(RGIBase):
 			logger.error("input file does not exist: {}".format(self.input_sequence))
 			exit()
 
-
         # otherwise you blow up your input when deleting intermediate files
 		if self.output_file == self.input_sequence and self.clean:
 			logger.error("output path same as input, must specify "
@@ -98,33 +99,86 @@ class RGI(RGIBase):
 
 		logger.info("{} => {}".format(self.input_sequence, filetype.guess(self.input_sequence)))
 		kind = filetype.guess(self.input_sequence)
-
+		
 		if kind is None:
 			if self.is_fasta() == False:
 				logger.error("invalid fasta")
 				exit()
 		else:
-			logger.error(kind.extension)
-			logger.error(kind.mime)
-			logger.warning("Sorry, no support for this format.")
-			exit()
+			if kind.extension in ["gz","bz2"]:
+				if self.is_fasta(kind.extension) == False:
+					logger.error("invalid fasta")
+					exit()
+				# uncompressed input and use uncompressed file
+				filename = os.path.basename(self.input_sequence)
+				umcompressed_file = os.path.join(self.working_directory, "{}.temp.uncompressed.fsa".format(filename))
+				with open(umcompressed_file, "w") as file_out:
+					if kind.extension == "gz":
+						with gzip.open(self.input_sequence, "rt") as handle:
+							file_out.write(handle.read())
+					else:
+						with bz2.open(self.input_sequence, "rt") as handle:
+							file_out.write(handle.read())
+
+				self.input_sequence = umcompressed_file
+				self.umcompressed_file = umcompressed_file
+			else:
+				logger.error("Sorry, no support for file format {}".format(kind.mime))
+				exit()
+
 		if self.threads > os.cpu_count():
 			logger.error("Argument num_threads illegal value, expected (>=1 and =<{}):  given `{}`)".format(os.cpu_count(), self.threads))
 			exit()
 
-	def is_fasta(self):
+	def is_fasta(self,extension=""):
 		"""Checks for valid fasta format."""
-		with open(self.input_sequence, "r") as handle:
-			fasta = SeqIO.parse(handle, "fasta")
-			# check each record in the file
-			for record in fasta:
-				if any(record.id) == False or any(record.seq) == False:
-					return False
-				if self.input_type == "contig":
-					return self.is_dna(record.seq)
-				if self.input_type == "protein":
-					return self.is_protein(record.seq)
+		if extension == "":
+			with open(self.input_sequence, "r") as handle:
+				fasta = SeqIO.parse(handle, "fasta")
+				self.check_record(fasta)
+				return True
+		elif extension in ["gz", "bz2"]:
+			if extension == "gz":
+				with gzip.open(self.input_sequence, "rt") as handle:
+					fasta = SeqIO.parse(handle, "fasta")
+					self.check_record(fasta)
+			else:
+				with bz2.open(self.input_sequence, "rt") as handle:
+					fasta = SeqIO.parse(handle, "fasta")
+					self.check_record(fasta)
 			return True
+		else:
+			return False
+
+	def check_record(self, fasta):
+		# check each record in the file
+		for record in fasta:
+			if any(record.id) == False or any(record.seq) == False:
+				return False
+			if self.input_type == "contig":
+				return self.is_dna(record.seq)
+			if self.input_type == "protein":
+				return self.is_protein(record.seq)
+
+	# TODO: test
+	def _is_fasta(self):
+		"""Checks for valid fasta format using seqkit stats"""
+		cmd = "seqkit stats --tabular {input_sequence} --out-file - | grep -v format".format(
+			input_sequence=self.input_sequence
+		)
+		result = subprocess.check_output(cmd, shell=True)
+		result_dict = result.strip().decode().split("\t")
+
+		if self.input_type == "contig":
+			if result_dict[1] == "FASTA" and result_dict[2] == ["DNA"]:
+				return True
+			else:
+				return False
+		if self.input_type == "protein":
+			if result_dict[1] == "FASTA" and result_dict[2] == ["Protein"]:
+				return True
+			else:
+				return False
 
 	@staticmethod
 	def is_dna(sequence):
@@ -206,6 +260,9 @@ class RGI(RGIBase):
 		if self.clean == True:
 			basename_output_file = os.path.splitext(os.path.basename(self.output_file))[0]
 			logger.info("Cleaning up temporary files...{}".format(basename_output_file))
+			# remove uncompressed input file
+			if self.umcompressed_file != "":
+				self.remove_file(self.umcompressed_file)
 			# clean working_directory
 			self.clean_directory(self.working_directory, basename_output_file)
 			d_name, f_name = os.path.split(self.output_file)
