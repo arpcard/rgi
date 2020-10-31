@@ -2,7 +2,7 @@
 FROM continuumio/miniconda3
 
 # metadata
-LABEL base.image="miniuonda3"
+LABEL base.image="miniconda3"
 LABEL version="2"
 LABEL software="RGI"
 LABEL description="Tool to identify resistance genes using the CARD database"
