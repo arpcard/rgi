@@ -2,10 +2,9 @@
 FROM continuumio/miniconda3
 
 # metadata
-LABEL base.image="miniconda3"
-LABEL version="1"
+LABEL base.image="miniuonda3"
+LABEL version="2"
 LABEL software="RGI"
-LABEL software.version="5.1.0"
 LABEL description="Tool to identify resistance genes using the CARD database"
 LABEL website="https://card.mcmaster.ca/"
 LABEL documentation="https://github.com/arpcard/rgi/blob/master/README.rst"
@@ -33,22 +32,24 @@ RUN wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants && \
     tar xf wildcard_data.tar.bz2 -C wildcard && \
         gunzip wildcard/*.gz
 
+# configure conda shell
+SHELL ["conda", "run", "-n", "rgi", "/bin/bash", "-c"]
+
 # install CARD database
-SHELL ["conda", "run", "-n", "rgi", "card_annotation", "-i",  "canonical/card.json", ">", "card_annotation.log", "2>&1"]
-SHELL ["conda", "run", "-n", "rgi", "rgi", "load", "-i", "caonical/card.json", "--card_annotation", "card_database_*.fasta"]
+RUN rgi card_annotation -i canonical/card.json > card_annotation.log 2>&1 && \
+    rgi load --local -i canonical/card.json --card_annotation card_database_*.fasta
 
 # install WILDCARD database
 # version number not in downloaded data so can't do this in a way that will
-# automatically be entered
-SHELL ["conda", "run", "-n", "rgi", "rgi", "wildcard_annotation", "-i", "wildcard", "--card_json", "canonical/card.json", "-v", "docker_version_number", ">", "wildcard_annotation.log", "2>&1"]
-SHELL ["conda", "run", "-n", "rgi", "rgi", "load", "--wildcard_annotation", "wildcard_database*", "--wildcard_index", "wildcard/index-for-model-sequences.txt", "--card_annotation", "card_database*"]
+# automatically be entered if the wildcard download contained a version file etc
+RUN rgi wildcard_annotation -i wildcard --card_json canonical/card.json -v latest > wildcard_annotation.log 2>&1 && \
+    rgi load --local --wildcard_annotation wildcard_database* --wildcard_index wildcard/index-for-model-sequences.txt --card_annotation card_database*
 
 # install kmer pathogen-of-origin database
-SHELL ["conda", "run", "-n", "rgi", "rgi", "load", "--kmer_database", "wildcard/61_kmer_db.json", "--amr_kmers", "wildcard/all_amr_61mers.txt", "--kmer_size", "61", "--debug", ">", "kmer_load.61.log", "2>&1"]
+RUN rgi load --local --kmer_database wildcard/61_kmer_db.json --amr_kmers wildcard/all_amr_61mers.txt --kmer_size 61 --debug > kmer_load.61.log 2>&1
 
-# Remove non-loaded databases to reduce container size
-RUN cp *.log /data && rm -rf /card_data
-
+# Move to workdir
 WORKDIR /data
+
 # set rgi executable as cmd to allow overriding
-ENTRYPOINT ["conda", "run", "-n", "rgi", "rgi"]
+ENTRYPOINT ["conda", "run", "-n", "rgi"]
