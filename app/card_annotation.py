@@ -2,7 +2,6 @@ import os, sys, json, csv, argparse
 """
 This script it used to create annotations and fasta for AMR++ using card data (version 2.0.0 and up)
 """
-
 def main(args):
 	working_directory = os.getcwd()
 	"""
@@ -25,8 +24,8 @@ def main(args):
 	with open(os.path.join(working_directory, "card_database_v{}.fasta".format(version)), 'w') as fout:
 		for i in data:
 			if i.isdigit():
-				# use homolog models only
-				if data[i]['model_type_id'] in ['40292']:
+				# use homolog, variant, rRNA gene variant, overexpression, knockout models
+				if data[i]['model_type_id'] in ['40292','40293','40295','41091','40354']:
 
 					drug_class = []
 					mechanism = []
@@ -43,8 +42,6 @@ def main(args):
 									group.append(("{}".format(data[i]["ARO_category"][c]["category_aro_name"])))
 					try:
 						for seq in data[i]['model_sequences']['sequence']:
-							# print(data[i]['model_sequences']['sequence'][seq]["dna_sequence"]["accession"])
-
 							if args.ncbi == True:
 								# header used to be able to validate CARD sequences with genbank sequences
 								header = ("gb|{ncbi}|ARO:{ARO_accession}|ID:{model_id}|Name:{ARO_name}".format(
@@ -68,16 +65,6 @@ def main(args):
 
 					except Exception as e:
 						print("No model sequences for model ({}, {}). Omitting this model and keep running.".format(data[i]['model_id'], data[i]['model_name']))
-						
-	"""
-	write card anntotation fasta (tab-delimited format)
-	"""
-	# with open(os.path.join(working_directory, "card_annotations_v{}.txt".format(version)), "w") as af:
-	# 	writer = csv.writer(af, delimiter=',', dialect='excel')
-	# 	writer.writerow(["header","class", "mechanism", "group"])
-	# 	for row in annotations:
-	# 		writer.writerow(row) 	
-		
 
 def create_parser():
     parser = argparse.ArgumentParser(prog="rgi card_annotation",description='Creates card annotations for RGI BWT from card.json')

@@ -1,4 +1,4 @@
-import os, sys, json, csv, argparse, multiprocessing, math
+import os, sys, json, csv, argparse, multiprocessing, math, pysam
 from app.settings import *
 from collections import OrderedDict
 from Bio import SeqIO, Seq
@@ -66,6 +66,7 @@ class CARDkmers(object):
             exit()
 
     def load_kmers(self):
+        logger.info("start loading CARD*kmer {}-mer db".format(self.k))
         with open(self.kmer_db) as db:
             j = json.load(db)
         logger.info("loaded CARD*kmer {}-mer db successfully".format(self.k))
@@ -110,21 +111,42 @@ class CARDkmers(object):
         filter out unmapped and supplementary alignments.
         store RNAME, SAM flag, and MAPQ in header
         """
-        os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
-                    .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
+
+        os.system("samtools index {input_bam}".format(input_bam=self.input_bam_file))
+        aligner = ""
+        bam_file = pysam.AlignmentFile(self.input_bam_file, "rb")
+        header = bam_file.text.split("\n")
+
+        for h in header:
+            if "@PG" in h:
+                aligner = h.split("\t")[1]
+
+        if aligner == "":
+            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
+                        .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$4"__"$3"__"$5"\\n"$11}""", out=self.fasta_file))
+        else:
+            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
+                        .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
+
+        
 
     def get_bwt_alignment_data(self, header):
         """
         bit-wise flag reference: http://blog.nextgenetics.net/?e=18
         """
         qname, model, flag, mapq = header.split("__")
-        if int(flag) & 64: #
-            read = "{}/1".format(qname)
-        elif int(flag) & 128:
-            read = "{}/2".format(qname)
-        else: # single end data
-            read = qname
-        return read, model, flag, mapq
+
+        if flag.isdigit() is False:
+            logger.error("failed to parse BAM file: {}, please check which aligner software was used to produce the BAM file in the RGI BWT step.".format(self.input_bam_file))
+            exit()
+        else:
+            if int(flag) & 64: #
+                read = "{}/1".format(qname)
+            elif int(flag) & 128:
+                read = "{}/2".format(qname)
+            else: # single end data
+                read = qname
+            return read, model, flag, mapq
 
     # def get_rgi_data(self, header):
     #     orf, hsp, model, type_hit = header.split("__")

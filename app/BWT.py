@@ -3,6 +3,8 @@ import csv, glob
 from multiprocessing import Pool
 import time
 import statistics
+from Bio import SeqIO, Seq
+import gzip
 
 class BWT(object):
 	"""
@@ -37,6 +39,7 @@ class BWT(object):
 		logger.info("card")
 		self.reference_genome = os.path.join(self.data, "card_reference.fasta")
 		self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bowtie2"))
+		self.index_directory_kma = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("kma"))
 		self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bwa"))
 
 		if self.include_baits == True:
@@ -152,6 +155,15 @@ class BWT(object):
 				threads=self.threads
 				)
 			)
+		elif self.aligner == "kma":
+			if not os.path.exists(index_directory):
+				os.makedirs(index_directory)
+				logger.info("created index at {}".format(index_directory))
+			os.system("kma index -i {reference_genome} -o {index_directory}".format(
+				index_directory=index_directory,
+				reference_genome=reference_genome
+				)
+			)
 		else:
 			if not os.path.exists(index_directory):
 				os.makedirs(index_directory)
@@ -162,6 +174,40 @@ class BWT(object):
 				reference_genome=reference_genome
 				)
 			)
+
+	def align_kma(self, reference_genome, index_directory, output_sam_file):
+		"""
+		Align paired reads to card or wildcard
+		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
+
+		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
+
+		cmd = "kma -ex_mode -1t1 -vcf -ipe {read_one} {read_two} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+			threads=self.threads,
+			index_directory=index_directory,
+			read_one=self.read_one,
+			read_two=self.read_two,
+			output_sam_file=output_sam_file
+		)
+		os.system(cmd)
+
+	def align_kma_interleaved(self, reference_genome, index_directory, output_sam_file):
+		"""
+		Align paired reads to card or wildcard
+		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
+
+		logger.info("align reads -ipe {} {} to {}".format(self.read_one, self.read_two, reference_genome))
+
+		cmd = "kma -ex_mode -1t1 -vcf -int {read_one} -t {threads} -t_db {index_directory} -o {output_sam_file}.temp -sam > {output_sam_file}".format(
+			threads=self.threads,
+			index_directory=index_directory,
+			read_one=self.read_one,
+			read_two=self.read_two,
+			output_sam_file=output_sam_file
+		)
+		os.system(cmd)
 
 	def align_bowtie2_unpaired(self, reference_genome, index_directory, output_sam_file):
 		"""
@@ -214,15 +260,16 @@ class BWT(object):
 
 		os.system(cmd)
 
-	def align_bwa_single_end_mapping(self):
+	def align_bwa_single_end_mapping(self, reference_genome, index_directory, output_sam_file):
 		"""
 		Align unpaired reads to reference genome using bwa
 		"""
+		self.check_index(index_directory=index_directory, reference_genome=reference_genome)
 		os.system("bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}".format(
 			threads=self.threads,
-			index_directory=self.index_directory_bwa,
+			index_directory=index_directory,
 			read_one=self.read_one,
-			output_sam_file=self.output_sam_file
+			output_sam_file=output_sam_file
 			)
 		)
 
@@ -291,7 +338,7 @@ class BWT(object):
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab
 			)
-
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_qname_rname_sequence(self):
@@ -303,6 +350,7 @@ class BWT(object):
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_sequences
 			)
+		# logger.debug(cmd)
 		os.system(cmd)
 
 	def get_coverage(self):
@@ -319,6 +367,14 @@ class BWT(object):
 		"""
 		Get converage for all positions using 'genomeCoverageBed -ibam' function
 		BAM file _must_ be sorted by position
+		By default, bedtools genomecov will compute a histogram of coverage for the genome file provided. The default output format is as follows:
+
+		1. chromosome (or entire genome)
+		2. depth of coverage from features in input file
+		3. number of bases on chromosome (or genome) with depth equal to column 2.
+		4. size of chromosome (or entire genome) in base pairs
+		5. fraction of bases on chromosome (or entire genome) with depth equal to column 2.
+
 		"""
 
 		cmd = "bedtools genomecov -ibam {sorted_bam_file} > {output_tab}".format(
@@ -890,7 +946,51 @@ class BWT(object):
 				logger.warning("missing aro accession: {} for alignment {} -> {}".format(accession,alignment_hit,e))
 		return model_id
 
-	def summary(self, alignment_hit, models, variants, baits, reads, models_by_accession):
+	def get_mutation_details(self):
+		# *.sam.temp.vcf.gz
+		results = {}
+		mutation_file_compressed = os.path.join(self.working_directory, "{}.temp.sam.temp.vcf.gz".format(self.output_file))
+		# logger.debug("mutation_file_compressed: {}".format(mutation_file_compressed))
+
+		with gzip.open(mutation_file_compressed, "rt") as m1:
+			reader=csv.reader(m1,delimiter='\t')
+			for row in reader:
+				if "#" not in row[0]:
+					if row[0] not in results.keys():
+						results[row[0]] = []
+
+					results[row[0]].append( 
+						"{reference_allele}{position}{alternative_allele}".format(
+							reference_allele=row[3].strip(),
+							position=row[1].strip(),
+							alternative_allele=row[4].strip()
+						) 
+					)
+
+		return results
+
+	def get_read_coverage(self):
+		read_coverage_file = os.path.join(self.working_directory, "{}.temp.sam.temp.res".format(self.output_file))
+		# logger.debug("read_coverage_file: {}".format(read_coverage_file))
+		results = {}
+		with open(read_coverage_file, "r") as c1:
+				reader=csv.reader(c1,delimiter='\t')
+				for row in reader:
+					if row[0] != "#Template":
+						results[row[0]] = { "depth": row[8].strip()}
+
+		return results
+
+	def get_consensus_sequence(self):
+		consensus_sequence_file = os.path.join(self.working_directory, "{}.temp.sam.temp.fsa".format(self.output_file))
+		# logger.debug("consensus_sequence_file: {}".format(consensus_sequence_file))
+		result = []
+		with open(consensus_sequence_file, "r") as c1:
+			result = SeqIO.to_dict(SeqIO.parse(c1, "fasta"))
+		return result
+
+
+	def summary(self, alignment_hit, models, variants, baits, reads, models_by_accession,mutation,read_coverage,consensus_sequence):
 		start = time.time()		
 		# logger.debug(alignment_hit)
 		coverage = self.get_coverage_details(alignment_hit)
@@ -988,7 +1088,41 @@ class BWT(object):
 			logger.info("time lapsed: {} - {}".format(format(elapsed,'.3f'), alignment_hit))
 			# self.async_print(alignment_hit, start, stop, elapsed)
 			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(models[model_id]["ARO_accession"])
-			# logger.debug(">>> {}".format(alignment_hit))
+			
+			consensus_sequence_dna = ""
+			consensus_sequence_protein = ""
+			read_coverage_depth = ""
+			snps = ""
+
+			if self.aligner == "kma":
+				try:
+					# if alignment_hit in consensus_sequence.keys():
+					consensus_sequence_dna = "{}".format(consensus_sequence[alignment_hit].seq)
+					input_seq = "{}".format(consensus_sequence[alignment_hit].seq)
+
+					trailing_bases = len(input_seq) % 3
+
+					if trailing_bases:
+						input_seq = ''.join([input_seq, 'NN']) if trailing_bases == 1 else ''.join([input_seq, 'N'])
+
+					try:
+						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=True)
+					except Exception as e:
+						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=False)
+					
+					if trailing_bases:
+						consensus_sequence_protein = consensus_sequence_protein[:-1]
+					
+					if alignment_hit in read_coverage.keys():
+						read_coverage_depth = read_coverage[alignment_hit]["depth"]
+					
+					if alignment_hit in mutation.keys():
+						snps = "; ".join(mutation[alignment_hit])
+
+				except Exception as e:
+					logger.warning("model with id : {}, has few mapped reads to make consensus sequence skipping: {}".format(model_id,e))
+					return {}
+
 			return {
 				"id": alignment_hit,
 				"cvterm_name": models[model_id]["model_name"],
@@ -1021,7 +1155,11 @@ class BWT(object):
 				},
 				"mutation": "N/A",
 				"resistomes": resistomes
-				,"predicted_pathogen": "N/A"
+				,"predicted_pathogen": "N/A",
+				"depth": read_coverage_depth, # get from *.sam.temp.res file when using kma
+				"snps": snps,# get from vcf file
+				"consensus_sequence_dna": consensus_sequence_dna, # get from *.sam.temp.fsa
+				"consensus_sequence_protein": "{}".format(consensus_sequence_protein)
 				}
 		except Exception as e:
 			logger.warning("missing model with id : {}, Exception: {}".format(model_id,e))
@@ -1036,7 +1174,7 @@ class BWT(object):
 		)
 
 	def jobs(self, job):
-		return self.summary(job[0], job[1], job[2], job[3], job[4], job[5])
+		return self.summary(job[0], job[1], job[2], job[3], job[4], job[5], job[6], job[7], job[8])
 
 	def get_summary(self):
 		"""
@@ -1090,12 +1228,23 @@ class BWT(object):
 		variants = {}
 		baits = {}
 		models = {}
-
+		mutation = {}
+		read_coverage = {}
+		consensus_sequence = {}
 		logger.info("get_reads_count ...")
 		reads = self.get_reads_count()
 		logger.info("get_model_details ...")
 		models = self.get_model_details()
 		models_by_accession = self.get_model_details(True)
+
+		if self.aligner == "kma":
+			logger.info("get_mutation_details ...")
+			mutation = self.get_mutation_details()
+			logger.info("get_read_coverage ...")
+			read_coverage = self.get_read_coverage()
+			logger.info("get_consensus_sequence ...")
+			consensus_sequence = self. get_consensus_sequence()
+
 		if self.include_wildcard:
 			logger.info("get_variant_details ...")
 			variants = self.get_variant_details()
@@ -1112,7 +1261,7 @@ class BWT(object):
 
 		jobs = []
 		for alignment_hit in reads.keys():
-			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,))
+			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,mutation,read_coverage,consensus_sequence,))
 
 		with Pool(processes=self.threads) as p:
 			results = p.map_async(self.jobs, jobs)
@@ -1151,8 +1300,12 @@ class BWT(object):
 							# "Mutation",
 							"AMR Gene Family",
 							"Drug Class",
-							"Resistance Mechanism"
+							"Resistance Mechanism",
+							"Depth", # get from *.sam.temp.res file when using kma
+							"SNPs", # get from vcf file
+							"Consensus Sequence DNA", # get from *.sam.temp.fsa
 							# ,"Predicted Pathogen"
+							"Consensus Sequence Protein"
 							])
 			for r in summary:
 				if r:
@@ -1183,6 +1336,10 @@ class BWT(object):
 						"; ".join(r["resistomes"]["Drug Class"]),
 						"; ".join(r["resistomes"]["Resistance Mechanism"])
 						# ,r["predicted_pathogen"]
+						,r["depth"]
+						,r["snps"]
+						,r["consensus_sequence_dna"]
+						,r["consensus_sequence_protein"]
 					])
 
 		# wrtie tab-delimited gene_mapping_data
@@ -1437,6 +1594,17 @@ class BWT(object):
 				self.create_index(index_directory=index_directory,reference_genome=reference_genome)
 			else:
 				logger.info("index already exists for reference: {} using aligner: {}".format(reference_genome,self.aligner))
+		elif self.aligner == "kma":
+			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
+			logger.info(json.dumps(files, indent=2))
+			if (("kma.comp.b" in files) and \
+				("kma.index.b" in files) and \
+				("kma.length.b" in files) and \
+				("kma.seq.b" in files) and \
+				("kma.name" in files)) == False:
+				# create index and save results in ./db from reference genome: (.fasta)
+				logger.info("create index for reference: {} using aligner: {} ".format(reference_genome, self.aligner))
+				self.create_index(index_directory=index_directory,reference_genome=reference_genome)
 		else:
 			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
 			logger.info(json.dumps(files, indent=2))
@@ -1467,9 +1635,14 @@ class BWT(object):
 				self.align_bowtie2_unpaired(reference_genome=self.reference_genome, index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file)
 			else:
 				self.align_bowtie2(reference_genome=self.reference_genome, index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file)
+		elif self.aligner == "kma":
+			if self.read_two == None:
+				self.align_kma_interleaved(reference_genome=self.reference_genome, index_directory=self.index_directory_kma, output_sam_file=self.output_sam_file)
+			else:
+				self.align_kma(reference_genome=self.reference_genome, index_directory=self.index_directory_kma, output_sam_file=self.output_sam_file)
 		else:
 			if self.read_two == None:
-				self.align_bwa_single_end_mapping()
+				self.align_bwa_single_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa, output_sam_file=self.output_sam_file)
 			else:
 				self.align_bwa_paired_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa,  output_sam_file=self.output_sam_file)
 		
