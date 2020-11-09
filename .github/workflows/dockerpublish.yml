@@ -5,20 +5,8 @@ on:
     types: [published]
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test_build:
-    name: Test build of Dockerfile in repository
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build docker container
-        run: docker build . --file Dockerfile
-
   # Push image to GitHub Packages.
   push_to_registry:
-    needs: test_build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -30,5 +18,5 @@ jobs:
             username: ${{ github.actor }}
             password: ${{ secrets.GITHUB_TOKEN }}
             registry: docker.pkg.github.com
-            repository: fmaguire/rgi
+            repository: fmaguire/rgi/latest
             tag_with_ref: true
