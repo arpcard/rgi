@@ -15,8 +15,7 @@ jobs:
       - name: Push to Github Packages
         uses: docker/build-push-action@v1
         with:
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
-            registry: docker.pkg.github.com
-            repository: fmaguire/rgi/latest
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+            repository: fmaguire/rgi
             tag_with_ref: true
