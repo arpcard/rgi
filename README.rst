@@ -163,6 +163,7 @@ Install Dependencies
 - pip3 install pysam
 - pip3 install beautifulsoup4
 - pip3 install requests
+- pip3 install lxml
 
 Install RGI from Project Root
 -----------------------------
