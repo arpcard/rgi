@@ -132,7 +132,6 @@ Requirements
 - `Biopython 1.72 <https://biopython.org/>`_
 - `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
 - `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
-- `mock 2.0.0 <https://pypi.org/project/mock/>`_
 - `pandas 0.15.0+ <https://pandas.pydata.org/>`_
 - `Matplotlib 2.1.2+ <https://matplotlib.org/>`_
 - `seaborn 0.8.1+ <https://matplotlib.org/>`_
@@ -150,35 +149,25 @@ Requirements
 Install Dependencies
 --------------------
 
-- pip3 install six
-- pip3 install biopython
-- pip3 install filetype
-- pip3 install pytest
-- pip3 install mock
-- pip3 install pandas
-- pip3 install matplotlib
-- pip3 install seaborn
-- pip3 install pyfaidx
-- pip3 install pyahocorasick
-- pip3 install pysam
-- pip3 install beautifulsoup4
-- pip3 install requests
-- pip3 install lxml
+.. code-block:: sh
 
-Install RGI from Project Root
------------------------------
+    conda env create -f conda_env.yml
+    conda activate rgi
+
+Install RGI itself
+------------------
 
 .. code-block:: sh
 
-   pip3 install git+https://github.com/arpcard/rgi.git 
+   pip install git+https://github.com/arpcard/rgi.git 
 
 or
 
 .. code-block:: sh
 
-   python3 setup.py build
-   python3 setup.py test
-   python3 setup.py install
+   python setup.py build
+   python setup.py test
+   python setup.py install
 
 Running RGI Tests
 -------------------
