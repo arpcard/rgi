@@ -176,8 +176,16 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 Install Development Version
 ---------------------------
 
-Dependencies
+Install Dependencies
 ````````````
+The following conda command will install all RGI dependencies (listed below):
+
+.. code-block:: sh
+    
+    git clone https://github.com/arpcard/rgi
+    conda env create -f conda_env.yml
+    conda activate rgi
+
 
 - `Python 3.6 <https://www.python.org/>`_
 - `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
@@ -201,14 +209,6 @@ Dependencies
 - `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
 - `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
-Install Dependencies
-```````````````````
-
-.. code-block:: sh
-    
-    git clone https://github.com/arpcard/rgi
-    conda env create -f conda_env.yml
-    conda activate rgi
 
 Install RGI 
 ```````````
@@ -316,8 +316,11 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 
       rgi load -h
 
+RGI Databases
+--------------
+
 Load CARD Reference Data
---------------------------
+````````````````````````
 
 **Required CARD Reference Data**
 
@@ -410,7 +413,7 @@ System wide (example uses the pre-compiled 61 bp k-mers):
         --debug > kmer_load.61.log 2>&1
 
 Check Database Version
------------------------
+``````````````````````
 
 Local or working directory:
 
@@ -425,7 +428,7 @@ System wide :
       rgi database --version
       
 Clean Previous or Old Databases
---------------------------------
+````````````````````````````````
 
 Local or working directory:
 
@@ -439,8 +442,9 @@ System wide:
    
       rgi clean      
 
-RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
-------------------------------------------------------------------------------------------------------
+
+Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
+-------------------------------------------------------------------------------
 
 .. code-block:: sh
 
@@ -488,7 +492,7 @@ RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 By default, all Loose RGI hits of 95% identity or better are automatically listed as Strict, regardless of alignment length, unless the --exclude_nudge flag is used.
 
 Running RGI main with Genome or Assembly DNA Sequences
---------------------------------------------------------
+```````````````````````````````````````````````````````
 
 You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
 
@@ -540,7 +544,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits for 
         --alignment_tool DIAMOND --num_threads 40 --split_prodigal_jobs --clean
 
 Running RGI main with Protein Sequences
---------------------------------------------------------
+```````````````````````````````````````
 
 You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
 
@@ -576,7 +580,7 @@ High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
         --alignment_tool DIAMOND --num_threads 40 --clean
 
 Running RGI main using GNU Parallel
---------------------------------------------
+````````````````````````````````````
 
 System wide and writing log files for each input file. Note: add code below to script.sh then run with `./script.sh /path/to/input_files`.
 
@@ -589,8 +593,8 @@ System wide and writing log files for each input file. Note: add code below to s
             parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
       done
 
-RGI main Tab-Delimited Output
------------------------------------
+RGI main Tab-Delimited Output Details
+`````````````````````````````````````
 
 +----------------------------------------------------------+------------------------------------------------+
 |    Field                                                 | Contents                                       |
@@ -650,7 +654,7 @@ RGI main Tab-Delimited Output
 +----------------------------------------------------------+------------------------------------------------+
 
 Generating Heat Maps of RGI main Results
-------------------------------------------------
+````````````````````````````````````````
 
 .. code-block:: sh
 
@@ -724,8 +728,8 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
             rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
                 --output /path/to/output_file -clus both -f
 
-RGI bwt Usage for Metagenomic Reads
--------------------------------------
+Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
+------------------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
@@ -781,7 +785,7 @@ RGI bwt Usage for Metagenomic Reads
         -U {unpaired_reads} -S {output_sam_file}
 
 Running RGI bwt with FASTQ files
---------------------------------------
+```````````````````````````````
 
 You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
 
@@ -803,8 +807,8 @@ Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourcefo
         --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
         --output_file output_prefix --threads 8 --include_wildcard --local 
 
-RGI bwt Tab-Delimited Output
-------------------------------
+RGI bwt Tab-Delimited Output Details
+````````````````````````````````````
 
 RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with results provided for allele mapping and summarized at the AMR gene level (i.e. summing allele level results by gene). Five tab-delimited files are produced:
 
@@ -823,7 +827,7 @@ RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with 
 +----------------------------------------------------------+------------------------------------------------+
 
 RGI bwt read mapping results at allele level
------------------------------------------------
+``````````````````````````````````````````
 
 +----------------------------------------------------------+---------------------------------------------------+
 |    Field                                                 | Contents                                          |
@@ -880,7 +884,7 @@ RGI bwt read mapping results at allele level
 Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI hits in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
 RGI bwt read mapping results at gene level
---------------------------------------------
+``````````````````````````````````````````
 
 +----------------------------------------------------------+---------------------------------------------------+
 |    Field                                                 | Contents                                          |
@@ -952,8 +956,8 @@ RGI bwt read mapping results at gene level
 
 Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
-RGI Compute Canada Serial Farming
-----------------------------------
+Running RGI on Compute Canada Serial Farm
+`````````````````````````````````````````
 
 **Order of operations**
 
@@ -1069,8 +1073,8 @@ More information on serial farming on Compute Canada can be found here_.
 .. _here: https://docs.computecanada.ca/wiki/Running_jobs#Serial_job
 
 
-RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
----------------------------------------------------------
+Using RGI kmer_query (K-mer Taxonomic Classification)
+-----------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
@@ -1136,12 +1140,12 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
 
 CARD k-mer Classifier Output
------------------------------
+````````````````````````````
 
 CARD k-mer classifier output differs between genome/gene and metagenomic data:
 
 CARD k-mer Classifier Output for a FASTA file
-----------------------------------------------
+`````````````````````````````````````````````
 
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
@@ -1165,7 +1169,7 @@ CARD k-mer Classifier Output for a FASTA file
 +----------------------------------------------------------+----------------------------------------------------+
 
 CARD k-mer Classifier Output for RGI main results
---------------------------------------------------
+`````````````````````````````````````````````````
 
 +----------------------------------------------------------+----------------------------------------------------+
 |    Field                                                 | Contents                                           |
@@ -1189,7 +1193,7 @@ CARD k-mer Classifier Output for RGI main results
 +----------------------------------------------------------+----------------------------------------------------+
 
 CARD k-mer Classifier Output for RGI bwt results
---------------------------------------------------
+````````````````````````````````````````````````
 
 As with RGI bwt analysis, output is produced at both the allele and gene level:
 
@@ -1211,7 +1215,7 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 +----------------------------------------------------------+----------------------------------------------------+
 
 Building Custom k-mer Classifiers
---------------------------------
+`````````````````````````````````
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
