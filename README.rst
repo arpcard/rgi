@@ -21,10 +21,7 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
 
-Table of Conents
-================
-
-.. contents:: 
+.. contents:: Table of Contents
 
 Overview of RGI
 ===============
@@ -184,10 +181,10 @@ Or
 Install Development Version
 ---------------------------
 
-Requirements
+Dependencies
 ````````````
 
-.. include:: conda_env.yml
+.. include:: https://raw.githubusercontent.com/fmaguire/rgi/master/conda_env.yml
       :literal:
 
 Links:
@@ -223,8 +220,8 @@ Install Dependencies
     conda env create -f conda_env.yml
     conda activate rgi
 
-Install RGI itself
-``````````````````
+Install RGI 
+```````````
 
 .. code-block:: sh
 
@@ -499,38 +496,48 @@ Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \\
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
         --output_file /path/to/output_file --input_type contig --local --clean
       
 Include Loose hits:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \\ --output_file /path/to/output_file --input_type contig --local --include_loose --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --include_loose --clean
       
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --include_loose --exclude_nudge --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --low_quality --include_loose --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --low_quality --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --alignment_tool DIAMOND --num_threads 40 --split_prodigal_jobs --clean
 
 Running RGI main with Protein Sequences
 --------------------------------------------------------
@@ -541,25 +548,32 @@ Generate Perfect or Strict hits for a set of protein sequences:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local --clean
 
 Include Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --include_loose --clean
 
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40 --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --alignment_tool DIAMOND --num_threads 40 --clean
 
 Running RGI main using GNU Parallel
 --------------------------------------------
@@ -679,31 +693,36 @@ Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file
             
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat gene_family -clus samples
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -cat gene_family -clus samples
 
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat drug_class -clus samples
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -cat drug_class -clus samples
 
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -clus both
             
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both -f
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -clus both -f
 
 RGI bwt Usage for Metagenomic Reads
 -------------------------------------
@@ -758,7 +777,8 @@ RGI bwt Usage for Metagenomic Reads
  
    .. code-block:: sh
    
-      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} -U {unpaired_reads} -S {output_sam_file}
+      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} \
+        -U {unpaired_reads} -S {output_sam_file}
 
 Running RGI bwt with FASTQ files
 --------------------------------------
@@ -771,13 +791,17 @@ Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourcefo
 
    .. code-block:: sh
    
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --local 
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
+        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
+        --output_file output_prefix --threads 8 --local 
 
 Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
 
    .. code-block:: sh
    
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --include_wildcard --local 
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
+        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
+        --output_file output_prefix --threads 8 --include_wildcard --local 
 
 RGI bwt Tab-Delimited Output
 ------------------------------
@@ -1094,19 +1118,22 @@ CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 process
 
 .. code-block:: sh
 
-   rgi kmer_query --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
+   rgi kmer_query --fasta --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/nucleotide_input.fasta --output /path/to/output_file --local
 
 CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --rgi -k 61 -n 8 --minimum 10 -i /path/to/rgi_main.json -o /path/to/output_file --local
+   rgi kmer_query --rgi --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/rgi_main.json --output /path/to/output_file --local
    
 CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
+   rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
 
 CARD k-mer Classifier Output
 -----------------------------
@@ -1224,12 +1251,14 @@ Example generation of 31 bp k-mers using 20 processors (note that the filename *
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
+   rgi kmer_build --input_directory /path/to/wildcard \
+    --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
 
 The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
+   rgi kmer_build --input_directory /path/to/wildcard \
+    --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
 
 
