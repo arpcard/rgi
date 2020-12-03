@@ -9,15 +9,21 @@
     :alt: Documentation
     :scale: 100%
     :target: http://bioconda.github.io/recipes/rgi/README.html
-    
+
+====================================
 The Resistance Gene Identifier (RGI) 
---------------------------------------------
+====================================
 
 This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
 RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://toolshed.g2.bx.psu.edu/view/card/rgi/715bc9aeef69>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can Install RGI from Conda or Run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
+
+.. contents:: 
+
+Overview of RGI
+===============
 
 Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 -----------------------------------------------------------------------
@@ -71,38 +77,6 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 
 **CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** As above, the reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
 
-Table of Contents
--------------------------------------
-
-- `License`_
-- `Citation`_
-- `Support & Bug Reports`_
-- `Requirements`_
-- `Install Dependencies`_
-- `Install RGI from Project Root`_
-- `Running RGI Tests`_
-- `Help Menu and Usage`_
-- `Help Menus for Subcommands`_
-- `Load CARD Reference Data`_
-- `Check Database Version`_
-- `Clean Previous or Old Databases`_
-- `RGI main Usage for Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes`_
-- `Running RGI main with Genome or Assembly DNA Sequences`_
-- `Running RGI main with Protein Sequences`_
-- `Running RGI main using GNU Parallel`_
-- `RGI main Tab-Delimited Output`_
-- `Generating Heat Maps of RGI main Results`_
-- `RGI bwt Usage for Metagenomic Reads`_
-- `Running RGI bwt with FASTQ files`_
-- `RGI bwt Tab-Delimited Output`_
-- `RGI Compute Canada Serial Farming`_
-- `RGI kmer_query Usage to Use K-mer Taxonomic Classifiers`_
-- `CARD k-mer Classifier Output`_
-- `Building Custom k-mer Classifiers`_
-- `Run RGI from Docker - via biocontainers or quay`_
-- `Run RGI from Docker - via dockerhub`_
-- `Install RGI from Conda`_
-
 License
 --------
 
@@ -111,7 +85,7 @@ Use or reproduction of these materials, in whole or in part, by any commercial o
 Citation
 --------
 
-Alcock et al. 2019. CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database. Nucleic Acids Research, gkz935. [Epub ahead of print]  [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
+Alcock et al. 2020. CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database. Nucleic Acids Research, Volume 48, Issue D1, Pages D517-525 [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
 
 Support & Bug Reports
 ----------------------
@@ -120,19 +94,99 @@ Please log an issue on `github issue <https://github.com/arpcard/rgi/issues>`_.
 
 You can email the CARD curators or developers directly at `card@mcmaster.ca <mailto:card@mcmaster.ca>`_, via Twitter at `@arpcard <http://www.twitter.com/arpcard>`_.
 
-Requirements
---------------------
+---------------------
+
+
+Installation
+============
+
+Recommended installation method for most users is via conda or docker.
+This will handle dependency management and ensure installation of the
+correct version of RGI's external dependencies e.g., BLAST, DIAMOND.
+
+Install RGI from Conda
+----------------------
+
+Install `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_ on your system if not already available ().
+
+Search for RGI package and show available versions:
+
+  .. code-block:: sh
+        
+        $ conda search --channel bioconda --channel conda-forge --channel defaults rgi
+
+Create a new conda environment
+
+  .. code-block:: sh
+        
+        $ conda create --name rgi --channel bioconda --channel conda-forge --channel defaults rgi
+
+Install RGI package:
+
+  .. code-block:: sh
+        
+        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi
+
+Install RGI specific version:
+
+  .. code-block:: sh
+        
+        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi=5.1.1
+
+Remove RGI package:
+
+  .. code-block:: sh
+        
+        $ conda remove rgi
+
+
+Install RGI using Docker/Singularity
+------------------------------------
+
+RGI is available via dockerhub or biocontainers full installed with all
+databases appropriately loaded.
+
+Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not already available
+
+- Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from conda package).
+
+    .. code-block:: sh
+
+        docker pull finlaymaguire/rgi:latest
+
+    Or
+
+    .. code-block:: sh
+
+        docker pull quay.io/biocontainers/rgi:5.1.1--py_0
+
+- RGI can be executed from the containers as follows:
+
+    .. code-block:: sh
+       
+        docker run -v $PWD:/data finlaymaguire/rgi -h
+
+    Or 
+
+    .. code-block:: sh
+       
+        docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 -h
+
+
+Install Development Version
+---------------------------
+
+Dependencies
+````````````
 
 - `Python 3.6 <https://www.python.org/>`_
 - `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
-- `six 1.7.0+ <https://bitbucket.org/gutworth/six>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
 - `DIAMOND 0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
 - `Biopython 1.72 <https://biopython.org/>`_
 - `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
 - `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
-- `mock 2.0.0 <https://pypi.org/project/mock/>`_
 - `pandas 0.15.0+ <https://pandas.pydata.org/>`_
 - `Matplotlib 2.1.2+ <https://matplotlib.org/>`_
 - `seaborn 0.8.1+ <https://matplotlib.org/>`_
@@ -148,44 +202,40 @@ Requirements
 - `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 Install Dependencies
---------------------
+```````````````````
 
-- pip3 install six
-- pip3 install biopython
-- pip3 install filetype
-- pip3 install pytest
-- pip3 install mock
-- pip3 install pandas
-- pip3 install matplotlib
-- pip3 install seaborn
-- pip3 install pyfaidx
-- pip3 install pyahocorasick
-- pip3 install pysam
-- pip3 install beautifulsoup4
-- pip3 install requests
-- pip3 install lxml
+.. code-block:: sh
+    
+    git clone https://github.com/arpcard/rgi
+    conda env create -f conda_env.yml
+    conda activate rgi
 
-Install RGI from Project Root
------------------------------
+Install RGI 
+```````````
 
 .. code-block:: sh
 
-   pip3 install git+https://github.com/arpcard/rgi.git 
+   pip install git+https://github.com/arpcard/rgi.git 
 
 or
 
 .. code-block:: sh
 
-   python3 setup.py build
-   python3 setup.py test
-   python3 setup.py install
+   python setup.py build
+   python setup.py test
+   python setup.py install
 
 Running RGI Tests
--------------------
+`````````````````
 .. code-block:: sh
    
    cd tests
    pytest -v -rxs
+
+-------------------
+
+RGI Usage Documentation
+=======================
 
 Help Menu and Usage
 ----------------------
@@ -323,15 +373,21 @@ Local or working directory (note that the filenames *wildcard_database_v3.0.2.fa
 
    .. code-block:: sh
    
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
+        --card_annotation card_database_v3.0.1.fasta --local
 
 System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
+        --card_annotation card_database_v3.0.1.fasta
 
 **Additional Reference Data for K-mer Pathogen-of-Origin Analyses**
 
@@ -341,13 +397,17 @@ Local or working directory (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
+        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
+        --local --debug > kmer_load.61.log 2>&1
 
 System wide (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --debug > kmer_load.61.log 2>&1
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
+        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
+        --debug > kmer_load.61.log 2>&1
 
 Check Database Version
 -----------------------
@@ -436,37 +496,48 @@ Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local --clean
       
 Include Loose hits:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --include_loose --clean
       
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --include_loose --exclude_nudge --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --low_quality --include_loose --clean
 
 Short or low quality contigs with partial gene prediction, including Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --low_quality --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --low_quality --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local -a DIAMOND -n 40 --split_prodigal_jobs --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \
+        --output_file /path/to/output_file --input_type contig --local \
+        --alignment_tool DIAMOND --num_threads 40 --split_prodigal_jobs --clean
 
 Running RGI main with Protein Sequences
 --------------------------------------------------------
@@ -477,25 +548,32 @@ Generate Perfect or Strict hits for a set of protein sequences:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local --clean
 
 Include Loose hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --include_loose --clean
 
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --include_loose --exclude_nudge --clean
 
 High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
 
    .. code-block:: sh
    
-      rgi main --input_sequence /path/to/protein_input.fasta --output_file /path/to/output_file --input_type protein --local -a DIAMOND -n 40 --clean
+      rgi main --input_sequence /path/to/protein_input.fasta \
+        --output_file /path/to/output_file --input_type protein --local \
+        --alignment_tool DIAMOND --num_threads 40 --clean
 
 Running RGI main using GNU Parallel
 --------------------------------------------
@@ -615,31 +693,36 @@ Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file
             
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat gene_family -clus samples
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -cat gene_family -clus samples
 
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -cat drug_class -clus samples
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -cat drug_class -clus samples
 
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -clus both
             
 Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:            
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ --output /path/to/output_file -clus both -f
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+                --output /path/to/output_file -clus both -f
 
 RGI bwt Usage for Metagenomic Reads
 -------------------------------------
@@ -694,7 +777,8 @@ RGI bwt Usage for Metagenomic Reads
  
    .. code-block:: sh
    
-      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} -U {unpaired_reads} -S {output_sam_file}
+      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} \
+        -U {unpaired_reads} -S {output_sam_file}
 
 Running RGI bwt with FASTQ files
 --------------------------------------
@@ -707,13 +791,17 @@ Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourcefo
 
    .. code-block:: sh
    
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --local 
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
+        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
+        --output_file output_prefix --threads 8 --local 
 
 Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
 
    .. code-block:: sh
    
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 --output_file output_prefix --threads 8 --include_wildcard --local 
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
+        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
+        --output_file output_prefix --threads 8 --include_wildcard --local 
 
 RGI bwt Tab-Delimited Output
 ------------------------------
@@ -1030,19 +1118,22 @@ CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 process
 
 .. code-block:: sh
 
-   rgi kmer_query --fasta -k 61 -n 8 --minimum 10 -i /path/to/nucleotide_input.fasta -o /path/to/output_file --local
+   rgi kmer_query --fasta --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/nucleotide_input.fasta --output /path/to/output_file --local
 
 CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --rgi -k 61 -n 8 --minimum 10 -i /path/to/rgi_main.json -o /path/to/output_file --local
+   rgi kmer_query --rgi --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/rgi_main.json --output /path/to/output_file --local
    
 CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --bwt -k 61 -n 8 --minimum 10 -i /path/to/rgi_bwt.bam -o /path/to/output_file --local
+   rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10 \
+    --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
 
 CARD k-mer Classifier Output
 -----------------------------
@@ -1160,82 +1251,14 @@ Example generation of 31 bp k-mers using 20 processors (note that the filename *
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
+   rgi kmer_build --input_directory /path/to/wildcard \
+    --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
 
 The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
+   rgi kmer_build --input_directory /path/to/wildcard \
+    --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
 
-Run RGI from Docker - via biocontainers or quay
-------------------------------------------------
 
-See all tags at `quay <https://quay.io/repository/biocontainers/rgi?tab=tags>`_ 
-
-Run the container with tag `4.2.2--py35ha92aebf_1` using the following:
-
-  .. code-block:: sh
-
-      docker run quay.io/biocontainers/rgi:4.2.2--py35ha92aebf_1 rgi --help
-
-Run RGI from Docker - via dockerhub
-----------------------------------
-
-First you you must either pull the Docker container from dockerhub (latest CARD version automatically installed):
-
-  .. code-block:: sh
-
-        docker pull finlaymaguire/rgi
-
-Or alternatively, build it locally from the Dockerfile (latest CARD version automatically installed):
-
-  .. code-block:: sh
-
-        git clone https://github.com/arpcard/rgi
-        docker build -t arpcard/rgi rgi
-
-Then you can either run interactively (mounting a local directory called `rgi_data` in your current directory to `/data/` within the container:
-
-  .. code-block:: sh
-
-        docker run -i -v $PWD/rgi_data:/data -t arpcard/rgi bash
-
-Or you can directly run the container as an executable with `$RGI_ARGS` being any of the commands described above. Remember paths to input and outputs files are relative to the container (i.e. `/data/` if mounted as above):
-
-  .. code-block:: sh
-        
-        docker run -v $PWD/rgi_data:/data arpcard/rgi $RGI_ARGS
-
-Install RGI from Conda
--------------------
-
-Search for RGI package and show available versions:
-
-  .. code-block:: sh
-        
-        $ conda search --channel bioconda --channel conda-forge --channel defaults rgi
-
-Create a new conda environment
-
-  .. code-block:: sh
-        
-        $ conda create --name rgi --channel bioconda --channel conda-forge --channel defaults rgi
-
-Install RGI package:
-
-  .. code-block:: sh
-        
-        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi
-
-Install RGI specific version:
-
-  .. code-block:: sh
-        
-        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi=5.1.1
-
-Remove RGI package:
-
-  .. code-block:: sh
-        
-        $ conda remove rgi
