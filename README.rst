@@ -20,8 +20,7 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
-
-.. contents:: Table of Contents
+.. contents:: 
 
 Overview of RGI
 ===============
@@ -108,9 +107,7 @@ correct version of RGI's external dependencies e.g., BLAST, DIAMOND.
 Install RGI from Conda
 ----------------------
 
-Install conda on your system if not already available (documentation_).
-
- .. _documentation: https://docs.conda.io/projects/conda/en/latest/user-guide/install/
+Install `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_ on your system if not already available ().
 
 Search for RGI package and show available versions:
 
@@ -147,11 +144,9 @@ Install RGI using Docker/Singularity
 ------------------------------------
 
 RGI is available via dockerhub or biocontainers full installed with all
-databases appropriately loaded (documentation_).
+databases appropriately loaded.
 
-    .. _documentation: https://docs.docker.com/get-docker/
-
-Install docker on your system if not already available
+Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not already available
 
 - Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from conda package).
 
@@ -159,7 +154,7 @@ Install docker on your system if not already available
 
         docker pull finlaymaguire/rgi:latest
 
-Or
+    Or
 
     .. code-block:: sh
 
@@ -171,7 +166,7 @@ Or
        
         docker run -v $PWD:/data finlaymaguire/rgi -h
 
-Or 
+    Or 
 
     .. code-block:: sh
        
@@ -183,11 +178,6 @@ Install Development Version
 
 Dependencies
 ````````````
-
-.. include:: https://raw.githubusercontent.com/fmaguire/rgi/master/conda_env.yml
-      :literal:
-
-Links:
 
 - `Python 3.6 <https://www.python.org/>`_
 - `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
@@ -383,15 +373,21 @@ Local or working directory (note that the filenames *wildcard_database_v3.0.2.fa
 
    .. code-block:: sh
    
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta --local
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
+        --card_annotation card_database_v3.0.1.fasta --local
 
 System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
    
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta --wildcard_index /path/to/wildcard/index-for-model-sequences.txt --card_annotation card_database_v3.0.1.fasta
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
+        --card_annotation card_database_v3.0.1.fasta
 
 **Additional Reference Data for K-mer Pathogen-of-Origin Analyses**
 
@@ -401,13 +397,17 @@ Local or working directory (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --local --debug > kmer_load.61.log 2>&1
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
+        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
+        --local --debug > kmer_load.61.log 2>&1
 
 System wide (example uses the pre-compiled 61 bp k-mers):
 
    .. code-block:: sh
    
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 --debug > kmer_load.61.log 2>&1
+      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
+        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
+        --debug > kmer_load.61.log 2>&1
 
 Check Database Version
 -----------------------
