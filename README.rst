@@ -316,7 +316,7 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 
       rgi load -h
 
-Database Usage
+RGI Databases
 --------------
 
 Load CARD Reference Data
@@ -728,8 +728,8 @@ Generate a heat map from pre-compiled RGI main JSON files, samples clustered by 
             rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
                 --output /path/to/output_file -clus both -f
 
-RGI bwt Usage for Metagenomic Reads
--------------------------------------
+Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
+------------------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
@@ -1073,8 +1073,8 @@ More information on serial farming on Compute Canada can be found here_.
 .. _here: https://docs.computecanada.ca/wiki/Running_jobs#Serial_job
 
 
-RGI kmer_query Usage to Use K-mer Taxonomic Classifiers
----------------------------------------------------------
+Using RGI kmer_query (K-mer Taxonomic Classification)
+-----------------------------------------------------
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
