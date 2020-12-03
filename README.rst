@@ -24,9 +24,7 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 Table of Conents
 ================
 
-.. contents:: Table of Contents
-   .. section-numbering::
-
+.. contents:: 
 
 Overview of RGI
 ===============
@@ -160,25 +158,25 @@ Install docker on your system if not already available
 
 - Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from conda package).
 
-  .. code-block:: sh
+    .. code-block:: sh
 
         docker pull finlaymaguire/rgi:latest
 
 Or
 
-  .. code-block:: sh
+    .. code-block:: sh
 
         docker pull quay.io/biocontainers/rgi:5.1.1--py_0
 
 - RGI can be executed from the containers as follows:
 
-  .. code-block:: sh
+    .. code-block:: sh
        
         docker run -v $PWD:/data finlaymaguire/rgi -h
 
 Or 
 
-   .. code-block:: sh
+    .. code-block:: sh
        
         docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 -h
 
@@ -189,9 +187,13 @@ Install Development Version
 Requirements
 ````````````
 
+.. include:: conda_env.yml
+      :literal:
+
+Links:
+
 - `Python 3.6 <https://www.python.org/>`_
 - `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
-- `six 1.7.0+ <https://bitbucket.org/gutworth/six>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
 - `DIAMOND 0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
@@ -216,7 +218,8 @@ Install Dependencies
 ```````````````````
 
 .. code-block:: sh
-
+    
+    git clone https://github.com/arpcard/rgi
     conda env create -f conda_env.yml
     conda activate rgi
 
@@ -496,13 +499,14 @@ Generate Perfect or Strict hits for a genome assembly or genome sequence:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \\
+        --output_file /path/to/output_file --input_type contig --local --clean
       
 Include Loose hits:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --input_type contig --local --include_loose --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta \\ --output_file /path/to/output_file --input_type contig --local --include_loose --clean
       
 Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
 
