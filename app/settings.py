@@ -4,7 +4,6 @@ import logging
 import json
 
 from Bio.Blast import NCBIXML
-from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from Bio import SeqIO
 

@@ -4,9 +4,9 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - python >= 3.5, <3.7
+  - python >= 3.5
   - pip
-  - biopython 1.72
+  - biopython 1.78
   - filetype >= 1.0.0
   - pytest >= 3.0.0
   - pandas >= 0.15.0
