@@ -1,7 +1,7 @@
 import pytest
 import os, json
 import subprocess as sp
-from app.MainBase import MainBase
+from rgi.MainBase import MainBase
 
 inputs = "inputs/"
 outputs = "outputs/"
@@ -116,4 +116,4 @@ def test_rgi_bwt_kma_interleaved(rgi):
     ))
     assert check_gene(gene) == True
 
-    
+

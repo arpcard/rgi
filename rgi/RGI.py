@@ -9,7 +9,7 @@ import filetype
 from Bio import SeqIO
 import glob
 import time, shutil
-import gzip, zlib
+import gzip
 import bz2
 from rgi.settings import *
 

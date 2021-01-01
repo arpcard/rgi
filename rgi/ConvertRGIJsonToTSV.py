@@ -1,6 +1,6 @@
 import csv
 from rgi.settings import *
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 from collections import OrderedDict
 
 class ConvertJsonToTSV(object):

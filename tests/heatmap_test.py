@@ -1,6 +1,6 @@
 import pytest
 import os
-from app.MainBase import MainBase
+from rgi.MainBase import MainBase
 
 """
 checks that heatmaps are created

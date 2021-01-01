@@ -1,7 +1,6 @@
-import csv, re, argparse, multiprocessing, math, json, ahocorasick, os, sqlite3
+import csv, re, argparse, multiprocessing, math, json, ahocorasick, os
 from Bio import Seq, SeqIO
 from rgi.settings import logger
-import itertools
 """
 This scripts creates the JSON to hold all kmer sets.
 """
