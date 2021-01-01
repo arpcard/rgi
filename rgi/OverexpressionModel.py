@@ -1,5 +1,5 @@
-from app.Base import BaseModel
-from app.settings import *
+from rgi.Base import BaseModel
+from rgi.settings import *
 
 class Overexpression(BaseModel):
 	"""Class for overexpression searches."""
@@ -87,7 +87,7 @@ class Overexpression(BaseModel):
 						temp = ""
 
 						pass_bitscore = "{}".format(self.extract_nth_bar(alignment.title, 1))
-						pass_evalue = "{}".format("n/a")		
+						pass_evalue = "{}".format("n/a")
 
 						# logger.debug("pass_evalue: {}".format(pass_evalue))
 						# logger.debug("pass_bitscore: {}".format(pass_bitscore))
@@ -108,7 +108,7 @@ class Overexpression(BaseModel):
 								card_sequence = ""
 
 							orf_protein_sequence = ""
-							
+
 							if predicted_genes_dict:
 								if orfInfo.strip() in predicted_genes_dict.keys():
 									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()], generic_dna).translate(table=11)).strip("*")
@@ -166,7 +166,7 @@ class Overexpression(BaseModel):
 										ppinsidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
-											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
+											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
 											ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 											# ppinsidedict["orf_prot_sequence"] = orf_protein_sequence
 										else:
@@ -207,14 +207,14 @@ class Overexpression(BaseModel):
 												sinsidedict = {}
 												sinsidedict["type_match"] = "Strict"
 												sinsidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
-												sinsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)							
+												sinsidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)
 												sinsidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 												sinsidedict["orf_from"] = orffrom.decode()
 												sinsidedict["model_name"] = json_data[modelID]["model_name"]
 												sinsidedict["model_type"] = json_data[modelID]["model_type"]
 												sinsidedict["model_type_id"] = modelTypeID
 												sinsidedict["model_id"] = modelID
-												sinsidedict["snp"] = eachs							
+												sinsidedict["snp"] = eachs
 												sinsidedict["pass_evalue"] = pass_evalue
 												sinsidedict["pass_bitscore"] = pass_bitscore
 												sinsidedict["ARO_accession"] = json_data[modelID]["ARO_accession"]
@@ -241,14 +241,14 @@ class Overexpression(BaseModel):
 													sinsidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 													sinsidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 													sinsidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
-													
+
 													if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
-														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
+														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
 														sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 														# sinsidedict["orf_prot_sequence"] = orf_protein_sequence
 													else:
 														sinsidedict["orf_dna_sequence"] = ""
-														sinsidedict["orf_prot_sequence"] = ""									
+														sinsidedict["orf_prot_sequence"] = ""
 
 												elif self.input_type == 'protein':
 													sinsidedict["query_start"] = hsp.query_start
@@ -266,11 +266,11 @@ class Overexpression(BaseModel):
 									else:
 										if snp_counter == 0:
 											"""If no SNP detected in strict hit."""
-											# logger.debug("Strict hits - no SNP") 
+											# logger.debug("Strict hits - no SNP")
 											insidedict = {}
 											insidedict["type_match"] = "Strict"
 											insidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
-											insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)							
+											insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)
 											insidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 											insidedict["orf_from"] = orffrom.decode()
 											insidedict["model_name"] = json_data[modelID]["model_name"]
@@ -303,14 +303,14 @@ class Overexpression(BaseModel):
 												insidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 												insidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 												insidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
-												
+
 												if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
-													insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
+													insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
 													insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 													# insidedict["orf_prot_sequence"] = orf_protein_sequence
 												else:
 													insidedict["orf_dna_sequence"] = ""
-													insidedict["orf_prot_sequence"] = ""									
+													insidedict["orf_prot_sequence"] = ""
 
 											elif self.input_type == 'protein':
 												insidedict["query_start"] = hsp.query_start
@@ -392,6 +392,6 @@ class Overexpression(BaseModel):
 								logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[modelID]["model_name"],hsp.bits, type(hsp.bits), type(pass_bitscore)))
 
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose)
-				
+
 			return blastResults
 

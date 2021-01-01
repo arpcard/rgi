@@ -1,5 +1,5 @@
-from app.Base import BaseModel
-from app.settings import *
+from rgi.Base import BaseModel
+from rgi.settings import *
 
 class Rrna(BaseModel):
 	"""Class for ribosomal RNA searches."""
@@ -24,7 +24,7 @@ class Rrna(BaseModel):
 	def sequence_orientation(self, end, start):
 		if end > start:
 			return "+"
-		else: 
+		else:
 			return "-"
 
 	def run(self):
@@ -58,7 +58,7 @@ class Rrna(BaseModel):
 					orf_info_str = str(orf_info).split(" | ")
 					model_type_id = int(orf_info_str[1].split(":")[1].strip())
 					# logger.debug("model_type_id: {} ".format(model_type_id))
-				
+
 					space_pos = align_title.index(' ')
 
 					hit_id = align_title[0:space_pos]
@@ -72,7 +72,7 @@ class Rrna(BaseModel):
 
 					# logger.debug("model_id: {}".format(model_id))
 					# logger.debug("pass_value: {}".format(pass_value))
-					
+
 					if model_type_id == 40295:
 						true_pass_evalue = float(pass_value)
 
@@ -88,9 +88,9 @@ class Rrna(BaseModel):
 
 						for hsp in alignment.hsps:
 							query_seq =  hsp.query.replace('-', '')
-							real_query_length = len(query_seq) 
-							sbjct_seq = hsp.sbjct.replace('-', '') 
-							real_sbjct_length = len(sbjct_seq) 
+							real_query_length = len(query_seq)
+							sbjct_seq = hsp.sbjct.replace('-', '')
+							real_sbjct_length = len(sbjct_seq)
 							strand = self.sequence_orientation(hsp.sbjct_end, hsp.sbjct_start)
 
 							for eachs in snp_dict_list:
@@ -99,7 +99,7 @@ class Rrna(BaseModel):
 								chan = eachs["change"]
 
 								if hsp.query_start < pos and (hsp.query_start + real_query_length) > pos:
-									# Report ONLY if the SNPs are present								
+									# Report ONLY if the SNPs are present
 									qry = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 									sbj = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 

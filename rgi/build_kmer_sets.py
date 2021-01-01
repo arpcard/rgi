@@ -1,5 +1,5 @@
 import os, sys, json, csv, argparse, glob
-import app.make_kmer_json
+import rgi.make_kmer_json
 from Bio import SeqIO, Seq
 
 """
@@ -331,7 +331,7 @@ def create_parser():
         help="skips the concatenation and splitting of the CARD*R*V sequences.")
     parser.add_argument('-n','--threads', dest="threads", type=int,
             default=1, help="number of threads (CPUs) to use (default={})".format(1))
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')
     return parser
 
 def run():

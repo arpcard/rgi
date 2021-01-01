@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Blast(object):
 	"""Class to create Blast object and align for protein and translated DNA searches."""
@@ -23,31 +23,31 @@ class Blast(object):
 		return "Blast({}".format(self.__dict__)
 
 	def run(self):
-		"""Runs BLAST algorithm.""" 
+		"""Runs BLAST algorithm."""
 		logger.info("run blast")
 		os.system('{program} -query {input} -db {path} \
 					-num_threads {num_threads} -outfmt {outfmt} -out {output_file}' \
 					.format(
-						program=self.program, 
-						num_threads=self.num_threads, 
+						program=self.program,
+						num_threads=self.num_threads,
 						outfmt=self.outfmt,
 						input=self.input_file,
-						path=os.path.join(self.db,"protein.db"), 
+						path=os.path.join(self.db,"protein.db"),
 						output_file=self.output_file
 					)
 				)
 
 	def run_custom(self, db ):
-		"""Runs DIAMOND algorithm.""" 
+		"""Runs DIAMOND algorithm."""
 		# logger.info("run diamond")
 		cmd = ('{program} -query {input} -db {db} -num_threads {num_threads} \
 					-outfmt {outfmt} -out {output_file} -perc_identity {perc_identity} \
 					-strand {strand}' \
 					.format(
-						program=self.program, 
+						program=self.program,
 						input=self.input_file,
 						db=db,
-						num_threads=self.num_threads, 
+						num_threads=self.num_threads,
 						outfmt=self.outfmt,
 						output_file=self.output_file,
 						perc_identity=95.0,

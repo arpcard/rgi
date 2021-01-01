@@ -1,5 +1,5 @@
 import csv
-from app.settings import *
+from rgi.settings import *
 from operator import itemgetter, attrgetter
 from collections import OrderedDict
 
@@ -10,7 +10,7 @@ class ConvertJsonToTSV(object):
 		name, ext = os.path.splitext(f_name)
 		self.filepath = os.path.join(f_path, "{}.json".format(f_name))
 		if ext.lower() == ".json":
-			self.filepath = os.path.join(f_path, "{}{}".format(name,ext))			
+			self.filepath = os.path.join(f_path, "{}{}".format(name,ext))
 		self.homolog_file = homolog_file
 		self.variant_file = variant_file
 		self.overexpression_file = overexpression_file

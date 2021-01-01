@@ -1,5 +1,5 @@
-from app.Base import BaseModel
-from app.settings import *
+from rgi.Base import BaseModel
+from rgi.settings import *
 
 class Variant(BaseModel):
 	"""Class for protein variant searches."""
@@ -60,7 +60,7 @@ class Variant(BaseModel):
 						else:
 							c += 1
 					orf_from = orf_info[c:]
-					
+
 					model_type_id = self.extract_nth_bar(align_title, 0)
 					# logger.info("model_type_id: {} ".format(model_type_id))
 					space_pos = align_title.index(' ')
@@ -79,7 +79,7 @@ class Variant(BaseModel):
 						except ValueError:
 							true_pass_evalue = float(pass_value[0:pass_value.find(' ')])
 
-						# logger.info("mutation | model_type_id = " + str(align_title))				
+						# logger.info("mutation | model_type_id = " + str(align_title))
 						init = 0
 						evalue_snp = self.extract_nth_bar(align_title, 2)
 						snpl = []
@@ -87,15 +87,15 @@ class Variant(BaseModel):
 						temp = ""
 						evalue_snp_dec = evalue_snp
 						snpl = evalue_snp_dec.split(',')
-						
+
 						for each_snp in snpl:
 							snp_dict_list.append({"original": each_snp[0], "change": each_snp[-1], "position": int(each_snp[1:-1])})
 
 						for hsp in alignment.hsps:
 							query_seq =  hsp.query.replace('-', '')
-							real_query_length = len(query_seq) 
-							sbjct_seq = hsp.sbjct.replace('-', '') 
-							real_sbjct_length = len(sbjct_seq) 
+							real_query_length = len(query_seq)
+							sbjct_seq = hsp.sbjct.replace('-', '')
+							real_sbjct_length = len(sbjct_seq)
 
 							for eachs in snp_dict_list:
 								pos = eachs["position"]
@@ -119,7 +119,7 @@ class Variant(BaseModel):
 
 									if submitted_proteins_dict:
 										orf_protein_sequence = str(submitted_proteins_dict[orf_info.decode().split(" ")[0]])
-										
+
 									# logger.info("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
 									# 			self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
 									# 			+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
@@ -129,7 +129,7 @@ class Variant(BaseModel):
 									sbj = int(pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
 									if hsp.query[qry] == chan:
-										query_snps = {}	
+										query_snps = {}
 										# logger.debug("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
 										# 		self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
 										# 		+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
@@ -141,7 +141,7 @@ class Variant(BaseModel):
 										# logger.debug("query_snp on frame {} {}".format(hsp.frame, json.dumps(query_snps, indent=2)))
 
 										try:
-											if float(hsp.bits) >= float(true_pass_evalue):		
+											if float(hsp.bits) >= float(true_pass_evalue):
 												sinsidedict = {}
 												sinsidedict["type_match"] = "Strict"
 												sinsidedict["snp"] = eachs
@@ -172,7 +172,7 @@ class Variant(BaseModel):
 													sinsidedict["partial"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["partial"]
 												else:
 													sinsidedict["partial"] = "0"
-												
+
 												if self.input_type == 'contig':
 													sinsidedict["query_start"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3
 													sinsidedict["query_end"] = self.extract_nth_hash(orf_info.decode(), 1) + (hsp.query_start - 1)*3 + real_query_length*3 - 1
@@ -182,12 +182,12 @@ class Variant(BaseModel):
 													sinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
 
 													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
-														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
+														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]]
 														# sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 														sinsidedict["orf_prot_sequence"] = orf_protein_sequence
 													else:
 														sinsidedict["orf_dna_sequence"] = ""
-														sinsidedict["orf_prot_sequence"] = ""	
+														sinsidedict["orf_prot_sequence"] = ""
 
 
 												elif self.input_type == 'protein':
@@ -210,7 +210,7 @@ class Variant(BaseModel):
 												slinsidedict["snp"] = eachs
 												slinsidedict["query_snp"] = query_snps
 												slinsidedict["orf_strand"] = self.extract_nth_bar(orf_info.decode(), 0)
-												slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)				
+												slinsidedict["orf_start"] = self.extract_nth_bar(orf_info.decode(), 1)
 												slinsidedict["orf_end"] = self.extract_nth_bar(orf_info.decode(), 2)
 												slinsidedict["orf_from"] = orf_from.decode()
 												slinsidedict["model_name"] = json_data[model_id]["model_name"]
@@ -245,12 +245,12 @@ class Variant(BaseModel):
 													slinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
 
 													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
-														slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
+														slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]]
 														# slinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orf_info.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 														slinsidedict["orf_prot_sequence"] = orf_protein_sequence
 													else:
 														slinsidedict["orf_dna_sequence"] = ""
-														slinsidedict["orf_prot_sequence"] = ""	
+														slinsidedict["orf_prot_sequence"] = ""
 
 												elif self.input_type == 'protein':
 													slinsidedict["query_start"] = hsp.query_start
@@ -270,6 +270,6 @@ class Variant(BaseModel):
 											logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[model_id]["model_name"],hsp.bits,type(hsp.bits), type(true_pass_evalue)))
 
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose)
-						
+
 			return blastResults
-	
+

@@ -1,6 +1,6 @@
 import csv, re, argparse, multiprocessing, math, json, ahocorasick, os, sqlite3
 from Bio import Seq, SeqIO
-from app.settings import logger
+from rgi.settings import logger
 import itertools
 """
 This scripts creates the JSON to hold all kmer sets.
@@ -50,7 +50,7 @@ def query_kmers(temp_l, t, fasta, o, batch_size):
                             f[kmer].append(p)
                         if p not in r[rev_kmer]:
                             r[rev_kmer].append(p)
-                
+
             logger.info('PROCESS {t}.{i}: Done'.format(t=t, i=i))
 
 
@@ -217,7 +217,7 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
 def make_json(plasmid_file, chr_file, both_file, genus_file, species_file, \
                 multi_file, variant_sequences, index_file, k, threads, batch_size):
 
-    p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file) 
+    p, c, b = get_genomic_kmers(plasmid_file, chr_file, both_file)
     s = get_taxon_kmers(species_file, multi_file, variant_sequences, index_file, k, "species", threads, batch_size)
     g = get_taxon_kmers(genus_file, multi_file, variant_sequences, index_file, k, "genus", threads, batch_size)
 
@@ -266,7 +266,7 @@ def run():
         help="kmer length")
     parser.add_argument('-n','--threads', dest="threads", type=int,
             default=1, help="number of threads (CPUs) to use (default={})".format(1))
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='Number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='Number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')
     args = parser.parse_args()
     main(args)
 

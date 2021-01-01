@@ -1,11 +1,11 @@
-from app.settings import *
+from rgi.settings import *
 import shutil
 
 class Galaxy(object):
 	def __init__(self, database, debug):
 		self.database = database
 		self.debug = debug
-		
+
 		if self.debug:
 			logger.setLevel(10)
 
@@ -65,4 +65,4 @@ class Galaxy(object):
 					logger.error("failed to copy file: {}".format(e))
 					exit()
 
-				
+

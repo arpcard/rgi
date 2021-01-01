@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 import csv, glob
 from multiprocessing import Pool
 import time
@@ -8,7 +8,7 @@ import gzip
 
 class BWT(object):
 	"""
-	Class to align metagenomic reads to CARD and wildCARD reference using bwa or bowtie2 and 
+	Class to align metagenomic reads to CARD and wildCARD reference using bwa or bowtie2 and
 	provide reports (gene, allele report and read level reports).
 	"""
 	def __init__(self, aligner, include_wildcard, include_baits, read_one, read_two, threads, output_file, debug, clean, local_database, mapq, mapped, coverage):
@@ -54,7 +54,7 @@ class BWT(object):
 			self.reference_genome = os.path.join(self.data, "card_wildcard_reference.fasta")
 			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bowtie2"))
 			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bwa"))
-		
+
 		# outputs
 		self.working_directory = os.path.join(os.getcwd())
 		self.output_sam_file = os.path.join(self.working_directory, "{}.temp.sam".format(self.output_file))
@@ -346,7 +346,7 @@ class BWT(object):
 		MAPQ (mapping quality - describes the uniqueness of the alignment, 0=non-unique, >10 probably unique) | awk '$5 > 0'
 		"""
 		cmd="samtools view --threads {threads} {input_bam} | cut -f 1,2,3,4,5,7 | sort -s -n -k 1,1 > {output_tab}".format(
-			threads=self.threads, 
+			threads=self.threads,
 			input_bam=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_sequences
 			)
@@ -358,7 +358,7 @@ class BWT(object):
 		Get coverage using 'samtools depth' function and write outputs to a tab-delimited file
 		"""
 		cmd="samtools depth {sorted_bam_file} > {output_tab}".format(
-			sorted_bam_file=self.sorted_bam_sorted_file_length_100, 
+			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_coverage
 			)
 		os.system(cmd)
@@ -399,7 +399,7 @@ class BWT(object):
 		Parse tab-delimited file for read counts to a dictionary
 		"""
 		sequences = {}
-		
+
 		with open(self.output_tab, 'r') as csvfile:
 			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
 			for row in reader:
@@ -410,7 +410,7 @@ class BWT(object):
 						"all": format(sum(map(int, [row[2], row[3]])))
 					}
 
-		
+
 		# write file reference_stats
 		with open(self.mapping_reference_stats, "w") as out:
 			out.write("**********************************************\n")
@@ -449,11 +449,11 @@ class BWT(object):
 						categories[data[i]["ARO_category"][c]["category_aro_class_name"]] = []
 					if data[i]["ARO_category"][c]["category_aro_name"] not in categories[data[i]["ARO_category"][c]["category_aro_class_name"]]:
 						categories[data[i]["ARO_category"][c]["category_aro_class_name"]].append(data[i]["ARO_category"][c]["category_aro_name"])
-						
+
 				if by_accession == False:
 					models[data[i]["model_id"]] = {
 						"model_id": data[i]["model_id"],
-						"ARO_accession": data[i]["ARO_accession"],						
+						"ARO_accession": data[i]["ARO_accession"],
 						"model_name": data[i]["model_name"],
 						"model_type": data[i]["model_type"],
 						"categories": categories,
@@ -475,7 +475,7 @@ class BWT(object):
 		Parse tab-delimited to a dictionary for all variants
 		"""
 		os.system("cat {index_file} | cut -f1,2,6,7,8,9,10 | sort > {output_file}".format(
-			index_file=os.path.join(self.data, "index-for-model-sequences.txt"), 
+			index_file=os.path.join(self.data, "index-for-model-sequences.txt"),
 			output_file=self.model_species_data_type
 			)
 		)
@@ -517,8 +517,8 @@ class BWT(object):
 							row[0]:  { # prevalence_sequence_id
 								row[3]: #accession
 									{
-										"data_type":row[4], 
-										"rgi_criteria":row[5], 
+										"data_type":row[4],
+										"rgi_criteria":row[5],
 										"percent_identity":row[6],
 										"species_name": row[2]
 									}
@@ -534,8 +534,8 @@ class BWT(object):
 							row[0]: { # prevalence_sequence_id
 								row[3]: #accession
 									{
-										"data_type":row[4], 
-										"rgi_criteria":row[5], 
+										"data_type":row[4],
+										"rgi_criteria":row[5],
 										"percent_identity":row[6],
 										"species_name": row[2]
 									}
@@ -546,8 +546,8 @@ class BWT(object):
 						variants[row[1]][row[0]].update({
 								row[3]: #accession
 									{
-										"data_type":row[4], 
-										"rgi_criteria":row[5], 
+										"data_type":row[4],
+										"rgi_criteria":row[5],
 										"percent_identity":row[6],
 										"species_name": row[2]
 									}
@@ -569,8 +569,8 @@ class BWT(object):
 					baits.update({
 						"{}|{}".format(row[0],row[3]): {
 								"ProbeID": row[0],
-								"GeneID":row[1], 
-								"TaxaID":row[2], 
+								"GeneID":row[1],
+								"TaxaID":row[2],
 								"ARO": row[3],
 								"ProbeSeq":row[4],
 								"Upstream": row[5],
@@ -630,7 +630,7 @@ class BWT(object):
 		read_one=os.path.join(self.working_directory, "{}.R1.fastq".format(self.output_file))
 		read_two=os.path.join(self.working_directory, "{}.R2.fastq".format(self.output_file))
 		options = ""
-		
+
 		if length:
 			options = options + " -length >={}".format(length)
 
@@ -683,7 +683,7 @@ class BWT(object):
 				"read_two": 0
 			}
 		}
-		
+
 		# unmapped
 		unmapped = self.filter_count_reads()
 		stats["unmapped"]["read_one"] = unmapped[0]
@@ -717,7 +717,7 @@ class BWT(object):
 		return (s.split(start))[1].split(end)[0]
 
 	def probes_stats(self, baits_card):
-		stats = {} 
+		stats = {}
 		baits = {}
 		with open(self.baits_mapping_data_tab, "r") as f2:
 			reader=csv.reader(f2,delimiter='\t')
@@ -747,7 +747,7 @@ class BWT(object):
 		with open(self.aro_term_reads, "w") as tab_out3:
 			writer = csv.writer(tab_out3, delimiter='\t', dialect='excel')
 			writer.writerow([
-				"ARO", 
+				"ARO",
 				"Number of Mapped Reads to baits"
 				])
 			for aro in aro_to_reads:
@@ -772,7 +772,7 @@ class BWT(object):
 		with open(self.baits_reads_count, "w") as tab_out2:
 			writer = csv.writer(tab_out2, delimiter='\t', dialect='excel')
 			writer.writerow([
-				"Bait", 
+				"Bait",
 				"Number of Mapped Reads"
 				])
 			for item in baits:
@@ -801,11 +801,11 @@ class BWT(object):
 		with open(self.reads_baits_count, "w") as tab_out2:
 			writer = csv.writer(tab_out2, delimiter='\t', dialect='excel')
 			writer.writerow([
-				"Read", 
+				"Read",
 				"Baits"
 				])
 			for item in reads_to_baits:
-				writer.writerow([item, 
+				writer.writerow([item,
 				"; ".join(reads_to_baits[item])
 				])
 
@@ -844,11 +844,11 @@ class BWT(object):
 		with open(self.mapping_baits_stats, "w") as tab_out:
 			writer = csv.writer(tab_out, delimiter='\t', dialect='excel')
 			writer.writerow([
-				"ARO Term", 
-				"ARO Accession", 
-				"Number of Baits", 
-				"Number of Mapped Baits with Reads", 
-				"Number of Reads Mapped to Baits", 
+				"ARO Term",
+				"ARO Accession",
+				"Number of Baits",
+				"Number of Mapped Baits with Reads",
+				"Number of Reads Mapped to Baits",
 				"Average Number of reads per Bait",
 				"Number of reads per Bait Coefficient of Variation (%)"
 				])
@@ -856,8 +856,8 @@ class BWT(object):
 			'''
 			Coefficient of variation = (Standard Deviation / Mean ) * 100
 			- ratio of the standard devitation to the mean
-			
-			|    -     | Number of Probes | Mapped Probes | 
+
+			|    -     | Number of Probes | Mapped Probes |
 			| -------- | --------         | ------------  |
 			| Mean     |   57             |  22           |
 			| std_dev  |   38             |  31           |
@@ -883,9 +883,9 @@ class BWT(object):
 					coefficient_of_variation = (standard_devitation / mean) * 100
 
 				writer.writerow([
-					stats[i]["aro_name"], 
-					i, 
-					baits_count, 
+					stats[i]["aro_name"],
+					i,
+					baits_count,
 					baits_with_reads_count,
 					reads_count,
 					format(mean,'.2f'),
@@ -913,13 +913,13 @@ class BWT(object):
 
 	def count_probes(self, cmd):
 		return os.popen(cmd).readlines()[0].strip("\n")
-	
+
 	def baits_reads_counts(self, accession):
 		"""
 		Returns
-		number_of_mapped_baits, 
-		number_of_mapped_baits_with_reads, 
-		average_bait_coverage, 
+		number_of_mapped_baits,
+		number_of_mapped_baits_with_reads,
+		average_bait_coverage,
 		bait_coverage_coefficient_of_variation
 		"""
 		if self.include_baits == True:
@@ -927,7 +927,7 @@ class BWT(object):
 				reader=csv.reader(f2,delimiter='\t')
 				for row in reader:
 					if "ARO Term" not in row[0]:
-						if accession in row[1]:		
+						if accession in row[1]:
 							return row[2], row[3], row[4], row[6]
 				return 0, 0, 0, 0
 
@@ -959,12 +959,12 @@ class BWT(object):
 					if row[0] not in results.keys():
 						results[row[0]] = []
 
-					results[row[0]].append( 
+					results[row[0]].append(
 						"{reference_allele}{position}{alternative_allele}".format(
 							reference_allele=row[3].strip(),
 							position=row[1].strip(),
 							alternative_allele=row[4].strip()
-						) 
+						)
 					)
 
 		return results
@@ -991,7 +991,7 @@ class BWT(object):
 
 
 	def summary(self, alignment_hit, models, variants, baits, reads, models_by_accession,mutation,read_coverage,consensus_sequence):
-		start = time.time()		
+		start = time.time()
 		# logger.debug(alignment_hit)
 		coverage = self.get_coverage_details(alignment_hit)
 		model_id = self.get_model_id(models_by_accession, alignment_hit)
@@ -1034,19 +1034,19 @@ class BWT(object):
 
 						for accession in variants[model_id][prevalence_sequence_id]:
 							_accession = accession
-			
+
 							if variants[model_id][prevalence_sequence_id][accession]["data_type"] not in observed_data_types:
 								observed_data_types.append(variants[model_id][prevalence_sequence_id][accession]["data_type"])
 
 							if variants[model_id][prevalence_sequence_id][accession]["species_name"] not in observed_in_pathogens:
 								observed_in_pathogens.append(variants[model_id][prevalence_sequence_id][accession]["species_name"].replace('"', ""))
-					
+
 					if "Resistomes & Variants" in database:
 						if "ncbi_chromosome" in observed_data_types:
 							observed_in_genomes = "YES"
 						if "ncbi_plasmid" in observed_data_types:
 							observed_in_plasmids = "YES"
-						
+
 						# get prevalence_sequence_id Prevalence_Sequence_ID:10687|ID:2882|Name:tet(W/N/W)|ARO:3004442
 						if "Prevalence_Sequence_ID" in alignment_hit:
 							prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[-1]
@@ -1061,7 +1061,7 @@ class BWT(object):
 								# logger.debug(alignment_hit)
 								# logger.debug(json.dumps(alignments, indent=2))
 								# logger.debug(json.dumps(variants[model_id], indent=2))
-								logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {} for model_id: {}".format(prevalence_sequence_id, e, database, model_id))						
+								logger.warning("missing key with Prev_id: {}, Exception: {}, Database: {} for model_id: {}".format(prevalence_sequence_id, e, database, model_id))
 
 
 				else:
@@ -1088,7 +1088,7 @@ class BWT(object):
 			logger.info("time lapsed: {} - {}".format(format(elapsed,'.3f'), alignment_hit))
 			# self.async_print(alignment_hit, start, stop, elapsed)
 			number_of_mapped_baits, number_of_mapped_baits_with_reads, average_bait_coverage, bait_coverage_coefficient_of_variation = self.baits_reads_counts(models[model_id]["ARO_accession"])
-			
+
 			consensus_sequence_dna = ""
 			consensus_sequence_protein = ""
 			read_coverage_depth = ""
@@ -1109,13 +1109,13 @@ class BWT(object):
 						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=True)
 					except Exception as e:
 						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=False)
-					
+
 					if trailing_bases:
 						consensus_sequence_protein = consensus_sequence_protein[:-1]
-					
+
 					if alignment_hit in read_coverage.keys():
 						read_coverage_depth = read_coverage[alignment_hit]["depth"]
-					
+
 					if alignment_hit in mutation.keys():
 						snps = "; ".join(mutation[alignment_hit])
 
@@ -1186,7 +1186,7 @@ class BWT(object):
 		------------------------------------------------------------------
 		<filename>.txt | samtools idxstats
 		------------------------------------------------------------------
-		columns:  
+		columns:
 				1. reference sequence name
 				2. sequence length
 				3. # mapped reads
@@ -1289,7 +1289,7 @@ class BWT(object):
 							"Mapped Reads with Flanking Sequence",
 							"All Mapped Reads",
 							"Percent Coverage",
-							"Length Coverage (bp)",  
+							"Length Coverage (bp)",
 							"Average MAPQ (Completely Mapped Reads)",
 							# "Number of Mapped Baits",
 							# "Number of Mapped Baits with Reads",
@@ -1310,7 +1310,7 @@ class BWT(object):
 			for r in summary:
 				if r:
 					writer.writerow([
-						r["id"], 
+						r["id"],
 						r["cvterm_name"],
 						r["aro_accession"],
 						r["model_type"],
@@ -1319,7 +1319,7 @@ class BWT(object):
 						r["observed_in_genomes"],
 						r["observed_in_plasmids"],
 						"; ".join(r["observed_in_pathogens"]),
-						r["reads"]["mapped"], 
+						r["reads"]["mapped"],
 						r["reads"]["unmapped"],
 						r["reads"]["all"],
 						r["percent_coverage"]["covered"],
@@ -1385,7 +1385,7 @@ class BWT(object):
 					mapping_summary[r[index]]["model_type"].append(r["model_type"])
 					mapping_summary[r[index]]["database"].append(r["database"])
 					mapping_summary[r[index]]["observed_in_genomes"].append(r["observed_in_genomes"])
-					mapping_summary[r[index]]["observed_in_plasmids"].append(r["observed_in_plasmids"])	
+					mapping_summary[r[index]]["observed_in_plasmids"].append(r["observed_in_plasmids"])
 
 					for p in r["observed_in_pathogens"]:
 						mapping_summary[r[index]]["observed_in_pathogens"].append(p)
@@ -1428,11 +1428,11 @@ class BWT(object):
 					if r["observed_in_genomes"] not in mapping_summary[r[index]]["observed_in_genomes"]:
 						mapping_summary[r[index]]["observed_in_genomes"].append(r["observed_in_genomes"])
 					if r["observed_in_plasmids"] not in mapping_summary[r[index]]["observed_in_plasmids"]:
-						mapping_summary[r[index]]["observed_in_plasmids"].append(r["observed_in_plasmids"])	
+						mapping_summary[r[index]]["observed_in_plasmids"].append(r["observed_in_plasmids"])
 
 					for p in r["observed_in_pathogens"]:
 						if p not in mapping_summary[r[index]]["observed_in_pathogens"]:
-							mapping_summary[r[index]]["observed_in_pathogens"].append(p)	
+							mapping_summary[r[index]]["observed_in_pathogens"].append(p)
 
 					mapping_summary[r[index]]["mapped"].append(r["reads"]["mapped"])
 					mapping_summary[r[index]]["range_of_reference_allele_source"].append(r["range_of_reference_allele_source"])
@@ -1483,7 +1483,7 @@ class BWT(object):
 							"Mapped Reads with Flanking Sequence",
 							"All Mapped Reads",
 							"Average Percent Coverage",
-							"Average Length Coverage (bp)",  
+							"Average Length Coverage (bp)",
 							"Average MAPQ (Completely Mapped Reads)",
 							"Number of Mapped Baits",
 							"Number of Mapped Baits with Reads",
@@ -1515,8 +1515,8 @@ class BWT(object):
 
 				average_percent_coverage = 0
 				average_length_coverage = 0
-				average_mapq  = 0				
-		
+				average_mapq  = 0
+
 				if len(mapping_summary[i]["percent_coverage"]) > 0:
 					average_percent_coverage = sum(map(float,mapping_summary[i]["percent_coverage"]))/len(mapping_summary[i]["percent_coverage"])
 
@@ -1629,7 +1629,7 @@ class BWT(object):
 
 	    # check index / create index / align
 		logger.info("align using {}".format(self.aligner))
-		
+
 		if self.aligner == "bowtie2":
 			if self.read_two == None:
 				self.align_bowtie2_unpaired(reference_genome=self.reference_genome, index_directory=self.index_directory_bowtie2, output_sam_file=self.output_sam_file)
@@ -1645,7 +1645,7 @@ class BWT(object):
 				self.align_bwa_single_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa, output_sam_file=self.output_sam_file)
 			else:
 				self.align_bwa_paired_end_mapping(reference_genome=self.reference_genome, index_directory=self.index_directory_bwa,  output_sam_file=self.output_sam_file)
-		
+
 		# convert SAM file to BAM file
 		logger.info("convert SAM file to BAM file")
 		self.convert_sam_to_bam(input_sam_file=self.output_sam_file, output_bam_file=self.output_bam_file)
@@ -1657,8 +1657,8 @@ class BWT(object):
 		# index BAM file
 		logger.info("index BAM file")
 		self.index_bam(bam_file=self.output_bam_sorted_file)
-		
-		# only extract alignment of specific length 
+
+		# only extract alignment of specific length
 		logger.info("only extract alignment of specific length")
 		self.extract_alignments_with_length()
 
@@ -1669,32 +1669,32 @@ class BWT(object):
 		# pull alligned
 		logger.info("pull alligned")
 		self.get_aligned()
-	
+
 		# pull qname, rname and sequence
 		logger.info("pull qname, rname and sequence")
 		self.get_qname_rname_sequence()
-		
+
 		# get coverage
 		logger.info("get coverage")
 		self.get_coverage()
-			
+
 		# get coverage for all positions
 		logger.info("get coverage for all positions")
 		self.get_coverage_all_positions()
-		
+
 		if self.include_baits == True:
 
 			# map baits to complete genes
 			logger.debug("map baits to complete genes")
 			self.align_bowtie2_baits_to_genes(
-				reference_genome=self.reference_genome, 
-				index_directory=self.index_directory_bowtie2, 
+				reference_genome=self.reference_genome,
+				index_directory=self.index_directory_bowtie2,
 				output_sam_file=self.baits_card_sam
 			)
-			
+
 			logger.info("convert SAM file to BAM file")
 			self.convert_sam_to_bam(input_sam_file=self.baits_card_sam, output_bam_file=self.baits_card_bam)
-			
+
 			os.system("samtools view -F4 --threads {threads} {input_bam} | cut -f 1,2,3 | sort -s -n -k 1,1 > {output_tab}".format(
 				threads=self.threads,
 				input_bam=self.baits_card_bam,
@@ -1728,7 +1728,7 @@ class BWT(object):
 
 			logger.info("convert SAM file to BAM file")
 			self.convert_sam_to_bam(input_sam_file=self.output_sam_file_baits, output_bam_file=self.output_bam_file_baits)
-			
+
 			# get mapped
 			logger.info("get number of reads mapped to baits")
 			os.system("samtools view -F4 --threads {threads} {input_bam} | cut -f 1,2,3 | sort -s -n -k 1,1 > {output_tab}".format(
@@ -1744,7 +1744,7 @@ class BWT(object):
 		# get summary
 		logger.info("get summary")
 		self.get_summary()
-		
+
 		# get stats
 		logger.info("get statistics")
 		self.get_stats()

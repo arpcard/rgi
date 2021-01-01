@@ -1,6 +1,6 @@
 import os, sys, json, csv, argparse, glob
 from Bio import SeqIO
-from app.settings import *
+from rgi.settings import *
 
 def main(args):
 	working_directory = os.getcwd()
@@ -23,11 +23,11 @@ def main(args):
 						annotations[row[0]] = {
 							"model_id": row[1],
 							"aro_term": row[2],
-							"aro_accession":  row[3], 
-							"detection_model": row[4], 
-							"percent_identity": row[9], 
-							"drug_class": row[13], 
-							"resistance_mechanism": row[12], 
+							"aro_accession":  row[3],
+							"detection_model": row[4],
+							"percent_identity": row[9],
+							"drug_class": row[13],
+							"resistance_mechanism": row[12],
 							"amr_gene_family": row[11]
 						}
 	prev_models = get_model(args.input_directory)
@@ -38,7 +38,7 @@ def main(args):
 				if record:
 					desc = record.description.replace(" ", "_")
 					arr = desc.split("|")
-					model_id = prev_models[arr[0]]						
+					model_id = prev_models[arr[0]]
 					Prevalence_Sequence_ID = arr[0].split(":")[-1]
 					header = "Prevalence_Sequence_ID:{prevalence_sequence_id}|ID:{model_id}|Name:{aro_term}|{aro_accession}".format(
 								prevalence_sequence_id=Prevalence_Sequence_ID,

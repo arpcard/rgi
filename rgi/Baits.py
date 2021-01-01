@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 import glob, subprocess
 
 class Baits(object):
@@ -15,7 +15,7 @@ class Baits(object):
 		self.filtered_output = os.path.join(o_f_path, self.output_file + "_filtered_{}.json".format(self.filter_temperature))
 		self.clean = clean
 		self.debug = debug
-		
+
 		if self.debug:
 			logger.setLevel(10)
 
@@ -42,7 +42,7 @@ class Baits(object):
 		logger.info("calculating baits melting temperature and entropy ...")
 		os.system('{program} -n RNA {input} > {output_file}' \
 					.format(
-						program="melt.pl", 
+						program="melt.pl",
 						input=self.input_file,
 						output_file=self.output_file
 					)
@@ -62,9 +62,9 @@ class Baits(object):
 				elif eachline[0:16] == "Calculating for ":
 					probes[count] = {
 						"id": eachline.split(", t = ")[0].split("Calculating for ")[-1],
-						"raw": eachline,  
-						"change_in_gibbs_free_energy (dG)": 0.0, 
-						"change_in_enthalpy (dH)": 0.0, 
+						"raw": eachline,
+						"change_in_gibbs_free_energy (dG)": 0.0,
+						"change_in_enthalpy (dH)": 0.0,
 						"change_in_entropy (dS)": 0.0,
 						"melting_temperature (Tm)": 0.0,
 					}

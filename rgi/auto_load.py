@@ -1,6 +1,6 @@
 import shutil
 import argparse
-from app.settings import *
+from rgi.settings import *
 import tempfile
 from bs4 import BeautifulSoup as bs
 import requests, json
@@ -22,7 +22,7 @@ def main(args):
 	logger.info("card cannonical version: {}".format(card_cannonical_version))
 	logger.info("card variants version: {}".format(card_variants_version))
 
-	# Create the directory 
+	# Create the directory
 	directory = tempfile.mkdtemp(prefix=os.path.join(os.getcwd(), "rgi_autoload_"))
 	print("Directory '%s' created" % directory)
 	print("=================================== DOWNLOAD CARD CANONICAL DATA ===================================")
@@ -45,7 +45,7 @@ def main(args):
 		card_variants_version=card_variants_version
 		)
 	)
-	os.system("mkdir -p {card_variants}".format(card_variants=card_variants)) 
+	os.system("mkdir -p {card_variants}".format(card_variants=card_variants))
 	os.system("tar xf {variants} -C {card_variants}".format(variants=variants,card_variants=card_variants))
 	os.system("gunzip {card_variants}/*.gz".format(card_variants=card_variants))
 

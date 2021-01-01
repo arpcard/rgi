@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Analyser(object):
 	"""Class to find analyse fasta files."""

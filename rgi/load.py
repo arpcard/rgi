@@ -1,6 +1,6 @@
 import shutil
 import argparse
-from app.settings import *
+from rgi.settings import *
 
 '''
 loaded_databases example:
@@ -73,7 +73,7 @@ def main(args):
 	if args.debug:
 		logger.setLevel(10)
 	logger.info(json.dumps(args.__dict__, indent=2))
-	
+
 	if args.card_json is not None:
 		# validate json
 		if validate_file(args.card_json) == False:

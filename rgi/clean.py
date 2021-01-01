@@ -1,7 +1,7 @@
 import argparse
 import glob
 import shutil
-from app.settings import *
+from rgi.settings import *
 
 # clean other files left over
 def clean():
@@ -10,7 +10,7 @@ def clean():
 		remove_directory(f)
 		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft","pyc","log"]:
 			os.remove(f)
-			
+
 		if os.path.isdir(f) == False:
 			if os.path.isfile(f) == True and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["py","md"]:
 				pass

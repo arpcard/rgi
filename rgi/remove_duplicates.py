@@ -1,13 +1,13 @@
 import os, argparse
 from Bio import SeqIO
 from Bio.SeqUtils.CheckSum import seguid
-from app.settings import *
+from rgi.settings import *
 from collections import defaultdict
 
 def main(args):
     if args.debug:
         logger.setLevel(10)
-    
+
     dedup_records = defaultdict(list)
     card_cannonical_lengths = {}
     # find the lengths of all reference cannonical sequences
@@ -31,7 +31,7 @@ def main(args):
                     remove.append(record.id)
             else:
                 dedup_records[str(record.seq)].append(record.id)
-    
+
     # write FASTA file
     logger.info("write FASTA file ...")
     with open(args.output_fasta_file, 'w') as fout:
@@ -79,7 +79,7 @@ def remove_sub_sequences(records):
     final_records = {}
     for k in recs:
         if recs[k] not in matches:
-           final_records[k] = recs[k] 
+           final_records[k] = recs[k]
 
     return final_records
 
@@ -97,7 +97,7 @@ def remove_duplicate_sequences(records):
         checksums.add(checksum)
 
         yield record
-    
+
     logger.info("Number of sequences: {}".format(len(all_seqs)))
 
 def create_parser():

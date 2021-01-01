@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Diamond(object):
 	"""Class to create Diamond object and align for protein and translated DNA searches."""
@@ -27,7 +27,7 @@ class Diamond(object):
 		return "Diamond({}".format(self.__dict__)
 
 	def run(self):
-		"""Runs DIAMOND algorithm.""" 
+		"""Runs DIAMOND algorithm."""
 		# TODO:: for versions of diamond > 0.8.36 use --xml-blord-format
 		cmd = ('diamond {program} --in {in_ref} --db {db} \
 				   --query {input} --outfmt {outfmt} --out {output_file}  \
@@ -40,7 +40,7 @@ class Diamond(object):
 						db=os.path.join(self.db,"protein.db"),
 						input=self.input_file,
 						output_file=self.output_file,
-						num_threads=self.num_threads, 
+						num_threads=self.num_threads,
 						index_chunks=self.index_chunks,
 						block_size=self.block_size,
 						outfmt=self.outfmt
@@ -50,4 +50,4 @@ class Diamond(object):
 		# logger.debug(cmd)
 		os.system(cmd)
 		logger.info("done running diamond {} -> {}".format(self.program, self.db))
-	
+

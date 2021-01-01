@@ -1,4 +1,4 @@
-from app.settings import os, SeqIO, logger
+from rgi.settings import os, SeqIO, logger
 import tempfile, time, fileinput, math, multiprocessing, shutil
 
 class ORF(object):
@@ -25,7 +25,7 @@ class ORF(object):
 			self.orf_prodigal()
 
 	def min_max_sequence_length(self):
-		"""Returns minimum and maximun sequence length in multi-fasta inputs""" 
+		"""Returns minimum and maximun sequence length in multi-fasta inputs"""
 		sequences = []
 		for record in SeqIO.parse(self.input_file, "fasta"):
 			sequences.append(len(record.seq))

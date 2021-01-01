@@ -8,7 +8,7 @@ import os
 from Bio import SeqIO
 import json
 from abc import ABCMeta, abstractmethod
-from app.settings import logger
+from rgi.settings import logger
 from Bio.Seq import Seq
 from pyfaidx import Fasta
 

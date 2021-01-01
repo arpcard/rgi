@@ -1,5 +1,5 @@
 import os, sys, json, csv, argparse, multiprocessing, math, pysam
-from app.settings import *
+from rgi.settings import *
 from collections import OrderedDict
 from Bio import SeqIO, Seq
 
@@ -128,7 +128,7 @@ class CARDkmers(object):
             os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
                         .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
 
-        
+
 
     def get_bwt_alignment_data(self, header):
         """
@@ -1197,16 +1197,16 @@ class CARDkmers(object):
             split_sequences = self.split_fasta(self.fasta_file)
             # Threading
             results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
-        
+
             o_total = {}
             num_seq_total = 0
             short_total = 0
-        
+
             for i in range(len(results)):
                 o_total.update(results[i][2])
                 num_seq_total += results[i][0]
                 short_total += results[i][1]
-        
+
             with open(self.output_json_file, "w") as oj:
                 json.dump(o_total, oj)
         elif self.fasta:
@@ -1215,16 +1215,16 @@ class CARDkmers(object):
             split_sequences = self.split_fasta(self.input_fasta_file)
             # Threading
             results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
-        
+
             o_total = {}
             num_seq_total = 0
             short_total = 0
-        
+
             for i in range(len(results)):
                 o_total.update(results[i][2])
                 num_seq_total += results[i][0]
                 short_total += results[i][1]
-        
+
             with open(self.output_json_file, "w") as oj:
                 json.dump(o_total, oj)
         else:

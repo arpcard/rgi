@@ -1,21 +1,21 @@
-from app.settings import *
-from app.RGI import RGI
+from rgi.settings import *
+from rgi.RGI import RGI
 import argparse
-from app.ConvertRGIJsonToTSV import ConvertJsonToTSV
-from app.Galaxy import Galaxy
-import app.Parser
-import app.load
-import app.auto_load
-import app.clean
-import app.build_kmer_sets
-import app.card_annotation
-import app.wildcard_annotation
-import app.baits_annotation
-import app.remove_duplicates
-from app.kmer_query import CARDkmers
-from app.BWT import BWT
-from app.Heatmap import Heatmap
-from app.Baits import Baits
+from rgi.ConvertRGIJsonToTSV import ConvertJsonToTSV
+from rgi.Galaxy import Galaxy
+import rgi.Parser
+import rgi.load
+import rgi.auto_load
+import rgi.clean
+import rgi.build_kmer_sets
+import rgi.card_annotation
+import rgi.wildcard_annotation
+import rgi.baits_annotation
+import rgi.remove_duplicates
+from rgi.kmer_query import CARDkmers
+from rgi.BWT import BWT
+from rgi.Heatmap import Heatmap
+from rgi.Baits import Baits
 
 class MainBase(object):
     def __init__(self, api=False):
@@ -45,7 +45,7 @@ class MainBase(object):
                Metagenomic
                ---------------------------------------------------------------------------------------
                bwt                   Align reads to CARD and in silico predicted allelic variants (beta)
-               
+
                ---------------------------------------------------------------------------------------
                Baits validation
                ---------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ class MainBase(object):
                ---------------------------------------------------------------------------------------
                Pathogen of origin
                ---------------------------------------------------------------------------------------
-               
+
                kmer_build            Build AMR specific k-mers database used for pathogen of origin (beta)
                kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin (beta)
 
@@ -140,11 +140,11 @@ class MainBase(object):
         self.parser_run(args)
 
     def parser_args(self):
-        parser = app.Parser.create_parser()
+        parser = rgi.Parser.create_parser()
         return parser
 
     def parser_run(self, args):
-        app.Parser.api_main(args)
+        rgi.Parser.api_main(args)
 
     def load(self):
         parser = self.load_args()
@@ -152,11 +152,11 @@ class MainBase(object):
         self.load_run(args)
 
     def load_args(self):
-        parser = app.load.create_parser()
+        parser = rgi.load.create_parser()
         return parser
 
     def load_run(self, args):
-        app.load.main(args)
+        rgi.load.main(args)
 
     def auto_load(self):
         parser = self.auto_load_args()
@@ -164,11 +164,11 @@ class MainBase(object):
         self.auto_load_run(args)
 
     def auto_load_args(self):
-        parser = app.auto_load.create_parser()
+        parser = rgi.auto_load.create_parser()
         return parser
 
     def auto_load_run(self, args):
-        app.auto_load.main(args)
+        rgi.auto_load.main(args)
 
     def kmer_build(self):
         parser = self.kmer_build_args()
@@ -176,11 +176,11 @@ class MainBase(object):
         self.kmer_build_run(args)
 
     def kmer_build_args(self):
-        parser = app.build_kmer_sets.create_parser()
+        parser = rgi.build_kmer_sets.create_parser()
         return parser
 
     def kmer_build_run(self, args):
-        app.build_kmer_sets.main(args)
+        rgi.build_kmer_sets.main(args)
 
     def kmer_query(self):
         parser = self.kmer_query_args()
@@ -222,11 +222,11 @@ class MainBase(object):
         self.card_annotation_run(args)
 
     def card_annotation_args(self):
-        parser = app.card_annotation.create_parser()
+        parser = rgi.card_annotation.create_parser()
         return parser
 
     def card_annotation_run(self, args):
-        app.card_annotation.main(args)
+        rgi.card_annotation.main(args)
 
     def wildcard_annotation(self):
         parser = self.wildcard_annotation_args()
@@ -234,11 +234,11 @@ class MainBase(object):
         self.wildcard_annotation_run(args)
 
     def wildcard_annotation_args(self):
-        parser = app.wildcard_annotation.create_parser()
+        parser = rgi.wildcard_annotation.create_parser()
         return parser
 
     def wildcard_annotation_run(self, args):
-        app.wildcard_annotation.main(args)
+        rgi.wildcard_annotation.main(args)
 
     def baits_annotation(self):
         parser = self.baits_annotation_args()
@@ -246,11 +246,11 @@ class MainBase(object):
         self.baits_annotation_run(args)
 
     def baits_annotation_args(self):
-        parser = app.baits_annotation.create_parser()
+        parser = rgi.baits_annotation.create_parser()
         return parser
 
     def baits_annotation_run(self, args):
-        app.baits_annotation.main(args)
+        rgi.baits_annotation.main(args)
 
     def remove_duplicates(self):
         parser = self.remove_duplicates_args()
@@ -258,11 +258,11 @@ class MainBase(object):
         self.remove_duplicates_run(args)
 
     def remove_duplicates_args(self):
-        parser = app.remove_duplicates.create_parser()
+        parser = rgi.remove_duplicates.create_parser()
         return parser
 
     def remove_duplicates_run(self, args):
-        app.remove_duplicates.main(args)
+        rgi.remove_duplicates.main(args)
 
     def bwt(self):
         parser = self.bwt_args()
@@ -362,11 +362,11 @@ class MainBase(object):
         self.clean_run(args)
 
     def clean_args(self):
-        parser = app.clean.create_parser()
+        parser = rgi.clean.create_parser()
         return parser
 
     def clean_run(self, args):
-        app.clean.main(args)
+        rgi.clean.main(args)
 
     def galaxy(self):
         parser = self.galaxy_args()
@@ -436,5 +436,8 @@ class MainBase(object):
 
         return data_version
 
-if __name__ == '__main__':
+def run():
+    """
+    Console script entrypoint
+    """
     MainBase()

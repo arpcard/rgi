@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 import math, os, json, csv, argparse
 import pandas as pd
 from collections import defaultdict, Counter

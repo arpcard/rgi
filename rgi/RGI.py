@@ -1,9 +1,9 @@
-from app.Base import RGIBase
-from app.Database import Database
-from app.Blast import Blast
-from app.Diamond import Diamond
-from app.ORF import ORF
-from app.Filter import Filter
+from rgi.Base import RGIBase
+from rgi.Database import Database
+from rgi.Blast import Blast
+from rgi.Diamond import Diamond
+from rgi.ORF import ORF
+from rgi.Filter import Filter
 
 import filetype
 from Bio import SeqIO
@@ -11,7 +11,7 @@ import glob
 import time, shutil
 import gzip, zlib
 import bz2
-from app.settings import *
+from rgi.settings import *
 
 class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
@@ -99,7 +99,7 @@ class RGI(RGIBase):
 
 		logger.info("{} => {}".format(self.input_sequence, filetype.guess(self.input_sequence)))
 		kind = filetype.guess(self.input_sequence)
-		
+
 		if kind is None:
 			if self.is_fasta() == False:
 				logger.error("invalid fasta")
@@ -198,19 +198,19 @@ class RGI(RGIBase):
 		}
 
 		for base in sequence:
-			try: 
+			try:
 				nucleotide_dict[base.upper()] += 1
 			except Exception as e:
 				logger.error("invalid nucleotide fasta due to: {}".format(e))
 				return False
-		logger.info("valid nucleotide fasta: {}".format(nucleotide_dict)) 
+		logger.info("valid nucleotide fasta: {}".format(nucleotide_dict))
 		return True
 
 	@staticmethod
 	def is_protein(sequence):
 		amino_acids_dict = {
 			# common symbols between protein and dna codes
-			'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0, 
+			'A': 0, 'T': 0, 'G': 0, 'C': 0, 'N': 0, 'U': 0,
 			# other amino acids
 			'R': 0, 'D': 0, 'Q': 0, 'E': 0, 'G': 0, 'H': 0, 'I': 0,
 	        'L': 0, 'K': 0, 'M': 0, 'F': 0, 'P': 0, 'S': 0, 'T': 0,
@@ -223,17 +223,17 @@ class RGI(RGIBase):
 			except Exception as e:
 				logger.error("invalid protein fasta due to: {}".format(e))
 				return False
-		
+
 		for a in amino_acids_dict.keys():
 			if a not in 'ATGCNU':
 				count = count + amino_acids_dict[a]
 
 		if count == 0:
-			logger.error("invalid protein fasta: {}".format(amino_acids_dict)) 
+			logger.error("invalid protein fasta: {}".format(amino_acids_dict))
 			return False
-		
-		logger.info("valid protein fasta: {}".format(amino_acids_dict))  
-		return True	
+
+		logger.info("valid protein fasta: {}".format(amino_acids_dict))
+		return True
 
 	def __set_xml_filepath(self,fp):
 		"""Sets blast xml filepath."""
@@ -281,7 +281,7 @@ class RGI(RGIBase):
 			if os.path.basename(self.input_sequence) + ".fai" in f and os.path.isfile(f):
 				self.remove_file(f)
 			#if os.path.basename(f)[:3] == "tmp" in f and os.path.isfile(f) and ".temp." in f:
-			#	self.remove_file(f)	
+			#	self.remove_file(f)
 			#if ".temp.directory" in f and os.path.isdir(f):
 			#	logger.info("Removed directory: {}".format(f))
 			#	shutil.rmtree(f)
