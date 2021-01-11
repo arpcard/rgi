@@ -9,7 +9,6 @@ from Bio import SeqIO
 import json
 from abc import ABCMeta, abstractmethod
 from app.settings import logger
-from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from pyfaidx import Fasta
 
@@ -268,7 +267,7 @@ class BaseModel(object):
         Returns:
             blast_results (dict): dictionary of sorted results
         """
-    
+
         nudged = False
         if len(perfect) == 0 and len(strict) == 0 and len(loose) > 0:
             if exclude_nudge is True:
@@ -288,7 +287,7 @@ class BaseModel(object):
                 except Exception as e:
                     logger.error(e)
         else:
-            if len(perfect) > 0: 
+            if len(perfect) > 0:
                 blast_results[query_id] = perfect
 
         return blast_results
@@ -306,13 +305,13 @@ class BaseModel(object):
         Returns:
             nudged (bool): True or False
             strict (dict): dictionary containing strict or perfect hits
-        """ 
-        
+        """
+
         nudged = False
-        
+
         # - check if there is 100% match with matching part to the reference
-        # - getting matching protein then pull nucleotides from reference and translate 
-        # - check the start codons including alternates 
+        # - getting matching protein then pull nucleotides from reference and translate
+        # - check the start codons including alternates
         # - promote to perfect if the start codon is present in the N-terminus
         # 95 <= int(loose[i]["perc_identity"]) <= 100
         # int(strict[s]["perc_identity"]) == 100
@@ -331,9 +330,9 @@ class BaseModel(object):
 
                     # pull nucleotides from query or submitted sequence
                     partial_bases, orf_start_, orf_end_ = self.get_part_sequence(
-                        self.input_sequence, strict[s]["orf_from"], 
-                        strict[s]["orf_start"], strict[s]["orf_end"], 
-                        length_nucleotides, strict[s]["orf_strand"], 
+                        self.input_sequence, strict[s]["orf_from"],
+                        strict[s]["orf_start"], strict[s]["orf_end"],
+                        length_nucleotides, strict[s]["orf_strand"],
                         strict[s]["ARO_name"]
                     )
 
@@ -344,17 +343,17 @@ class BaseModel(object):
                             # update orf_end
                             strict[s]["orf_end_possible"] = orf_end_ + 1
                             strict[s]["orf_start_possible"] = strict[s]["orf_start"]
-                            orf_dna_sequence_ = str(Seq(partial_bases, generic_dna).reverse_complement()) + strict[s]["orf_dna_sequence"]
-                            partial_protein = str(Seq(partial_bases, generic_dna).reverse_complement().translate(table=11))
+                            orf_dna_sequence_ = str(Seq(partial_bases).reverse_complement()) + strict[s]["orf_dna_sequence"]
+                            partial_protein = str(Seq(partial_bases).reverse_complement().translate(table=11))
                             # logger.debug("Reverse strand: {}".format(partial_protein))
                         else:
                             # update orf_start
                             strict[s]["orf_start_possible"] = orf_start_
                             strict[s]["orf_end_possible"] = int(strict[s]["orf_end"]) + 1
                             orf_dna_sequence_ = partial_bases + strict[s]["orf_dna_sequence"]
-                            partial_protein = str(Seq(partial_bases, generic_dna).translate(table=11)).strip("*")
+                            partial_protein = str(Seq(partial_bases).translate(table=11)).strip("*")
                             # logger.debug("Forward strand: {}".format(partial_protein))
-                        
+
                         # logger.debug("Translated protein: [{}]".format(partial_protein))
                         # update start codon to M for all other alternate start codons
                         if len(partial_protein) > 0:
@@ -369,9 +368,9 @@ class BaseModel(object):
                             # logger.debug("Missing n-terminus push to Perfect: {} #complete_gene {}".format(strict[s]["ARO_name"],
                             #     json.dumps({
                             #         "ARO_name": strict[s]["ARO_name"],
-                            #         "strand": strict[s]["orf_strand"], 
+                            #         "strand": strict[s]["orf_strand"],
                             #         "header": strict[s]["orf_from"],
-                            #         "orf_start_possible": strict[s]["orf_start_possible"], 
+                            #         "orf_start_possible": strict[s]["orf_start_possible"],
                             #         "orf_end_possible": strict[s]["orf_end_possible"],
                             #         "orf_prot_sequence_possible": combine,
                             #         "orf_prot_sequence_possible_": partial_protein + strict[s]["match"],
@@ -388,12 +387,12 @@ class BaseModel(object):
 
                     else:
                         pass
-                        # logger.debug("incomplete nucleotides for gene: {} #partial_gene {}".format(strict[s]["ARO_name"], 
+                        # logger.debug("incomplete nucleotides for gene: {} #partial_gene {}".format(strict[s]["ARO_name"],
                         #     json.dumps({
                         #                 "ARO_name": strict[s]["ARO_name"],
-                        #                 "strand": strict[s]["orf_strand"], 
+                        #                 "strand": strict[s]["orf_strand"],
                         #                 "header": strict[s]["orf_from"],
-                        #                 "orf_start": strict[s]["orf_start"], 
+                        #                 "orf_start": strict[s]["orf_start"],
                         #                 "orf_end": strict[s]["orf_end"],
                         #                 "partial_bases": partial_bases
                         #             }, indent=2)
@@ -410,29 +409,29 @@ class BaseModel(object):
                         if start_codon in ["TTG", "CTG", "ATT", "ATC", "ATA", "ATG", "GTG"] and stop_codon in ["TAA", "TAG", "TGA"]:
                             strict[s]["note"] = "possible complete gene, reference contained within open reading frame"
                             strict[s]["orf_prot_sequence_possible"] = ""
-                            
+
                             if strict[s]["orf_strand"] == "-":
                                 strict[s]["orf_start_possible"] = strict[s]["orf_start"]
                                 strict[s]["orf_end_possible"] = int(strict[s]["orf_start"]) + len(strict[s]["dna_sequence_from_broadstreet"]) - 1
                             else:
                                 strict[s]["orf_start_possible"] = int(strict[s]["orf_end"]) - len(strict[s]["dna_sequence_from_broadstreet"]) + 1
                                 strict[s]["orf_end_possible"] = int(strict[s]["orf_end"])
-                            
+
                             # pull nucleotides from query or submitted sequence
                             partial_bases, orf_start_, orf_end_ = self.get_part_sequence(
-                                self.input_sequence, strict[s]["orf_from"], 
-                                strict[s]["orf_start_possible"], strict[s]["orf_end_possible"], 
-                                0, strict[s]["orf_strand"], 
+                                self.input_sequence, strict[s]["orf_from"],
+                                strict[s]["orf_start_possible"], strict[s]["orf_end_possible"],
+                                0, strict[s]["orf_strand"],
                                 strict[s]["ARO_name"]
                             )
 
                             if strict[s]["orf_strand"] == "-":
-                                strict[s]["orf_dna_sequence_possible"] = str(Seq(partial_bases, generic_dna).reverse_complement())
+                                strict[s]["orf_dna_sequence_possible"] = str(Seq(partial_bases).reverse_complement())
                             else:
                                 strict[s]["orf_dna_sequence_possible"] = partial_bases
 
                             if len(strict[s]["orf_dna_sequence_possible"]) % 3 == 0:
-                                orf_prot_sequence_possible = str(Seq(strict[s]["orf_dna_sequence_possible"], generic_dna).translate(table=11)).strip("*")
+                                orf_prot_sequence_possible = str(Seq(strict[s]["orf_dna_sequence_possible"]).translate(table=11)).strip("*")
                                 strict[s]["orf_prot_sequence_possible"] = orf_prot_sequence_possible
                                 if orf_prot_sequence_possible == strict[s]["sequence_from_broadstreet"]:
                                     strict[s]["type_match"] = "Perfect"
@@ -446,9 +445,9 @@ class BaseModel(object):
                             # logger.debug("Reference contained within open reading frame push to Perfect: {} #complete_gene {}".format(strict[s]["ARO_name"],
                             #     json.dumps({
                             #         "ARO_name": strict[s]["ARO_name"],
-                            #         "strand": strict[s]["orf_strand"], 
+                            #         "strand": strict[s]["orf_strand"],
                             #         "header": strict[s]["orf_from"],
-                            #         "orf_start_possible": strict[s]["orf_start_possible"], 
+                            #         "orf_start_possible": strict[s]["orf_start_possible"],
                             #         "orf_end_possible": strict[s]["orf_end_possible"],
                             #         "orf_dna_sequence_possible": strict[s]["orf_dna_sequence_possible"],
                             #         "orf_prot_sequence_possible": strict[s]["orf_prot_sequence_possible"],
@@ -460,15 +459,15 @@ class BaseModel(object):
                         else:
                             logger.warning("partial gene in card reference: {}, start_codon: {},  stop_codon: {}".format(
                                 strict[s]["ARO_name"],
-                                start_codon, 
+                                start_codon,
                                 stop_codon
                             ))
                     else:
                         # print(json.dumps(strict[s], indent=2))
                         logger.warning("partial gene in card reference: {}".format(
                             strict[s]["ARO_name"]
-                        ))                        
-                # orf and reference are overlapping  
+                        ))
+                # orf and reference are overlapping
                 '''
                 elif reference not in query and query not in reference:
                     logger.warning("TODO:: orf and reference are overlapping")
@@ -477,7 +476,7 @@ class BaseModel(object):
                 # logger.debug("95 <= 100, strict hit")
                 # logger.debug(json.dumps(strict[s], indent=2))
                 pass
-    
+
         return nudged, strict
 
     def get_part_sequence(self, fasta_file, header, start, stop, nterminus, strand, name):
@@ -500,7 +499,7 @@ class BaseModel(object):
 
         Returns:
             sequence (str): portion on a sequence
-        """  
+        """
         # remove the last 2 characters from header as this is appended by prodigal
         header = header[:header.rfind("_")]
         genes = False
@@ -548,12 +547,12 @@ class BaseModel(object):
         Returns:
             nudged (bool): True or False
             loose (dict): dictionary containing loose or strict hits
-        """  
+        """
         nudged = False
         # check if there are any loose hits that might be strict
         for i in loose:
             if 95 <= int(loose[i]["perc_identity"]) <= 100:
-                # add to strict 
+                # add to strict
                 # logger.debug("loose hit with at least 95 percent identity push to Strict: {} #partial_gene".format(loose[i]["ARO_name"]))
                 loose[i]["type_match"] = "Strict"
                 loose[i]["nudged"] = True
