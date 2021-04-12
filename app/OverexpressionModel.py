@@ -111,9 +111,9 @@ class Overexpression(BaseModel):
 							
 							if predicted_genes_dict:
 								if orfInfo.strip() in predicted_genes_dict.keys():
-									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()], generic_dna).translate(table=11)).strip("*")
+									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()]).translate(table=11)).strip("*")
 								else:
-									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()[:orfInfo.decode().index(' # ')]], generic_dna).translate(table=11)).strip("*")
+									orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()[:orfInfo.decode().index(' # ')]]).translate(table=11)).strip("*")
 
 							# if predicted_genes_dict_protein:
 							# 	if orfInfo.strip() in predicted_genes_dict_protein.keys():
@@ -167,7 +167,7 @@ class Overexpression(BaseModel):
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
-											ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+											ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]]).translate(table=11)).strip("*")
 											# ppinsidedict["orf_prot_sequence"] = orf_protein_sequence
 										else:
 											ppinsidedict["orf_dna_sequence"] = ""
@@ -244,7 +244,7 @@ class Overexpression(BaseModel):
 													
 													if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
-														sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+														sinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]]).translate(table=11)).strip("*")
 														# sinsidedict["orf_prot_sequence"] = orf_protein_sequence
 													else:
 														sinsidedict["orf_dna_sequence"] = ""
@@ -306,7 +306,7 @@ class Overexpression(BaseModel):
 												
 												if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 													insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
-													insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+													insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]]).translate(table=11)).strip("*")
 													# insidedict["orf_prot_sequence"] = orf_protein_sequence
 												else:
 													insidedict["orf_dna_sequence"] = ""
@@ -368,7 +368,7 @@ class Overexpression(BaseModel):
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 											linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
-											linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
+											linsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]]).translate(table=11)).strip("*")
 											# linsidedict["orf_prot_sequence"] = orf_protein_sequence
 										else:
 											linsidedict["orf_dna_sequence"] = ""
