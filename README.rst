@@ -164,13 +164,13 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 
     .. code-block:: sh
        
-        docker run -v $PWD:/data finlaymaguire/rgi -h
+        docker run -v $PWD:/data finlaymaguire/rgi rgi -h
 
     Or 
 
     .. code-block:: sh
        
-        docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 -h
+        docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 rgi -h
 
 
 Install Development Version
