@@ -1,11 +1,11 @@
-cff-version: "1.1.0"
+cff-version: 1.1.0
 date-released: 2020-01-01
-doi: "10.1093/nar/gkz935"
+version: 5.2.0
 message: "If you use RGI or CARD in your research please cite it as follows:"
 repository-code: "https://github.com/arpcard/rgi"
 title: " CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database "
 doi: "10.1093/nar/gkz935"
-authors: 
+authors:
   -
     affiliation: "McMaster University"
     family-names: "Alcock"
@@ -16,129 +16,129 @@ authors:
     given-names: "Amogelang R"
   -
     affiliation: "McMaster University"
-	family-names: "Lau"
-	given-names: "Tammy T Y"
-  - 
+    family-names: "Lau"
+    given-names: "Tammy T Y"
+  -
     affiliation: "McMaster University"
-	family-names: "Tsang"
-	given-names: "Kara K"
-  - 
+    family-names: "Tsang"
+    given-names: "Kara K"
+  -
     affiliation: "McMaster University"
-	family-names: "Bouchard"
-	given-names: "Mégane"
-  - 
+    family-names: "Bouchard"
+    given-names: "Mégane"
+  -
     affiliation: "McMaster University"
-	family-names: "Edalatmand"
-	given-names: "Arman"
-  - 
+    family-names: "Edalatmand"
+    given-names: "Arman"
+  -
     affiliation: "McMaster University"
-	family-names: "Huynh"
-	given-names: "William"
-  - 
+    family-names: "Huynh"
+    given-names: "William"
+  -
     affiliation: "McMaster University"
-	family-names: "Nguyen"
-	given-names: "Anna-Lisa V"
-  - 
+    family-names: "Nguyen"
+    given-names: "Anna-Lisa V"
+  -
     affiliation: "McMaster University"
-	family-names: "Cheng"
-	given-names: "Annie A"
-  - 
+    family-names: "Cheng"
+    given-names: "Annie A"
+  -
     affiliation: "McMaster University"
-	family-names: "Liu"
-	given-names: "Sihan"
-  - 
+    family-names: "Liu"
+    given-names: "Sihan"
+  -
     affiliation: "McMaster University"
-	family-names: "Min"
-	given-names: "Sally Y"
-  - 
+    family-names: "Min"
+    given-names: "Sally Y"
+  -
     affiliation: "McMaster University"
-	family-names: "Miroshnichenko"
-	given-names: "Anatoly"
-  - 
+    family-names: "Miroshnichenko"
+    given-names: "Anatoly"
+  -
     affiliation: "McMaster University"
-	family-names: "Tran"
-	given-names: "Hiu-Ki"
-  - 
+    family-names: "Tran"
+    given-names: "Hiu-Ki"
+  -
     affiliation: "McMaster University"
-	family-names: "Werfalli"
-	given-names: "Rafik E"
-  - 
+    family-names: "Werfalli"
+    given-names: "Rafik E"
+  -
     affiliation: "McMaster University"
-	family-names: "Nasir"
-	given-names: "Jalees A"
-  - 
+    family-names: "Nasir"
+    given-names: "Jalees A"
+  -
     affiliation: "McMaster University"
-	family-names: "Oloni"
-	given-names: "Martins"
-  - 
+    family-names: "Oloni"
+    given-names: "Martins"
+  -
     affiliation: "McMaster University"
-	family-names: "Speicher"
-	given-names: "David J"
-  - 
+    family-names: "Speicher"
+    given-names: "David J"
+  -
     affiliation: "McMaster University"
-	family-names: "Florescu"
-	given-names: "Alexandra"
-  - 
+    family-names: "Florescu"
+    given-names: "Alexandra"
+  -
     affiliation: "McMaster University"
-	family-names: "Singh"
-	given-names: "Bhavya"
-  - 
+    family-names: "Singh"
+    given-names: "Bhavya"
+  -
     affiliation: "McMaster University"
-	family-names: "Faltyn"
-	given-names: "Mateusz"
-  - 
+    family-names: "Faltyn"
+    given-names: "Mateusz"
+  -
     affiliation: "National Autonomous University of Mexico"
-	family-names: "Hernandez"
-	given-names: "Koutoucheva, Anastasia"
-  - 
+    family-names: "Hernandez"
+    given-names: "Koutoucheva, Anastasia"
+  -
     affiliation: "McMaster University"
-	family-names: "Sharma"
-	given-names: "Arjun N"
-  - 
+    family-names: "Sharma"
+    given-names: "Arjun N"
+  -
     affiliation: "McMaster University"
-	family-names: "Bordeleau"
-	given-names: "Emily"
-  - 
-	affiliation: "Harvard University"
-	family-names: "Pawlowski"
-	given-names: "Andrew C"
-  - 
+    family-names: "Bordeleau"
+    given-names: "Emily"
+  -
+    affiliation: "Harvard University"
+    family-names: "Pawlowski"
+    given-names: "Andrew C"
+  -
     affiliation: "McMaster University"
-	family-names: "Zubyk"
-	given-names: "Haley L"
-  - 
+    family-names: "Zubyk"
+    given-names: "Haley L"
+  -
     affiliation: "University of British Columbia"
-	family-names: "Dooley"
-	given-names: "Damion"
-  - 
+    family-names: "Dooley"
+    given-names: "Damion"
+  -
     affiliation: "Simon Fraser University"
-	family-names: "Griffiths"
-	given-names: "Emma"
-  - 
+    family-names: "Griffiths"
+    given-names: "Emma"
+  -
     affiliation: "Dalhousie University"
-	family-names: "Maguire"
-	given-names: "Finlay"
-  - 
+    family-names: "Maguire"
+    given-names: "Finlay"
+  -
     affiliation: "Simon Fraser University"
-	family-names: "Winsor"
-	given-names: "Geoff L"
-  - 
+    family-names: "Winsor"
+    given-names: "Geoff L"
+  -
     affiliation: "Dalhousie University"
-	family-names: "Beiko"
-	given-names: "Robert G"
-  - 
+    family-names: "Beiko"
+    given-names: "Robert G"
+  -
     affiliation: "Simon Fraser University"
-	family-names: "Brinkman"
-	given-names: "Fiona S L"
-  - 
+    family-names: "Brinkman"
+    given-names: "Fiona S L"
+  -
     affiliation: "University of British Columbia"
-	family-names: "Hsiao"
-	given-names: "William W L"
-  - 
-	affiliation: "Public Health Agency of Canada"
-	family-names: "Domselaar"
-	given-names: "Gary V"
-  - 
-	affiliation: "McMaster University"
-	family-names: "McArthur"
-	given-names: "Andrew G"
+    family-names: "Hsiao"
+    given-names: "William W L"
+  -
+    affiliation: "Public Health Agency of Canada"
+    family-names: "Domselaar"
+    given-names: "Gary V"
+  -
+    affiliation: "McMaster University"
+    family-names: "McArthur"
+    given-names: "Andrew G"
