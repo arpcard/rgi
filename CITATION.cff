@@ -3,7 +3,8 @@ date-released: 2020-01-01
 version: 5.2.0
 message: "If you use RGI or CARD in your research please cite it as follows:"
 repository-code: "https://github.com/arpcard/rgi"
-title: " CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database "
+title: "CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database"
+journal: "Nucleic Acids Research"
 doi: "10.1093/nar/gkz935"
 authors:
   -
