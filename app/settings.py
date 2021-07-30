@@ -28,8 +28,8 @@ def determine_path():
 
 script_path = determine_path()
 
-path = os.path.join(script_path, "_db/")
-data_path = os.path.join(script_path, "_data/")
+path = os.getenv('DB_PATH', os.path.join(script_path, "_db/"))
+data_path = os.getenv('DATA_PATH', os.path.join(script_path, "_data/"))
 
 # ====================================================================================
 # LOGGING CONFIG
