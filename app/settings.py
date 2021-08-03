@@ -28,8 +28,8 @@ def determine_path():
 
 script_path = determine_path()
 
-path = os.path.join(script_path, "_db/")
-data_path = os.path.join(script_path, "_data/")
+path = os.getenv('DB_PATH', os.path.join(script_path, "_db/"))
+data_path = os.getenv('DATA_PATH', os.path.join(script_path, "_data/"))
 
 # ====================================================================================
 # LOGGING CONFIG
@@ -51,7 +51,7 @@ logger.addHandler(stream_handler)
 LOCAL_DATABASE = os.path.join(os.getcwd(), "localDB")
 
 APP_NAME="Resistance Gene Identifier"
-SOFTWARE_VERSION = "5.2.0"
+SOFTWARE_VERSION = "5.2.1"
 SOFTWARE_SUMMARY = 'Use the Resistance Gene Identifier to predict resistome(s) from protein or nucleotide \
 data based on homology and SNP models. Check https://card.mcmaster.ca/download for software and data updates. \
 Receive email notification of monthly CARD updates via the CARD Mailing List \
