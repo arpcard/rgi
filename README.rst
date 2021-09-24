@@ -113,25 +113,25 @@ Search for RGI package and show available versions:
 
   .. code-block:: sh
         
-        $ conda search --channel bioconda --channel conda-forge --channel defaults rgi
+        $ conda search --channel conda-forge --channel bioconda --channel defaults rgi
 
 Create a new conda environment
 
   .. code-block:: sh
         
-        $ conda create --name rgi --channel bioconda --channel conda-forge --channel defaults rgi
+        $ conda create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI package:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi
+        $ conda install --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
         
-        $ conda install --channel bioconda --channel conda-forge --channel defaults rgi=5.1.1
+        $ conda install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
 
 Remove RGI package:
 
