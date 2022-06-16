@@ -158,7 +158,7 @@ def make_json(m,j,f,t,s):
                                     ndict['Best_Hit_ARO_classes'] = {'Drug Class': [], 'Resistance Mechanism': [],
                                                                     'AMR Gene Family': [], 'Antibiotic': [],
                                                                     'Adjuvant': [], 'Efflux Component': [],
-                                                                    'Efflux Regulator': []}
+                                                                    'Efflux Regulator': [], 'Antibiotic+Adjuvant': []}
                                     ndict['pass_bitscore'] = j[orf][hsp]['pass_bitscore']
                                     ndict['bit_score'] = j[orf][hsp]['bit_score']
                                     ndict['Predicted_Protein'] = j[orf][hsp]['orf_prot_sequence']
