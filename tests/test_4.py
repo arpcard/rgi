@@ -41,7 +41,7 @@ def test_rgi_bwt(rgi):
     filename = "output"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "bowtie2", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))

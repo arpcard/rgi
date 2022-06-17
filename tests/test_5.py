@@ -52,7 +52,7 @@ def test_rgi_bwt_bwa(rgi):
     filename = "output_bwt"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "bwa", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
@@ -63,7 +63,7 @@ def test_rgi_bwt_bwa_single(rgi):
     filename = "output_bwt_bwa_single"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "bwa", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
@@ -75,7 +75,7 @@ def test_rgi_bwt_bowtie2(rgi):
     filename = "output_bwt_bowtie2"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "bowtie2", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
@@ -86,7 +86,7 @@ def test_rgi_bwt_bowtie2_single(rgi):
     filename = "output_bwt_bowtie2_single"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "bowtie2", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
@@ -98,7 +98,7 @@ def test_rgi_bwt_kma(rgi):
     filename = "output_bwt_kma"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "kma", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
@@ -110,7 +110,7 @@ def test_rgi_bwt_kma_interleaved(rgi):
     filename = "output_bwt_kma_interleaved"
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "kma", "3" ,output_file)
-    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
+    gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
         amr_gene = "tet(Q)"
     ))
