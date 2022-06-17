@@ -41,7 +41,7 @@ def run_rgi_single(rgi, read_one, aligner, threads, output_file):
     ]))
 
 def check_gene(gene):
-    if gene == "tetQ":
+    if gene == "tet(Q)":
         return True
     else:
         return False
@@ -54,7 +54,7 @@ def test_rgi_bwt_bwa(rgi):
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "bwa", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
@@ -65,7 +65,7 @@ def test_rgi_bwt_bwa_single(rgi):
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "bwa", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
@@ -77,7 +77,7 @@ def test_rgi_bwt_bowtie2(rgi):
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "bowtie2", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
@@ -88,7 +88,7 @@ def test_rgi_bwt_bowtie2_single(rgi):
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "bowtie2", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
@@ -100,7 +100,7 @@ def test_rgi_bwt_kma(rgi):
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "kma", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
@@ -112,7 +112,7 @@ def test_rgi_bwt_kma_interleaved(rgi):
     run_rgi_single(rgi, os.path.join(working_directory,inputs,read_one), "kma", "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep {amr_gene}".format(
         gene_summary_output="{}.gene_mapping_data.txt".format(output_file),
-        amr_gene = "tetQ"
+        amr_gene = "tet(Q)"
     ))
     assert check_gene(gene) == True
 
