@@ -17,7 +17,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False, exclude_nudge=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False, exclude_nudge=False, keep=False):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -48,7 +48,8 @@ class RGI(RGIBase):
 		self.split_prodigal_jobs = split_prodigal_jobs
 		self.exclude_nudge = exclude_nudge
 		self.umcompressed_file = ""
-
+		self.keep = keep
+		
 		if self.debug:
 			logger.setLevel(10)
 
@@ -290,8 +291,14 @@ class RGI(RGIBase):
 		"""Removes file."""
 		if os.path.exists(f):
 			try:
-				logger.info("Removed file: {}".format(f))
-				os.remove(f)
+				# keep CDS protein and dna from prodigal if user specified --clean anf --keep flags
+				if self.keep == True and (f.find("temp.contig.fsa") != -1 \
+					or f.find("temp.contigToORF.fsa") != -1) and \
+				os.path.splitext(os.path.basename(f))[1][1:].strip() in ["fsa"]:
+					pass
+				else:
+					logger.info("Removed file: {}".format(f))
+					os.remove(f)
 			except Exception as e:
 				raise e
 		else:

@@ -107,6 +107,7 @@ class MainBase(object):
         parser.add_argument('--exclude_nudge', dest="exclude_nudge", action='store_false', help="exclude hits nudged from loose to strict hits")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
         parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
+        parser.add_argument('--keep', dest="keep", action="store_true", help="keeps Prodigal CDS when used with --clean (default: False)")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
         parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes")
         parser.add_argument('-d','--data', dest="data", default="NA",
