@@ -64,9 +64,24 @@ def run_rgi(rgi, input_type, input_sequence, output_file):
 		'--alignment_tool', alignment_tool,
 		'--clean',
 		'--include_loose',
+		'--include_nudge',
 		'--low_quality',
 		'--debug'
     ]))
+
+# def run_rgi_with_nudge(rgi, input_type, input_sequence, output_file):
+# 	parser = rgi.main_args()
+# 	rgi.main_run(parser.parse_args([
+# 		'--input_type', input_type,
+# 		'--input_sequence', input_sequence,
+# 		'--output_file', output_file,
+# 		'--alignment_tool', alignment_tool,
+# 		'--clean',
+# 		'--include_loose',
+# 		'--include_nudge',
+# 		'--low_quality',
+# 		'--debug'
+#     ]))
 
 def test_rgi_protein_sequence(rgi):
 
@@ -138,4 +153,11 @@ def test_rgi_rrna_model(rgi):
 		'Streptococcus pneumoniae 23S rRNA mutation conferring resistance to macrolides and streptogramins antibiotics', 'Strict') == True
 
 
+def test_rgi_nudge_loose_to_strict(rgi):
+
+	filename = "loose_to_strict.fasta"
+	output_file = os.path.join(working_directory,outputs,"{}.json".format(filename))
+	run_rgi(rgi, 'contig', os.path.join(working_directory,inputs,filename), output_file)
+
+	assert validate_results(output_file, 98.06, 'Escherichia coli EF-Tu mutants conferring resistance to Pulvomycin', 'Strict') == True
 

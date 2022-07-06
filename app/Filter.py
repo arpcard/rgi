@@ -48,11 +48,11 @@ class Filter(BaseModel):
 		# results = {}
 		try:
 			if model_type == "homolog":
-				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.exclude_nudge)
+				obj = Homolog(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.include_nudge)
 			if model_type == "variant":
-				obj = Variant(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.exclude_nudge)
+				obj = Variant(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.include_nudge)
 			if model_type == "overexpression":
-				obj = Overexpression(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.exclude_nudge)
+				obj = Overexpression(self.input_type, self.loose, self.input_sequence, self.xml_file, self.working_directory, self.rgi_obj.local_database, self.rgi_obj.include_nudge)
 			results = obj.run()
 			logger.info("save {} results...".format(model_type))
 			file_name = os.path.basename(self.input_sequence)
@@ -117,7 +117,7 @@ class Filter(BaseModel):
 			""" Cleans rRNA model previous result and temporal files"""
 			self.file_name = os.path.basename(self.input_sequence)
 			d, x = self.create_db_query()
-			rrna_obj = Rrna(self.input_sequence, self.output_file, d, x, self.loose, self.rgi_obj.local_database, self.rgi_obj.exclude_nudge)
+			rrna_obj = Rrna(self.input_sequence, self.output_file, d, x, self.loose, self.rgi_obj.local_database, self.rgi_obj.include_nudge)
 			res = rrna_obj.run()
 
 

@@ -3,7 +3,7 @@ from app.settings import *
 
 class Homolog(BaseModel):
 	"""Class for homology searches."""
-	def __init__(self, input_type, loose, input_sequence, xml_file, working_directory, local_database=False, exclude_nudge=True):
+	def __init__(self, input_type, loose, input_sequence, xml_file, working_directory, local_database=False, include_nudge=False):
 		self.input_type = input_type
 		self.loose = loose
 		self.input_sequence = input_sequence
@@ -14,7 +14,7 @@ class Homolog(BaseModel):
 		self.local_database = local_database
 		self.data = data_path
 
-		self.exclude_nudge = exclude_nudge
+		self.include_nudge = include_nudge
 
 		if self.local_database:
 			self.db = LOCAL_DATABASE
@@ -298,7 +298,7 @@ class Homolog(BaseModel):
 								logger.warning("Exception : {} -> {} -> Model({})".format(type(e), e, modelID))
 								logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[modelID]["model_name"],hsp.bits, type(hsp.bits), type(pass_bitscore)))
 
-				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose, self.exclude_nudge)
+				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose, self.include_nudge)
 
 			return blastResults
 

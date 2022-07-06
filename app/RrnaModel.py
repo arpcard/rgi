@@ -3,7 +3,7 @@ from app.settings import *
 
 class Rrna(BaseModel):
 	"""Class for ribosomal RNA searches."""
-	def __init__(self, input_file, output_file, db, xml, loose, local_database=False, exclude_nudge=True):
+	def __init__(self, input_file, output_file, db, xml, loose, local_database=False, include_nudge=False, num_threads=32):
 		self.input_file = input_file
 		self.output_file = output_file
 		self.db = db
@@ -13,7 +13,8 @@ class Rrna(BaseModel):
 		self.local_database = local_database
 		self.data = data_path
 
-		self.exclude_nudge = exclude_nudge
+		self.include_nudge = include_nudge
+		self.num_threads = num_threads
 
 		if self.local_database:
 			# self.db = LOCAL_DATABASE
@@ -230,6 +231,6 @@ class Rrna(BaseModel):
 											logger.warning("Exception : {} -> {} -> Model({})".format(type(e), e, model_id))
 											logger.warning("{} ---> hsp.bits: {} {} ? {}".format(json_data[model_id]["model_name"],hsp.bits,type(hsp.bits), type(true_pass_evalue)))
 
-					blastResults = self.results(blastResults, blast_record.query + " | QUERY: " + alignment.hit_def, perfect, strict , loose, self.exclude_nudge)
+					blastResults = self.results(blastResults, blast_record.query + " | QUERY: " + alignment.hit_def, perfect, strict , loose, self.include_nudge)
 
 			return blastResults

@@ -103,18 +103,18 @@ class MainBase(object):
                 help = "specify alignment tool (default = BLAST)")
         parser.add_argument('-n','--num_threads', dest="threads", type=int,
                 default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
-        parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits")
-        parser.add_argument('--exclude_nudge', dest="exclude_nudge", action='store_false', help="exclude hits nudged from loose to strict hits")
+        parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits (default: False)")
+        parser.add_argument('--include_nudge', dest="include_nudge", action='store_true', help="include hits nudged from loose to strict hits (default: False)")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
+        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files (default: False)")
         parser.add_argument('--keep', dest="keep", action="store_true", help="keeps Prodigal CDS when used with --clean (default: False)")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
-        parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default: False)")
+        parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes (default: False)")
         parser.add_argument('-d','--data', dest="data", default="NA",
                 choices=['wgs', 'plasmid', 'chromosome', 'NA'],
                 help = "specify a data-type (default = NA)")
         parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
-        parser.add_argument('--split_prodigal_jobs', dest="split_prodigal_jobs", action="store_true", help="run multiple prodigal jobs simultaneously for contigs in a fasta file")
+        parser.add_argument('--split_prodigal_jobs', dest="split_prodigal_jobs", action="store_true", help="run multiple prodigal jobs simultaneously for contigs in a fasta file (default: False)")
         return parser
 
     def main_run(self, args):
