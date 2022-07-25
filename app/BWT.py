@@ -5,13 +5,15 @@ import time
 import statistics
 from Bio import SeqIO, Seq
 import gzip
+# pip3 install "dask[dataframe]"
+import dask.dataframe as dd
 
 class BWT(object):
 	"""
 	Class to align metagenomic reads to CARD and wildCARD reference using bwa or bowtie2 and 
 	provide reports (gene, allele report and read level reports).
 	"""
-	def __init__(self, aligner, include_wildcard, include_baits, read_one, read_two, threads, output_file, debug, clean, local_database, mapq, mapped, coverage):
+	def __init__(self, aligner, include_wildcard, include_baits, read_one, read_two, threads, output_file, debug, clean, local_database, mapq, mapped, coverage, include_other_models):
 		"""Creates BWT object."""
 		self.aligner = aligner
 		self.read_one = read_one
@@ -28,6 +30,7 @@ class BWT(object):
 		self.mapq = mapq
 		self.mapped = mapped
 		self.coverage = coverage
+		self.include_other_models = include_other_models
 
 		if self.local_database:
 			self.db = LOCAL_DATABASE
@@ -36,11 +39,20 @@ class BWT(object):
 		# index dbs
 		self.indecies_directory = os.path.join(self.db,"bwt")
 
-		logger.info("card")
+		# card canonical
+		logger.info("card canonical")
 		self.reference_genome = os.path.join(self.data, "card_reference.fasta")
 		self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bowtie2"))
 		self.index_directory_kma = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("kma"))
 		self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference", "{}".format("bwa"))
+
+		# # other models plus homolog
+		# if self.include_other_models == True:
+		# 	logger.info("card other models")
+		# 	self.reference_genome = os.path.join(self.data, "card_reference_all.fasta")
+		# 	self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_reference_all", "{}".format("bowtie2"))
+		# 	self.index_directory_kma = os.path.join(self.db, self.indecies_directory, "card_reference_all", "{}".format("kma"))
+		# 	self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_reference_all", "{}".format("bwa"))
 
 		if self.include_baits == True:
 			logger.info("baits")
@@ -48,9 +60,9 @@ class BWT(object):
 			self.index_directory_bowtie2_baits = os.path.join(self.db, self.indecies_directory, "baits_reference", "{}".format("bowtie2_baits"))
 			self.index_directory_bwa_baits = os.path.join(self.db, self.indecies_directory, "baits_reference", "{}".format("bwa_baits"))
 
-		# card and variants
+		# card canonical and variants
 		if self.include_wildcard == True:
-			logger.info("card variants")
+			logger.info("card canonical + variants")
 			self.reference_genome = os.path.join(self.data, "card_wildcard_reference.fasta")
 			self.index_directory_bowtie2 = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bowtie2"))
 			self.index_directory_bwa = os.path.join(self.db, self.indecies_directory, "card_wildcard_reference", "{}".format("bwa"))
@@ -365,7 +377,7 @@ class BWT(object):
 
 	def get_coverage_all_positions(self):
 		"""
-		Get converage for all positions using 'genomeCoverageBed -ibam' function
+		Get coverage for all positions using 'genomeCoverageBed -ibam' function
 		BAM file _must_ be sorted by position
 		By default, bedtools genomecov will compute a histogram of coverage for the genome file provided. The default output format is as follows:
 
@@ -376,7 +388,7 @@ class BWT(object):
 		5. fraction of bases on chromosome (or entire genome) with depth equal to column 2.
 
 		"""
-
+		# TODO:: This command is slow, it needs improvement, maybe explore -bg and -bga options
 		cmd = "bedtools genomecov -ibam {sorted_bam_file} > {output_tab}".format(
 			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
 			output_tab=self.output_tab_coverage_all_positions
@@ -421,11 +433,12 @@ class BWT(object):
 
 			return sequences
 
-	def get_model_details(self, by_accession=False):
+	def get_model_details(self):
 		"""
 		Parse card.json to get each model details
 		"""
 		models = {}
+		models_by_accession = {}
 		try:
 			with open(os.path.join(self.data, "card.json"), 'r') as jfile:
 				data = json.load(jfile)
@@ -450,35 +463,40 @@ class BWT(object):
 					if data[i]["ARO_category"][c]["category_aro_name"] not in categories[data[i]["ARO_category"][c]["category_aro_class_name"]]:
 						categories[data[i]["ARO_category"][c]["category_aro_class_name"]].append(data[i]["ARO_category"][c]["category_aro_name"])
 						
-				if by_accession == False:
-					models[data[i]["model_id"]] = {
-						"model_id": data[i]["model_id"],
-						"ARO_accession": data[i]["ARO_accession"],						
-						"model_name": data[i]["model_name"],
-						"model_type": data[i]["model_type"],
-						"categories": categories,
-						"taxon": taxon
-					}
-				else:
-					models[data[i]["ARO_accession"]] = {
-						"model_id": data[i]["model_id"],
-						"ARO_accession": data[i]["ARO_accession"],
-						"model_name": data[i]["model_name"],
-						"model_type": data[i]["model_type"],
-						"categories": categories,
-						"taxon": taxon
-					}
-		return models
+
+				models[data[i]["model_id"]] = {
+					"model_id": data[i]["model_id"],
+					"ARO_accession": data[i]["ARO_accession"],						
+					"model_name": data[i]["model_name"],
+					"model_type": data[i]["model_type"],
+					"categories": categories,
+					"taxon": taxon
+				}
+			
+				models_by_accession[data[i]["ARO_accession"]] = {
+					"model_id": data[i]["model_id"],
+					"ARO_accession": data[i]["ARO_accession"],
+					"model_name": data[i]["model_name"],
+					"model_type": data[i]["model_type"],
+					"categories": categories,
+					"taxon": taxon
+				}
+		return models, models_by_accession
 
 	def get_variant_details(self):
 		"""
 		Parse tab-delimited to a dictionary for all variants
 		"""
-		os.system("cat {index_file} | cut -f1,2,6,7,8,9,10 | sort > {output_file}".format(
-			index_file=os.path.join(self.data, "index-for-model-sequences.txt"), 
-			output_file=self.model_species_data_type
-			)
-		)
+		# os.system("cat {index_file} | cut -f1,2,6,7,8,9,10 | sort > {output_file}".format(
+		# 	index_file=os.path.join(self.data, "index-for-model-sequences.txt"), 
+		# 	output_file=self.model_species_data_type
+		# 	)
+		# )
+
+		df = dd.read_csv(os.path.join(self.data, "index-for-model-sequences.txt"),
+			sep="\t",usecols=["prevalence_sequence_id","model_id","species_name","ncbi_accession","data_type","rgi_criteria","percent_identity"])
+		# , header=None
+		df.to_csv(filename=self.model_species_data_type, single_file=True, mode="w", sep="\t", header_first_partition_only=True, index=False)
 
 		variants = {}
 		# prevalence_sequence_id	model_id	accession 			species_name			data_type		rgi_criteria	percent_identity
@@ -1234,8 +1252,7 @@ class BWT(object):
 		logger.info("get_reads_count ...")
 		reads = self.get_reads_count()
 		logger.info("get_model_details ...")
-		models = self.get_model_details()
-		models_by_accession = self.get_model_details(True)
+		models, models_by_accession = self.get_model_details()
 
 		if self.aligner == "kma":
 			logger.info("get_mutation_details ...")
@@ -1546,34 +1563,70 @@ class BWT(object):
 				elif min_identity == max_identity and min_identity > 0.0:
 					identity_range = "{}".format(max_identity)
 
-				writer.writerow([
-					"; ".join(mapping_summary[i]["cvterm_name"]),
-					i,
-					"; ".join(mapping_summary[i]["model_type"]),
-					"; ".join(mapping_summary[i]["database"]),
-					am[i],
-					identity_range,
-					observed_in_genomes,
-					observed_in_plasmids,
-					"; ".join(mapping_summary[i]["observed_in_pathogens"]),
-					format(sum(map(float,mapping_summary[i]["mapped"])),'.2f'),
-					format(sum(map(float,mapping_summary[i]["unmapped"])),'.2f'),
-					format(sum(map(float,mapping_summary[i]["all"])),'.2f'),
-					format(average_percent_coverage,'.2f'),
-					format(average_length_coverage,'.2f'),
-					format(average_mapq,'.2f'),
-					mapping_summary[i]["number_of_mapped_baits"][-1],
-					mapping_summary[i]["number_of_mapped_baits_with_reads"][-1],
-					mapping_summary[i]["average_bait_coverage"][-1],
-					mapping_summary[i]["bait_coverage_coefficient_of_variation"][-1],
-					"N/A",
-					"N/A",
-					"; ".join(mate_pairs),
-					"; ".join(mapping_summary[i]["reference_sequence_length"]),
-					"; ".join(mapping_summary[i]["AMR Gene Family"]),
-					"; ".join(mapping_summary[i]["Drug Class"]),
-					"; ".join(mapping_summary[i]["Resistance Mechanism"])
-				])
+				# filter results
+				if self.include_other_models is False:
+					# show hits to homolog model only
+					if "protein homolog model" in mapping_summary[i]["model_type"]:
+						# logger.debug("show homolog only model types ...{}".format("; ".join(mapping_summary[i]["model_type"])))
+						writer.writerow([
+							"; ".join(mapping_summary[i]["cvterm_name"]),
+							i,
+							"; ".join(mapping_summary[i]["model_type"]),
+							"; ".join(mapping_summary[i]["database"]),
+							am[i],
+							identity_range,
+							observed_in_genomes,
+							observed_in_plasmids,
+							"; ".join(mapping_summary[i]["observed_in_pathogens"]),
+							format(sum(map(float,mapping_summary[i]["mapped"])),'.2f'),
+							format(sum(map(float,mapping_summary[i]["unmapped"])),'.2f'),
+							format(sum(map(float,mapping_summary[i]["all"])),'.2f'),
+							format(average_percent_coverage,'.2f'),
+							format(average_length_coverage,'.2f'),
+							format(average_mapq,'.2f'),
+							mapping_summary[i]["number_of_mapped_baits"][-1],
+							mapping_summary[i]["number_of_mapped_baits_with_reads"][-1],
+							mapping_summary[i]["average_bait_coverage"][-1],
+							mapping_summary[i]["bait_coverage_coefficient_of_variation"][-1],
+							"N/A",
+							"N/A",
+							"; ".join(mate_pairs),
+							"; ".join(mapping_summary[i]["reference_sequence_length"]),
+							"; ".join(mapping_summary[i]["AMR Gene Family"]),
+							"; ".join(mapping_summary[i]["Drug Class"]),
+							"; ".join(mapping_summary[i]["Resistance Mechanism"])
+						])
+
+				else: 
+					# logger.debug("show all model types ... {}".format("; ".join(mapping_summary[i]["model_type"])))
+					writer.writerow([
+						"; ".join(mapping_summary[i]["cvterm_name"]),
+						i,
+						"; ".join(mapping_summary[i]["model_type"]),
+						"; ".join(mapping_summary[i]["database"]),
+						am[i],
+						identity_range,
+						observed_in_genomes,
+						observed_in_plasmids,
+						"; ".join(mapping_summary[i]["observed_in_pathogens"]),
+						format(sum(map(float,mapping_summary[i]["mapped"])),'.2f'),
+						format(sum(map(float,mapping_summary[i]["unmapped"])),'.2f'),
+						format(sum(map(float,mapping_summary[i]["all"])),'.2f'),
+						format(average_percent_coverage,'.2f'),
+						format(average_length_coverage,'.2f'),
+						format(average_mapq,'.2f'),
+						mapping_summary[i]["number_of_mapped_baits"][-1],
+						mapping_summary[i]["number_of_mapped_baits_with_reads"][-1],
+						mapping_summary[i]["average_bait_coverage"][-1],
+						mapping_summary[i]["bait_coverage_coefficient_of_variation"][-1],
+						"N/A",
+						"N/A",
+						"; ".join(mate_pairs),
+						"; ".join(mapping_summary[i]["reference_sequence_length"]),
+						"; ".join(mapping_summary[i]["AMR Gene Family"]),
+						"; ".join(mapping_summary[i]["Drug Class"]),
+						"; ".join(mapping_summary[i]["Resistance Mechanism"])
+					])
 
 	def check_index(self, index_directory, reference_genome):
 		"""
@@ -1598,13 +1651,14 @@ class BWT(object):
 			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
 			logger.info(json.dumps(files, indent=2))
 			if (("kma.comp.b" in files) and \
-				("kma.index.b" in files) and \
 				("kma.length.b" in files) and \
 				("kma.seq.b" in files) and \
 				("kma.name" in files)) == False:
 				# create index and save results in ./db from reference genome: (.fasta)
 				logger.info("create index for reference: {} using aligner: {} ".format(reference_genome, self.aligner))
 				self.create_index(index_directory=index_directory,reference_genome=reference_genome)
+			else:
+				logger.info("index already exists for reference: {} using aligner: {}".format(reference_genome,self.aligner))
 		else:
 			files = [os.path.basename(x) for x in glob.glob(os.path.join(os.path.dirname(index_directory),"*"))]
 			logger.info(json.dumps(files, indent=2))
