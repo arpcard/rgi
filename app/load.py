@@ -7,10 +7,12 @@ loaded_databases example:
 
 {
     "card_canonical": {
-      "data_version": "3.0.1"
+      "data_version": "3.0.1",
+      "model_type_used": ["homolog"]
     },
     "card_variants": {
-      "data_version": "3.0.1"
+      "data_version": "3.0.1",
+      "model_type_used": ["homolog"]
     },
     "card_kmers": {
       "kmer_sizes": ["31","61"]
@@ -41,7 +43,7 @@ def validate_file(filename):
 
 def get_card_annotation(args_card_annotation, args_local_database):
 	card_annotation = args_card_annotation
-	# check if card annation is already loaded
+	# check if card annotation is already loaded
 	if args_card_annotation is None:
 		db = get_location(args_local_database)
 		if os.path.isfile(os.path.join(db, "card_reference.fasta")):
@@ -59,14 +61,16 @@ def main(args):
 		# initialize bwt dict for versions used
 		loaded_databases = {
 				"card_canonical": {
-					"data_version": "N/A"
+					"data_version": "N/A",
+					"model_type_used": []
 				},
 				"card_variants": {
-					"data_version": "N/A"
+					"data_version": "N/A",
+					"model_type_used": []
 				},
 				"card_kmers": {
 					"kmer_sizes": []
-				}
+				}	
 			}
 
 	# print args
@@ -81,6 +85,10 @@ def main(args):
 			exit()
 		load_file(args.local_database, args.card_json, "card.json")
 		loaded_databases["card_canonical"]["data_version"] = get_card_json_version(os.path.join(get_location(args.local_database), "card.json"))
+		loaded_databases["card_canonical"]["model_type_used"] = ["homolog"]
+		if args.include_other_models:
+			loaded_databases["card_canonical"]["model_type_used"] = ["homolog","variant","rRNA","overexpression","knockout"]
+
 
 	card_annotation = args.card_annotation
 
@@ -88,7 +96,7 @@ def main(args):
 	if args.card_annotation is not None:
 		load_reference_card_only(args.local_database, args.card_annotation, "card_reference.fasta")
 	else:
-		# check if card annation is already loaded
+		# check if card annotation is already loaded
 		card_annotation = get_card_annotation(args.card_annotation, args.local_database)
 
 	if args.wildcard_index is not None and args.wildcard_annotation is not None:#and args.card_annotation is not None:
@@ -97,6 +105,9 @@ def main(args):
 		# load annotation files (card and wildcard)
 		load_reference_card_and_wildcard(args.local_database, card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
 		loaded_databases["card_variants"]["data_version"] = args.wildcard_version
+		loaded_databases["card_variants"]["model_type_used"] = ["homolog"]
+		if args.include_other_models:
+			loaded_databases["card_variants"]["model_type_used"] = ["homolog","variant","rRNA","overexpression","knockout"]
 
 	if args.kmer_database is not None:
 		if args.kmer_size is not None:
@@ -237,6 +248,9 @@ def create_parser():
 
 	parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
 	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+
+	parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", help="create annotations for other models including homolog model (default: False)")
+
 	return parser
 
 def run():

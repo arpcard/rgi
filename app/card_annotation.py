@@ -18,14 +18,25 @@ def main(args):
 		exit()
 
 	annotations = []
+	
+	# use homolog only
+	selected_model_types = ['40292']
+
+	output_file = os.path.join(working_directory, "card_database_v{}.fasta".format(version))
+
+	if args.include_other_models:
+		# use homolog, variant, rRNA gene variant, overexpression, knockout models
+		selected_model_types = ['40292','40293','40295','41091','40354']
+		output_file = os.path.join(working_directory, "card_database_v{}_all.fasta".format(version))
+
 	"""
 	write card reference fasta (FASTA format)
 	"""
-	with open(os.path.join(working_directory, "card_database_v{}.fasta".format(version)), 'w') as fout:
+	with open(output_file, 'w') as fout:
 		for i in data:
 			if i.isdigit():
-				# use homolog, variant, rRNA gene variant, overexpression, knockout models
-				if data[i]['model_type_id'] in ['40292','40293','40295','41091','40354']:
+				# check for model types
+				if data[i]['model_type_id'] in selected_model_types:
 
 					drug_class = []
 					mechanism = []
@@ -69,7 +80,8 @@ def main(args):
 def create_parser():
     parser = argparse.ArgumentParser(prog="rgi card_annotation",description='Creates card annotations for RGI BWT from card.json')
     parser.add_argument('-i', '--input', dest="input", required=True, help="card.json file")
-    parser.add_argument('--ncbi', dest="ncbi", action="store_true", help="adds ncbi accession to FASTA headers")
+    parser.add_argument('--ncbi', dest="ncbi", action="store_true", help="adds ncbi accession to FASTA headers (default: False)")
+    parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", help="create annotations for other models including homolog model (default: False)")
     return parser
 
 def run():

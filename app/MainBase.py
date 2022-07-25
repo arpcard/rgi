@@ -271,19 +271,21 @@ class MainBase(object):
         self.bwt_run(args)
 
     def bwt_args(self):
-        parser = argparse.ArgumentParser(prog="rgi bwt",description='Aligns metagenomic reads to CARD and wildCARD reference using bowtie or bwa and provide reports.')
-        parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmied)")
-        parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmied)")
-        parser.add_argument('-a', '--aligner', default="kma", choices=['bowtie2','bwa','kma'], help="aligner")
+        parser = argparse.ArgumentParser(prog="rgi bwt",description='Aligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.')
+        parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmed)")
+        parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmed)")
+        parser.add_argument('-a', '--aligner', default="kma", choices=['kma','bowtie2','bwa'], help="select read aligner (default=kma)")
         parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
-        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
+        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default=False)")
+        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files (default=False)")
         parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard")
-        parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits")
-        parser.add_argument('--mapq', dest="mapq", help="filter reads based on MAPQ score")
-        parser.add_argument('--mapped', dest="mapped", help="filter reads based on mapped reads")
+        parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard (default=False)")
+        parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", \
+            help="include protein variant, rRNA variant, knockout, and protein overexpression models (default=False)")
+        parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits (default=False)")
+        parser.add_argument('--mapq', dest="mapq", help="filter reads based on MAPQ score (default=False)")
+        parser.add_argument('--mapped', dest="mapped", help="filter reads based on mapped reads (default=False)")
         parser.add_argument('--coverage', dest="coverage", help="filter reads based on coverage of reference sequence")
 
         return parser
@@ -302,7 +304,8 @@ class MainBase(object):
             args.local_database,
             args.mapq,
             args.mapped,
-            args.coverage
+            args.coverage,
+            args.include_other_models
         )
         obj.run()
 
@@ -426,6 +429,23 @@ class MainBase(object):
                         kmers_str
                         )
                     )
+                    if "model_type_used" in json_data["card_canonical"].keys() or "model_type_used" in json_data["card_variants"].keys() :
+                        card_canonical_model_type_used = "N/A"
+                        card_variants_model_type_used = "N/A"
+
+                        if len(json_data["card_canonical"]["model_type_used"]) > 0:
+                            card_canonical_model_type_used = ";".join(json_data["card_canonical"]["model_type_used"])
+                        if len(json_data["card_variants"]["model_type_used"]) > 0:
+                            card_variants_model_type_used = ";".join(json_data["card_variants"]["model_type_used"])
+
+                        data_version = ("card_canonical: {} | card_canonical_model_type_used: {} | card_variants: {} | card_variants_model_type_used: {} | kmer_sizes: {}".format(
+                            json_data["card_canonical"]["data_version"],
+                            card_canonical_model_type_used,
+                            json_data["card_variants"]["data_version"],
+                            card_variants_model_type_used,
+                            kmers_str
+                            )
+                        )  
                 else:
                     data_version = json_data["card_canonical"]["data_version"]
         else:

@@ -7,9 +7,7 @@ def main(args):
 	logger.info(json.dumps(args.__dict__, indent=2))
 	version = args.version
 	files = glob.glob(os.path.join(args.input_directory,"*"))
-	tab_file = os.path.join(working_directory, "wildcard_annotations_v{}.txt".format(version))
 	fasta_file = os.path.join(working_directory, "wildcard_database_v{}.fasta".format(version))
-	all_fasta = os.path.join(working_directory, "wildcard_all.fasta")
 	fastas = {}
 	annotations = {}
 
@@ -32,8 +30,19 @@ def main(args):
 						}
 	prev_models = get_model(args.input_directory)
 
+	# homolog only
+	selected_model_types = ['nucleotide_fasta_protein_homolog_model_variants.fasta']
+
+	if args.include_other_models:
+		fasta_file = os.path.join(working_directory, "wildcard_database_v{}_all.fasta".format(version))
+		# use homolog, variant, rRNA gene variant, overexpression, knockout models
+		selected_model_types = ['nucleotide_fasta_rRNA_gene_variant_model_variants.fasta', \
+				   'nucleotide_fasta_protein_overexpression_model_variants.fasta', \
+				   'nucleotide_fasta_protein_homolog_model_variants.fasta', \
+				   'nucleotide_fasta_protein_variant_model_variants.fasta']
+
 	for f in files:
-		if "nucleotide_fasta_protein_homolog_model_variants.fasta" in f:
+		if os.path.basename(f) in selected_model_types:
 			for record in SeqIO.parse(f, 'fasta'):
 				if record:
 					desc = record.description.replace(" ", "_")
@@ -56,7 +65,7 @@ def main(args):
 			fout.write(">{}\n".format(i))
 			fout.write("{}\n".format(fastas[i]))
 
-	print("Done writing wildcard_database_v{}.fasta".format(version))
+	print("Done writing {}".format(os.path.basename(fasta_file)))
 
 def get_model(input_directory):
 	prev_models = {}
@@ -77,6 +86,7 @@ def create_parser():
     parser.add_argument('-i', '--input_directory', dest="input_directory", required=True, help="input directory for wildcard")
     parser.add_argument('-v', '--version', dest="version", required=True, help="specify version downloaded for wildcard / variants")
     parser.add_argument('-j', '--card_json', dest="card_json", required=True, help="card.json file")
+    parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", help="create annotations for other models including homolog model (default: False)")
     return parser
 
 def run():
