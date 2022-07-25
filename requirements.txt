@@ -10,4 +10,4 @@ pysam==0.16.0.1
 beautifulsoup4==4.9.3
 requests==2.24.0
 lxml==4.6.5
-dask[dataframe]>=2022.7.1
+dask[dataframe]
