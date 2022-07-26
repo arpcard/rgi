@@ -20,9 +20,9 @@ before_install:
   - sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
   # bowtie2
-  - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip
-  - unzip bowtie2-2.3.4.3-linux-x86_64.zip
-  - sudo mv bowtie2-2.3.4.3-linux-x86_64/bowtie2* /usr/bin
+  - wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
+  - unzip bowtie2-2.4.5-linux-x86_64.zip
+  - sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
 
   # diamond
   - wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
@@ -54,7 +54,7 @@ before_install:
   # kma
   - git clone https://bitbucket.org/genomicepidemiology/kma.git
   - pushd kma && make && sudo mv kma /usr/bin && popd
- 
+
 install:
   - pip install -r requirements.txt
   - pip install .
