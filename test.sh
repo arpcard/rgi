@@ -14,7 +14,7 @@ diamond --version
 samtools --version
 bamtools --version
 bedtools --version
-bwa
+# bwa
 jellyfish --version
 kma -v
 
