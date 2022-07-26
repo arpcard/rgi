@@ -11,7 +11,7 @@ echo "=================================== CHECK DEPENDENCIES VERSIONS ==========
 blastp -version
 bowtie2 --version
 diamond --version
-samtools version
+samtools --version
 bamtools --version
 bedtools --version
 bwa
