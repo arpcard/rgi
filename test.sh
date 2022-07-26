@@ -59,7 +59,7 @@ rgi clean --debug
 echo "=================================== LOAD DATABASES ==================================="
 # load
 echo "$cmd rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version '$variants_version' --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug"
-rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug
+./rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug
 
 echo "=================================== CHECK LOADED DATABASES ==================================="
 # check database
