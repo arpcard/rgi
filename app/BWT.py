@@ -494,7 +494,7 @@ class BWT(object):
 		# )
 
 		df = dd.read_csv(os.path.join(self.data, "index-for-model-sequences.txt"),
-			sep="\t",usecols=["prevalence_sequence_id","model_id","species_name","ncbi_accession","data_type","rgi_criteria","percent_identity"])
+			sep="\t",assume_missing=True,usecols=["prevalence_sequence_id","model_id","species_name","ncbi_accession","data_type","rgi_criteria","percent_identity"])
 		# , header=None
 		df.to_csv(filename=self.model_species_data_type, single_file=True, mode="w", sep="\t", header_first_partition_only=True, index=False)
 
