@@ -113,14 +113,6 @@ class CARDkmers(object):
         """
 
         os.system("samtools index {input_bam}".format(input_bam=self.input_bam_file))
-        aligner = ""
-        bam_file = pysam.AlignmentFile(self.input_bam_file, "rb")
-        header = bam_file.text.split("\n")
-
-        for h in header:
-            if "@PG" in h:
-                aligner = h.split("\t")[1]
-
         os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk -F '\t' '{cmd}'; done > {out}"""
                     .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
 
@@ -222,7 +214,7 @@ class CARDkmers(object):
                     if x.split()[0] == contig_id:
                         orf_id = x
             elif type == 'bwt':
-                read, model, flag, mapq = self.get_bwt_alignment_data(entry.id)
+                read, model, flag, mapq = self.get_bwt_alignment_data(entry.description)
             elif type == "fasta":
                 read = entry.id
             else:
