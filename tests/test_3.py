@@ -21,7 +21,9 @@ def test_create_local_db(rgi):
 	f = os.path.join(working_directory,inputs,"{}".format("card.json"))
 	rgi.load_run(parser.parse_args([
 		'--card_json', f,
-		'--local'
+		'--local',
+		'--debug'
 	]))
+
 	assert (os.path.isfile(f) and os.path.exists(f)), \
 	print("add card.json to {} directory and re-run test".format(os.path.join(working_directory,inputs)))

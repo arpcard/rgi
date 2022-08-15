@@ -102,7 +102,7 @@ def main(args):
 
 def get_versions():
 	r = requests.get('https://card.mcmaster.ca/download')
-	soup = bs(r.content, 'lxml')
+	soup = bs(r.content, 'html.parser')
 	data = [item['href'] if item.get('href') is not None else item['src'] for item in soup.select('[href^="/download/0"]') ]
 	data_version = valid_version(re.search(r'\s*([\d.].([\d.]).([\d.]))', data[0]).group(1))
 	prev = [item['href'] if item.get('href') is not None else item['src'] for item in soup.select('[href^="/download/6"]') ]

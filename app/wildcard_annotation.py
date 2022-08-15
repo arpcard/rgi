@@ -3,12 +3,11 @@ from Bio import SeqIO
 from app.settings import *
 
 def main(args):
-	working_directory = os.getcwd()
+	if args.debug:
+		logger.setLevel(10)
 	logger.info(json.dumps(args.__dict__, indent=2))
 	version = args.version
 	files = glob.glob(os.path.join(args.input_directory,"*"))
-	fasta_file = os.path.join(working_directory, "wildcard_database_v{}.fasta".format(version))
-	fastas = {}
 	annotations = {}
 
 	for f in files:
@@ -21,19 +20,41 @@ def main(args):
 						annotations[row[0]] = {
 							"model_id": row[1],
 							"aro_term": row[2],
-							"aro_accession":  row[3], 
-							"detection_model": row[4], 
-							"percent_identity": row[9], 
-							"drug_class": row[13], 
-							"resistance_mechanism": row[12], 
+							"aro_accession":  row[3],
+							"detection_model": row[4],
+							"percent_identity": row[9],
+							"drug_class": row[13],
+							"resistance_mechanism": row[12],
 							"amr_gene_family": row[11]
 						}
 	prev_models = get_model(args.input_directory)
 
+	# write FASTA with only homolog models
+	write_fasta_annotation_file(files, prev_models, annotations, version)
+	# write FASTA with homolog, variant, rRNA gene variant, overexpression, knockout models
+	write_fasta_annotation_file(files, prev_models, annotations, version, True)
+
+def get_model(input_directory):
+	prev_models = {}
+	try:
+		with open(os.path.join(input_directory, "index-for-model-sequences.txt"), 'r') as ifile:
+			lines = csv.reader(ifile, delimiter='\t')
+			for row in lines:
+				if row[0] != 'prevalence_sequence_id':
+					prev_models["Prevalence_Sequence_ID:{}".format(row[0])] = row[1]
+	except Exception as e:
+		raise e
+	else:
+		pass
+	return prev_models
+
+def write_fasta_annotation_file(files, prev_models, annotations, version, all_model_type=False):
+	working_directory = os.getcwd()
+	fasta_file = os.path.join(working_directory, "wildcard_database_v{}.fasta".format(version))
+	fastas = {}
 	# homolog only
 	selected_model_types = ['nucleotide_fasta_protein_homolog_model_variants.fasta']
-
-	if args.include_other_models:
+	if all_model_type is True:
 		fasta_file = os.path.join(working_directory, "wildcard_database_v{}_all.fasta".format(version))
 		# use homolog, variant, rRNA gene variant, overexpression, knockout models
 		selected_model_types = ['nucleotide_fasta_rRNA_gene_variant_model_variants.fasta', \
@@ -47,7 +68,7 @@ def main(args):
 				if record:
 					desc = record.description.replace(" ", "_")
 					arr = desc.split("|")
-					model_id = prev_models[arr[0]]						
+					model_id = prev_models[arr[0]]
 					Prevalence_Sequence_ID = arr[0].split(":")[-1]
 					header = "Prevalence_Sequence_ID:{prevalence_sequence_id}|ID:{model_id}|Name:{aro_term}|{aro_accession}".format(
 								prevalence_sequence_id=Prevalence_Sequence_ID,
@@ -65,29 +86,15 @@ def main(args):
 			fout.write(">{}\n".format(i))
 			fout.write("{}\n".format(fastas[i]))
 
-	print("Done writing {}".format(os.path.basename(fasta_file)))
-
-def get_model(input_directory):
-	prev_models = {}
-	try:
-		with open(os.path.join(input_directory, "index-for-model-sequences.txt"), 'r') as ifile:
-			lines = csv.reader(ifile, delimiter='\t')
-			for row in lines:
-				if row[0] != 'prevalence_sequence_id':
-					prev_models["Prevalence_Sequence_ID:{}".format(row[0])] = row[1]
-	except Exception as e:
-		raise e
-	else:
-		pass
-	return prev_models
+	logger.info("Done writing {}".format(os.path.basename(fasta_file)))
 
 def create_parser():
-    parser = argparse.ArgumentParser(prog="rgi wildcard_annotation", description='Creates card annotations for RGI BWT from Variants or Wilcard data')
-    parser.add_argument('-i', '--input_directory', dest="input_directory", required=True, help="input directory for wildcard")
-    parser.add_argument('-v', '--version', dest="version", required=True, help="specify version downloaded for wildcard / variants")
-    parser.add_argument('-j', '--card_json', dest="card_json", required=True, help="card.json file")
-    parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", help="create annotations for other models including homolog model (default: False)")
-    return parser
+	parser = argparse.ArgumentParser(prog="rgi wildcard_annotation", description='Creates card annotations for RGI BWT from Variants or Wilcard data')
+	parser.add_argument('-i', '--input_directory', dest="input_directory", required=True, help="input directory for wildcard")
+	parser.add_argument('-v', '--version', dest="version", required=True, help="specify version downloaded for wildcard / variants")
+	parser.add_argument('-j', '--card_json', dest="card_json", required=True, help="card.json file")
+	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default: False)")
+	return parser
 
 def run():
     parser = create_parser()
