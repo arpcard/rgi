@@ -1,4 +1,6 @@
 import os, json, argparse
+from argparse import RawTextHelpFormatter
+from app.settings import APP_NAME, SOFTWARE_VERSION
 
 def check_for_all_classifications(classtype, class_dict):
     dc = 0
@@ -216,7 +218,7 @@ def make_json(m,j,f,t,s):
         return finaldrugclass, finalresistmech, finalgenefam, finalgene
 
 def create_parser():
-    parser = argparse.ArgumentParser(prog="rgi parser",description='Creates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.')
+    parser = argparse.ArgumentParser(prog="rgi parser",description='{} - {} - Parser \n\nCreates categorical .json files RGI wheel visualization. An input .json file containing the RGI results must be input.'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i', '--input', dest="input", required=True, help="RGI results in a .json file")
     parser.add_argument('-o', '--output', dest="output", default="RGIResults", help="Name/identifier for the output categorical .json files")
     parser.add_argument('--include_loose', dest="loose", action='store_true', help="Include loose hits in addition to strict and perfect hits")

@@ -16,6 +16,7 @@ from app.kmer_query import CARDkmers
 from app.BWT import BWT
 from app.Heatmap import Heatmap
 from app.Baits import Baits
+from argparse import RawTextHelpFormatter
 
 class MainBase(object):
     def __init__(self, api=False):
@@ -189,11 +190,10 @@ class MainBase(object):
         self.kmer_query_run(args)
 
     def kmer_query_args(self):
-        parser = argparse.ArgumentParser(
-            description='Tests sequenes using CARD*kmers')
+        parser = argparse.ArgumentParser(prog="rgi kmer_query",
+            description='{} - {} - Kmer Query \n\nTests sequenes using CARD*kmers'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-i', '--input', dest="input", required=True,
-            help="Input file (bam file from RGI*BWT, json file of RGI results, \
-            fasta file of sequences)")
+            help="Input file (bam file from RGI*BWT, json file of RGI results, fasta file of sequences)")
         parser.add_argument('--bwt', action="store_true",
             help="Specify if the input file for analysis is a bam file generated from RGI*BWT")
         parser.add_argument('--rgi', action="store_true",
@@ -271,7 +271,8 @@ class MainBase(object):
         self.bwt_run(args)
 
     def bwt_args(self):
-        parser = argparse.ArgumentParser(prog="rgi bwt",description='Aligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.')
+		# description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
+        parser = argparse.ArgumentParser(prog="rgi bwt",description="{} - {} - BWT \n\nAligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.".format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmed)")
         parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmed)")
         parser.add_argument('-a', '--aligner', default="kma", choices=['kma','bowtie2','bwa'], help="select read aligner (default=kma)")
@@ -315,7 +316,7 @@ class MainBase(object):
         self.tm_run(args)
 
     def tm_args(self):
-        parser = argparse.ArgumentParser(prog="rgi tm",description='TM')
+        parser = argparse.ArgumentParser(prog="rgi tm",description='{} - {} - TM'.format(APP_NAME,SOFTWARE_VERSION))
         parser.add_argument('-i', '--input_file', dest="input_file", help="input_file")
         parser.add_argument('-o', '--output_file', dest="output_file", help="output_file")
         parser.add_argument('-t', '--filter_temperature', dest="filter_temperature", default=65,
@@ -340,14 +341,12 @@ class MainBase(object):
         self.heatmap_run(args)
 
     def heatmap_args(self):
-        parser = argparse.ArgumentParser(prog="rgi heatmap",description='Creates a heatmap when given multiple RGI results.')
+        parser = argparse.ArgumentParser(prog="rgi heatmap",description='{} - {} - Heatmap \n\nCreates a heatmap when given multiple RGI results.'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-i', '--input', dest="input", required=True, help="Directory containing the RGI .json files (REQUIRED)")
         parser.add_argument('-cat', '--category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"),
             help="The option to organize resistance genes based on a category.")
         parser.add_argument('-f', '--frequency', dest="frequency", action="store_true", help="Represent samples based on resistance profile.")
-        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output EPS and PNG files. \
-            The number of files run will automatically be appended to the end of the file name.\
-            (default={})".format('RGI_heatmap'))
+        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
         parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),
             help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
         parser.add_argument('-d', '--display', dest="display", choices=("plain", "fill", "text"), default="plain",

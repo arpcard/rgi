@@ -1,6 +1,8 @@
 import os, sys, json, csv, argparse, glob
 from Bio import SeqIO
 from app.settings import *
+from argparse import RawTextHelpFormatter
+from app.settings import APP_NAME, SOFTWARE_VERSION
 
 def main(args):
 	if args.debug:
@@ -89,7 +91,7 @@ def write_fasta_annotation_file(files, prev_models, annotations, version, all_mo
 	logger.info("Done writing {}".format(os.path.basename(fasta_file)))
 
 def create_parser():
-	parser = argparse.ArgumentParser(prog="rgi wildcard_annotation", description='Creates card annotations for RGI BWT from Variants or Wilcard data')
+	parser = argparse.ArgumentParser(prog="rgi wildcard_annotation", description='{} - {} - WildCARD Annotation \n\nCreates card annotations for RGI BWT from Variants or Wilcard data'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
 	parser.add_argument('-i', '--input_directory', dest="input_directory", required=True, help="input directory for wildcard")
 	parser.add_argument('-v', '--version', dest="version", required=True, help="specify version downloaded for wildcard / variants")
 	parser.add_argument('-j', '--card_json', dest="card_json", required=True, help="card.json file")

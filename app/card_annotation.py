@@ -1,5 +1,7 @@
 import os, sys, json, csv, argparse
 from app.settings import *
+from argparse import RawTextHelpFormatter
+from app.settings import APP_NAME, SOFTWARE_VERSION
 """
 This script it used to create annotations and fasta for AMR++ using card data (version 2.0.0 and up)
 """
@@ -86,7 +88,7 @@ def write_fasta_annotation_file(data, version, ncbi, all_model_type=False):
 	logger.info("Done writing {}".format(os.path.basename(output_file)))
 
 def create_parser():
-	parser = argparse.ArgumentParser(prog="rgi card_annotation",description='Creates card annotations for RGI BWT from card.json')
+	parser = argparse.ArgumentParser(prog="rgi card_annotation",description='{} - {} - CARD Annotation \n\nCreates card annotations for RGI BWT from card.json'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
 	parser.add_argument('-i', '--input', dest="input", required=True, help="card.json file")
 	parser.add_argument('--ncbi', dest="ncbi", action="store_true", help="adds ncbi accession to FASTA headers (default: False)")
 	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default: False)")

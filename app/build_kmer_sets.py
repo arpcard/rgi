@@ -1,7 +1,8 @@
 import os, sys, json, csv, argparse, glob
 import app.make_kmer_json
 from Bio import SeqIO, Seq
-
+from argparse import RawTextHelpFormatter
+from app.settings import APP_NAME, SOFTWARE_VERSION
 """
 This script builds the CARD*k-mer sets.
 Please provide location to the CARD*Resistomes&Variants nucleotide FASTAs
@@ -319,8 +320,8 @@ def main(args):
     print("Finished creating CARD*kmers set.")
 
 def create_parser():
-    parser = argparse.ArgumentParser(
-        description="Builds the kmer sets for CARD*kmers")
+    parser = argparse.ArgumentParser(prog="rgi kmer_build",
+        description="{} - {} - Kmer Build \n\nBuilds the kmer sets for CARD*kmers".format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i', '--input_directory', dest="input_directory",
         help="input directory of prevalence data")
     parser.add_argument('-c', '--card', dest="card_fasta", required=True,
@@ -331,7 +332,7 @@ def create_parser():
         help="skips the concatenation and splitting of the CARD*R*V sequences.")
     parser.add_argument('-n','--threads', dest="threads", type=int,
             default=1, help="number of threads (CPUs) to use (default={})".format(1))
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')        
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100000, help='number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)')
     return parser
 
 def run():
