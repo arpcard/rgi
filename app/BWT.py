@@ -538,6 +538,7 @@ class BWT(object):
 		df = dd.read_csv(os.path.join(self.data, "index-for-model-sequences.txt"),
 			sep="\t",assume_missing=True,usecols=["prevalence_sequence_id","model_id","species_name","ncbi_accession","data_type","rgi_criteria","percent_identity"])
 		# , header=None
+		df = df.astype({"prevalence_sequence_id": int, "model_id": int})
 		df.to_csv(filename=self.model_species_data_type, single_file=True, mode="w", sep="\t", header_first_partition_only=True, index=False)
 
 		variants = {}
@@ -1135,6 +1136,7 @@ class BWT(object):
 				else:
 					# provide info from model
 					observed_in_pathogens = models[model_id]["taxon"]
+					percent_identity = 100.0
 			else:
 				# logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				observed_in_pathogens = models[model_id]["taxon"]
@@ -1190,6 +1192,13 @@ class BWT(object):
 				except Exception as e:
 					logger.warning("model with id : {}, has few mapped reads to make consensus sequence skipping: {}".format(model_id,e))
 					return {}
+
+			# report consensus if the depth is at least 5
+			# logger.info("read_coverage_depth: {}".format(read_coverage_depth))
+			if float(read_coverage_depth.strip() or 0) < 5.0:
+				snps=""
+				consensus_sequence_dna=""
+				consensus_sequence_protein=""
 
 			return {
 				"id": alignment_hit,
@@ -1324,7 +1333,7 @@ class BWT(object):
 			baits = self.get_baits_details()
 
 		mapq_average = 0
-		t0 = time.time()
+		# t0 = time.time()
 
 		jobs = []
 		for alignment_hit in reads.keys():
@@ -1334,7 +1343,7 @@ class BWT(object):
 			results = p.map_async(self.jobs, jobs)
 			summary = results.get()
 
-		logger.info("Time: {}".format( format(time.time() - t0, '.3f')))
+		# logger.info("Time: {}".format( format(time.time() - t0, '.3f')))
 		# write json
 		with open(self.allele_mapping_data_json, "w") as af:
 			af.write(json.dumps(summary,sort_keys=True))
@@ -1727,7 +1736,7 @@ class BWT(object):
 		"""
 		Align reads to reference genomes and report
 		"""
-
+		t0 = time.time()
 		logger.info("inputs")
 		logger.info(json.dumps(self.__dict__, indent=2))
 
@@ -1856,5 +1865,5 @@ class BWT(object):
 		# clean temporary files
 		logger.info("clean temporary files")
 		self.clean_files()
-
+		logger.info("Total Time: {} seconds".format( format(time.time() - t0, '.3f')))
 		logger.info("Done.")
