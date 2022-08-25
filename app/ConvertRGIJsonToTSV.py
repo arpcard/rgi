@@ -314,6 +314,8 @@ class ConvertJsonToTSV(object):
 								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"],
 								nudged,
 								note
 								]
