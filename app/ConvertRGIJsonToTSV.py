@@ -84,6 +84,8 @@ class ConvertJsonToTSV(object):
                                 "Percentage Length of Reference Sequence",
                                 "ID",
                                 "Model_ID",
+                                "Hit_Start",
+                                "Hit_End",
 								"Nudged",
 								"Note"])
 
@@ -253,6 +255,8 @@ class ConvertJsonToTSV(object):
 								percentage_length_reference_sequence,
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"],
 								nudged,
 								note
 								]
