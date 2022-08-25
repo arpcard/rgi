@@ -182,6 +182,9 @@ class Variant(BaseModel):
 													sinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
 													sinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
 													sinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
+													sinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+													sinsidedict["hit_end"] = (hsp.sbjct_end)*3
+													
 
 													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
 														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
@@ -245,6 +248,8 @@ class Variant(BaseModel):
 													slinsidedict["orf_start"] = self.extract_nth_hash(orf_info.decode(), 1)
 													slinsidedict["orf_end"] = self.extract_nth_hash(orf_info.decode(), 2)
 													slinsidedict["orf_from"] = self.extract_nth_hash(orf_info.decode(), 0)
+													slinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+													slinsidedict["hit_end"] = (hsp.sbjct_end)*3
 
 													if orf_info.decode().split(' # ')[0] in predicted_genes_dict:
 														slinsidedict["orf_dna_sequence"] = predicted_genes_dict[orf_info.decode().split(' # ')[0]] 
