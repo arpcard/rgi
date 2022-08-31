@@ -22,7 +22,7 @@ def main(args):
 	logger.info("card cannonical version: {}".format(card_cannonical_version))
 	logger.info("card variants version: {}".format(card_variants_version))
 
-	# Create the directory 
+	# Create the directory
 	directory = tempfile.mkdtemp(prefix=os.path.join(os.getcwd(), "rgi_autoload_"))
 	print("Directory '%s' created" % directory)
 	print("=================================== DOWNLOAD CARD CANONICAL DATA ===================================")
@@ -45,7 +45,7 @@ def main(args):
 		card_variants_version=card_variants_version
 		)
 	)
-	os.system("mkdir -p {card_variants}".format(card_variants=card_variants)) 
+	os.system("mkdir -p {card_variants}".format(card_variants=card_variants))
 	os.system("tar xf {variants} -C {card_variants}".format(variants=variants,card_variants=card_variants))
 	os.system("gunzip {card_variants}/*.gz".format(card_variants=card_variants))
 
@@ -67,9 +67,11 @@ def main(args):
 	os.system("rgi load \
 	--card_json {card_data}/card.json \
 	--card_annotation card_database_v{card_cannonical_version}.fasta \
+	--card_annotation_all_models card_database_v{card_cannonical_version}_all.fasta \
 	--wildcard_index {card_variants}/index-for-model-sequences.txt \
 	--wildcard_version {card_variants_version} \
 	--wildcard_annotation wildcard_database_v{card_variants_version}.fasta \
+	--wildcard_annotation_all_models wildcard_database_v{card_variants_version}_all.fasta \
 	--kmer_database {card_variants}/61_kmer_db.json \
 	--amr_kmers {card_variants}/all_amr_61mers.txt \
 	--kmer_size 61 \
@@ -96,7 +98,9 @@ def main(args):
 		os.system("rm -r {card_variants}".format(card_variants=card_variants))
 		os.system("rm -r {}".format(directory))
 		os.system("rm card_database_v{card_cannonical_version}.fasta".format(card_cannonical_version=card_cannonical_version))
+		os.system("rm card_database_v{card_cannonical_version}_all.fasta".format(card_cannonical_version=card_cannonical_version))
 		os.system("rm wildcard_database_v{card_variants_version}.fasta".format(card_variants_version=card_variants_version))
+		os.system("rm wildcard_database_v{card_variants_version}_all.fasta".format(card_variants_version=card_variants_version))
 
 	print("=================================== DONE ===================================")
 
