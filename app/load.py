@@ -150,8 +150,6 @@ def main(args):
 		load_reference_card_and_wildcard(args.local_database, card_annotation , args.wildcard_annotation,"card_wildcard_reference.fasta")
 		loaded_databases["card_variants"]["data_version"] = args.wildcard_version
 		loaded_databases["card_variants"]["model_type_used"] = ["homolog"]
-		# if args.include_other_models:
-		# 	loaded_databases["card_variants"]["model_type_used"] = ["homolog","variant","rRNA","overexpression","knockout"]
 
 	# CARD[All] + WILD[ALL]
 	if args.wildcard_annotation_all_models is not None and args.card_annotation_all_models is not None:
@@ -301,7 +299,6 @@ def create_parser():
     parser.add_argument('--kmer_size', required=False, help="kmer size if loading kmer files")
     parser.add_argument('--local', dest="local_database", action="store_true", help="use local database (default: uses database in executable directory)")
     parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
-    parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", help="create annotations for other models including homolog model (default: False)")
     return parser
 
 def run():
