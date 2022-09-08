@@ -286,9 +286,9 @@ def load_file(local_db, filepath, filename, validate_json=False):
 def create_parser():
     parser = argparse.ArgumentParser(prog="rgi load", description="{} - {} - Load".format(APP_NAME, SOFTWARE_VERSION))
     parser.add_argument('-i', '--card_json', required=True, help='must be a card database json file')
-    parser.add_argument('--card_annotation', required=False, help="annotated reference FASTA for homolog models only created using rgi card_annotation")
-    parser.add_argument('--card_annotation_all_models', required=False, help="annotated reference FASTA which includes all models created using rgi card_annotation e.g")
-    parser.add_argument('--wildcard_annotation', required=False, help="annotated reference FASTA for homolog models only created using rgi wildcard_annotation")
+    parser.add_argument('--card_annotation', required=False, help="annotated reference FASTA for homolog models only, created using rgi card_annotation")
+    parser.add_argument('--card_annotation_all_models', required=False, help="annotated reference FASTA which includes all models created using rgi card_annotation")
+    parser.add_argument('--wildcard_annotation', required=False, help="annotated reference FASTA for homolog models only, created using rgi wildcard_annotation")
     parser.add_argument('--wildcard_annotation_all_models', required=False, help="annotated reference FASTA which includes all models created using rgi wildcard_annotation")
     parser.add_argument('--wildcard_index', required=False, help="wildcard index file (index-for-model-sequences.txt)")
     parser.add_argument('--wildcard_version', required=False, help="specify variants version used")
