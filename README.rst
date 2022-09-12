@@ -3,7 +3,7 @@
 .. |build-status| image:: https://travis-ci.org/arpcard/rgi.svg?branch=master
     :alt: build status
     :scale: 100%
-    :target: https://travis-ci.org/arpcard/rgi 
+    :target: https://travis-ci.org/arpcard/rgi
 
 .. |docs| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
     :alt: Documentation
@@ -11,69 +11,126 @@
     :target: http://bioconda.github.io/recipes/rgi/README.html
 
 ====================================
-The Resistance Gene Identifier (RGI) 
+The Resistance Gene Identifier (RGI)
 ====================================
 
-This application is used to predict resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
+This application is used to predict antibiotic resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
-RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://toolshed.g2.bx.psu.edu/view/card/rgi/715bc9aeef69>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can Install RGI from Conda or Run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
+RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://toolshed.g2.bx.psu.edu/view/card/rgi/715bc9aeef69>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
-.. contents:: 
+ > `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
+
+.. contents::
 
 Overview of RGI
 ===============
 
-Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
------------------------------------------------------------------------
+Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes (a.k.a. RGI main)
+-----------------------------------------------------------------------------------------
 
-If DNA sequences are submitted, RGI first predicts complete open reading frames (ORFs) using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. This includes a secondary correction by RGI if Prodigal undercalls the correct start codon to ensure complete AMR genes are predicted. However, if Prodigal fails to predict an AMR ORF, this will produce a false negative result. 
+ > The text below provides an overview of analysis of FASTA sequences (contigs, genomes, etc.). For command line examples see `Running RGI main with Genome or Assembly DNA Sequences <#running-rgi-main-with-genome-or-assembly-dna-sequences>`_.
+
+If DNA FASTA sequences are submitted, RGI first predicts complete open reading frames (ORFs) using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. This includes a secondary correction by RGI if Prodigal undercalls the correct start codon to ensure complete AMR genes are predicted. However, if Prodigal fails to predict an AMR ORF, RGI will produce a false negative result.
 
 Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs.
 
-If protein sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly.
+If protein FASTA sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly.
 
-The RGI currently supports CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (use of BLASTP or `DIAMOND <https://ab.inf.uni-tuebingen.de/software/diamond>`_ bitscore cut-offs to detect functional homologs of AMR genes), `protein variant models <https://card.mcmaster.ca/ontology/40293>`_ (for accurate differentiation between susceptible intrinsic genes and intrinsic genes that have acquired mutations conferring AMR, based on CARD's curated SNP matrices), `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ (for detection of drug resistant rRNA target sequences), and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ (which detect efflux subunits associated AMR, but also highlights mutations conferring over-expression when present).
+The RGI analyzes genome or proteome sequences under a **Perfect**, **Strict**, and **Loose** (a.k.a. Discovery) paradigm. The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences in CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial matches that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
 
-+----------------------------------------------------------+---------------------------------------------------+
-|    Example                                               | AMR Gene                                          |
-+==========================================================+===================================================+
-|    Protein Homolog Model                                 | `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_| 
-+----------------------------------------------------------+---------------------------------------------------+
-|    Protein Variant Model                                 | `Acinetobacter baumannii gyrA conferring          |
-|                                                          | resistance to fluoroquinolones                    |
-|                                                          | <https://card.mcmaster.ca/ontology/40507>`_       |
-+----------------------------------------------------------+---------------------------------------------------+
-|    rRNA Mutation Model                                   | `Campylobacter jejuni 23S rRNA with mutation      |
-|                                                          | conferring resistance to erythromycin             |
-|                                                          | <https://card.mcmaster.ca/ontology/42445>`_       |
-+----------------------------------------------------------+---------------------------------------------------+
-|    Protein Over-Expression Model                         | `MexR <https://card.mcmaster.ca/ontology/36645>`_ | 
-+----------------------------------------------------------+---------------------------------------------------+
+Within the **Perfect**, **Strict**, and **Loose** paradigm, RGI currently supports CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_, and `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_:
 
-The RGI analyzes genome or proteome sequences under three paradigms: **Perfect**, **Strict**, and **Loose** (a.k.a. Discovery). The Perfect algorithm is most often applied to clinical surveillance as it detects perfect matches to the curated reference sequences and mutations in the CARD. In contrast, the Strict algorithm detects previously unknown variants of known AMR genes, including secondary screen for key mutations, using detection models with CARD's curated similarity cut-offs to ensure the detected variant is likely a functional AMR gene. The Loose algorithm works outside of the detection model cut-offs to provide detection of new, emergent threats and more distant homologs of AMR genes, but will also catalog homologous sequences and spurious partial hits that may not have a role in AMR. Combined with phenotypic screening, the Loose algorithm allows researchers to hone in on new AMR genes.
+* **Protein Homolog Models** (PHM) detect protein sequences based on their similarity to a curated reference sequence, using curated BLASTP bitscore cut-offs, for example `NDM-1 <https://card.mcmaster.ca/ontology/36728>`_. Protein Homolog Models apply to all genes that confer resistance through their presence in an organism, such as the presence of a beta-lactamase gene on a plasmid. PHMs include a reference sequence and a bitscore cut-off for detection using BLASTP. A Perfect RGI match is 100% identical to the reference protein sequence along its entire length, a Strict RGI match is not identical but the bit-score of the matched sequence is greater than the curated BLASTP bit-score cutoff, Loose RGI matches have a bit-score less than the curated BLASTP bit-score cut-off.
+* **Protein Variant Models** (PVM) perform a similar search as Protein Homolog Models (PHM), i.e. detect protein sequences based on their similarity to a curated reference sequence, but secondarily screen query sequences for curated sets of mutations to differentiate them from antibiotic susceptible wild-type alleles, for example `Acinetobacter baumannii gyrA conferring resistance to fluoroquinolones <https://card.mcmaster.ca/ontology/40507>`_. PVMs are designed to detect AMR acquired via mutation of house-keeping genes or antibiotic targets. PVMs include a protein reference sequence (often from antibiotic susceptible wild-type alleles), a curated bit-score cut-off, and mapped resistance variants. Mapped resistance variants may include any or all of single point mutations, insertions, or deletions curated from the scientific literature. A Strict RGI match has a BLASTP bit-score above the curated BLASTP cutoff value and contains at least one curated mutation from amongst the mapped resistance variants, while a Loose RGI match has a bit-score less than the curated BLASTP bit-score cut-off but still contains at least one curated mutation from amongst the mapped resistance variants.
+* **Protein Overexpression Models** (POM) are similar to Protein Variant Models (PVM) in that they include a protein reference sequence, a curated BLASTP bitscore cut-off, and mapped resistance variants. Whereas PVMs are designed to detect AMR acquired via mutation of house-keeping genes or antibiotic targets, reporting only those with curated mutations conferring AMR, POMs are restricted to regulatory proteins and report both wild-type sequences and/or sequences with mutations leading to overexpression of efflux complexes, for example `MexS <https://card.mcmaster.ca/ontology/37193>`_. The former lead to efflux of antibiotics at basal levels, while the latter can confer clinical resistance. POMs include a protein reference sequence (often from wild-type alleles), a curated bit-score cut-off, and mapped resistance variants. Mapped resistance variants may include any or all of single point mutations, insertions, or deletions curated from the scientific literature. A Perfect RGI match is 100% identical to the wild-type reference protein sequence along its entire length, a Strict RGI match has a BLASTP bit-score above the curated BLASTP cutoff value may or may not contain at least one curated mutation from amongst the mapped resistance variants, while a Loose RGI match has a bit-score less than the curated BLASTP bit-score cut-off may or may not contain at least one curated mutation from amongst the mapped resistance variants.
+* **Ribosomal RNA (rRNA) Gene Variant Models** (RVM) are similar to Protein Variant Models (PVM), i.e. detect  sequences based on their similarity to a curated reference sequence and secondarily screen query sequences for curated sets of mutations to differentiate them from antibiotic susceptible wild-type alleles, except RVMs are designed to detect AMR acquired via mutation of genes encoding ribosomal RNAs (rRNA), for example `Campylobacter jejuni 23S rRNA with mutation conferring resistance to erythromycin <https://card.mcmaster.ca/ontology/42445>`_. RVMs include a rRNA reference sequence (often from antibiotic susceptible wild-type alleles), a curated bit-score cut-off, and mapped resistance variants. Mapped resistance variants may include any or all of single point mutations, insertions, or deletions curated from the scientific literature. A Strict RGI match has a BLASTN bit-score above the curated BLASTN cutoff value and contains at least one curated mutation from amongst the mapped resistance variants, while a Loose RGI match has a bit-score less than the curated BLASTN bit-score cut-off but still contains at least one curated mutation from amongst the mapped resistance variants.
 
-**By default, all Loose hits of 95% identity or better are automatically listed as Strict, regardless of alignment length (see --exclude_nudge).**
+**Example**: The `Acinetobacter baumannii gyrA conferring resistance to fluoroquinolones <https://card.mcmaster.ca/ontology/40507>`_ Protein Variant Model has a bitscore cut-off of 1500 to separate **Strict** & **Loose** hits based on their similarity to the curated antibiotic susceptible reference protein AJF82744.1, but RGI will only report an antibiotic resistant version of this gene if the query sequence has the G79C or S81L substitutions:
 
-All results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism. JSON files created at the command line can be `Uploaded at the CARD Website <https://card.mcmaster.ca/analyze/rgi>`_ for visualization.
+.. image:: images/gyrA.jpg
+
+All RGI results are organized via the `Antibiotic Resistance Ontology <https://card.mcmaster.ca/ontology/36006>`_ classification: AMR Gene Family, Drug Class, and Resistance Mechanism. JSON files created at the command line can be `Uploaded at the CARD Website <https://card.mcmaster.ca/analyze/rgi>`_ for visualization, for example the Mycobacterium tuberculosis H37Rv complete genome (GenBank AL123456):
 
 .. image:: images/rgiwheel.jpg
-`Example visualization of Escherichia coli EC160090 (GenBank MCNL01) <https://card.mcmaster.ca/rgi/results/MCNL01>`_
 
-Note on metagenomic assemblies or merged metagenomic reads: this is a computationally expensive approach, since each merged read or contig set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. While not generally recommended, this does allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below). 
+**Note**: Users have the option of using BLAST or `DIAMOND <https://github.com/bbuchfink/diamond>`_ for generation of local alignments and assessment of bitscores within RGI. The default is BLAST, but DIAMOND generates alignments faster than BLAST and the RGI developers routinely assess DIAMOND's performance to ensure it calculates equivalent bitscores as BLAST given RGI's Perfect / Strict / Loose paradigm is dependant upon hand curated bitscore cut-offs. As such, RGI may not support the latest version of DIAMOND.
 
-Analyzing Metagenomic Reads (beta-testing)
------------------------------------------------
+ > `What are CARD detection models and how are bitscore cut-offs determined? <https://github.com/arpcard/rgi/issues/140>`_
 
-RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ , `BWA <http://bio-bwa.sourceforge.net>`_ , and `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ (support for SNP screening models will be added to future versions). FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended as the allelic diversity for AMR genes is greatly unrepresented in the published literature, hampering high-stringency read mapping (i.e. AMR genes are often only characterized for a single pathogen). Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e., nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
 
-CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD) were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation.
+Curation at CARD is routinely ahead of RGI software development, so not all parameters or models curated in CARD will be annotated in sequences analyzed using RGI. For example, RGI does not currently support CARD's `protein knockout models <https://card.mcmaster.ca/ontology/40354>`_, `protein domain meta-models <https://card.mcmaster.ca/ontology/40326>`_, `gene cluster meta-models <https://card.mcmaster.ca/ontology/40298>`_, or `efflux pump system meta-models <https://card.mcmaster.ca/ontology/41112>`_. In addition, while CARD's `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_, and `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ are current supported by RGI, mutation screening currently only supports annotation of resistance-conferring SNPs via the `single resistance variant <https://card.mcmaster.ca/ontology/36301>`_ parameter. For example, here is a snapshot from CARD 3.2.3 for `protein variant models <https://card.mcmaster.ca/ontology/40293>`_:
+
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    Parameters Among 220 PVMs                             | Frequency                                      | Supported by RGI    |
++==========================================================+================================================+=====================+
+|    single resistance variant                             | 1299                                           |yes                  |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    high confidence TB                                    | 227                                            |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    multiple resistance variants                          | 113                                            |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    deletion mutation from nucleotide sequence            | 95                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    insertion mutation from nucleotide sequence           | 65                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    nonsense mutation                                     | 52                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    minimal confidence TB                                 | 43                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    co-dependent single resistance variant                | 39                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    moderate confidence TB                                | 28                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    deletion mutation from peptide sequence               | 22                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    frameshift mutation                                   | 14                                             |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    insertion mutation from peptide sequence              | 9                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    co-dependent insertion/deletion                       | 8                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    co-dependent nonsense SNP                             | 5                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    snp in promoter region                                | 4                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    disruptive mutation in regulatory element             | 2                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+
+Lastly, analyzing metagenomic assemblies or merged metagenomic reads using RGI main is a computationally intensive approach, since each merged read or contig FASTA set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. However, this approach does (1) allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below), and (2) allow inclusion of `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ when annotating the resistome (as outlined below, RGI bwt's read mapping algorithms do not support models that require screening for mutations).
+
+ > `What RGI settings are best for a Metagenome-Assembled Genome (MAG)? <https://github.com/arpcard/FAQ#rgi-faqs>`_
+
+Analyzing Metagenomic Reads (a.k.a. RGI bwt)
+--------------------------------------------
+
+ >  The text below provides an overview of analysis of FASTQ sequencing reads. For command line examples see `Running RGI bwt with FASTQ files <#running-rgi-bwt-with-fastq-files>`_.
+
+RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ , `BWA <http://bio-bwa.sourceforge.net>`_ , or `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR alelle network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps <images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
+
+.. image:: images/simulation.jpg
+The above illustrates simulated 90x short read coverage from seven antibiotic resistance gene nucleotide reference sequences in CARD (catB, OXA-1, AAC(6')-Ib, NDM-1, BRP(MBL), QnrB1, CTX-M-15), subsequently aligned with RGI bwt against CARD using Bowtie2 or KMA algorithms. Reads are aligned to a single reference gene using KMA but for Bowtie2 the same reads are aligned across a selection of similar reference sequences, with associated lower MAPQ scores. Note that KMA has limits in its ability to resolve very similar sequences, e.g. all simulated catB3 reads were all aligned to catI and all simulated AAC(6')-Ib reads were aligned to AAC(6')-Ib-cr.
+
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default RGI bwt aligned reads to reference sequences from CARD's protein homolog models, protein variant models, rRNA mutation models, and protein over-expression models. However, as outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, e.g. a wild-type gyrase susceptible to fluoroquinolones. As such, earlier versions of RGI were over-reporting antibiotic resistance genes by not checking for these curated mutations. For example, while the KMA algorithm reports SNPs relative to reference, RGI was not screening these SNPs against CARD. Read alignments against the protein variant model, rRNA mutation model, and protein over-expression model reference sequences can now only be listed by use of the new --include_other_models parameter, but at this time these results still do not include comparison to CARD's curated lists of mutations. As such, these often spurious results are no longer included in default RGI bwt output. Support for mutation screening models will be added to future versions of RGI bwt.**
+
+For RGI bwt, FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended for non-clinical samples as the allelic diversity for AMR genes is greatly unrepresented in the published literature, with a strong bias towards clinical antibiotic resistance genes and pathogens, hampering high-stringency read mapping for samples with divergent alleles. Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
+
+ > `What data is included in CARD? Can I add unpublished data? <https://github.com/arpcard/FAQ#card-faqs>`_
+
+CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD) were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for hundreds of pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, genomic island sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation. RGI bwt will indicate if the reference sequence for aligned reads is from the 'canonical' curated CARD reference sequences or from CARD's Resistomes & Variants, allowing users to know if the underlying reference is an *in silico* prediction or experimentally validated resistance gene.
+
+**Note**: While CARD's Resistomes & Variants increases the allelic diversity of the reference data for non-clinical samples, it does so at the cost of inflating the allele network problem outlined above. Summarizing results at the level of AMR Gene Family may be more accurate than summarizing at the level of individual antibiotic resistance genes.
+
+**Note**: As RGI bwt makes no assumptions about pre-processing of metagenomics data, we suggest prior quality/adaptor trimming of reads with `skewer <https://github.com/relipmoc/skewer>`_ and deduplication of reads using `dedupe.sh <https://sourceforge.net/projects/bbmap/>`_. If needed, down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. Thanks to Allison Guitor of McMaster University for these suggestions.
 
 K-mer Prediction of Pathogen-of-Origin for AMR Genes (beta-testing)
 --------------------------------------------------------------------------
 
-CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (see above) provides a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for hits found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
+ > The text below provides an overview of k-mer prediction of pathogen-of-origin. For command line examples see `Using RGI kmer_query <#using-rgi-kmer-query-k-mer-taxonomic-classification>`_.
+
+CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (see above) provides a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for matches found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
 
 **CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** As above, the reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
 
@@ -85,7 +142,7 @@ Use or reproduction of these materials, in whole or in part, by any commercial o
 Citation
 --------
 
-Alcock et al. 2020. CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database. Nucleic Acids Research, Volume 48, Issue D1, Pages D517-525 [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
+Alcock et al. 2020. CARD 2020: Antibiotic resistome surveillance with the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, Volume 48, Issue D1, Pages D517-525 [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
 
 Support & Bug Reports
 ----------------------
@@ -100,43 +157,43 @@ You can email the CARD curators or developers directly at `card@mcmaster.ca <mai
 Installation
 ============
 
-Recommended installation method for most users is via conda or docker.
+Recommended installation method for most users is via Conda or Docker.
 This will handle dependency management and ensure installation of the
 correct version of RGI's external dependencies e.g., BLAST, DIAMOND.
 
 Install RGI from Conda
 ----------------------
 
-Install `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_ on your system if not already available ().
+Install `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_ on your system if not already available.
 
 Search for RGI package and show available versions:
 
   .. code-block:: sh
-        
+
         $ conda search --channel conda-forge --channel bioconda --channel defaults rgi
 
-Create a new conda environment
+Create a new Conda environment
 
   .. code-block:: sh
-        
+
         $ conda create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI package:
 
   .. code-block:: sh
-        
+
         $ conda install --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
-        
+
         $ conda install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
 
 Remove RGI package:
 
   .. code-block:: sh
-        
+
         $ conda remove rgi
 
 
@@ -148,7 +205,7 @@ databases appropriately loaded.
 
 Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not already available
 
-- Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from conda package).
+- Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from Conda package).
 
     .. code-block:: sh
 
@@ -163,13 +220,13 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 - RGI can be executed from the containers as follows:
 
     .. code-block:: sh
-       
+
         docker run -v $PWD:/data finlaymaguire/rgi rgi -h
 
-    Or 
+    Or
 
     .. code-block:: sh
-       
+
         docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 rgi -h
 
 
@@ -181,7 +238,7 @@ Install Dependencies
 The following conda command will install all RGI dependencies (listed below):
 
 .. code-block:: sh
-    
+
     git clone https://github.com/arpcard/rgi
     conda env create -f conda_env.yml
     conda activate rgi
@@ -191,7 +248,7 @@ The following conda command will install all RGI dependencies (listed below):
 - `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
-- `DIAMOND 0.8.36 <https://ab.inf.uni-tuebingen.de/software/diamond>`_
+- `DIAMOND 0.8.36 <https://github.com/bbuchfink/diamond>`_
 - `Biopython 1.78 <https://biopython.org/>`_
 - `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
 - `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
@@ -210,12 +267,12 @@ The following conda command will install all RGI dependencies (listed below):
 - `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 
-Install RGI 
+Install RGI
 ```````````
 
 .. code-block:: sh
 
-   pip install git+https://github.com/arpcard/rgi.git 
+   pip install git+https://github.com/arpcard/rgi.git
 
 or
 
@@ -228,7 +285,7 @@ or
 Running RGI Tests
 `````````````````
 .. code-block:: sh
-   
+
    cd tests
    pytest -v -rxs
 
@@ -272,7 +329,7 @@ The following command will bring up RGI's main help menu:
                Metagenomic
                ---------------------------------------------------------------------------------------
                bwt                   Align reads to CARD and in silico predicted allelic variants (beta)
-               
+
                ---------------------------------------------------------------------------------------
                Baits validation
                ---------------------------------------------------------------------------------------
@@ -289,7 +346,7 @@ The following command will bring up RGI's main help menu:
                ---------------------------------------------------------------------------------------
                Pathogen of origin
                ---------------------------------------------------------------------------------------
-               
+
                kmer_build            Build AMR specific k-mers database used for pathogen of origin (beta)
                kmer_query            Query sequences against AMR k-mers database to predict pathogen of origin (beta)
 
@@ -316,101 +373,82 @@ Help screens for subcommands can be accessed using the -h argument, e.g.
 
       rgi load -h
 
+
 RGI Databases
 --------------
 
-Load CARD Reference Data
-````````````````````````
+Loading CARD Reference Data
+````````````````````````````
 
-**Required CARD Reference Data**
+.. code-block:: sh
 
-To start analyses, first acquire the latest AMR reference data from CARD. CARD data can be installed at the system level or at the local level:
+				usage: rgi load [-h] -i CARD_JSON [--card_annotation CARD_ANNOTATION]
+				                [--card_annotation_all_models CARD_ANNOTATION_ALL_MODELS]
+				                [--wildcard_annotation WILDCARD_ANNOTATION]
+				                [--wildcard_annotation_all_models WILDCARD_ANNOTATION_ALL_MODELS]
+				                [--wildcard_index WILDCARD_INDEX]
+				                [--wildcard_version WILDCARD_VERSION]
+				                [--baits_annotation BAITS_ANNOTATION]
+				                [--baits_index BAITS_INDEX] [--kmer_database KMER_DATABASE]
+				                [--amr_kmers AMR_KMERS] [--kmer_size KMER_SIZE] [--local]
+				                [--debug] [--include_other_models]
 
-Obtain CARD data:
+				Resistance Gene Identifier - 6.0.0 - Load
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -i CARD_JSON, --card_json CARD_JSON
+				                        must be a card database json file
+				  --card_annotation CARD_ANNOTATION
+				                        annotated reference FASTA for protein homolog models
+				                        only, created using rgi card_annotation
+				  --card_annotation_all_models CARD_ANNOTATION_ALL_MODELS
+				                        annotated reference FASTA which includes all models
+				                        created using rgi card_annotation
+				  --wildcard_annotation WILDCARD_ANNOTATION
+				                        annotated reference FASTA for protein homolog models
+				                        only, created using rgi wildcard_annotation
+				  --wildcard_annotation_all_models WILDCARD_ANNOTATION_ALL_MODELS
+				                        annotated reference FASTA which includes all models
+				                        created using rgi wildcard_annotation
+				  --wildcard_index WILDCARD_INDEX
+				                        wildcard index file (index-for-model-sequences.txt)
+				  --wildcard_version WILDCARD_VERSION
+				                        specify variants version used
+				  --baits_annotation BAITS_ANNOTATION
+				                        annotated reference FASTA
+				  --baits_index BAITS_INDEX
+				                        baits index file (baits-probes-with-sequence-info.txt)
+				  --kmer_database KMER_DATABASE
+				                        json of kmer database
+				  --amr_kmers AMR_KMERS
+				                        txt file of all amr kmers
+				  --kmer_size KMER_SIZE
+				                        kmer size if loading kmer files
+				  --local               use local database (default: uses database in
+				                        executable directory)
+				  --debug               debug mode
+
+Depending upon the type of analysis you wish to perform, different sets of CARD reference data first need to be loaded into RGI. By default, these data will be loaded at the system-wide level, i.e. available to all users alongside a system-wide RGI installation, but they can alternatively be loaded for the local user directory using the --local flag. Steps for loading required data are outlined below in sections describing different types of analysis (all using --local in their examples), but below are examples of loading the canonical CARD reference data either system-wide or locally. 
+
+First download the latest AMR reference data from CARD:
 
    .. code-block:: sh
-   
+
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
 
-Local or working directory:
+Load in Local or working directory:
 
    .. code-block:: sh
-   
+
       rgi load --card_json /path/to/card.json --local
 
-System wide:
+Load System wide:
 
    .. code-block:: sh
 
       rgi load --card_json /path/to/card.json
-
-**Additional Reference Data for Metagenomics Analyses**
-
-Metagenomics analyses may additionally require CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data, which can also be installed at the system level or at the local level once the CARD data has been loaded.
-
-Additional CARD data pre-processing for metagenomics using a local or working directory (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
-
-System wide additional CARD data pre-processing for metagenomics (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-
-      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
-      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta
-
-Obtain WildCARD data:
-
-   .. code-block:: sh
-   
-      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
-      mkdir -p wildcard
-      tar -xjf wildcard_data.tar.bz2 -C wildcard
-      gunzip wildcard/*.gz
-      
-Local or working directory (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
-        -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
-        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
-        --card_annotation card_database_v3.0.1.fasta --local
-
-System wide (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* depend on the version of CARD data downloaded, please adjust accordingly):
-
-   .. code-block:: sh
-   
-      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json \
-        -v version_number > wildcard_annotation.log 2>&1
-      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta \
-        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
-        --card_annotation card_database_v3.0.1.fasta
-
-**Additional Reference Data for K-mer Pathogen-of-Origin Analyses**
-
-Complete all the above steps for **Required CARD Reference Data** and **Additional Reference Data for Metagenomics Analyses**, then load the k-mer reference data:
-
-Local or working directory (example uses the pre-compiled 61 bp k-mers):
-
-   .. code-block:: sh
-   
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
-        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
-        --local --debug > kmer_load.61.log 2>&1
-
-System wide (example uses the pre-compiled 61 bp k-mers):
-
-   .. code-block:: sh
-   
-      rgi load --kmer_database /path/to/wildcard/61_kmer_db.json \
-        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61 \
-        --debug > kmer_load.61.log 2>&1
 
 Check Database Version
 ``````````````````````
@@ -418,7 +456,7 @@ Check Database Version
 Local or working directory:
 
    .. code-block:: sh
-   
+
       rgi database --version --local
 
 System wide :
@@ -426,7 +464,7 @@ System wide :
    .. code-block:: sh
 
       rgi database --version
-      
+
 Clean Previous or Old Databases
 ````````````````````````````````
 
@@ -438,13 +476,61 @@ Local or working directory:
 
 System wide:
 
-   .. code-block:: sh 
-   
-      rgi clean      
+   .. code-block:: sh
 
+      rgi clean
+
+Bulk Load All Reference Data
+`````````````````````````````
+
+The examples in this documentation outline best practices for loading of CARD reference data for each possible type of analysis. If you wish to bulk load all possible CARD reference data to allow on-the-fly switching between different types of analysis, here are all of the steps combined:
+
+Remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD and WildCARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xjf wildcard_data.tar.bz2 -C wildcard
+      gunzip wildcard/*.gz
+      
+Create annotation files (note that the parameter *version_number* depends upon the versions of WildCARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
+        -v version_number > wildcard_annotation.log 2>&1
+ 
+Load all data into RGI (note that the FASTA filenames plus the parameter *version_number* depend on the versions of CARD and WildCARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+     rgi load \
+       --card_json /path/to/card.json \
+       --debug --local \
+       --card_annotation card_database_v3.2.4.fasta \
+       --card_annotation_all_models card_database_v3.2.4_all.fasta \
+       --wildcard_annotation wildcard_database_v4.0.0.fasta \
+       --wildcard_annotation_all_models wildcard_database_v4.0.0_all.fasta \
+       --wildcard_index /path/to/wildcard/index-for-model-sequences.txt \
+       --wildcard_version 4.0.0 \
+       --amr_kmers /path/to/wildcard/all_amr_61mers.txt \
+       --kmer_database /path/to/wildcard/61_kmer_db.json \
+       --kmer_size 61
 
 Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
 -------------------------------------------------------------------------------
+
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e, nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
 
 .. code-block:: sh
 
@@ -452,132 +538,155 @@ Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
 
 .. code-block:: sh
 
-          usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
-                          [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose] [--local]
-                          [--clean] [--debug] [--low_quality]
-                          [-d {wgs,plasmid,chromosome,NA}] [-v] [--split_prodigal_jobs]
-          
-          Resistance Gene Identifier - 4.2.2 - Main
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
-                                  input file must be in either FASTA (contig and
-                                  protein) or gzip format! e.g myFile.fasta,
-                                  myFasta.fasta.gz
-            -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                                  output folder and base filename
-            -t {contig,protein}, --input_type {contig,protein}
-                                  specify data input type (default = contig)
-            -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
-                                  specify alignment tool (default = BLAST)
-            -n THREADS, --num_threads THREADS
-                                  number of threads (CPUs) to use in the BLAST search
-                                  (default=32)
-            --include_loose       include loose hits in addition to strict and perfect
-                                  hits
-            --exclude_nudge       exclude hits nudged from loose to strict hits
-            --local               use local database (default: uses database in
-                                  executable directory)
-            --clean               removes temporary files
-            --debug               debug mode
-            --low_quality         use for short contigs to predict partial genes
-            -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
-                                  specify a data-type (default = NA)
-            -v, --version         prints software version number
-            --split_prodigal_jobs
-                                  run multiple prodigal jobs simultaneously for contigs
-                                  in a fasta file
+					usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
+					                [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose]
+					                [--include_nudge] [--local] [--clean] [--keep] [--debug]
+					                [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v]
+					                [--split_prodigal_jobs]
 
-By default, all Loose RGI hits of 95% identity or better are automatically listed as Strict, regardless of alignment length, unless the --exclude_nudge flag is used.
+					Resistance Gene Identifier - 6.0.0 - Main
+
+					optional arguments:
+					  -h, --help            show this help message and exit
+					  -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
+					                        input file must be in either FASTA (contig and
+					                        protein) or gzip format! e.g myFile.fasta,
+					                        myFasta.fasta.gz
+					  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+					                        output folder and base filename
+					  -t {contig,protein}, --input_type {contig,protein}
+					                        specify data input type (default = contig)
+					  -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
+					                        specify alignment tool (default = BLAST)
+					  -n THREADS, --num_threads THREADS
+					                        number of threads (CPUs) to use in the BLAST search
+					                        (default=16)
+					  --include_loose       include loose hits in addition to strict and perfect
+					                        hits (default: False)
+					  --include_nudge       include hits nudged from loose to strict hits
+					                        (default: False)
+					  --local               use local database (default: uses database in
+					                        executable directory)
+					  --clean               removes temporary files (default: False)
+					  --keep                keeps Prodigal CDS when used with --clean (default:
+					                        False)
+					  --debug               debug mode (default: False)
+					  --low_quality         use for short contigs to predict partial genes
+					                        (default: False)
+					  -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
+					                        specify a data-type (default = NA)
+					  -v, --version         prints software version number
+					  --split_prodigal_jobs
+					                        run multiple prodigal jobs simultaneously for contigs
+					                        in a fasta file (default: False)
+
+
+Loading CARD Reference Data for RGI main
+`````````````````````````````````````````
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local      
 
 Running RGI main with Genome or Assembly DNA Sequences
 ```````````````````````````````````````````````````````
 
-You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
-
-Generate Perfect or Strict hits for a genome assembly or genome sequence:
+The default settings for RGI main will include Perfect or Strict predictions via BLAST against CARD reference sequences for ORFs predicted by Prodigal from submitted nucleotide sequences, applying any additional mutation screening depending upon the detection model type, e.g. CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_. Prodigal ORF predictions will include complete start-to-stop ORFs only (ignoring those less than 30 bp).
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local --clean
-      
-Include Loose hits:
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean
+
+For AMR gene discovery, this can be expanded to include all Loose matches:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local \
-        --include_loose --clean
-      
-Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --include_loose
+
+Or alternatively, users can select to list Loose matches of 95% identity or better as Strict matches, regardless of alignment length:
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local \
-        --include_loose --exclude_nudge --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --include_nudge
 
-Short or low quality contigs with partial gene prediction, including Loose hits:
-
-   .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local \
-        --low_quality --include_loose --clean
-
-Short or low quality contigs with partial gene prediction, including Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local \
-        --low_quality --include_loose --exclude_nudge --clean
 
-High-performance (e.g. 40 processors) generation of Perfect and Strict hits for high quality genome assembly contigs:
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --low_quality
+
+Arguments can be used in combination. For example, analysis of metagenomic assemblies can be a computationally intensive approach so users may wish to use the faster DIAMOND algorithms, but the data may include short contigs with partial ORFs so the --low_quality flag may also be desirable. Partial ORFs may not pass curated bitscore cut-offs or novel samples may contain divergent alleles, so nudging 95% identity Loose matches to Strict matches may aid resistome annotation, although we suggest manual sorting of results by % identity or HSP length:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/nucleotide_input.fasta \
-        --output_file /path/to/output_file --input_type contig --local \
-        --alignment_tool DIAMOND --num_threads 40 --split_prodigal_jobs --clean
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
+        --include_nudge
+
+This same analysis can be threaded over many processors if high-performance computing is available:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
+        --include_nudge --num_threads 40 --split_prodigal_jobs
 
 Running RGI main with Protein Sequences
 ```````````````````````````````````````
 
-You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
-
-Generate Perfect or Strict hits for a set of protein sequences:
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/protein_input.fasta \
-        --output_file /path/to/output_file --input_type protein --local --clean
 
-Include Loose hits:
+      rgi clean --local
 
-   .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/protein_input.fasta \
-        --output_file /path/to/output_file --input_type protein --local \
-        --include_loose --clean
-
-Include Loose hits, but not nudging Loose hits of 95% identity or better to Strict:
+Download CARD data:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/protein_input.fasta \
-        --output_file /path/to/output_file --input_type protein --local \
-        --include_loose --exclude_nudge --clean
 
-High-performance (e.g. 40 processors) generation of Perfect and Strict hits:
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      
+Load into local or working directory:
 
    .. code-block:: sh
-   
-      rgi main --input_sequence /path/to/protein_input.fasta \
-        --output_file /path/to/output_file --input_type protein --local \
-        --alignment_tool DIAMOND --num_threads 40 --clean
+
+      rgi load --card_json /path/to/card.json --local   
+
+If protein FASTA sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly (thus excluding the `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_). The same parameter combinations as above can be used, e.g. RGI annotating protein sequencing using the defaults:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/protein_input.fasta
+        --output_file /path/to/output_file --local --clean -t protein
+
+As above, for AMR gene discovery this can be expanded to include all Loose matches:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/protein_input.fasta
+        --output_file /path/to/output_file --local --clean --include_loose -t protein
+
+Other parameters can be used alone or in combination as above.
 
 Running RGI main using GNU Parallel
 ````````````````````````````````````
@@ -662,32 +771,31 @@ Generating Heat Maps of RGI main Results
 
 .. code-block:: sh
 
-         usage: rgi heatmap [-h] -i INPUT
-                            [-cat {drug_class,resistance_mechanism,gene_family}] [-f]
-                            [-o OUTPUT] [-clus {samples,genes,both}]
-                            [-d {plain,fill,text}] [--debug]
-         
-         Creates a heatmap when given multiple RGI results.
-         
-         optional arguments:
-           -h, --help            show this help message and exit
-           -i INPUT, --input INPUT
-                                 Directory containing the RGI .json files (REQUIRED)
-           -cat {drug_class,resistance_mechanism,gene_family}, --category {drug_class,resistance_mechanism,gene_family}
-                                 The option to organize resistance genes based on a
-                                 category.
-           -f, --frequency       Represent samples based on resistance profile.
-           -o OUTPUT, --output OUTPUT
-                                 Name for the output EPS and PNG files. The number of
-                                 files run will automatically be appended to the end of
-                                 the file name. (default=RGI_heatmap)
-           -clus {samples,genes,both}, --cluster {samples,genes,both}
-                                 Option to use SciPy's hiearchical clustering algorithm
-                                 to cluster rows (AMR genes) or columns (samples).
-           -d {plain,fill,text}, --display {plain,fill,text}
-                                 Specify display options for categories
-                                 (deafult=plain).
-           --debug               debug mode
+				usage: rgi heatmap [-h] -i INPUT
+				                   [-cat {drug_class,resistance_mechanism,gene_family}] [-f]
+				                   [-o OUTPUT] [-clus {samples,genes,both}]
+				                   [-d {plain,fill,text}] [--debug]
+
+				Resistance Gene Identifier - 6.0.0 - Heatmap
+
+				Creates a heatmap when given multiple RGI results.
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -i INPUT, --input INPUT
+				                        Directory containing the RGI .json files (REQUIRED)
+				  -cat {drug_class,resistance_mechanism,gene_family}, --category {drug_class,resistance_mechanism,gene_family}
+				                        The option to organize resistance genes based on a category.
+				  -f, --frequency       Represent samples based on resistance profile.
+				  -o OUTPUT, --output OUTPUT
+				                        Name for the output EPS and PNG files.
+				                        The number of files run will automatically
+				                        be appended to the end of the file name.(default=RGI_heatmap)
+				  -clus {samples,genes,both}, --cluster {samples,genes,both}
+				                        Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).
+				  -d {plain,fill,text}, --display {plain,fill,text}
+				                        Specify display options for categories (deafult=plain).
+				  --debug               debug mode
 
 .. image:: images/heatmap.jpg
 
@@ -697,41 +805,41 @@ Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
                 --output /path/to/output_file
-            
-Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:            
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
                 --output /path/to/output_file -cat gene_family -clus samples
 
-Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:            
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
                 --output /path/to/output_file -cat drug_class -clus samples
 
-Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:            
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
                 --output /path/to/output_file -clus both
-            
-Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:            
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:
 
       .. code-block:: sh
 
-            rgi heatmap --input /path/to/rgi_results_json_files_directory/ \
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
                 --output /path/to/output_file -clus both -f
 
 Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 ------------------------------------------------------------
 
-**This is an unpublished algorithm undergoing beta-testing.**
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default RGI bwt aligned reads to reference sequences from CARD's protein homolog models, protein variant models, rRNA mutation models, and protein over-expression models. However, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, e.g. a wild-type gyrase susceptible to fluoroquinolones. As such, earlier versions of RGI were over-reporting antibiotic resistance genes by not checking for these curated mutations. For example, while the KMA algorithm reports SNPs relative to reference, RGI was not screening these SNPs against CARD. Read alignments against the protein variant model, rRNA mutation model, and protein over-expression model reference sequences can now only be listed by use of the new --include_other_models parameter, but at this time these results still do not include comparison to CARD's curated lists of mutations. As such, these often spurious results are no longer included in default RGI bwt output. Support for mutation screening models will be added to future versions of RGI bwt.**
 
 .. code-block:: sh
 
@@ -739,73 +847,229 @@ Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 
 .. code-block:: sh
 
-          usage: rgi bwt [-h] -1 READ_ONE [-2 READ_TWO] [-a {bowtie2,bwa}] [-n THREADS]
-                         -o OUTPUT_FILE [--debug] [--local] [--include_wildcard]
-                         [--include_baits] [--mapq MAPQ] [--mapped MAPPED]
-                         [--coverage COVERAGE]
-          
-          Aligns metagenomic reads to CARD and wildCARD reference using bowtie or bwa
-          and provide reports.
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -1 READ_ONE, --read_one READ_ONE
-                                  raw read one (qc and trimmied)
-            -2 READ_TWO, --read_two READ_TWO
-                                  raw read two (qc and trimmied)
-            -a {bowtie2,bwa,kma}, --aligner {bowtie2,bwa,kma}
-                                  aligner
-            -n THREADS, --threads THREADS
-                                  number of threads (CPUs) to use (default=32)
-            -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                                  name of output filename(s)
-            --debug               debug mode
-            --clean               removes temporary files
-            --local               use local database (default: uses database in
-                                  executable directory)
-            --include_wildcard    include wildcard
-            --include_baits       include baits
-            --mapq MAPQ           filter reads based on MAPQ score
-            --mapped MAPPED       filter reads based on mapped reads
-            --coverage COVERAGE   filter reads based on coverage of reference sequence
+				usage: rgi bwt [-h] -1 READ_ONE [-2 READ_TWO] [-a {kma,bowtie2,bwa}]
+				               [-n THREADS] -o OUTPUT_FILE [--debug] [--clean] [--local]
+				               [--include_wildcard] [--include_other_models] [--include_baits]
+				               [--mapq MAPQ] [--mapped MAPPED] [--coverage COVERAGE]
 
-**Note: the mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.**
+				Resistance Gene Identifier - 6.0.0 - BWT
+
+				Aligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -1 READ_ONE, --read_one READ_ONE
+				                        raw read one (qc and trimmed)
+				  -2 READ_TWO, --read_two READ_TWO
+				                        raw read two (qc and trimmed)
+				  -a {kma,bowtie2,bwa}, --aligner {kma,bowtie2,bwa}
+				                        select read aligner (default=kma)
+				  -n THREADS, --threads THREADS
+				                        number of threads (CPUs) to use (default=16)
+				  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+				                        name of output filename(s)
+				  --debug               debug mode (default=False)
+				  --clean               removes temporary files (default=False)
+				  --local               use local database (default: uses database in executable directory)
+				  --include_wildcard    include wildcard (default=False)
+				  --include_other_models
+				                        include protein variant, rRNA variant, knockout, and protein overexpression models (default=False)
+				  --include_baits       include baits (default=False)
+				  --mapq MAPQ           filter reads based on MAPQ score (default=False)
+				  --mapped MAPPED       filter reads based on mapped reads (default=False)
+				  --coverage COVERAGE   filter reads based on coverage of reference sequence
+
+**Note**: The mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.
 
 `BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt:
 
    .. code-block:: sh
-   
+
       bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}
-   
+
 `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt:
- 
+
    .. code-block:: sh
-   
-      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory} \
+
+      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory}
         -U {unpaired_reads} -S {output_sam_file}
 
-Running RGI bwt with FASTQ files
-```````````````````````````````
-
-You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database.
-
-RGI will take FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI.
-
-Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD only:
+`KMA <https://bitbucket.org/genomicepidemiology/kma/src/master/>`_ usage within RGI bwt (default):
 
    .. code-block:: sh
-   
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
-        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
-        --output_file output_prefix --threads 8 --local 
 
-Align forward and reverse FASTQ reads using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ using 8 processors against 'canonical' CARD **plus** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
+      kma -mem_mode -ex_mode -1t1 -vcf -int {read_one} -t {threads}
+        -t_db {index_directory} -o {output_sam_file}.temp -sam
+
+Running RGI bwt with FASTQ files - Restricted to Protein Homolog Models
+````````````````````````````````````````````````````````````````````````
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
 
    .. code-block:: sh
-   
-      rgi bwt --read_one /path/to/fastq/R1.fastq.gz \
-        --read_two /path/to/fastq/R2.fastq.gz --aligner bowtie2 \
-        --output_file output_prefix --threads 8 --include_wildcard --local 
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local 
+
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
+
+As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.ka. WildCARD) data:
+
+   .. code-block:: sh
+
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xjf wildcard_data.tar.bz2 -C wildcard
+      gunzip wildcard/*.gz
+
+Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the parameter *version_number* depend on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --wildcard_annotation wildcard_database_v3.0.2.fasta
+        --card_json /path/to/card.json
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
+        --card_annotation card_database_v3.0.1.fasta --local
+
+RGI will use FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
+
+The default settings for RGI bwt will align reads using KMA against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, i.e. reference sequences that do not require SNP mapping to predict resistance. The default uses only 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED):
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local
+
+The same analysis can be expanded to use multiple processors:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local -n 20
+
+Although not recommended (see above), an alternate read aligner can be used:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local -n 20 -a bowtie2
+
+RGI bwt can use an expanded reference set by aligning reads to both 'canonical' CARD **and** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ `WildCARD` variants:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local -n 20 --include_wildcard
+
+Running RGI bwt with FASTQ files - All Model Types
+```````````````````````````````````````````````````
+
+RGI bwt can also be used to align reads to CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ **plus** `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_. As outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, but RGI bwt as of yet does not perform this comparison. Use these results with caution.
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local 
+
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json
+        --card_annotation_all_models card_database_v3.0.1_all.fasta --local
+
+As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.ka. WildCARD) data:
+
+   .. code-block:: sh
+
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xjf wildcard_data.tar.bz2 -C wildcard
+      gunzip wildcard/*.gz
+
+Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the paramater *version_number* depend on the version of CARD data downloaded, please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
+
+   .. code-block:: sh
+
+      rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
+        -v version_number > wildcard_annotation.log 2>&1
+      rgi load --card_json /path/to/card.json 
+        --wildcard_annotation_all_models wildcard_database_v3.0.2_all.fasta
+        --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
+        --card_annotation_all_models card_database_v3.0.1_all.fasta 
+        --local
+
+RGI will use FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
+
+The default settings for RGI bwt will align reads using KMA:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local --include_other_models
+
+The same analysis can be expanded to use multiple processors:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local --include_other_models -n 20
+
+Although not recommended (see above), an alternate read aligner can be used:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local --include_other_models -n 20 -a bowtie2
+
+RGI bwt can use an expanded reference set by aligning reads to both 'canonical' CARD **and** CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ `WildCARD` variants:
+
+   .. code-block:: sh
+
+      rgi bwt --read_one /path/to/fastq/R1.fastq.gz
+        --read_two /path/to/fastq/R2.fastq.gz --output_file output_prefix
+        --local --include_other_models -n 20 --include_wildcard
 
 RGI bwt Tab-Delimited Output Details
 ````````````````````````````````````
@@ -817,7 +1081,7 @@ RGI bwt aligns FASTQ reads to the AMR alleles used as reference sequences, with 
 +==========================================================+================================================+
 |    output_prefix.allele_mapping_data.txt                 | RGI bwt read mapping results at allele level   |
 +----------------------------------------------------------+------------------------------------------------+
-|    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     | 
+|    output_prefix.gene_mapping_data.txt                   | RGI bwt read mapping results at gene level     |
 +----------------------------------------------------------+------------------------------------------------+
 |    output_prefix.artifacts_mapping_stats.txt             | Statistics for read mapping artifacts          |
 +----------------------------------------------------------+------------------------------------------------+
@@ -834,7 +1098,7 @@ RGI bwt read mapping results at allele level
 +==========================================================+===================================================+
 |    Reference Sequence                                    | Reference allele to which reads have been mapped  |
 +----------------------------------------------------------+---------------------------------------------------+
-|    ARO Term                                              | ARO Term                                          | 
+|    ARO Term                                              | ARO Term                                          |
 +----------------------------------------------------------+---------------------------------------------------+
 |    ARO Accession                                         | ARO Accession                                     |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -845,7 +1109,7 @@ RGI bwt read mapping results at allele level
 |    Reference Allele Source                               | See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed in Genome(s)          | Has this allele sequence been observed in a CARD  |
-|                                                          | Prevalence genome sequence?                       | 
+|                                                          | Prevalence genome sequence?                       |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed in Plasmid(s)         | Has this allele sequence been observed in a CARD  |
 |                                                          | Prevalence plasmid sequence?                      |
@@ -859,7 +1123,7 @@ RGI bwt read mapping results at allele level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to allele     |
 +----------------------------------------------------------+---------------------------------------------------+
-|    All Mapped Reads                                      | Sum of previous two columns                       | 
+|    All Mapped Reads                                      | Sum of previous two columns                       |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Percent Coverage                                      | Percent of reference allele covered by reads      |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -870,7 +1134,7 @@ RGI bwt read mapping results at allele level
 |    Mate Pair Linkage                                     | For mate pair sequencing, if a sister read maps to|
 |                                                          | a different AMR gene, this is listed              |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Reference Length                                      | Length (bp) of reference allele                   | 
+|    Reference Length                                      | Length (bp) of reference allele                   |
 +----------------------------------------------------------+---------------------------------------------------+
 |    AMR Gene Family                                       | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -878,21 +1142,25 @@ RGI bwt read mapping results at allele level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistance Mechanism                                  | ARO Categorization                                |
 +----------------------------------------------------------+---------------------------------------------------+
-|    Depth                                                 | Depth of coverage (reported only when using kma)  |
+|    Depth                                                 | Depth of coverage (reported only when using KMA)  |
 +----------------------------------------------------------+---------------------------------------------------+
 |    SNPs                                                  | Single nucleotide polymorphisms observed from     |
-|                                                          | mapped reads (reported only when using kma)       |
+|                                                          | mapped reads (reported only when using KMA and    |
+|                                                          | with depth of at least 5).                        |
+|                                                          | Not screened against curated SNPs in CARD.        |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Consensus Sequence DNA                                | Nucleotide Consensus Sequence using mapped reads  |
-|                                                          | (reported only when using kma)                    |
+|                                                          | (reported only when using KMA and                 |
+|                                                          | with depth of at least 5).                        |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Consensus Sequence Protein                            | Protein Consensus Sequence translated from DNA    |
-|                                                          | (reported only when using kma)                    |
+|                                                          | (reported only when using KMA and                 |
+|                                                          | with depth of at least 5).                        |
 +----------------------------------------------------------+---------------------------------------------------+
 
 **Reference Allele Source:**
 
-Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI hits in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
+Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI matches in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
 RGI bwt read mapping results at gene level
 ``````````````````````````````````````````
@@ -900,7 +1168,7 @@ RGI bwt read mapping results at gene level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Field                                                 | Contents                                          |
 +==========================================================+===================================================+
-|    ARO Term                                              | ARO Term                                          | 
+|    ARO Term                                              | ARO Term                                          |
 +----------------------------------------------------------+---------------------------------------------------+
 |    ARO Accession                                         | ARO Accession                                     |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -913,7 +1181,7 @@ RGI bwt read mapping results at gene level
 |    Reference Allele(s) Identity to CARD Reference Protein| See below                                         |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed in Genome(s)          | Have these allele sequences been observed in a    |
-|                                                          | CARD Prevalence genome sequence?                  | 
+|                                                          | CARD Prevalence genome sequence?                  |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Resistomes & Variants: Observed in Plasmid(s)         | Have these allele sequences been observed in a    |
 |                                                          | CARD Prevalence plasmid sequence?                 |
@@ -928,7 +1196,7 @@ RGI bwt read mapping results at gene level
 |    Mapped Reads with Flanking Sequence                   | Number of reads mapped incompletely to these      |
 |                                                          | alleles                                           |
 +----------------------------------------------------------+---------------------------------------------------+
-|    All Mapped Reads                                      | Sum of previous two columns                       | 
+|    All Mapped Reads                                      | Sum of previous two columns                       |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Average Percent Coverage                              | Average % of reference allele(s) covered by reads |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -965,7 +1233,7 @@ RGI bwt read mapping results at gene level
 
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
-Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Hits with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
+Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
 
 Running RGI on Compute Canada Serial Farm
 `````````````````````````````````````````
@@ -978,20 +1246,20 @@ Running RGI on Compute Canada Serial Farm
 
    - `rgi bwt` was used as example.
 
-   ### step 1: 
+   ### step 1:
 
    - update make_table_dat.sh to construct arguments for commands
 
-   ### step 2: 
-   
+   ### step 2:
+
    - update eval command in job_script.sh to match your tool and also load appropriate modules
 
-   ### step 3: 
+   ### step 3:
 
-   - create table.dat using script make_table_dat.sh with inputs files in all_samples directory 
+   - create table.dat using script make_table_dat.sh with inputs files in all_samples directory
    ./make_table_dat.sh ./all_samples/ > table.dat
-   
-   ### step 4: 
+
+   ### step 4:
 
    - submit multiple jobs using for_loop.sh
 
@@ -1006,7 +1274,7 @@ Running RGI on Compute Canada Serial Farm
 
    DIR=`find . -mindepth 1 -type d`
    for D in $DIR; do
-         directory=$(basename $D);    
+         directory=$(basename $D);
          for file in $directory/*; do
            filename=$(basename $file);
          if [[ $filename = *"_pass_1.fastq.gz"* ]]; then
@@ -1031,7 +1299,7 @@ This block of code is used to generate the arguments for serial farming. In this
    #SBATCH --mem-per-cpu=2048M
    #SBATCH --mail-user=raphenar@mcmaster.ca
    #SBATCH --mail-type=ALL
-   
+
    # Extracing the $I_FOR-th line from file $TABLE:
    LINE=`sed -n ${I_FOR}p "$TABLE"`
 
@@ -1076,7 +1344,7 @@ This script is used once all the previous steps are completed. This script allow
     export I_FOR=$i
     sbatch job_script.sh
    done
-    
+
 **Resources**
 
 More information on serial farming on Compute Canada can be found here_.
@@ -1089,11 +1357,9 @@ Using RGI kmer_query (K-mer Taxonomic Classification)
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
-You must `Load CARD Reference Data`_ for these commands to work. These examples use a local database, exclude "--local" flag to use a system wide reference database. Examples also use the pre-compiled 61 bp k-mers available at the CARD website's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ download.
-
 As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website.
 
-CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
+CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
 .. image:: images/kmerlogic.jpg
 
@@ -1103,52 +1369,96 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
 
 .. code-block:: sh
 
-          usage: rgi [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN] [-n THREADS]
-                     -o OUTPUT [--local] [--debug]
-          
-          Tests sequences using CARD*k-mers
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT, --input INPUT
-                                  Input file (bam file from RGI*BWT, json file of RGI
-                                  results, fasta file of sequences)
-            --bwt                 Specify if the input file for analysis is a bam file
-                                  generated from RGI*BWT
-            --rgi                 Specify if the input file is a RGI results json file
-            --fasta               Specify if the input file is a fasta file of sequences
-            -k K, --kmer_size K   length of k
-            -m MIN, --minimum MIN
-                                  Minimum number of kmers in the called category for the
-                                  classification to be made (default=10).
-            -n THREADS, --threads THREADS
-                                  number of threads (CPUs) to use (default=32)
-            -o OUTPUT, --output OUTPUT
-                                  Output file name.
-            --local               use local database (default: uses database in
-                                  executable directory)
-            --debug               debug mode
+				usage: rgi kmer_query [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN]
+				                      [-n THREADS] -o OUTPUT [--local] [--debug]
+
+				Resistance Gene Identifier - 6.0.0 - Kmer Query
+
+				Tests sequenes using CARD*kmers
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -i INPUT, --input INPUT
+				                        Input file (bam file from RGI*BWT, json file of RGI results, fasta file of sequences)
+				  --bwt                 Specify if the input file for analysis is a bam file generated from RGI*BWT
+				  --rgi                 Specify if the input file is a RGI results json file
+				  --fasta               Specify if the input file is a fasta file of sequences
+				  -k K, --kmer_size K   length of k
+				  -m MIN, --minimum MIN
+				                        Minimum number of kmers in the called category for the classification to be made (default=10).
+				  -n THREADS, --threads THREADS
+				                        number of threads (CPUs) to use (default=1)
+				  -o OUTPUT, --output OUTPUT
+				                        Output file name.
+				  --local               use local database (default: uses database in executable directory)
+				  --debug               debug mode
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+      
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local 
+
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+
+   .. code-block:: sh
+
+      rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
+      rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
+
+The pre-compiled 61 bp k-mers are available via CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_:
+
+   .. code-block:: sh
+
+      wget -O wildcard_data.tar.bz2 https://card.mcmaster.ca/latest/variants
+      mkdir -p wildcard
+      tar -xjf wildcard_data.tar.bz2 -C wildcard
+      gunzip wildcard/*.gz
+
+Load k-mers:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json
+        --kmer_database /path/to/wildcard/61_kmer_db.json
+        --amr_kmers /path/to/wildcard/all_amr_61mers.txt --kmer_size 61
+        --local --debug > kmer_load.61.log 2>&1
 
 CARD k-mer Classifier analysis of an individual FASTA file (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --fasta --kmer_size 61 --threads 8 --minimum 10 \
+   rgi kmer_query --fasta --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/nucleotide_input.fasta --output /path/to/output_file --local
 
 CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --rgi --kmer_size 61 --threads 8 --minimum 10 \
+   rgi kmer_query --rgi --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_main.json --output /path/to/output_file --local
-   
+
 CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
-   rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10 \
+   rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
+    
+**Note**: The current installation of RGI uses KMA v1.4.3, which produces a BAM file incompatible with RGI kmer_query --bwt. We suggest you either generate a BAM file using BWA as the read aligner in RGI bwt or downgrade to KMA v1.3.4.    
 
 CARD k-mer Classifier Output
 ````````````````````````````
@@ -1170,7 +1480,7 @@ CARD k-mer Classifier Output for a FASTA file
 |    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the k-mers|
 |                                                          | are known exclusively from chromosomes, exclusively|
 |                                                          | from plasmids, or can be found in either           |
-|                                                          | chromosomes or plasmids                            | 
+|                                                          | chromosomes or plasmids                            |
 +----------------------------------------------------------+----------------------------------------------------+
 |    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
 +----------------------------------------------------------+----------------------------------------------------+
@@ -1194,7 +1504,7 @@ CARD k-mer Classifier Output for RGI main results
 |    CARD kmer Prediction                                  | Taxonomic prediction, with indication if the k-mers|
 |                                                          | are known exclusively from chromosomes, exclusively|
 |                                                          | from plasmids, or can be found in either           |
-|                                                          | chromosomes or plasmids                            | 
+|                                                          | chromosomes or plasmids                            |
 +----------------------------------------------------------+----------------------------------------------------+
 |    Taxonomic kmers                                       | Number of k-mer hits broken down by taxonomy       |
 +----------------------------------------------------------+----------------------------------------------------+
@@ -1230,9 +1540,9 @@ Building Custom k-mer Classifiers
 
 **This is an unpublished algorithm undergoing beta-testing.**
 
-You must `Load CARD Reference Data`_ for these commands to work. 
+You must `Load CARD Reference Data`_ for these commands to work.
 
-As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can also use RGI to create k-mers of any length. 
+As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can also use RGI to create k-mers of any length. **Warning**: this is computationally intensive.
 
 .. code-block:: sh
 
@@ -1240,40 +1550,36 @@ As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genom
 
 .. code-block:: sh
 
-          usage: rgi [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip] [-n THREADS]
-                     [--batch_size BATCH_SIZE]
-          
-          Builds the kmer sets for CARD*kmers
-          
-          optional arguments:
-            -h, --help            show this help message and exit
-            -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
-                                  input directory of prevalence data
-            -c CARD_FASTA, --card CARD_FASTA
-                                  fasta file of CARD reference sequences. If missing,
-                                  run 'rgi card_annotation' to generate.
-            -k K                  k-mer size (e.g., 61)
-            --skip                skips the concatenation and splitting of the CARD*R*V
-                                  sequences.
-            -n THREADS, --threads THREADS
-                                  number of threads (CPUs) to use (default=1)
-            --batch_size BATCH_SIZE
-                                  number of kmers to query at a time using pyahocorasick
-                                  --the greater the number the more memory usage
-                                  (default=100,000)
+				usage: rgi kmer_build [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
+				                      [-n THREADS] [--batch_size BATCH_SIZE]
+
+				Resistance Gene Identifier - 6.0.0 - Kmer Build
+
+				Builds the kmer sets for CARD*kmers
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -i INPUT_DIRECTORY, --input_directory INPUT_DIRECTORY
+				                        input directory of prevalence data
+				  -c CARD_FASTA, --card CARD_FASTA
+				                        fasta file of CARD reference sequences. If missing, run 'rgi card_annotation' to generate.
+				  -k K                  k-mer size (e.g., 61)
+				  --skip                skips the concatenation and splitting of the CARD*R*V sequences.
+				  -n THREADS, --threads THREADS
+				                        number of threads (CPUs) to use (default=1)
+				  --batch_size BATCH_SIZE
+				                        number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)
 
 Example generation of 31 bp k-mers using 20 processors (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard \
+   rgi kmer_build --input_directory /path/to/wildcard
     --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
 
 The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
 .. code-block:: sh
 
-   rgi kmer_build --input_directory /path/to/wildcard \
+   rgi kmer_build --input_directory /path/to/wildcard
     --card card_database_v3.0.1.fasta -k 33 --threads 20 --batch_size 100000 --skip
-
-
