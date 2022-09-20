@@ -165,6 +165,8 @@ class Rrna(BaseModel):
 												sinsidedict["sequence_from_db"] = ""
 												sinsidedict["orf_dna_sequence"] = hsp.sbjct
 												sinsidedict["orf_prot_sequence"] = ""
+												sinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+												sinsidedict["hit_end"] = (hsp.sbjct_end)*3
 
 												sinsidedict["sequence_from_broadstreet"]	= json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
 												sinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
@@ -216,6 +218,8 @@ class Rrna(BaseModel):
 												slinsidedict["sbjct"] = hsp.sbjct
 												slinsidedict["orf_dna_sequence"] = hsp.sbjct
 												slinsidedict["orf_prot_sequence"] = ""
+												slinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+												slinsidedict["hit_end"] = (hsp.sbjct_end)*3
 
 												slinsidedict["sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["protein_sequence"]["sequence"]
 												slinsidedict["dna_sequence_from_broadstreet"] = json_data[model_id]["model_sequences"]["sequence"][seq_in_model]["dna_sequence"]["sequence"]
