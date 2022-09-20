@@ -104,6 +104,8 @@ class Filter(BaseModel):
 		prepare_output_thread = multiprocessing.Process(target=self.prepare_output, args=())
 		prepare_output_thread.start()
 		prepare_output_thread.join()
+		if prepare_output_thread.exitcode: 
+		    raise Exception()
 		cleanup_thread = multiprocessing.Process(target=self.cleanup, args=())
 		cleanup_thread.start()
 
