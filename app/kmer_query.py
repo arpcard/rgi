@@ -174,7 +174,7 @@ class CARDkmers(object):
         temp_iterator = SeqIO.parse(file, "fasta")
         ns = sum(1 for i in temp_iterator) # counts number of sequences in generator
         list_size = math.ceil(ns/self.threads) # maximizes list size for threads available
-        split_sequences = list(self.chunk_list(iterator, list_size)) # returns a list of lists
+        split_sequences = list(self.chunk_list(iterator, list_size)) if list_size > 0 else [[]] # returns a list of lists
         logger.info("Using {t} threads to query {s} sequences".format(t=self.threads, s=ns))
         return split_sequences
 
