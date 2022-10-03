@@ -121,14 +121,14 @@ class CARDkmers(object):
             if "@PG" in h:
                 aligner = h.split("\t")[1]
 
-        if aligner == "":
+        if aligner == "ID:KMA":
             os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
                         .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$4"__"$3"__"$5"\\n"$11}""", out=self.fasta_file))
         else:
             os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
                         .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
 
-        
+
 
     def get_bwt_alignment_data(self, header):
         """
