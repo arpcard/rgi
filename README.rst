@@ -1457,8 +1457,7 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 
    rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
-    
-**Note**: The current installation of RGI uses KMA v1.4.3, which produces a BAM file incompatible with RGI kmer_query --bwt. We suggest you either generate a BAM file using BWA as the read aligner in RGI bwt or downgrade to KMA v1.3.4.    
+
 
 CARD k-mer Classifier Output
 ````````````````````````````
