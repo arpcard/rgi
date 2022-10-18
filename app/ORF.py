@@ -1,5 +1,8 @@
 from app.settings import os, SeqIO, logger
-import tempfile, time, fileinput, math, multiprocessing, shutil
+import contextlib, tempfile, time, fileinput, math, multiprocessing, shutil
+from multiprocessing.pool import ThreadPool
+import pyrodigal
+from Bio import SeqIO
 
 class ORF(object):
 	"""Class to find open reading frames from nucleotide sequence."""
@@ -25,7 +28,7 @@ class ORF(object):
 			self.orf_prodigal()
 
 	def min_max_sequence_length(self):
-		"""Returns minimum and maximun sequence length in multi-fasta inputs""" 
+		"""Returns minimum and maximun sequence length in multi-fasta inputs"""
 		sequences = []
 		for record in SeqIO.parse(self.input_file, "fasta"):
 			sequences.append(len(record.seq))
@@ -214,4 +217,52 @@ class ORF(object):
 
 
 
+class PyORF(object):
+	"""Class to find open reading frames using Pyrodigal."""
 
+	def __init__(self,input_file, threads, clean=True, working_directory=None, low_quality=False, training_file=None, split_prodigal_jobs=False):
+		"""Creates ORF object for finding open reading frames."""
+		self.input_file = input_file
+		self.clean = clean
+		self.working_directory = working_directory
+		self.low_quality = low_quality
+		self.training_file = training_file
+		self.threads = threads
+		self.split_prodigal_jobs = split_prodigal_jobs
+
+	def __repr__(self):
+		"""Returns ORF class full object."""
+		return "PyORF({}".format(self.__dict__)
+
+	def contig_to_orf(self):
+		"""Find open reading frames in contigs."""
+		# load sequences to be processed
+		records = list(SeqIO.parse(self.input_file, "fasta"))
+		sequences = [ str(record.seq) for record in records ]
+		minimum_sequence_length = min((len(seq) for seq in sequences), default=0)
+
+		# create an ORF finder in single or meta mode based on configuration
+		if self.training_file is not None:
+			with open(self.training_file, "rb") as src:
+				training_info = pyrodigal.TrainingInfo.load(src)
+			orf_finder = pyrodigal.OrfFinder(meta=False, mask=True, training_info=training_info)
+		elif self.low_quality or minimum_sequence_length < 20000:
+			orf_finder = pyrodigal.OrfFinder(meta=True, mask=True)
+		else:
+			orf_finder = pyrodigal.OrfFinder(meta=False, mask=True)
+			orf_finder.train(*sequences, force_nonsd=True)
+
+		with contextlib.ExitStack() as stack:
+			# open result files
+			filename = os.path.basename(self.input_file)
+			trans_filename = os.path.join(self.working_directory, "{}.temp.contig.fsa".format(filename))
+			trans_file = stack.enter_context(open(trans_filename, "w"))
+			nuc_filename = os.path.join(self.working_directory, "{}.temp.contigToORF.fsa".format(filename))
+			nuc_file = stack.enter_context(open(nuc_filename, "w"))
+			# prepare a pool to run ORF detection in parallel
+			pool = stack.enter_context(ThreadPool(self.threads))
+			# detect genes and save results to output files
+			for record, genes in zip(records, pool.map(orf_finder.find_genes, sequences)):
+				prefix = "{}_".format(record.id)
+				genes.write_genes(nuc_file, prefix=prefix)
+				genes.write_translations(trans_file, prefix=prefix)
