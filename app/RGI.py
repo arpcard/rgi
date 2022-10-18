@@ -2,7 +2,7 @@ from app.Base import RGIBase
 from app.Database import Database
 from app.Blast import Blast
 from app.Diamond import Diamond
-from app.ORF import ORF
+from app.ORF import ORF, PyORF
 from app.Filter import Filter
 
 import filetype
@@ -341,7 +341,7 @@ class RGI(RGIBase):
 	def process_contig(self):
 		"""Process nuclotide sequence(s)."""
 		file_name = os.path.basename(self.input_sequence)
-		orf_obj = ORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality, split_prodigal_jobs=self.split_prodigal_jobs)
+		orf_obj = PyORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality, split_prodigal_jobs=self.split_prodigal_jobs)
 		orf_obj.contig_to_orf()
 		contig_fsa_file = os.path.join(self.working_directory,"{}.temp.contig.fsa".format(file_name))
 		blast_results_xml_file = os.path.join(self.working_directory,"{}.temp.contig.fsa.blastRes.xml".format(file_name))
