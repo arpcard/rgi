@@ -21,6 +21,7 @@ dependencies:
   - blast 2.9.0
   - zlib
   - prodigal 2.6.3
+  - pyrodigal >=1.1.2
   - diamond 0.8.36
   - oligoarrayaux 3.8
   - samtools 1.9
