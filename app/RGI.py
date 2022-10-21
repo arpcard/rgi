@@ -17,7 +17,7 @@ class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""
 
 	def __init__(self,input_type='contig',input_sequence=None,threads=32,output_file=None,loose=False, \
-				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False, include_nudge=False, keep=False):
+				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False, include_nudge=False, keep=False, orf_finder='pyrodigal'):
 		"""Creates RGI object for resistome(s) prediction."""
 
 		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
@@ -31,6 +31,7 @@ class RGI(RGIBase):
 		self.clean = clean
 		self.data = data
 		self.aligner = aligner.lower()
+		self.orf_finder = orf_finder.lower()
 		self.database = galaxy
 		self.low_quality = low_quality
 
@@ -341,7 +342,13 @@ class RGI(RGIBase):
 	def process_contig(self):
 		"""Process nuclotide sequence(s)."""
 		file_name = os.path.basename(self.input_sequence)
-		orf_obj = PyORF(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality, split_prodigal_jobs=self.split_prodigal_jobs)
+
+		if self.orf_finder == "pyrodigal":
+			orf_finder_cls = PyORF
+		elif self.orf_finder == "prodigal":
+			orf_finder_cls = ORF
+		
+		orf_obj = orf_finder_cls(input_file=self.input_sequence, threads=self.threads, clean=self.clean, working_directory=self.working_directory, low_quality=self.low_quality, split_prodigal_jobs=self.split_prodigal_jobs)
 		orf_obj.contig_to_orf()
 		contig_fsa_file = os.path.join(self.working_directory,"{}.temp.contig.fsa".format(file_name))
 		blast_results_xml_file = os.path.join(self.working_directory,"{}.temp.contig.fsa.blastRes.xml".format(file_name))
