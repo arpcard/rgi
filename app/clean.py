@@ -10,7 +10,7 @@ def clean():
 		remove_directory(f)
 		if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft","xml","fsa","draft","pyc","log"]:
 			os.remove(f)
-			
+
 		if os.path.isdir(f) == False:
 			if os.path.isfile(f) == True and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["py","md"]:
 				pass
@@ -22,7 +22,7 @@ def clean():
     # clean data files
 	data_files = glob.glob(os.path.join(data_path,"*"))
 	for datafile in data_files:
-		if os.path.isfile(datafile) and os.path.basename(datafile) not in ["loaded_databases.json","card.json", ".gitignore","__init__.py"]:
+		if os.path.isfile(datafile) and os.path.basename(datafile) not in ["card.json", ".gitignore","__init__.py"]:
 			logger.info("Remove: {}".format(datafile))
 			os.remove(datafile)
 	logger.info("Cleaned directory: {}".format(data_path))

@@ -23,9 +23,11 @@ def main(args):
 	logger.info("card variants version: {}".format(card_variants_version))
 
 	# Create the directory
+	logger.info("Creating temp directory with prefix {}".format(os.path.join(os.getcwd(), "rgi_autoload_")))
 	directory = tempfile.mkdtemp(prefix=os.path.join(os.getcwd(), "rgi_autoload_"))
-	print("Directory '%s' created" % directory)
-	print("=================================== DOWNLOAD CARD CANONICAL DATA ===================================")
+	logger.info("Directory '%s' created" % directory)
+	# print("Directory '%s' created" % directory)
+	logger.info("=================================== DOWNLOAD CARD CANONICAL DATA ===================================")
 	# get latest card database
 	data=os.path.join(directory,"data")
 	card_data=os.path.join(directory,"card_data")
@@ -37,7 +39,7 @@ def main(args):
 	os.system("mkdir -p {card_data}".format(card_data=card_data))
 	os.system("tar xf {data} -C {card_data}".format(data=data,card_data=card_data))
 
-	print("=================================== DOWNLOAD CARD VARIANTS DATA ===================================")
+	logger.info("=================================== DOWNLOAD CARD VARIANTS DATA ===================================")
 	variants=os.path.join(directory,"variants")
 	card_variants=os.path.join(directory,"card_variants")
 	os.system("wget -O {variants} --no-check-certificate https://card.mcmaster.ca/download/6/prevalence-v{card_variants_version}.tar.bz2".format(
@@ -49,10 +51,10 @@ def main(args):
 	os.system("tar xf {variants} -C {card_variants}".format(variants=variants,card_variants=card_variants))
 	os.system("gunzip {card_variants}/*.gz".format(card_variants=card_variants))
 
-	print("=================================== CARD CANONICAL ANNOTATIONS ===================================")
+	logger.info("=================================== CARD CANONICAL ANNOTATIONS ===================================")
 	os.system("rgi card_annotation --input {card_data}/card.json".format(card_data=card_data))
 
-	print("=================================== CARD VARIANTS ANNOTATIONS ===================================")
+	logger.info("=================================== CARD VARIANTS ANNOTATIONS ===================================")
 	os.system("rgi wildcard_annotation --input_directory {card_variants} --version {card_variants_version} --card_json {card_data}/card.json".format(
 		card_variants=card_variants,
 		card_variants_version=card_variants_version,
@@ -60,10 +62,10 @@ def main(args):
 		)
 	)
 
-	print("=================================== CLEAN OLD DATABASES ===================================")
+	logger.info("=================================== CLEAN OLD DATABASES ===================================")
 	os.system("rgi clean {debug} {local_database}".format(local_database=local_database,debug=debug))
 
-	print("=================================== LOAD DATABASES ===================================")
+	logger.info("=================================== LOAD DATABASES ===================================")
 	os.system("rgi load \
 	--card_json {card_data}/card.json \
 	--card_annotation card_database_v{card_cannonical_version}.fasta \
@@ -85,11 +87,11 @@ def main(args):
 		)
 	)
 
-	print("=================================== CHECK LOADED DATABASES ===================================")
+	logger.info("=================================== CHECK LOADED DATABASES ===================================")
 	os.system("rgi database -v --all {local_database}".format(local_database=local_database))
 
 	if args.clean:
-		print("=================================== CLEAN UP ===================================")
+		logger.info("=================================== CLEAN UP ===================================")
 		os.system("rm {data}".format(data=data))
 		os.system("rm {variants}".format(variants=variants))
 		os.system("rm {card_data}/* ".format(card_data=card_data))
@@ -102,7 +104,7 @@ def main(args):
 		os.system("rm wildcard_database_v{card_variants_version}.fasta".format(card_variants_version=card_variants_version))
 		os.system("rm wildcard_database_v{card_variants_version}_all.fasta".format(card_variants_version=card_variants_version))
 
-	print("=================================== DONE ===================================")
+	logger.info("=================================== DONE ===================================")
 
 def get_versions():
 	r = requests.get('https://card.mcmaster.ca/download')
