@@ -263,6 +263,5 @@ class PyORF(object):
 			pool = stack.enter_context(ThreadPool(self.threads))
 			# detect genes and save results to output files
 			for record, genes in zip(records, pool.map(orf_finder.find_genes, sequences)):
-				prefix = "{}_".format(record.id)
-				genes.write_genes(nuc_file, prefix=prefix)
-				genes.write_translations(trans_file, prefix=prefix)
+				genes.write_genes(nuc_file, record.id)
+				genes.write_translations(trans_file, record.id)
