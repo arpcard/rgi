@@ -9,13 +9,13 @@ class Baits(object):
 		self.output_file = output_file
 		self.filter_temperature = filter_temperature
 
-		o_f_path, o_f_name = os.path.split(os.path.abspath(self.output_file))
+		o_f_path, _ = os.path.split(os.path.abspath(self.output_file))
 
 		self.all_output = os.path.join(o_f_path, self.output_file + ".json")
 		self.filtered_output = os.path.join(o_f_path, self.output_file + "_filtered_{}.json".format(self.filter_temperature))
 		self.clean = clean
 		self.debug = debug
-		
+
 		if self.debug:
 			logger.setLevel(10)
 
@@ -42,7 +42,7 @@ class Baits(object):
 		logger.info("calculating baits melting temperature and entropy ...")
 		os.system('{program} -n RNA {input} > {output_file}' \
 					.format(
-						program="melt.pl", 
+						program="melt.pl",
 						input=self.input_file,
 						output_file=self.output_file
 					)
@@ -50,7 +50,6 @@ class Baits(object):
 
 		# parse output file
 		probes = {}
-		temps = []
 
 		with open(self.output_file, 'r') as in_file:
 			data = in_file.readlines()
@@ -62,9 +61,9 @@ class Baits(object):
 				elif eachline[0:16] == "Calculating for ":
 					probes[count] = {
 						"id": eachline.split(", t = ")[0].split("Calculating for ")[-1],
-						"raw": eachline,  
-						"change_in_gibbs_free_energy (dG)": 0.0, 
-						"change_in_enthalpy (dH)": 0.0, 
+						"raw": eachline,
+						"change_in_gibbs_free_energy (dG)": 0.0,
+						"change_in_enthalpy (dH)": 0.0,
 						"change_in_entropy (dS)": 0.0,
 						"melting_temperature (Tm)": 0.0,
 					}
@@ -94,7 +93,7 @@ class Baits(object):
 
 		# remove temporary files
 		if self.clean == True:
-			o_f_path, o_f_name = os.path.split(os.path.abspath(self.output_file))
+			o_f_path, _ = os.path.split(os.path.abspath(self.output_file))
 			files = glob.glob(os.path.join(o_f_path,"*"))
 			for f in files:
 				if os.path.isfile(f) == True and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["run","plot","ext","ct","dG"]:

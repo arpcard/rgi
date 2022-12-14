@@ -35,7 +35,6 @@ def validate_results(filepath,perc_identity=0, ARO_name='', type_match=''):
 	pi = ""
 	name = ""
 	tm = ""
-	filename = os.path.basename(filepath)
 	f = os.path.join("{}".format(filepath))
 	if os.path.isfile(f):
 		with open(f) as json_file:
@@ -43,7 +42,7 @@ def validate_results(filepath,perc_identity=0, ARO_name='', type_match=''):
 			for i in json_data:
 				if i not in ["_metadata"]:
 					for j in json_data[i]:
-						for k in json_data[i][j]:
+						for _ in json_data[i][j]:
 							pi = json_data[str(i)][str(j)]["perc_identity"]
 							name = json_data[str(i)][str(j)]["ARO_name"]
 							tm = json_data[str(i)][str(j)]["type_match"]

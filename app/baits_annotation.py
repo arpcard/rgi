@@ -4,7 +4,6 @@ from argparse import RawTextHelpFormatter
 from app.settings import APP_NAME, SOFTWARE_VERSION
 
 def main(args):
-    working_directory = os.getcwd()
     print(args)
     print("""
     TODO:

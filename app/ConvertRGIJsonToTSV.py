@@ -256,7 +256,7 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note
 								]
-							for key, value in match_dict.items():
+							for value in match_dict.values():
 								writer.writerow(value)
 
 
@@ -318,7 +318,7 @@ class ConvertJsonToTSV(object):
 								note
 								]
 
-							for key, value in match_dict.items():
+							for value in match_dict.values():
 								writer.writerow(value)
 
 	def manual():

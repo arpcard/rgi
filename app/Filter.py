@@ -88,8 +88,8 @@ class Filter(BaseModel):
 			os.path.join(self.working_directory,"{}.temp.{}.json".format(file_name, "overexpression")), \
 			os.path.join(self.working_directory,"{}.temp.{}.json".format(file_name, "rrna"))
 			)
-		# combine 3 json files			
-		obj.combine_jsons()	
+		# combine 3 json files
+		obj.combine_jsons()
 		# write tsv
 		obj.run()
 
@@ -123,7 +123,7 @@ class Filter(BaseModel):
 
 			file_name = os.path.basename(self.input_sequence)
 			with open(os.path.join(self.working_directory,"{}.{}.json".format(file_name, model_type)), 'w') as fout:
-				fout.write(json.dumps(res))			
+				fout.write(json.dumps(res))
 
 			# with open(os.path.splitext(self.output_file)[0]+".{}.json".format(model_type), 'w') as fout:
 			# 	fout.write(json.dumps(res))
@@ -134,7 +134,7 @@ class Filter(BaseModel):
 		logger.info("create_db_query")
 		# make_custom_db(self, in_file, out_file, db_type="diamond")
 		in_file = self.input_sequence
-		f_path, f_name = os.path.split(self.input_sequence)
+		_, f_name = os.path.split(self.input_sequence)
 		out_file = os.path.join(self.working_directory, "{}.db".format(f_name))
 		xml_file = os.path.join(self.working_directory,"{}.blastRes.rrna.xml".format(f_name))
 		logger.info("DB from user query")
@@ -151,7 +151,7 @@ class Filter(BaseModel):
 		blast_obj.run_custom(db)
 
 	def format_fasta(self):
-		f_path, f_name = os.path.split(self.input_sequence)
+		_, f_name = os.path.split(self.input_sequence)
 		temp_file = os.path.join(self.working_directory, "{}.temp".format(f_name))
 		with open(temp_file, 'w') as fout:
 			for record in SeqIO.parse(self.input_sequence, 'fasta'):
@@ -164,7 +164,6 @@ class Filter(BaseModel):
 		return hashlib.md5(name.encode('utf-8')).hexdigest()
 
 	def write_output(self):
-		file_name = os.path.basename(self.input_sequence)
 		logger.info(self.output_file)
 		with open(self.output_file, 'w') as rrna_js:
 			rrna_js.write(json.dumps(self.rna_results))

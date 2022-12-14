@@ -187,7 +187,6 @@ def get_taxon_kmers(single_file, multi_file, variant_sequences, index_file, k, t
     same = 0
     single = 0
     forward = 0
-    reverse = 0
     to_also_delete = []
 
     for k in r:

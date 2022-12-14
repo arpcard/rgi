@@ -638,7 +638,6 @@ class CARDkmers(object):
             m_allele = {} # promiscuous plasmid
             cp_allele = {} # genomic island
             a_allele = {} # ambiguous
-            u = 0 # unknown - no hits/info
         elif type == "rgi":
             rgi_summary = []
         elif type == "fasta":

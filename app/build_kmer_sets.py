@@ -236,7 +236,6 @@ def main(args):
     #     exit("Debug")
 
     prevalence_directory = args.input_directory
-    card_fasta = args.card_fasta
     k = args.k
     batch_size = args.batch_size
 

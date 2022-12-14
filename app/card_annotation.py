@@ -17,7 +17,7 @@ def main(args):
 	# get version
 	try:
 		version = data["_version"]
-	except Exception as e:
+	except Exception:
 		logger.error("missing version number")
 		exit()
 

@@ -20,7 +20,7 @@ class RGI(RGIBase):
 				clean=True,data='na',aligner='blast',galaxy=None, local_database=False, low_quality=False, debug=False, split_prodigal_jobs=False, include_nudge=False, keep=False, orf_finder='pyrodigal'):
 		"""Creates RGI object for resistome(s) prediction."""
 
-		o_f_path, o_f_name = os.path.split(os.path.abspath(output_file))
+		o_f_path, _ = os.path.split(os.path.abspath(output_file))
 
 		self.input_type = input_type.lower()
 		self.input_sequence = os.path.abspath(input_sequence)
@@ -267,7 +267,7 @@ class RGI(RGIBase):
 				self.remove_file(self.umcompressed_file)
 			# clean working_directory
 			self.clean_directory(self.working_directory, basename_output_file)
-			d_name, f_name = os.path.split(self.output_file)
+			d_name, _ = os.path.split(self.output_file)
 			# clean destination_directory
 			self.clean_directory(d_name, basename_output_file)
 		else:
@@ -366,7 +366,7 @@ class RGI(RGIBase):
 			else:
 				self.write_stub_output_file()
 				logger.error("no open reading frames (orfs) found.")
-		except Exception as e:
+		except Exception:
 			self.write_stub_output_file()
 			logger.exception("failed to write orf file")
 		else:
