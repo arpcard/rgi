@@ -14,7 +14,6 @@ import app.baits_annotation
 import app.remove_duplicates
 from app.kmer_query import CARDkmers
 from app.BWT import BWT
-from app.Heatmap import Heatmap
 from app.Baits import Baits
 from argparse import RawTextHelpFormatter
 
@@ -40,7 +39,6 @@ class MainBase(object):
                main     Runs rgi application
                tab      Creates a Tab-delimited from rgi results
                parser   Creates categorical JSON files RGI wheel visualization
-               heatmap  Heatmap for multiple analysis
 
                ---------------------------------------------------------------------------------------
                Metagenomic
@@ -72,7 +70,7 @@ class MainBase(object):
 
         parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load', 'auto_load',
-                                                'clean', 'galaxy', 'database', 'bwt', 'tm', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
+                                                'clean', 'galaxy', 'database', 'bwt', 'tm', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'kmer_build', 'kmer_query'],
                                                 help='Subcommand to run')
 
         if api == False:
@@ -338,30 +336,6 @@ class MainBase(object):
             args.clean,
             args.debug
         )
-        obj.run()
-
-    def heatmap(self):
-        parser = self.heatmap_args()
-        args = parser.parse_args(sys.argv[2:])
-        self.heatmap_run(args)
-
-    def heatmap_args(self):
-        parser = argparse.ArgumentParser(prog="rgi heatmap",description='{} - {} - Heatmap \n\nCreates a heatmap when given multiple RGI results.'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
-        parser.add_argument('-i', '--input', dest="input", required=True, help="Directory containing the RGI .json files (REQUIRED)")
-        parser.add_argument('-cat', '--category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"),
-            help="The option to organize resistance genes based on a category.")
-        parser.add_argument('-f', '--frequency', dest="frequency", action="store_true", help="Represent samples based on resistance profile.")
-        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
-        parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),
-            help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
-        parser.add_argument('-d', '--display', dest="display", choices=("plain", "fill", "text"), default="plain",
-            help="Specify display options for categories (deafult=plain).")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
-
-        return parser
-
-    def heatmap_run(self, args):
-        obj = Heatmap(args.input, args.classification, args.frequency, args.output, args.cluster, args.display, args.debug)
         obj.run()
 
     def clean(self):
