@@ -15,10 +15,12 @@ dependencies:
   - beautifulsoup4
   - requests >= 2.0.0
   - lxml >= 4.0.0
-  - blast 2.9.0
+  - pyrodigal >=2.0.0
+  - dask
+  - blast 2.9.0 # non-python/pip installable deps go below blast
+  - jellyfish
   - zlib
   - prodigal 2.6.3
-  - pyrodigal >=2.0.0
   - diamond 0.8.36
   - oligoarrayaux 3.8
   - samtools 1.9

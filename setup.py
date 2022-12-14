@@ -1,16 +1,4 @@
-"""
-from this directory run:
-
-pip install .
-
-or
-
-python setup.py buil1d
-python setup.py test
-python setup.py install
-
-"""
-
+#!/usr/bin/env python
 from rgi.settings import SOFTWARE_VERSION
 from setuptools import setup
 
