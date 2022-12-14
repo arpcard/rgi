@@ -98,7 +98,6 @@ def make_json(m,j,f,t,s):
     finaldrugclass = {'name': 'Drug Classes', 'children': []}
     finalresistmech = {'name': 'Resistance Mechanisms', 'children': []}
     finalgenefam = {'name': 'AMR Gene Family', 'children': []}
-    counting_dict = {'Perfect': 0, 'Strict': 0, 'Loose': 0}
 
     for dc in m:
         #print(dc)
@@ -241,24 +240,26 @@ def write_output(results, counter, output):
     with open(os.path.join(os.getcwd(), output + '-tree-og.json'), 'w') as o5:
         json.dump(results[3], o5)
 
-def calc_number_of_hits(m,f):
+
+def calc_number_of_hits(m, f):
     perfect_list = []
     strict_list = []
     loose_list = []
 
     for c in m:
-        for key,value in c['Perfect'].items():
+        for value in c['Perfect'].values():
             for i in value:
-                for k,v in i.items():
+                for k in i:
                     if k not in perfect_list:
                         perfect_list.append(k)
-        for key,value in c['Strict'].items():
+
+        for value in c['Strict'].values():
             for i in value:
                 for k,v in i.items():
                     if k not in strict_list:
                         strict_list.append(k)
         if f is True:
-            for key,value in c['Loose'].items():
+            for value in c['Loose'].items():
                 for i in value:
                     for k,v in i.items():
                         if k not in loose_list:
@@ -270,14 +271,15 @@ def calc_number_of_hits(m,f):
 def api_main(args):
     j = read_file(args.input)
     m = main(j)
-    count = calc_number_of_hits(m,args.loose)
+    count = calc_number_of_hits(m, args.loose)
     snps = identify_snps(j)
     res = make_json(m,j,args.loose,args.type, snps)
     write_output(res, count, args.output)
 
 def run():
     parser = create_parser()
-    args = parser.parse_args()
+    args = parser.parse_args().values():
+
     api_main(args)
 
 if __name__ == '__main__':

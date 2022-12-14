@@ -1,5 +1,5 @@
 from app.settings import os, SeqIO, logger
-import contextlib, tempfile, time, fileinput, math, multiprocessing, shutil
+import contextlib, tempfile, fileinput, math, multiprocessing, shutil
 from multiprocessing.pool import ThreadPool
 import pyrodigal
 from Bio import SeqIO
@@ -77,7 +77,7 @@ class ORF(object):
 		self.execute_threads(seq)
 
 	def worker(self, input_fasta):
-		o_f_path, o_f_name = os.path.split(os.path.abspath(input_fasta))
+		_, o_f_name = os.path.split(os.path.abspath(input_fasta))
 		cmd = "prodigal -p meta -q -m -i {input_fasta} -d {wd}/{tmp_name}.temp.contigToORF.fsa \
 		-a {wd}/{tmp_name}.temp.contig.fsa \
 		-o {wd}/{tmp_name}.temp.draft \
@@ -88,7 +88,7 @@ class ORF(object):
 	def prodigal_run(self, fasta, *o):
 		files = []
 		logger.info("prodigal_run on {} sequences...".format(len(fasta)))
-		o_f_path, o_f_name = os.path.split(os.path.abspath(self.input_file))
+		_, o_f_name = os.path.split(os.path.abspath(self.input_file))
 		for entry in fasta:
 			# create directory tmp if it doesn't exist
 			tmp = os.path.join(self.working_directory, "{}.temp.directory".format(o_f_name))
@@ -151,7 +151,7 @@ class ORF(object):
 		for process in processes:
 			process.join()
 
-		f_path, f_name = os.path.split(os.path.abspath(self.input_file))
+		_, f_name = os.path.split(os.path.abspath(self.input_file))
 
 		output_dna_orf = "{wd}/{tmp_name}.temp.contigToORF.fsa".format(wd=self.working_directory, tmp_name=f_name)
 		output_prot_orf = "{wd}/{tmp_name}.temp.contig.fsa".format(wd=self.working_directory,tmp_name=f_name)
@@ -161,7 +161,7 @@ class ORF(object):
 		# combine results
 		for i in results:
 			for j in i:
-				o_f_path, o_f_name = os.path.split(os.path.abspath(j))
+				_, o_f_name = os.path.split(os.path.abspath(j))
 				self.write_output_file(output_dna_orf, ["{wd}/{tmp_name}.temp.contigToORF.fsa".format(wd=self.working_directory,tmp_name=o_f_name)])
 				self.write_output_file(output_prot_orf, ["{wd}/{tmp_name}.temp.contig.fsa".format(wd=self.working_directory,tmp_name=o_f_name)])
 				self.write_output_file(output_draft, ["{wd}/{tmp_name}.temp.draft".format(wd=self.working_directory,tmp_name=o_f_name)])

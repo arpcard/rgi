@@ -27,7 +27,7 @@ class Rrna(BaseModel):
 	def sequence_orientation(self, end, start):
 		if end > start:
 			return "+"
-		else: 
+		else:
 			return "-"
 
 	def run(self):
@@ -57,17 +57,15 @@ class Rrna(BaseModel):
 							c += 1
 						else:
 							c += 1
-					orf_from = orf_info[c:]
 					orf_info_str = str(orf_info).split(" | ")
 					model_type_id = int(orf_info_str[1].split(":")[1].strip())
 					# logger.debug("model_type_id: {} ".format(model_type_id))
-				
+
 					space_pos = align_title.index(' ')
 
 					hit_id = align_title[0:space_pos]
 					hit_id = hit_id.encode('ascii','replace')
 
-					model_descrpt = "?model_descrpt?"
 					model_info = orf_info_str[0].split("_")
 					model_id = model_info[0].strip()
 					seq_in_model = model_info[1].strip()
@@ -75,7 +73,7 @@ class Rrna(BaseModel):
 
 					# logger.debug("model_id: {}".format(model_id))
 					# logger.debug("pass_value: {}".format(pass_value))
-					
+
 					if model_type_id == 40295:
 						true_pass_evalue = float(pass_value)
 
@@ -83,7 +81,6 @@ class Rrna(BaseModel):
 						evalue_snp = orf_info_str[3].split(":")[1].strip()
 						snpl = []
 						snp_dict_list = []
-						temp = ""
 						snpl = evalue_snp.split(',')
 
 						for each_snp in snpl:
@@ -91,19 +88,15 @@ class Rrna(BaseModel):
 
 						for hsp in alignment.hsps:
 							query_seq =  hsp.query.replace('-', '')
-							real_query_length = len(query_seq) 
-							sbjct_seq = hsp.sbjct.replace('-', '') 
-							real_sbjct_length = len(sbjct_seq) 
+							real_query_length = len(query_seq)
 							strand = self.sequence_orientation(hsp.sbjct_end, hsp.sbjct_start)
 
 							for eachs in snp_dict_list:
 								pos = eachs["position"]
-								ori = eachs["original"]
 								chan = eachs["change"]
 
 								if hsp.query_start < pos and (hsp.query_start + real_query_length) > pos:
-									# Report ONLY if the SNPs are present								
-									qry = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
+									# Report ONLY if the SNPs are present
 									sbj = int(pos) - hsp.query_start + self.find_num_dash(hsp.query, (int(pos) - hsp.query_start))
 
 									if hsp.sbjct[sbj] == chan:

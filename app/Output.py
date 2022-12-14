@@ -53,7 +53,7 @@ class Output(object):
 		try:
 			with open(self.input_file, 'r') as f:
 				data = json.load(f)
-		
+
 		except ValueError:
 			logger.error("invalid JSON string.")
 			exit()
@@ -67,10 +67,9 @@ class Output(object):
 							 "Best_Hit_ARO_category", "ARO_category", "PASS_bitscore", \
 							 "Best_Hit_bitscore", "bit_score","Predicted_DNA","Predicted_Protein",\
 							 "CARD_Protein_Sequence","LABEL","ID","Model_id"])
-			
+
 			for item in data:
 				minevalue = 0.0
-				minscore = 0.0
 				maxpercent = 0.0
 				startCompare = False
 				minARO = ""
@@ -82,7 +81,6 @@ class Output(object):
 				snpList = []
 				cutoffList = []
 				typeList = []
-				evalueList = []
 				identityList = []
 				SequenceFromBroadStreet = ""
 				predictedProtein = ""
@@ -140,7 +138,7 @@ class Output(object):
 
 								if "hsp_num:" in it:
 									hitID = it
-							
+
 						else:
 							startCompare = True
 							minevalue = data[item][it]["evalue"]
@@ -163,12 +161,10 @@ class Output(object):
 
 							if "hsp_num:" in it:
 								hitID = it
-							print("AMOS", minARO, "-> ", type_match)
 
-					clist = set(cutoffList)
 					tl = set(typeList)
 					arocatset = set(AROnameList)
-					
+
 					if set(snpList) == set(['n/a']):
 						snpList = 'n/a'
 					else:
@@ -181,23 +177,22 @@ class Output(object):
 
 					if typeList:
 						if self.findnthbar2(item, 1) == "":
-							writer.writerow([item, 
-								"", 
-								"", 
-								"", 
-								"", 
-								#', '.join(list(clist)),
+							writer.writerow([item,
+								"",
+								"",
+								"",
+								"",
 								type_match,
 								pass_evalue,
 								minevalue,
-								minARO, 
-								maxpercent, 
-								', '.join(map(lambda x:"ARO:"+x, AROlist)), 
+								minARO,
+								maxpercent,
+								', '.join(map(lambda x:"ARO:"+x, AROlist)),
 								'; '.join(list(arocatset)),
-								', '.join(list(tl)), 
-								snpList, 
+								', '.join(list(tl)),
+								snpList,
 								'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
-								'; '.join(AROsortedList), 
+								'; '.join(AROsortedList),
 								pass_bitscore,
 								maxscore,
 								', '.join(map(str, bitScoreList)),
@@ -210,22 +205,21 @@ class Output(object):
 								])
 						else:
 							writer.writerow([self.findnthbar2(item, 0),
-								self.findnthbar2(item, 4).strip(" "), 
-					        	int(self.findnthbar2(item, 1))-1, 
-					        	int(self.findnthbar2(item, 2))-1, 
-					        	self.findnthbar2(item, 3), 
-					        	#', '.join(list(clist)), 
+								self.findnthbar2(item, 4).strip(" "),
+					        	int(self.findnthbar2(item, 1))-1,
+					        	int(self.findnthbar2(item, 2))-1,
+					        	self.findnthbar2(item, 3),
 					        	type_match,
-					        	pass_evalue, 
+					        	pass_evalue,
 					        	minevalue,
-					        	minARO, 
-					        	maxpercent, 
-					        	', '.join(map(lambda x:"ARO:"+x, AROlist)), 
-					        	', '.join(list(arocatset)), 
-					        	', '.join(list(tl)), 
-					        	snpList, 
+					        	minARO,
+					        	maxpercent,
+					        	', '.join(map(lambda x:"ARO:"+x, AROlist)),
+					        	', '.join(list(arocatset)),
+					        	', '.join(list(tl)),
+					        	snpList,
 					        	'; '.join(bestAROcategorydict[str(minARO)+"|"+str(minevalue)]),
-					        	'; '.join(AROsortedList), 
+					        	'; '.join(AROsortedList),
 					        	pass_bitscore,
 					        	maxscore,
 					        	', '.join(map(str, bitScoreList)),

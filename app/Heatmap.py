@@ -1,7 +1,7 @@
 from app.settings import *
-import math, os, json, csv, argparse
+import math, os, json, csv
 import pandas as pd
-from collections import defaultdict, Counter
+from collections import Counter
 from textwrap import wrap
 import matplotlib # this needs to be added to run on galaxylab
 matplotlib.use('Agg') # this needs to be added to run on galaxylab

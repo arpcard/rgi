@@ -81,7 +81,7 @@ class Database(object):
 									for seq in j[i]['model_sequences']['sequence']:
 										fout.write('>%s_%s | model_type_id: 40292 | pass_bitscore: %s | %s\n' % (i, seq, pass_bit_score, j[i]['ARO_name']))
 										fout.write('%s\n' %(j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
-								except Exception as e:
+								except Exception:
 									logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running." \
 										% (j[i]['model_id'], j[i]['model_name']))
 									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
@@ -98,7 +98,7 @@ class Database(object):
 							else:
 								try:
 									snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-								except Exception as e:
+								except Exception as:
 									logger.warning("No snp for model (%s, %s). RGI will omit this model and keep running." \
 										% (j[i]['model_id'], j[i]['model_name']))
 									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")
@@ -176,7 +176,7 @@ class Database(object):
 								for seq in j[i]['model_sequences']['sequence']:
 									if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
 										basecomplement = self.complementary_strand(j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence'])
-							
+
 										fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
 										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
 										fout.write('%s\n' % (basecomplement))
@@ -202,9 +202,9 @@ class Database(object):
 					   "R":"Y", "Y":"R", "S":"S", "W":"W", "B":"V", "V":"B", "H":"D", "D":"H"}
 		complement = []
 
-		for base in strand: 
+		for base in strand:
 			complement.append(self.trans[base])
-		
+
 		complement_seq = ''.join(complement)
 		return complement_seq
 

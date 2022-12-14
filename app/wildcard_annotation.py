@@ -1,4 +1,4 @@
-import os, sys, json, csv, argparse, glob
+import os, json, csv, argparse, glob
 from Bio import SeqIO
 from app.settings import *
 from argparse import RawTextHelpFormatter
@@ -70,7 +70,6 @@ def write_fasta_annotation_file(files, prev_models, annotations, version, all_mo
 				if record:
 					desc = record.description.replace(" ", "_")
 					arr = desc.split("|")
-					model_id = prev_models[arr[0]]
 					Prevalence_Sequence_ID = arr[0].split(":")[-1]
 					header = "Prevalence_Sequence_ID:{prevalence_sequence_id}|ID:{model_id}|Name:{aro_term}|{aro_accession}".format(
 								prevalence_sequence_id=Prevalence_Sequence_ID,

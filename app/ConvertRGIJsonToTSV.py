@@ -1,6 +1,6 @@
 import csv
 from app.settings import *
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 from collections import OrderedDict
 
 class ConvertJsonToTSV(object):
@@ -10,7 +10,7 @@ class ConvertJsonToTSV(object):
 		name, ext = os.path.splitext(f_name)
 		self.filepath = os.path.join(f_path, "{}.json".format(f_name))
 		if ext.lower() == ".json":
-			self.filepath = os.path.join(f_path, "{}{}".format(name,ext))			
+			self.filepath = os.path.join(f_path, "{}{}".format(name,ext))
 		self.homolog_file = homolog_file
 		self.variant_file = variant_file
 		self.overexpression_file = overexpression_file
@@ -256,7 +256,7 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note
 								]
-							for key, value in match_dict.items():
+							for value in match_dict.values():
 								writer.writerow(value)
 
 
@@ -318,7 +318,7 @@ class ConvertJsonToTSV(object):
 								note
 								]
 
-							for key, value in match_dict.items():
+							for value in match_dict.values():
 								writer.writerow(value)
 
 	def manual():

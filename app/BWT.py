@@ -150,13 +150,13 @@ class BWT(object):
 			logger.info("Cleaning up temporary files...{}".format(basename_output_file))
 			# clean working_directory
 			self.clean_directory(self.working_directory, basename_output_file)
-			d_name, f_name = os.path.split(self.output_file)
+			d_name, _ = os.path.split(self.output_file)
 			# clean destination_directory
 			self.clean_directory(d_name, basename_output_file)
 		else:
 			logger.info("Clean up skipped.")
 
-	def clean_directory(self, directory, basename_output_file):
+	def clean_directory(self, directory):
 		"""Cleans files in directory."""
 		logger.info(directory)
 		files = glob.glob(os.path.join(directory, "*"))
@@ -240,7 +240,6 @@ class BWT(object):
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,
-			read_two=self.read_two,
 			output_sam_file=output_sam_file
 		)
 		os.system(cmd)
@@ -357,24 +356,12 @@ class BWT(object):
 		Get alignments from bam file using length as a filter (default length=10, map_quality=2)
 		TODO:: add filters (mapped, length, coverage and map_quality)
 		"""
-		cmd="bamtools filter -in {input_bam} -out {output_bam}".format(
-			input_bam=self.output_bam_sorted_file,
-			output_bam=self.sorted_bam_sorted_file_length_100,
-			length=length,
-			map_quality=map_quality
-		)
-		# logger.info(cmd)
 		subprocess.run(["bamtools","filter","-in",self.output_bam_sorted_file,"-out",self.sorted_bam_sorted_file_length_100])
 
 	def get_aligned(self):
 		"""
 		Get stats for aligned reads using 'samtools idxstats' function
 		"""
-		cmd = "samtools idxstats {input_bam} > {output_tab}".format(
-			input_bam=self.sorted_bam_sorted_file_length_100,
-			output_tab=self.output_tab
-			)
-		# logger.debug(cmd)
 		input_bam=self.sorted_bam_sorted_file_length_100
 		output_tab=self.output_tab
 		subprocess.run(f"samtools idxstats {input_bam} > {output_tab}", shell=True, check=True)
@@ -383,13 +370,6 @@ class BWT(object):
 		"""
 		MAPQ (mapping quality - describes the uniqueness of the alignment, 0=non-unique, >10 probably unique) | awk '$5 > 0'
 		"""
-		cmd="samtools view --threads {threads} {input_bam} | cut -f 1,2,3,4,5,7 | sort -s -n -k 1,1 > {output_tab}".format(
-			threads=self.threads,
-			input_bam=self.sorted_bam_sorted_file_length_100,
-			output_tab=self.output_tab_sequences
-			)
-		# logger.debug(cmd)
-		# os.system(cmd)
 		threads=self.threads
 		input_bam=self.sorted_bam_sorted_file_length_100
 		output_tab=self.output_tab_sequences
@@ -399,12 +379,6 @@ class BWT(object):
 		"""
 		Get coverage using 'samtools depth' function and write outputs to a tab-delimited file
 		"""
-		cmd="samtools depth {sorted_bam_file} > {output_tab}".format(
-			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
-			output_tab=self.output_tab_coverage
-			)
-		# logger.debug(cmd)
-		# os.system(cmd)
 		sorted_bam_file=self.sorted_bam_sorted_file_length_100
 		output_tab=self.output_tab_coverage
 		subprocess.run(f"samtools depth {sorted_bam_file} > {output_tab}", shell=True, check=True)
@@ -423,12 +397,6 @@ class BWT(object):
 
 		"""
 		# TODO:: This command is slow, it needs improvement, maybe explore -bg and -bga options
-		cmd = "bedtools genomecov -ibam {sorted_bam_file} > {output_tab}".format(
-			sorted_bam_file=self.sorted_bam_sorted_file_length_100,
-			output_tab=self.output_tab_coverage_all_positions
-		)
-		# logger.debug(cmd)
-		# os.system(cmd)
 		sorted_bam_file=self.sorted_bam_sorted_file_length_100
 		output_tab=self.output_tab_coverage_all_positions
 		subprocess.run(f"bedtools genomecov -ibam {sorted_bam_file} > {output_tab}", shell=True, check=True)
@@ -760,10 +728,6 @@ class BWT(object):
 		logger.info("count reads {}".format(json.dumps(stats,indent=2)))
 		'''
 		# overall stats for mapping
-		cmd_overall = "bamtools stats -in {} > {}".format(self.sorted_bam_sorted_file_length_100 , self.mapping_overall_stats)
-		# logger.info("overall mapping stats using {}".format(cmd_overall))
-		# logger.info(cmd_overall)
-		# os.system(cmd_overall)
 		input_bam=self.sorted_bam_sorted_file_length_100
 		output_stats=self.mapping_overall_stats
 		subprocess.run(f"bamtools stats -in {input_bam} > {output_stats}", shell=True, check=True)
@@ -774,10 +738,6 @@ class BWT(object):
 			out.write("Stats for Artifacts: \n")
 			out.write("**********************************************\n")
 			out.write("\n")
-		cmd_artifacts = "samtools flagstat {} >> {}".format(self.sorted_bam_sorted_file_length_100 , self.mapping_artifacts_stats)
-		# logger.info("mapping artifacts stats i.e duplicates using {}".format(cmd_artifacts))
-		# logger.info(cmd_artifacts)
-		# os.system(cmd_artifacts)
 		input_bam=self.sorted_bam_sorted_file_length_100
 		output_stats=self.mapping_artifacts_stats
 		subprocess.run(f"samtools flagstat {input_bam} >> {output_stats}", shell=True, check=True)
@@ -937,7 +897,7 @@ class BWT(object):
 			'''
 
 			for i in stats:
-				accession, baits_count, baits_with_reads_count, reads_count, sample = self.get_counts(i, data_out)
+				_, baits_count, baits_with_reads_count, reads_count, sample = self.get_counts(i, data_out)
 				standard_devitation = 0
 				coefficient_of_variation = 0
 
@@ -1096,7 +1056,7 @@ class BWT(object):
 				# logger.debug("model_id: {}, alignment_hit: {}".format(model_id, alignment_hit))
 				if model_id in variants.keys():
 					_accession = ""
-					for s in variants[model_id]:
+					for _ in variants[model_id]:
 						prevalence_sequence_id = alignment_hit.split("|")[0].split(":")[-1]
 						observed_in_genomes = "NO"
 						observed_in_plasmids = "NO"
@@ -1177,7 +1137,7 @@ class BWT(object):
 
 					try:
 						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=True)
-					except Exception as e:
+					except Exception:
 						consensus_sequence_protein = Seq.translate(input_seq,to_stop=False,table=11,cds=False)
 
 					if trailing_bases:
@@ -1332,9 +1292,6 @@ class BWT(object):
 			logger.info("get_baits_details ...")
 			baits = self.get_baits_details()
 
-		mapq_average = 0
-		# t0 = time.time()
-
 		jobs = []
 		for alignment_hit in reads.keys():
 			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,mutation,read_coverage,consensus_sequence,))
@@ -1422,7 +1379,6 @@ class BWT(object):
 		mapping_summary = {}
 		alleles_mapped = []
 		index = "aro_accession"
-		range_of_reference_allele_source = []
 		for r in summary:
 			if r:
 				alleles_mapped.append(r[index])
