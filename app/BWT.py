@@ -240,7 +240,6 @@ class BWT(object):
 			threads=self.threads,
 			index_directory=index_directory,
 			read_one=self.read_one,
-			read_two=self.read_two,
 			output_sam_file=output_sam_file
 		)
 		os.system(cmd)
