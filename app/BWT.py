@@ -149,10 +149,10 @@ class BWT(object):
 			basename_output_file = os.path.splitext(os.path.basename(self.output_file))[0]
 			logger.info("Cleaning up temporary files...{}".format(basename_output_file))
 			# clean working_directory
-			self.clean_directory(self.working_directory, basename_output_file)
+			self.clean_directory(self.working_directory)
 			d_name, _ = os.path.split(self.output_file)
 			# clean destination_directory
-			self.clean_directory(d_name, basename_output_file)
+			self.clean_directory(d_name)
 		else:
 			logger.info("Clean up skipped.")
 

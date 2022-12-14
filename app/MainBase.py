@@ -271,7 +271,6 @@ class MainBase(object):
     def bwt(self):
         parser = self.bwt_args()
         args = parser.parse_args(sys.argv[2:])
-        args.aligner = 'kma'
         self.bwt_run(args)
 
     def bwt_args(self):
@@ -296,7 +295,7 @@ class MainBase(object):
 
     def bwt_run(self, args):
         obj = BWT(
-            args.aligner,
+            'kma',
             args.include_wildcard,
             args.include_baits,
             args.read_one,

@@ -1,6 +1,9 @@
 import os
 import sys
+import json
 import logging
+from Bio.Blast import NCBIXML
+from Bio import SeqIO
 
 # ====================================================================================
 # FUNTIONS
