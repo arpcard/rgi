@@ -98,7 +98,7 @@ class Database(object):
 							else:
 								try:
 									snpList = [j[i]['model_param']['snp']['param_value'][k] for k in j[i]['model_param']['snp']['param_value']]
-								except Exception as:
+								except Exception:
 									logger.warning("No snp for model (%s, %s). RGI will omit this model and keep running." \
 										% (j[i]['model_id'], j[i]['model_name']))
 									logger.info("Please let the CARD Admins know! Email: card@mcmaster.ca")

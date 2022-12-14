@@ -278,7 +278,7 @@ def api_main(args):
 
 def run():
     parser = create_parser()
-    args = parser.parse_args().values():
+    args = parser.parse_args().values()
 
     api_main(args)
 
