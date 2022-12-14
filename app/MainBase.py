@@ -271,6 +271,7 @@ class MainBase(object):
     def bwt(self):
         parser = self.bwt_args()
         args = parser.parse_args(sys.argv[2:])
+        args.aligner = 'kma'
         self.bwt_run(args)
 
     def bwt_args(self):
@@ -278,7 +279,6 @@ class MainBase(object):
         parser = argparse.ArgumentParser(prog="rgi bwt",description="{} - {} - BWT \n\nAligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.".format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmed)")
         parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmed)")
-        parser.add_argument('-a', '--aligner', default="kma", choices=['kma','bowtie2','bwa'], help="select read aligner (default=kma)")
         parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
         parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
         parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default=False)")

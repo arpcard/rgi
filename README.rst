@@ -108,7 +108,7 @@ Analyzing Metagenomic Reads (a.k.a. RGI bwt)
 
  >  The text below provides an overview of analysis of FASTQ sequencing reads. For command line examples see `Running RGI bwt with FASTQ files <#running-rgi-bwt-with-fastq-files>`_.
 
-RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ , `BWA <http://bio-bwa.sourceforge.net>`_ , or `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR alelle network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps <images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
+RGI can align short DNA sequences in FASTQ format using `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR alelle network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps <images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
 
 .. image:: images/simulation.jpg
 The above illustrates simulated 90x short read coverage from seven antibiotic resistance gene nucleotide reference sequences in CARD (catB, OXA-1, AAC(6')-Ib, NDM-1, BRP(MBL), QnrB1, CTX-M-15), subsequently aligned with RGI bwt against CARD using Bowtie2 or KMA algorithms. Reads are aligned to a single reference gene using KMA but for Bowtie2 the same reads are aligned across a selection of similar reference sequences, with associated lower MAPQ scores. Note that KMA has limits in its ability to resolve very similar sequences, e.g. all simulated catB3 reads were all aligned to catI and all simulated AAC(6')-Ib reads were aligned to AAC(6')-Ib-cr.
@@ -262,8 +262,6 @@ The following conda command will install all RGI dependencies (listed below):
 - `bamtools 2.5.1 <https://github.com/pezmaster31/bamtools>`_
 - `bedtools 2.27.1 <https://github.com/arq5x/bedtools2>`_
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
-- `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
-- `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
 - `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 
@@ -847,14 +845,14 @@ Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 
 .. code-block:: sh
 
-				usage: rgi bwt [-h] -1 READ_ONE [-2 READ_TWO] [-a {kma,bowtie2,bwa}]
+				usage: rgi bwt [-h] -1 READ_ONE [-2 READ_TWO] 
 				               [-n THREADS] -o OUTPUT_FILE [--debug] [--clean] [--local]
 				               [--include_wildcard] [--include_other_models] [--include_baits]
 				               [--mapq MAPQ] [--mapped MAPPED] [--coverage COVERAGE]
 
 				Resistance Gene Identifier - 6.0.0 - BWT
 
-				Aligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.
+				Aligns metagenomic reads to CARD and wildCARD reference using kma and provide reports.
 
 				optional arguments:
 				  -h, --help            show this help message and exit
@@ -862,8 +860,6 @@ Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 				                        raw read one (qc and trimmed)
 				  -2 READ_TWO, --read_two READ_TWO
 				                        raw read two (qc and trimmed)
-				  -a {kma,bowtie2,bwa}, --aligner {kma,bowtie2,bwa}
-				                        select read aligner (default=kma)
 				  -n THREADS, --threads THREADS
 				                        number of threads (CPUs) to use (default=16)
 				  -o OUTPUT_FILE, --output_file OUTPUT_FILE
@@ -880,19 +876,6 @@ Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 				  --coverage COVERAGE   filter reads based on coverage of reference sequence
 
 **Note**: The mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.
-
-`BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt:
-
-   .. code-block:: sh
-
-      bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}
-
-`Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt:
-
-   .. code-block:: sh
-
-      bowtie2 --very-sensitive-local --threads {threads} -x {index_directory}
-        -U {unpaired_reads} -S {output_sam_file}
 
 `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master/>`_ usage within RGI bwt (default):
 
