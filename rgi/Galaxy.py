@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 import shutil
 
 class Galaxy(object):

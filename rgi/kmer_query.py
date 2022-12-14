@@ -1,5 +1,5 @@
 import os, json, csv, multiprocessing, math, pysam
-from app.settings import *
+from rgi.settings import *
 from collections import OrderedDict
 from Bio import SeqIO
 

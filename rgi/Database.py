@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Database(object):
 	"""Class to create BLAST databases from a card.json file."""

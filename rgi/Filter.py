@@ -1,12 +1,12 @@
-from app.Base import BaseModel
-from app.HomologModel import Homolog
-from app.VariantModel import Variant
-from app.OverexpressionModel import Overexpression
-from app.RrnaModel import Rrna
-from app.Blast import Blast
-from app.Database import Database
-from app.ConvertRGIJsonToTSV import ConvertJsonToTSV
-from app.settings import *
+from rgi.Base import BaseModel
+from rgi.HomologModel import Homolog
+from rgi.VariantModel import Variant
+from rgi.OverexpressionModel import Overexpression
+from rgi.RrnaModel import Rrna
+from rgi.Blast import Blast
+from rgi.Database import Database
+from rgi.ConvertRGIJsonToTSV import ConvertJsonToTSV
+from rgi.settings import *
 
 import hashlib
 import multiprocessing

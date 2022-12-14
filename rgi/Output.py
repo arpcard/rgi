@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Output(object):
 	"""Class to format RGI output."""

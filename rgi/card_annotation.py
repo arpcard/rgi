@@ -1,7 +1,7 @@
 import os, json, argparse
-from app.settings import *
+from rgi.settings import *
 from argparse import RawTextHelpFormatter
-from app.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION
 """
 This script it used to create annotations and fasta for AMR++ using card data (version 2.0.0 and up)
 """

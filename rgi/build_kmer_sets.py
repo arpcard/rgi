@@ -1,8 +1,8 @@
 import os, csv, argparse, glob
-import app.make_kmer_json
+import rgi.make_kmer_json
 from Bio import SeqIO
 from argparse import RawTextHelpFormatter
-from app.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION
 """
 This script builds the CARD*k-mer sets.
 Please provide location to the CARD*Resistomes&Variants nucleotide FASTAs
@@ -292,7 +292,7 @@ def main(args):
                         "nucleotide_prevalence_all.fasta")
 
     print("-- CREATING KMER SETS --")
-    app.make_kmer_json.make_json(plasmid_file, chr_file, both_file, genus_file, \
+    rgi.make_kmer_json.make_json(plasmid_file, chr_file, both_file, genus_file, \
     species_file, multi_file, variant_sequences, index, k, args.threads, batch_size)
     print("DONE \n")
 

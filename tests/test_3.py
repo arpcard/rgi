@@ -1,6 +1,6 @@
 import pytest
 import os, json
-from app.MainBase import MainBase
+from rgi.MainBase import MainBase
 
 inputs = "inputs/"
 outputs = "outputs/"

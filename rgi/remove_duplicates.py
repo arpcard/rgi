@@ -1,10 +1,10 @@
 import os, argparse
 from Bio import SeqIO
 from Bio.SeqUtils.CheckSum import seguid
-from app.settings import *
+from rgi.settings import *
 from collections import defaultdict
 from argparse import RawTextHelpFormatter
-from app.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION
 
 def main(args):
     if args.debug:

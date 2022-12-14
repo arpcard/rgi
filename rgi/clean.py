@@ -1,7 +1,7 @@
 import argparse
 import glob
 import shutil
-from app.settings import *
+from rgi.settings import *
 
 # clean other files left over
 def clean():

@@ -1,5 +1,5 @@
 import csv
-from app.settings import *
+from rgi.settings import *
 from operator import itemgetter
 from collections import OrderedDict
 

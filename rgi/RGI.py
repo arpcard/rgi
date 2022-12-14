@@ -1,9 +1,9 @@
-from app.Base import RGIBase
-from app.Database import Database
-from app.Blast import Blast
-from app.Diamond import Diamond
-from app.ORF import ORF, PyORF
-from app.Filter import Filter
+from rgi.Base import RGIBase
+from rgi.Database import Database
+from rgi.Blast import Blast
+from rgi.Diamond import Diamond
+from rgi.ORF import ORF, PyORF
+from rgi.Filter import Filter
 
 import filetype
 from Bio import SeqIO
@@ -11,7 +11,7 @@ import glob
 import time
 import gzip
 import bz2
-from app.settings import *
+from rgi.settings import *
 
 class RGI(RGIBase):
 	"""Class to predict resistome(s) from protein or nucleotide data based on CARD detection models."""

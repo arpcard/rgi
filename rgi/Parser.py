@@ -1,6 +1,6 @@
 import os, json, argparse
 from argparse import RawTextHelpFormatter
-from app.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION
 
 def check_for_all_classifications(classtype, class_dict):
     dc = 0

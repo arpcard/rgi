@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Diamond(object):
 	"""Class to create Diamond object and align for protein and translated DNA searches."""

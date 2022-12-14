@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 
 class Blast(object):
 	"""Class to create Blast object and align for protein and translated DNA searches."""
