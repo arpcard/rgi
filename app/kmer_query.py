@@ -1,7 +1,7 @@
-import os, sys, json, csv, argparse, multiprocessing, math, pysam
+import os, json, csv, multiprocessing, math, pysam
 from app.settings import *
 from collections import OrderedDict
-from Bio import SeqIO, Seq
+from Bio import SeqIO
 
 class CARDkmers(object):
     """
@@ -1197,16 +1197,16 @@ class CARDkmers(object):
             split_sequences = self.split_fasta(self.fasta_file)
             # Threading
             results = self.execute_threads(split_sequences, j, amr_kmers, "bwt")
-        
+
             o_total = {}
             num_seq_total = 0
             short_total = 0
-        
+
             for i in range(len(results)):
                 o_total.update(results[i][2])
                 num_seq_total += results[i][0]
                 short_total += results[i][1]
-        
+
             with open(self.output_json_file, "w") as oj:
                 json.dump(o_total, oj)
         elif self.fasta:
@@ -1215,16 +1215,16 @@ class CARDkmers(object):
             split_sequences = self.split_fasta(self.input_fasta_file)
             # Threading
             results = self.execute_threads(split_sequences, j, amr_kmers, "fasta")
-        
+
             o_total = {}
             num_seq_total = 0
             short_total = 0
-        
+
             for i in range(len(results)):
                 o_total.update(results[i][2])
                 num_seq_total += results[i][0]
                 short_total += results[i][1]
-        
+
             with open(self.output_json_file, "w") as oj:
                 json.dump(o_total, oj)
         else:

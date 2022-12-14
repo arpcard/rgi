@@ -1,4 +1,3 @@
-import sys
 import os
 import json
 import argparse
@@ -28,7 +27,7 @@ def main(args):
 				if i.isdigit():
 					if "model_sequences" in j[i].keys():
 						for k in j[i]["model_sequences"]["sequence"]:
-							_source = "{}".format("CARD")	
+							_source = "{}".format("CARD")
 							_type = "{}".format("CDS")
 							_phase = "{}".format(".")
 							_score = "{}".format(".")
@@ -63,7 +62,7 @@ def run():
 	parser = argparse.ArgumentParser(description='convert card json to gff3')
 	parser.add_argument('-i','--input_file', dest="input_file", default=None, required=True, help='card.json input file')
 	args = parser.parse_args()
-	main(args)	
+	main(args)
 
 if __name__ == '__main__':
 	run()

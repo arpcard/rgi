@@ -1,4 +1,4 @@
-import os, sys, json, csv, argparse, glob
+import os, json, csv, argparse, glob
 from Bio import SeqIO
 from app.settings import *
 from argparse import RawTextHelpFormatter

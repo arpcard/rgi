@@ -1,5 +1,5 @@
 from app.settings import os, SeqIO, logger
-import contextlib, tempfile, time, fileinput, math, multiprocessing, shutil
+import contextlib, tempfile, fileinput, math, multiprocessing, shutil
 from multiprocessing.pool import ThreadPool
 import pyrodigal
 from Bio import SeqIO

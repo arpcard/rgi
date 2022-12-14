@@ -1,6 +1,6 @@
-import os, sys, json, csv, argparse, glob
+import os, csv, argparse, glob
 import app.make_kmer_json
-from Bio import SeqIO, Seq
+from Bio import SeqIO
 from argparse import RawTextHelpFormatter
 from app.settings import APP_NAME, SOFTWARE_VERSION
 """
