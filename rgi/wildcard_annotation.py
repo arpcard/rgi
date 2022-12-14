@@ -1,8 +1,8 @@
 import os, json, csv, argparse, glob
 from Bio import SeqIO
-from app.settings import *
+from rgi.settings import *
 from argparse import RawTextHelpFormatter
-from app.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION
 
 def main(args):
 	if args.debug:

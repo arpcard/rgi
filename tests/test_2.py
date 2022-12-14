@@ -2,10 +2,10 @@ import os
 import pytest
 from unittest.mock import Mock
 
-from app.RGI import RGI
-from app.HomologModel import Homolog
-from app.Database import Database
-from app.MainBase import MainBase
+from rgi.RGI import RGI
+from rgi.HomologModel import Homolog
+from rgi.Database import Database
+from rgi.MainBase import MainBase
 
 # pip3 install mock
 # Run all tests with

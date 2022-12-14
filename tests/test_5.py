@@ -1,7 +1,7 @@
 import pytest
 import os, json
 import subprocess as sp
-from app.MainBase import MainBase
+from rgi.MainBase import MainBase
 
 inputs = "inputs/"
 outputs = "outputs/"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from app.settings import logger, APP_NAME, SOFTWARE_VERSION
+from rgi.settings import logger, APP_NAME, SOFTWARE_VERSION
 import tempfile
 from bs4 import BeautifulSoup as bs
 import requests

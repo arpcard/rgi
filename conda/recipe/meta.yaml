@@ -33,6 +33,7 @@ requirements:
     - lxml >= 4.0.0
     - blast 2.9.0
     - zlib
+    - jellyfish
     - prodigal 2.6.3
     - pyrodigal >=2.0.0
     - diamond 0.8.36
@@ -41,6 +42,7 @@ requirements:
     - bamtools >= 2.0.0
     - bedtools >= 2.28.0
     - kma >=1.2.26s
+    - dask
     - wget
   run:
     # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
@@ -52,6 +54,7 @@ requirements:
     - pyfaidx >= 0.5.4.1
     - pyahocorasick 1.4.0
     - pysam >= 0.16.0.1
+    - jellyfish
     - beautifulsoup4
     - requests >= 2.0.0
     - lxml >= 4.0.0
@@ -64,6 +67,7 @@ requirements:
     - bamtools >= 2.0.0
     - bedtools >= 2.28.0
     - kma >=1.2.26s
+    - dask
     - wget
     - zlib
 test:

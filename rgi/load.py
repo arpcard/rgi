@@ -1,6 +1,6 @@
 import shutil
 import argparse
-from app.settings import *
+from rgi.settings import *
 
 '''
 loaded_databases example:

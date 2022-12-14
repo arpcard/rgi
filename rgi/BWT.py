@@ -1,4 +1,4 @@
-from app.settings import *
+from rgi.settings import *
 import csv, glob
 from multiprocessing import Pool
 import time

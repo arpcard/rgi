@@ -1,5 +1,5 @@
-from app.Base import BaseModel
-from app.settings import *
+from rgi.Base import BaseModel
+from rgi.settings import *
 
 class Overexpression(BaseModel):
 	"""Class for overexpression searches."""
