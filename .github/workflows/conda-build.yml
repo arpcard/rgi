@@ -11,7 +11,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - name: Checkout bactopia/bactopia
+      - name: Checkout rgi/rgi
         uses: actions/checkout@v3
         with:
           ref: dev
@@ -29,5 +29,4 @@ jobs:
           cd conda/recipe/ && mamba build -c conda-forge -c bioconda -c defaults --output-folder . . 
           anaconda upload --force ./noarch/*.tar.bz2
         env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-
+          ANACONDA_API_TOKEN: ${{ secrets.RGI_CONDA_BUILD }}
