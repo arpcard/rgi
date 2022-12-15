@@ -1,4 +1,4 @@
-name: rgi-test
+name: RGI Test
 
 on:
   push:
@@ -26,9 +26,7 @@ jobs:
           auto-activate-base: false
 
       - name: Setup rgi environment
-        run: conda install -c conda-forge -c bioconda mamba && 
-          | mamba env create -f conda/conda_env.yml && 
-          | pip install .
+        run: conda install -c conda-forge -c bioconda mamba && mamba env create -f conda/conda_env.yml && pip install .
 
       - name: Free up Disk Space
         run: bash ${GITHUB_WORKSPACE}/bin/gh-actions/free-disk-space.sh
