@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
     steps:
       - name: Checkout arpcard/rgi
         uses: actions/checkout@v2
@@ -22,11 +22,12 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: rgi 
-          auto-activate-base: fale
+          environment-file: conda/conda_env.yml
+          activate-environment: rgi
+          auto-activate-base: true
 
-      - name: Setup rgi environment
-        run: conda install -c conda-forge -c bioconda mamba && mamba env create -f conda/conda_env.yml && conda activate rgi && pip install .
+      - name: Pip install rgi into conda environment 
+        run: pip install .
 
       - name: Free up Disk Space
         run: bash ${GITHUB_WORKSPACE}/bin/gh-actions/free-disk-space.sh
@@ -35,4 +36,4 @@ jobs:
         run: uname -a && env
 
       - name: Test rgi 
-        run: conda activate rgi && ./test.sh
+        run: conda activate rgi && bash test.sh
