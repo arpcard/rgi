@@ -35,4 +35,4 @@ jobs:
         run: uname -a && env
 
       - name: Test rgi 
-        run: bash test.sh
+        run: ./test.sh
