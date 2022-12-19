@@ -1,7 +1,6 @@
 import os, json, argparse
-from rgi.settings import *
 from argparse import RawTextHelpFormatter
-from rgi.settings import APP_NAME, SOFTWARE_VERSION
+from rgi.settings import APP_NAME, SOFTWARE_VERSION, logger
 """
 This script it used to create annotations and fasta for AMR++ using card data (version 2.0.0 and up)
 """
@@ -13,14 +12,12 @@ def main(args):
 	"""
 	with open(os.path.join(args.input), 'r') as jfile:
 		data = json.load(jfile)
-
 	# get version
 	try:
 		version = data["_version"]
 	except Exception:
 		logger.error("missing version number")
 		exit()
-
 	# write FASTA with only homolog models
 	write_fasta_annotation_file(data, version, args.ncbi)
 	# write FASTA with homolog, variant, rRNA gene variant, overexpression, knockout models
@@ -88,16 +85,13 @@ def write_fasta_annotation_file(data, version, ncbi, all_model_type=False):
 	logger.info("Done writing {}".format(os.path.basename(output_file)))
 
 def create_parser():
-	parser = argparse.ArgumentParser(prog="rgi card_annotation",description='{} - {} - CARD Annotation \n\nCreates card annotations for RGI BWT from card.json'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
+	parser = argparse.ArgumentParser(prog="rgi card_annotation",description='{} - {} - CARD Annotation \n\nCreates card annotations for RGI BWT from card.json'.format(APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
 	parser.add_argument('-i', '--input', dest="input", required=True, help="card.json file")
 	parser.add_argument('--ncbi', dest="ncbi", action="store_true", help="adds ncbi accession to FASTA headers (default: False)")
 	parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default: False)")
 	return parser
 
-def run():
+if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
     main(args)
-
-if __name__ == '__main__':
-    run()

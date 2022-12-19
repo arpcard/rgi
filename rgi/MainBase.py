@@ -224,6 +224,7 @@ class MainBase(object):
         parser = self.card_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.card_annotation_run(args)
+        sys.exit(0)
 
     def card_annotation_args(self):
         parser = rgi.card_annotation.create_parser()
@@ -236,6 +237,7 @@ class MainBase(object):
         parser = self.wildcard_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.wildcard_annotation_run(args)
+        sys.exit(0)
 
     def wildcard_annotation_args(self):
         parser = rgi.wildcard_annotation.create_parser()
@@ -248,6 +250,7 @@ class MainBase(object):
         parser = self.baits_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.baits_annotation_run(args)
+        sys.exit(0)
 
     def baits_annotation_args(self):
         parser = rgi.baits_annotation.create_parser()
