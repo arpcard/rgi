@@ -31,9 +31,6 @@ jobs:
       - name: Pip install rgi into conda environment 
         run: pip install .
 
-      - name: Free up Disk Space
-        run: bash ${GITHUB_WORKSPACE}/bin/gh-actions/free-disk-space.sh
-
       - name: Environment Information
         run: uname -a && env
 
