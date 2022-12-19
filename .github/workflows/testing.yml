@@ -25,6 +25,8 @@ jobs:
           mamba-version: "*"
           activate-environment: "rgi"
           use-mamba: true
+
+      - name: Create rgi conda environment
         run:  mamba env create -f conda/conda_env.yml 
 
       - name: Pip install rgi into conda environment 
@@ -37,4 +39,4 @@ jobs:
         run: uname -a && env
 
       - name: Test rgi 
-        run: conda activate rgi && bash test.sh
+        run: bash test.sh
