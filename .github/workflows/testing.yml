@@ -22,7 +22,7 @@ jobs:
       - name: Setup RGI conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-	      mamba-version: "*"
+          mamba-version: "*"
           channels: bioconda,conda-forge,defaults
           channel-priority: true
           activate-environment: rgi
