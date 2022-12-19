@@ -14,9 +14,7 @@ jobs:
         shell: bash -l {0}
     steps:
       - name: Checkout arpcard/rgi
-        uses: actions/checkout@v3
-        with:
-          ref: dev
+        uses: actions/checkout@v2
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
