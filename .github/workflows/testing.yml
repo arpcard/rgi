@@ -19,15 +19,14 @@ jobs:
       - name: Checkout arpcard/rgi
         uses: actions/checkout@v2
 
-      - name: Setup miniconda
+      - name: Setup RGI conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          mamba-version: "*"
-          activate-environment: "rgi"
-          use-mamba: true
-
-      - name: Create rgi conda environment
-        run:  mamba env create -f conda/conda_env.yml 
+	      mamba-version: "*"
+          channels: bioconda,conda-forge,defaults
+          channel-priority: true
+          activate-environment: rgi
+          environment-file: conda/conda_env.yml
 
       - name: Pip install rgi into conda environment 
         run: pip install .
