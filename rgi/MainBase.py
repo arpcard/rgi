@@ -84,6 +84,7 @@ class MainBase(object):
         parser = self.main_args()
         args = parser.parse_args(sys.argv[2:])
         self.main_run(args)
+        sys.exit(0)
 
     def main_args(self):
         parser = argparse.ArgumentParser(prog="rgi main",description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
@@ -129,6 +130,7 @@ class MainBase(object):
         parser = self.tab_args()
         args = parser.parse_args(sys.argv[2:])
         self.tab_run(args)
+        sys.exit(0)
 
     def tab_args(self):
         parser = argparse.ArgumentParser(prog="rgi tab", description="{} - {} - Tab-delimited".format(APP_NAME, SOFTWARE_VERSION))
@@ -143,6 +145,7 @@ class MainBase(object):
         parser = self.parser_args()
         args = parser.parse_args(sys.argv[2:])
         self.parser_run(args)
+        sys.exit(0)
 
     def parser_args(self):
         parser = rgi.Parser.create_parser()
@@ -155,6 +158,7 @@ class MainBase(object):
         parser = self.load_args()
         args = parser.parse_args(sys.argv[2:])
         self.load_run(args)
+        sys.exit(0)
 
     def load_args(self):
         parser = rgi.load.create_parser()
@@ -167,6 +171,7 @@ class MainBase(object):
         parser = self.auto_load_args()
         args = parser.parse_args(sys.argv[2:])
         self.auto_load_run(args)
+        sys.exit(0)
 
     def auto_load_args(self):
         parser = rgi.auto_load.create_parser()
@@ -179,6 +184,7 @@ class MainBase(object):
         parser = self.kmer_build_args()
         args = parser.parse_args(sys.argv[2:])
         self.kmer_build_run(args)
+        sys.exit(0)
 
     def kmer_build_args(self):
         parser = rgi.build_kmer_sets.create_parser()
@@ -191,6 +197,7 @@ class MainBase(object):
         parser = self.kmer_query_args()
         args = parser.parse_args(sys.argv[2:])
         self.kmer_query_run(args)
+        sys.exit(0)
 
     def kmer_query_args(self):
         parser = argparse.ArgumentParser(prog="rgi kmer_query",
@@ -224,6 +231,7 @@ class MainBase(object):
         parser = self.card_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.card_annotation_run(args)
+        sys.exit(0)
 
     def card_annotation_args(self):
         parser = rgi.card_annotation.create_parser()
@@ -236,6 +244,7 @@ class MainBase(object):
         parser = self.wildcard_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.wildcard_annotation_run(args)
+        sys.exit(0)
 
     def wildcard_annotation_args(self):
         parser = rgi.wildcard_annotation.create_parser()
@@ -248,6 +257,7 @@ class MainBase(object):
         parser = self.baits_annotation_args()
         args = parser.parse_args(sys.argv[2:])
         self.baits_annotation_run(args)
+        sys.exit(0)
 
     def baits_annotation_args(self):
         parser = rgi.baits_annotation.create_parser()
@@ -260,6 +270,7 @@ class MainBase(object):
         parser = self.remove_duplicates_args()
         args = parser.parse_args(sys.argv[2:])
         self.remove_duplicates_run(args)
+        sys.exit(0)
 
     def remove_duplicates_args(self):
         parser = rgi.remove_duplicates.create_parser()
@@ -272,6 +283,7 @@ class MainBase(object):
         parser = self.bwt_args()
         args = parser.parse_args(sys.argv[2:])
         self.bwt_run(args)
+        sys.exit(0)
 
     def bwt_args(self):
 		# description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
@@ -316,6 +328,7 @@ class MainBase(object):
         parser = self.tm_args()
         args = parser.parse_args(sys.argv[2:])
         self.tm_run(args)
+        sys.exit(0)
 
     def tm_args(self):
         parser = argparse.ArgumentParser(prog="rgi tm",description='{} - {} - TM'.format(APP_NAME,SOFTWARE_VERSION))
@@ -341,6 +354,7 @@ class MainBase(object):
         parser = self.clean_args()
         args = parser.parse_args(sys.argv[2:])
         self.clean_run(args)
+        sys.exit(0)
 
     def clean_args(self):
         parser = rgi.clean.create_parser()
@@ -353,6 +367,7 @@ class MainBase(object):
         parser = self.galaxy_args()
         args = parser.parse_args(sys.argv[2:])
         self.galaxy_run(args)
+        sys.exit(0)
 
     def galaxy_args(self):
         parser = argparse.ArgumentParser(prog="rgi galaxy", description="{} - {} - Galaxy project wrapper".\
@@ -369,6 +384,7 @@ class MainBase(object):
         parser = self.database_args()
         args = parser.parse_args(sys.argv[2:])
         print(self.database_run(args))
+        sys.exit(0)
 
     def database_args(self):
         parser = argparse.ArgumentParser(prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))

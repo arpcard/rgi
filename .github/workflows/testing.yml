@@ -1,4 +1,4 @@
-name: rgi-test
+name: RGI Test
 
 on:
   push:
@@ -11,28 +11,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
     steps:
       - name: Checkout arpcard/rgi
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup miniconda
+      - name: Setup RGI conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: rgi 
-          auto-activate-base: false
+          mamba-version: "*"
+          channels: bioconda,conda-forge,defaults
+          channel-priority: true
+          activate-environment: rgi
+          environment-file: conda/conda_env.yml
 
-      - name: Setup rgi environment
-        run: mamba env create -f conda/conda_env.yml && pip install .
-
-      - name: Free up Disk Space
-        run: bash ${GITHUB_WORKSPACE}/bin/gh-actions/free-disk-space.sh
+      - name: Pip install rgi into conda environment 
+        run: pip install .
 
       - name: Environment Information
         run: uname -a && env
 
       - name: Test rgi 
-        run: ./test.sh
+        run: bash -el test.sh

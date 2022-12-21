@@ -3,13 +3,13 @@
 
 # exit on failure of any command
 set -e
+conda activate rgi
 
 cmd="COMMAND"
 
 echo "=================================== CHECK DEPENDENCIES VERSIONS ==================================="
 
 blastp -version
-bowtie2 --version
 diamond --version
 samtools --version
 bamtools --version
@@ -69,8 +69,8 @@ rgi database -v --all
 
 echo "=================================== COPY DATA & INPUTS ==================================="
 # for test_1.py
-echo "$cmd cp card_data/card.json app/_data"
-cp card_data/card.json app/_data
+echo "$cmd cp card_data/card.json rgi/_data"
+cp card_data/card.json rgi/_data
 
 # for test_3.py
 echo "$cmd cp card_data/card.json tests/inputs"
