@@ -2,6 +2,7 @@ import pytest
 import os, json
 import subprocess as sp
 from rgi.MainBase import MainBase
+from pathlib import Path
 
 inputs = "inputs/"
 outputs = "outputs/"
@@ -35,6 +36,10 @@ def check_gene(gene):
         return False
 
 def test_rgi_bwt(rgi):
+
+    print(os.getcwd())
+    print([x for x in Path("..").glob("*")])
+
     read_one = "10_R1.fastq.gz"
     read_two = "10_R2.fastq.gz"
     filename = "output"
