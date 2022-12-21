@@ -37,12 +37,14 @@ def check_gene(gene):
 
 def test_rgi_bwt(rgi):
 
-    print(os.getcwd())
-    print([x for x in Path("..").glob("*")])
-
     read_one = "10_R1.fastq.gz"
     read_two = "10_R2.fastq.gz"
     filename = "output"
+
+    print(os.system("find ../../../../ -name card_reference.fasta"))
+    print(f"{os.path.join(working_directory,inputs,read_one)}")
+    print(os.system(f"find ../../../../ -name {read_one}"))
+
     output_file = os.path.join(working_directory,outputs,"{}".format(filename))
     run_rgi(rgi, os.path.join(working_directory,inputs,read_one), os.path.join(working_directory,inputs,read_two), "3" ,output_file)
     gene = sp.getoutput("cat {gene_summary_output} | cut -f1 | grep '{amr_gene}'".format(
