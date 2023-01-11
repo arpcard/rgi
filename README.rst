@@ -142,7 +142,7 @@ Use or reproduction of these materials, in whole or in part, by any commercial o
 Citation
 --------
 
-Alcock et al. 2020. CARD 2020: Antibiotic resistome surveillance with the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, Volume 48, Issue D1, Pages D517-525 [`PMID 31665441 <https://www.ncbi.nlm.nih.gov/pubmed/31665441>`_]
+Alcock et al. 2023. CARD 2023: expanded curation, support for machine learning, and resistome prediction at the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 51, D690-D699 [`PMID 36263822 <https://www.ncbi.nlm.nih.gov/pubmed/36263822>`_]
 
 Support & Bug Reports
 ----------------------
@@ -1457,8 +1457,7 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 
    rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
-
-
+    
 CARD k-mer Classifier Output
 ````````````````````````````
 
