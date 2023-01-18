@@ -577,7 +577,7 @@ Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
 					                        specify a data-type (default = NA)
 					  -v, --version         prints software version number
 					  -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
-					                        specify ORF finding tool (default = PYRODIGAL)
+					                        specify ORF finding tool (default = PRODIGAL)
 					  --split_prodigal_jobs
 					                        run multiple prodigal jobs simultaneously for contigs
 					                        in a fasta file (default: False)
