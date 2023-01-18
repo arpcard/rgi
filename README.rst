@@ -393,7 +393,7 @@ Loading CARD Reference Data
 				                [--amr_kmers AMR_KMERS] [--kmer_size KMER_SIZE] [--local]
 				                [--debug] [--include_other_models]
 
-				Resistance Gene Identifier - 6.0.0 - Load
+				Resistance Gene Identifier - 6.0.2 - Load
 
 				optional arguments:
 				  -h, --help            show this help message and exit
@@ -429,7 +429,7 @@ Loading CARD Reference Data
 				                        executable directory)
 				  --debug               debug mode
 
-Depending upon the type of analysis you wish to perform, different sets of CARD reference data first need to be loaded into RGI. By default, these data will be loaded at the system-wide level, i.e. available to all users alongside a system-wide RGI installation, but they can alternatively be loaded for the local user directory using the --local flag. Steps for loading required data are outlined below in sections describing different types of analysis (all using --local in their examples), but below are examples of loading the canonical CARD reference data either system-wide or locally. 
+Depending upon the type of analysis you wish to perform, different sets of CARD reference data first need to be loaded into RGI. By default, these data will be loaded at the system-wide level, i.e. available to all users alongside a system-wide RGI installation, but they can alternatively be loaded for the local user directory using the --local flag. Steps for loading required data are outlined below in sections describing different types of analysis (all using --local in their examples), but below are examples of loading the canonical CARD reference data either system-wide or locally.
 
 First download the latest AMR reference data from CARD:
 
@@ -501,7 +501,7 @@ Download CARD and WildCARD data:
       mkdir -p wildcard
       tar -xjf wildcard_data.tar.bz2 -C wildcard
       gunzip wildcard/*.gz
-      
+
 Create annotation files (note that the parameter *version_number* depends upon the versions of WildCARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
@@ -509,7 +509,7 @@ Create annotation files (note that the parameter *version_number* depends upon t
       rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
         -v version_number > wildcard_annotation.log 2>&1
- 
+
 Load all data into RGI (note that the FASTA filenames plus the parameter *version_number* depend on the versions of CARD and WildCARD data downloaded, please adjust accordingly):
 
    .. code-block:: sh
@@ -542,9 +542,9 @@ Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
 					                [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose]
 					                [--include_nudge] [--local] [--clean] [--keep] [--debug]
 					                [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v]
-					                [--split_prodigal_jobs]
+					                [-g {PRODIGAL,PYRODIGAL}] [--split_prodigal_jobs]
 
-					Resistance Gene Identifier - 6.0.0 - Main
+					Resistance Gene Identifier - 6.0.2 - Main
 
 					optional arguments:
 					  -h, --help            show this help message and exit
@@ -576,6 +576,8 @@ Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
 					  -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
 					                        specify a data-type (default = NA)
 					  -v, --version         prints software version number
+					  -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
+					                        specify ORF finding tool (default = PYRODIGAL)
 					  --split_prodigal_jobs
 					                        run multiple prodigal jobs simultaneously for contigs
 					                        in a fasta file (default: False)
@@ -596,12 +598,12 @@ Download CARD data:
 
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
-      
+
 Load into local or working directory:
 
    .. code-block:: sh
 
-      rgi load --card_json /path/to/card.json --local      
+      rgi load --card_json /path/to/card.json --local
 
 Running RGI main with Genome or Assembly DNA Sequences
 ```````````````````````````````````````````````````````
@@ -665,12 +667,12 @@ Download CARD data:
 
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
-      
+
 Load into local or working directory:
 
    .. code-block:: sh
 
-      rgi load --card_json /path/to/card.json --local   
+      rgi load --card_json /path/to/card.json --local
 
 If protein FASTA sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly (thus excluding the `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_). The same parameter combinations as above can be used, e.g. RGI annotating protein sequencing using the defaults:
 
@@ -776,7 +778,7 @@ Generating Heat Maps of RGI main Results
 				                   [-o OUTPUT] [-clus {samples,genes,both}]
 				                   [-d {plain,fill,text}] [--debug]
 
-				Resistance Gene Identifier - 6.0.0 - Heatmap
+				Resistance Gene Identifier - 6.0.2 - Heatmap
 
 				Creates a heatmap when given multiple RGI results.
 
@@ -852,7 +854,7 @@ Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
 				               [--include_wildcard] [--include_other_models] [--include_baits]
 				               [--mapq MAPQ] [--mapped MAPPED] [--coverage COVERAGE]
 
-				Resistance Gene Identifier - 6.0.0 - BWT
+				Resistance Gene Identifier - 6.0.2 - BWT
 
 				Aligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.
 
@@ -916,12 +918,12 @@ Download CARD data:
 
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
-      
+
 Load into local or working directory:
 
    .. code-block:: sh
 
-      rgi load --card_json /path/to/card.json --local 
+      rgi load --card_json /path/to/card.json --local
 
 Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
@@ -1001,12 +1003,12 @@ Download CARD data:
 
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
-      
+
 Load into local or working directory:
 
    .. code-block:: sh
 
-      rgi load --card_json /path/to/card.json --local 
+      rgi load --card_json /path/to/card.json --local
 
 Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
 
@@ -1031,10 +1033,10 @@ Pre-process the WildCARD reference data for metagenomics reads (note that the fi
 
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
         -v version_number > wildcard_annotation.log 2>&1
-      rgi load --card_json /path/to/card.json 
+      rgi load --card_json /path/to/card.json
         --wildcard_annotation_all_models wildcard_database_v3.0.2_all.fasta
         --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
-        --card_annotation_all_models card_database_v3.0.1_all.fasta 
+        --card_annotation_all_models card_database_v3.0.1_all.fasta
         --local
 
 RGI will use FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
@@ -1372,7 +1374,7 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
 				usage: rgi kmer_query [-h] -i INPUT [--bwt] [--rgi] [--fasta] -k K [-m MIN]
 				                      [-n THREADS] -o OUTPUT [--local] [--debug]
 
-				Resistance Gene Identifier - 6.0.0 - Kmer Query
+				Resistance Gene Identifier - 6.0.2 - Kmer Query
 
 				Tests sequenes using CARD*kmers
 
@@ -1405,12 +1407,12 @@ Download CARD data:
 
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
-      
+
 Load into local or working directory:
 
    .. code-block:: sh
 
-      rgi load --card_json /path/to/card.json --local 
+      rgi load --card_json /path/to/card.json --local
 
 Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
 
@@ -1457,7 +1459,7 @@ CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 pro
 
    rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
-    
+
 CARD k-mer Classifier Output
 ````````````````````````````
 
@@ -1551,7 +1553,7 @@ As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genom
 				usage: rgi kmer_build [-h] [-i INPUT_DIRECTORY] -c CARD_FASTA -k K [--skip]
 				                      [-n THREADS] [--batch_size BATCH_SIZE]
 
-				Resistance Gene Identifier - 6.0.0 - Kmer Build
+				Resistance Gene Identifier - 6.0.2 - Kmer Build
 
 				Builds the kmer sets for CARD*kmers
 

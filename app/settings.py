@@ -51,7 +51,7 @@ logger.addHandler(stream_handler)
 LOCAL_DATABASE = os.path.join(os.getcwd(), "localDB")
 
 APP_NAME="Resistance Gene Identifier"
-SOFTWARE_VERSION = "6.0.1"
+SOFTWARE_VERSION = "6.0.2"
 SOFTWARE_SUMMARY = 'Use the Resistance Gene Identifier to predict resistome(s) from protein or nucleotide \
 data based on homology and SNP models. Check https://card.mcmaster.ca/download for software and data updates. \
 Receive email notification of monthly CARD updates via the CARD Mailing List \

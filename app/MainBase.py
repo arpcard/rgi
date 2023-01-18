@@ -115,7 +115,7 @@ class MainBase(object):
                 choices=['wgs', 'plasmid', 'chromosome', 'NA'],
                 help = "specify a data-type (default = NA)")
         parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
-        parser.add_argument('-O',  '--orf_finder', dest="orf_finder",
+        parser.add_argument('-g',  '--orf_finder', dest="orf_finder",
             type=str.upper,
             choices=['PRODIGAL', 'PYRODIGAL'],
             default='PYRODIGAL',
