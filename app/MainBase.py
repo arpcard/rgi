@@ -118,8 +118,8 @@ class MainBase(object):
         parser.add_argument('-g',  '--orf_finder', dest="orf_finder",
             type=str.upper,
             choices=['PRODIGAL', 'PYRODIGAL'],
-            default='PYRODIGAL',
-            help="specify ORF finding tool (default = PYRODIGAL)")
+            default='PRODIGAL',
+            help="specify ORF finding tool (default = PRODIGAL)")
         parser.add_argument('--split_prodigal_jobs', dest="split_prodigal_jobs", action="store_true", help="run multiple prodigal jobs simultaneously for contigs in a fasta file (default: False)")
         return parser
 
