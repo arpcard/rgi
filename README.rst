@@ -22,7 +22,7 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 
  > `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
 
- > YouTube: `Canadian Bioinformatics Workshops 2023 - Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
+ > `YouTube Video Lecture: Canadian Bioinformatics Workshops 2023 - Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
 
 .. contents::
 
