@@ -18,6 +18,8 @@ This application is used to predict antibiotic resistome(s) from protein or nucl
 
 RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://toolshed.g2.bx.psu.edu/view/card/rgi/715bc9aeef69>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
+May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RGI analysis of metagenomic sequencing reads: `CZ ID AMR Pipeline Workflow <https://chanzuckerberg.zendesk.com/hc/en-us/articles/15091031482644-AMR-Pipeline-Workflow>`_.
+
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
  > `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
