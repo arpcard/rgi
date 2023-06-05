@@ -170,35 +170,37 @@ Install RGI from Conda
 
 Install `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_ on your system if not already available.
 
+Install `mamba` from `mamba <https://mamba.readthedocs.io/en/latest/installation.html>`_ on your system if not already available.
+
 Search for RGI package and show available versions:
 
   .. code-block:: sh
 
-        $ conda search --channel conda-forge --channel bioconda --channel defaults rgi
+        $ mamba search --channel conda-forge --channel bioconda --channel defaults rgi
 
 Create a new Conda environment
 
   .. code-block:: sh
 
-        $ conda create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
+        $ mamba create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI package:
 
   .. code-block:: sh
 
-        $ conda install --channel conda-forge --channel bioconda --channel defaults rgi
+        $ mamba install --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
 
-        $ conda install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
+        $ mamba install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
 
 Remove RGI package:
 
   .. code-block:: sh
 
-        $ conda remove rgi
+        $ mamba remove rgi
 
 
 Install RGI using Docker/Singularity
