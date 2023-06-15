@@ -103,6 +103,8 @@ class ConvertJsonToTSV(object):
 						order_strict = []
 						dna = 0
 						cgList = []
+						hitID = []
+						temp2=[]
 						temp3 = []
 						best_snps = ""
 						other_snps = ""
