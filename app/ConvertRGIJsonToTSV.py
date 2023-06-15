@@ -84,10 +84,10 @@ class ConvertJsonToTSV(object):
                                 "Percentage Length of Reference Sequence",
                                 "ID",
                                 "Model_ID",
-                                "Hit_Start",
-                                "Hit_End",
 								"Nudged",
-								"Note"])
+								"Note",
+								"Hit_Start",
+								"Hit_End"])
 
 				if os.path.isfile(self.filepath):
 					with open(self.filepath) as rgi_file:
