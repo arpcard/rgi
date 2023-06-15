@@ -103,8 +103,6 @@ class ConvertJsonToTSV(object):
 						order_strict = []
 						dna = 0
 						cgList = []
-						hitID = []
-						temp2=[]
 						temp3 = []
 						best_snps = ""
 						other_snps = ""
@@ -255,10 +253,10 @@ class ConvertJsonToTSV(object):
 								percentage_length_reference_sequence,
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
-								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"],
 								nudged,
-								note
+								note,
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"]
 								]
 							for key, value in match_dict.items():
 								writer.writerow(value)
@@ -318,10 +316,10 @@ class ConvertJsonToTSV(object):
 								format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) / len(rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"]))*100, '.2f'),
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
-								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"],
 								nudged,
-								note
+								note,
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"]
 								]
 
 							for key, value in match_dict.items():
