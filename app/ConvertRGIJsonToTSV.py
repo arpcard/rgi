@@ -85,7 +85,9 @@ class ConvertJsonToTSV(object):
                                 "ID",
                                 "Model_ID",
 								"Nudged",
-								"Note"])
+								"Note",
+								"Hit_Start",
+								"Hit_End"])
 
 				if os.path.isfile(self.filepath):
 					with open(self.filepath) as rgi_file:
@@ -254,7 +256,9 @@ class ConvertJsonToTSV(object):
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
 								nudged,
-								note
+								note,
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"]
 								]
 							for key, value in match_dict.items():
 								writer.writerow(value)
@@ -315,7 +319,9 @@ class ConvertJsonToTSV(object):
 								ordered[0],
 								rgi_data[hsp][ordered[0]]["model_id"],
 								nudged,
-								note
+								note,
+								rgi_data[hsp][ordered[0]]["hit_start"],
+								rgi_data[hsp][ordered[0]]["hit_end"]
 								]
 
 							for key, value in match_dict.items():

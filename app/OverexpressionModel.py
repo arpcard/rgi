@@ -166,6 +166,9 @@ class Overexpression(BaseModel):
 										ppinsidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 										ppinsidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 										ppinsidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
+										ppinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+										ppinsidedict["hit_end"] = (hsp.sbjct_end)*3
+                
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
@@ -243,6 +246,8 @@ class Overexpression(BaseModel):
 													sinsidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 													sinsidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 													sinsidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
+													sinsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+													snsidedict["hit_end"] = (hsp.sbjct_end)*3
 													
 													if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 														sinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
@@ -305,6 +310,8 @@ class Overexpression(BaseModel):
 												insidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 												insidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 												insidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
+												insidedict["hit_start"] = (hsp.sbjct_start-1)*3
+												insidedict["hit_end"] = (hsp.sbjct_end)*3
 												
 												if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 													insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
@@ -367,6 +374,8 @@ class Overexpression(BaseModel):
 										linsidedict["orf_start"] = self.extract_nth_hash(orfInfo.decode(), 1)
 										linsidedict["orf_end"] = self.extract_nth_hash(orfInfo.decode(), 2)
 										linsidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0)
+										linsidedict["hit_start"] = (hsp.sbjct_start-1)*3
+										linsidedict["hit_end"] = (hsp.sbjct_end)*3
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
 											linsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
