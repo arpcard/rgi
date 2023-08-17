@@ -87,7 +87,8 @@ class ConvertJsonToTSV(object):
 								"Nudged",
 								"Note",
 								"Hit_Start",
-								"Hit_End"])
+								"Hit_End",
+								"Antibiotic"])
 
 				if os.path.isfile(self.filepath):
 					with open(self.filepath) as rgi_file:
@@ -258,7 +259,9 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note,
 								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"]
+								rgi_data[hsp][ordered[0]]["hit_end"],
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Antibiotic')
 								]
 							for key, value in match_dict.items():
 								writer.writerow(value)
@@ -321,7 +324,9 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note,
 								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"]
+								rgi_data[hsp][ordered[0]]["hit_end"],
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Antibiotic'),
 								]
 
 							for key, value in match_dict.items():
