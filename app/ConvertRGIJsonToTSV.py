@@ -62,32 +62,33 @@ class ConvertJsonToTSV(object):
 			with open(os.path.join(f_path, "{}.txt".format(os.path.splitext(f_name)[0])), "w") as af:
 				writer = csv.writer(af, delimiter='\t', dialect='excel')
 				writer.writerow(["ORF_ID",
-                                "Contig",
-                                "Start",
-                                "Stop",
-                                "Orientation",
-                                "Cut_Off",
-                                "Pass_Bitscore",
-                                "Best_Hit_Bitscore",
-                                "Best_Hit_ARO",
-                                "Best_Identities",
-                                "ARO",
-                                "Model_type",
-                                "SNPs_in_Best_Hit_ARO",
+								"Contig",
+								"Start",
+								"Stop",
+								"Orientation",
+								"Cut_Off",
+								"Pass_Bitscore",
+								"Best_Hit_Bitscore",
+								"Best_Hit_ARO",
+								"Best_Identities",
+								"ARO",
+								"Model_type",
+								"SNPs_in_Best_Hit_ARO",
 								"Other_SNPs",
-                                "Drug Class",
-                                "Resistance Mechanism",
-                                "AMR Gene Family",
-                                "Predicted_DNA",
-                                "Predicted_Protein",
-                                "CARD_Protein_Sequence",
-                                "Percentage Length of Reference Sequence",
-                                "ID",
-                                "Model_ID",
+								"Drug Class",
+								"Resistance Mechanism",
+								"AMR Gene Family",
+								"Predicted_DNA",
+								"Predicted_Protein",
+								"CARD_Protein_Sequence",
+								"Percentage Length of Reference Sequence",
+								"ID",
+								"Model_ID",
 								"Nudged",
 								"Note",
 								"Hit_Start",
-								"Hit_End"])
+								"Hit_End",
+								"Antibiotic"])
 
 				if os.path.isfile(self.filepath):
 					with open(self.filepath) as rgi_file:
@@ -238,16 +239,16 @@ class ConvertJsonToTSV(object):
 								rgi_data[hsp][ordered[0]]["bit_score"],
 								rgi_data[hsp][ordered[0]]["ARO_name"],
 								rgi_data[hsp][ordered[0]]["perc_identity"],
-                                rgi_data[hsp][ordered[0]]["ARO_accession"],
+								rgi_data[hsp][ordered[0]]["ARO_accession"],
 								rgi_data[hsp][ordered[0]]["model_type"],
 								best_snps,
 								other_snps,
 								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
 									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Drug Class'),
-                                "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
-                                	if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Resistance Mechanism'),
-                                "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
-                                	if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'AMR Gene Family'),
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Resistance Mechanism'),
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'AMR Gene Family'),
 								orf_dna,
 								orf_prot,
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
@@ -258,7 +259,9 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note,
 								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"]
+								rgi_data[hsp][ordered[0]]["hit_end"],
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Antibiotic')
 								]
 							for key, value in match_dict.items():
 								writer.writerow(value)
@@ -302,16 +305,16 @@ class ConvertJsonToTSV(object):
 								rgi_data[hsp][ordered[0]]["bit_score"],
 								rgi_data[hsp][ordered[0]]["ARO_name"],
 								rgi_data[hsp][ordered[0]]["perc_identity"],
-                                rgi_data[hsp][ordered[0]]["ARO_accession"],
+								rgi_data[hsp][ordered[0]]["ARO_accession"],
 								rgi_data[hsp][ordered[0]]["model_type"],
 								best_snps,
 								other_snps,
 								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
 									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Drug Class'),
-                                "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
-                                	if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Resistance Mechanism'),
-                                "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
-                                	if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'AMR Gene Family'),
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Resistance Mechanism'),
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'AMR Gene Family'),
 								"",
 								rgi_data[hsp][ordered[0]]["orf_prot_sequence"],
 								rgi_data[hsp][ordered[0]]["sequence_from_broadstreet"],
@@ -321,7 +324,9 @@ class ConvertJsonToTSV(object):
 								nudged,
 								note,
 								rgi_data[hsp][ordered[0]]["hit_start"],
-								rgi_data[hsp][ordered[0]]["hit_end"]
+								rgi_data[hsp][ordered[0]]["hit_end"],
+								"; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"] \
+									if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Antibiotic'),
 								]
 
 							for key, value in match_dict.items():
