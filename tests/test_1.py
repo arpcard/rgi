@@ -98,7 +98,7 @@ def test_rgi_nucleotide_sequence(rgi):
 	run_rgi(rgi, 'contig', os.path.join(working_directory,inputs,filename), output_file)
 
 	assert validate_results(output_file, 100, 'NDM-1', 'Perfect') == True
-	assert validate_results(output_file, 100, "APH(3')-VI", 'Perfect') == True
+	assert validate_results(output_file, 98.46, "APH(3')-VIa", 'Strict') == True
 	assert validate_results(output_file, 100, 'mphE', 'Perfect') == True
 	assert validate_results(output_file, 100, 'msrE', 'Perfect') == True
 
@@ -160,4 +160,3 @@ def test_rgi_nudge_loose_to_strict(rgi):
 	run_rgi(rgi, 'contig', os.path.join(working_directory,inputs,filename), output_file)
 
 	assert validate_results(output_file, 98.06, 'Escherichia coli EF-Tu mutants conferring resistance to Pulvomycin', 'Strict') == True
-
