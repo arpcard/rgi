@@ -65,9 +65,9 @@ class Homolog(BaseModel):
 						else:
 							c += 1
 					orffrom = orfInfo[c:]
-				
+
 					modelTypeID = self.extract_nth_bar(alignTitle, 0)
-					
+
 					if modelTypeID == 40292:
 						spacepos = alignTitle.index(' ')
 						hitid = alignTitle[0:spacepos]
@@ -78,7 +78,7 @@ class Homolog(BaseModel):
 						seqinModel = modelDescrpt[underscoreinMD+1: modelDescrpt.index(' ')]
 
 						pass_bitscore = "{}".format(self.extract_nth_bar(alignment.title, 1))
-						pass_evalue = "{}".format("n/a")		
+						pass_evalue = "{}".format("n/a")
 
 						# logger.info("pass_evalue: {}".format(pass_evalue))
 						# logger.info("pass_bitscore: {}".format(pass_bitscore))
@@ -94,7 +94,7 @@ class Homolog(BaseModel):
 								card_sequence = str(json_data[modelID]["model_sequences"]["sequence"][seqinModel]["protein_sequence"]["sequence"])
 							except Exception as e:
 								logger.warning("Exception : {} -> {} -> Model({}) missing in database. Please generate new database.".format(type(e), e, modelID))
-								
+
 							# if predicted_genes_dict:
 							# 	if orfInfo.strip() in predicted_genes_dict.keys():
 							# 		orf_protein_sequence = str(Seq(predicted_genes_dict[orfInfo.decode()], generic_dna).translate(table=11)).strip("*")
@@ -153,7 +153,7 @@ class Homolog(BaseModel):
 										ppinsidedict["hit_end"] = (hsp.sbjct_end)*3
 
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
-											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
+											ppinsidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
 											# ppinsidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 											ppinsidedict["orf_prot_sequence"] =  orf_protein_sequence
 										else:
@@ -165,6 +165,9 @@ class Homolog(BaseModel):
 										ppinsidedict["query_end"] = hsp.query_start + realQueryLength
 										ppinsidedict["query_from"] = blast_record.query
 										ppinsidedict["orf_prot_sequence"] = orf_protein_sequence
+										ppinsidedict["hit_start"] = ""
+										ppinsidedict["hit_end"] = ""
+
 
 									elif self.input_type == 'read':
 										pass
@@ -179,7 +182,7 @@ class Homolog(BaseModel):
 									insidedict = {}
 									insidedict["type_match"] = "Strict"
 									insidedict["orf_strand"] = self.extract_nth_bar(orfInfo.decode(), 0)
-									insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)							
+									insidedict["orf_start"] = self.extract_nth_bar(orfInfo.decode(), 1)
 									insidedict["orf_end"] = self.extract_nth_bar(orfInfo.decode(), 2)
 									insidedict["orf_from"] = orffrom.decode()
 									insidedict["model_name"] = json_data[modelID]["model_name"]
@@ -214,20 +217,22 @@ class Homolog(BaseModel):
 										insidedict["orf_from"] = self.extract_nth_hash(orfInfo.decode(), 0).rstrip()
 										insidedict["hit_start"] = (hsp.sbjct_start-1)*3
 										insidedict["hit_end"] = (hsp.sbjct_end)*3
-										
+
 										if orfInfo.decode().split(' # ')[0] in predicted_genes_dict:
-											insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]] 
+											insidedict["orf_dna_sequence"] = predicted_genes_dict[orfInfo.decode().split(' # ')[0]]
 											# insidedict["orf_prot_sequence"] = str(Seq(predicted_genes_dict[orfInfo.decode().split(' # ')[0]], generic_dna).translate(table=11)).strip("*")
 											insidedict["orf_prot_sequence"] = orf_protein_sequence
 										else:
 											insidedict["orf_dna_sequence"] = ""
-											insidedict["orf_prot_sequence"] = ""									
+											insidedict["orf_prot_sequence"] = ""
 
 									elif self.input_type == 'protein':
 										insidedict["query_start"] = hsp.query_start
 										insidedict["query_end"] = hsp.query_start + realQueryLength
 										insidedict["query_from"] = blast_record.query
 										insidedict["orf_prot_sequence"] = orf_protein_sequence
+										insidedict["hit_start"] = ""
+										insidedict["hit_end"] = ""
 
 									elif self.input_type == 'read':
 										pass
@@ -293,6 +298,9 @@ class Homolog(BaseModel):
 										linsidedict["query_end"] = hsp.query_start + realQueryLength
 										linsidedict["query_from"] = blast_record.query
 										linsidedict["orf_prot_sequence"] = orf_protein_sequence
+										linsidedict["hit_start"] = ""
+										linsidedict["hit_end"] = ""
+
 
 									elif self.input_type == 'read':
 										pass
@@ -308,4 +316,3 @@ class Homolog(BaseModel):
 				blastResults = self.results(blastResults, blast_record.query, perfect, strict , loose, self.include_nudge)
 
 			return blastResults
-
