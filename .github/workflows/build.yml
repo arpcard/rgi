@@ -56,7 +56,7 @@ jobs:
         pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
 
         # bamtools
-        wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
+        curl -O -s https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
         tar xzf v2.5.1.tar.gz
         pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
 
