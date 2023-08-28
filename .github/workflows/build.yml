@@ -35,51 +35,42 @@ jobs:
         sudo apt-get install -y prodigal
         sudo apt-get install -y libtbb-dev
 
-        # install blast
         wget http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
         blastp -version
 
-        # bowtie2
         wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
         unzip bowtie2-2.4.5-linux-x86_64.zip
         sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
         bowtie2 --version
 
-        # diamond
         wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
         sudo mv diamond /usr/bin
         diamond --version
 
-        # bwa
         git clone https://github.com/lh3/bwa.git
         pushd bwa && make && sudo mv bwa /usr/bin && popd
 
-        # jellyfish
         wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
         mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
         jellyfish --version
 
-        # samtools
-        #wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-        #tar jxf samtools-1.9.tar.bz2
-        #pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
-        #samtools --version
+        wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+        tar jxf samtools-1.9.tar.bz2
+        pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
+        samtools --version
 
-        # bamtools
         curl -O -s https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
         tar xzf v2.5.1.tar.gz
         pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
         bamtools --version
 
-        # bedtools
         wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
         chmod +x bedtools && sudo mv bedtools /usr/bin
         bedtools --version
 
-        # kma
         git clone https://bitbucket.org/genomicepidemiology/kma.git
         pushd kma && make && sudo mv kma /usr/bin && popd
         kma -v
@@ -88,7 +79,6 @@ jobs:
         python -m pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-        # install RGI
         pip install .
         rgi -h
 
