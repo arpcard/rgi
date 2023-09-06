@@ -223,7 +223,7 @@ class ConvertJsonToTSV(object):
 									other_snps = "n/a"
 
 								if rgi_data[hsp][hit]["model_type_id"] in [40295]:
-									percentage_length_reference_sequence = format(((orf_end - orf_start) /\
+									percentage_length_reference_sequence = format((abs(orf_end - orf_start) /\
 										len(rgi_data[hsp][ordered[0]]["dna_sequence_from_broadstreet"]))*100, '.2f')
 								else:
 									percentage_length_reference_sequence = format((len(rgi_data[hsp][ordered[0]]["orf_prot_sequence"]) /\
