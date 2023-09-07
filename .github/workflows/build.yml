@@ -80,7 +80,7 @@ jobs:
         echo "=====> install rgi ..."
         echo `pwd`
         tree -L 1
-        pip3 install --target .
+        pip3 install -r requirements.txt --target .
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
