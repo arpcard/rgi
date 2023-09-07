@@ -15,7 +15,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -31,57 +30,68 @@ jobs:
         architecture: 'x64'
     - name: Install dependencies
       run: |
-        sudo apt-get -qq update
-        sudo apt-get install -y prodigal
-        sudo apt-get install -y libtbb-dev
+        echo "=====> update and install prodigal, libs, cmake, and make ..."
+        echo `pwd`
 
+        apt-get -qq update
+        apt-get install -y prodigal
+        apt-get install -y libtbb-dev
+        apt-get install -y cmake g++ make
+
+        echo "install blast ..."
         wget http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
-        sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
-        blastp -version
+        mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
         wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
         unzip bowtie2-2.4.5-linux-x86_64.zip
-        sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
-        bowtie2 --version
+        mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
 
         wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
-        sudo mv diamond /usr/bin
-        diamond --version
+        mv diamond /usr/bin
 
         git clone https://github.com/lh3/bwa.git
         pushd bwa && make && sudo mv bwa /usr/bin && popd
 
         wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
         mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
-        jellyfish --version
 
         wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
         tar jxf samtools-1.9.tar.bz2
         pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
-        samtools --version
 
-        curl -O -s https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
-        tar xzf v2.5.1.tar.gz
-        pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
-        bamtools --version
+        # wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
+        # tar xzf v2.5.1.tar.gz
+        # pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
+        # bamtools --version
 
         wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
         chmod +x bedtools && sudo mv bedtools /usr/bin
-        bedtools --version
 
         git clone https://bitbucket.org/genomicepidemiology/kma.git
         pushd kma && make && sudo mv kma /usr/bin && popd
-        kma -v
 
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-        pip install .
-        rgi -h
-
+    - name: Install rgi
+      run: |
+        echo "=====> install rgi ..."
+        echo `pwd`
+        pip install --debug -U -r requirements.txt --target .
+    - name: Check versions
+      run: |
+          echo "=====> check versions installed ..."
+          echo `pwd`
+          blastp -version
+          bowtie2 --version
+          diamond --version
+          jellyfish --version
+          samtools --version
+          bedtools --version
+          kma -v
+          rgi -h
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -90,4 +100,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        ./test.sh
+        bash test.sh

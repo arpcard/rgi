@@ -12,7 +12,7 @@ blastp -version
 bowtie2 --version
 diamond --version
 samtools --version
-bamtools --version
+# bamtools --version
 bedtools --version
 # bwa
 jellyfish --version
