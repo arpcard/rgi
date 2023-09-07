@@ -33,23 +33,23 @@ jobs:
         echo "=====> update and install prodigal, libs, cmake, and make ..."
         echo `pwd`
 
-        apt-get -qq update
-        apt-get install -y prodigal
-        apt-get install -y libtbb-dev
-        apt-get install -y cmake g++ make
+        sudo apt-get -qq update
+        sudo apt-get install -y prodigal
+        sudo apt-get install -y libtbb-dev
+        sudo apt-get install -y cmake g++ make
 
         echo "install blast ..."
         wget http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
-        mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
+        sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
         wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
         unzip bowtie2-2.4.5-linux-x86_64.zip
-        mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
+        sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
 
         wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
-        mv diamond /usr/bin
+        sudo mv diamond /usr/bin
 
         git clone https://github.com/lh3/bwa.git
         pushd bwa && make && sudo mv bwa /usr/bin && popd
