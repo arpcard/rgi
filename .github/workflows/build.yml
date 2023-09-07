@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7"]
+        python-version: ["3.7","3.8","3.9","3.10","3.11"]
 
     steps:
     - uses: actions/checkout@v3
@@ -79,6 +79,7 @@ jobs:
       run: |
         echo "=====> install rgi ..."
         echo `pwd`
+        pip install biopython 
         pip install --debug -U -r requirements.txt --target .
         pip install git+https://github.com/arpcard/rgi.git
     - name: Check versions
