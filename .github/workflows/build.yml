@@ -79,14 +79,8 @@ jobs:
       run: |
         echo "=====> install rgi ..."
         echo `pwd`
-        which python
-        python -V
-        python3 -V
-        pip --version
-        pip3 --version
-        pip3 install biopython
-        pip3 install --debug -U -r requirements.txt --target .
-        pip3 install git+https://github.com/arpcard/rgi.git
+        tree -L 1
+        pip3 install --target .
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
