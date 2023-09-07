@@ -20,7 +20,7 @@ kma -v
 
 echo "=================================== RGI EXECUTABLE LOCATION ==================================="
 which rgi
-./rgi -h
+rgi -h
 
 echo "=================================== DOWNLOAD CARD CANONICAL DATA ==================================="
 # get latest card database
@@ -38,7 +38,7 @@ gunzip card_variants/*.gz
 echo "=================================== CARD CANONICAL ANNOTATIONS ==================================="
 # create fasta files with annotations from card.json
 echo "$cmd rgi card_annotation --input card_data/card.json"
-./rgi card_annotation --input card_data/card.json
+rgi card_annotation --input card_data/card.json
 
 echo "=================================== VERSIONS ==================================="
 # remove file with '_all.fasta'
@@ -51,23 +51,23 @@ echo "$cmd variants_version: $variants_version"
 echo "=================================== CARD VARIANTS ANNOTATIONS ==================================="
 # create fasta files with annotations from variants
 echo "$cmd rgi wildcard_annotation --input_directory card_variants --version '$variants_version' --card_json card_data/card.json"
-./rgi wildcard_annotation --input_directory card_variants --version "$variants_version" --card_json card_data/card.json
+rgi wildcard_annotation --input_directory card_variants --version "$variants_version" --card_json card_data/card.json
 
 echo "=================================== CLEAN OLD DATABASES ==================================="
 # clean
 echo "$cmd rgi clean --debug"
-./rgi clean --debug
+rgi clean --debug
 
 echo "=================================== LOAD DATABASES ==================================="
 # load
 echo "$cmd rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version '$variants_version' --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug"
-./rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug
+rgi load --card_json card_data/card.json --card_annotation card_database_v${data_version}.fasta --wildcard_index card_variants/index-for-model-sequences.txt --wildcard_version "$variants_version" --wildcard_annotation wildcard_database_v${variants_version}.fasta --debug
 
 
 echo "=================================== CHECK LOADED DATABASES ==================================="
 # check database
 echo "$cmd rgi database -v --all"
-./rgi database -v --all
+rgi database -v --all
 
 echo "=================================== COPY DATA & INPUTS ==================================="
 # for test_1.py
