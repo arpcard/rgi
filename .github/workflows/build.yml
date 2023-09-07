@@ -79,7 +79,8 @@ jobs:
       run: |
         echo "=====> install rgi ..."
         echo `pwd`
-        pip install biopython 
+        which python
+        pip install biopython
         pip install --debug -U -r requirements.txt --target .
         pip install git+https://github.com/arpcard/rgi.git
     - name: Check versions
