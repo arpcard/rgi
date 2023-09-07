@@ -80,9 +80,13 @@ jobs:
         echo "=====> install rgi ..."
         echo `pwd`
         which python
-        pip install biopython
-        pip install --debug -U -r requirements.txt --target .
-        pip install git+https://github.com/arpcard/rgi.git
+        python -V
+        python3 -V
+        pip --version
+        pip3 --version
+        pip3 install biopython
+        pip3 install --debug -U -r requirements.txt --target .
+        pip3 install git+https://github.com/arpcard/rgi.git
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
