@@ -1,4 +1,4 @@
-biopython==1.78
+biopython>=1.78
 filetype>=1.0.0
 pytest>=3.0.0
 pandas>=0.15.0
