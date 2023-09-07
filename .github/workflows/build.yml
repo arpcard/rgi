@@ -82,8 +82,8 @@ jobs:
         echo "=====> install rgi ..."
         echo `pwd`
         tree -L 1
-        pip3 install -r requirements.txt
-        pip3 install .
+        python setup.py build
+        sudo python setup.py install
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
