@@ -80,6 +80,7 @@ jobs:
         echo "=====> install rgi ..."
         echo `pwd`
         pip install --debug -U -r requirements.txt --target .
+        pip install git+https://github.com/arpcard/rgi.git
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
