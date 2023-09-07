@@ -4,8 +4,8 @@ import logging
 import json
 
 # from Bio.Blast import NCBIXML
-from Bio.Seq import Seq
-from Bio import SeqIO
+#from Bio.Seq import Seq
+# from Bio import SeqIO
 
 # ====================================================================================
 # FUNTIONS

@@ -1,6 +1,7 @@
 from app.Base import BaseModel
 from app.settings import *
 from Bio.Blast import NCBIXML
+from Bio.Seq import Seq
 
 class Overexpression(BaseModel):
 	"""Class for overexpression searches."""

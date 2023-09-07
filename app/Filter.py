@@ -7,6 +7,7 @@ from app.Blast import Blast
 from app.Database import Database
 from app.ConvertRGIJsonToTSV import ConvertJsonToTSV
 from app.settings import *
+from Bio import SeqIO
 
 import hashlib
 import multiprocessing
@@ -88,8 +89,8 @@ class Filter(BaseModel):
 			os.path.join(self.working_directory,"{}.temp.{}.json".format(file_name, "overexpression")), \
 			os.path.join(self.working_directory,"{}.temp.{}.json".format(file_name, "rrna"))
 			)
-		# combine 3 json files			
-		obj.combine_jsons()	
+		# combine 3 json files
+		obj.combine_jsons()
 		# write tsv
 		obj.run()
 
@@ -104,7 +105,7 @@ class Filter(BaseModel):
 		prepare_output_thread = multiprocessing.Process(target=self.prepare_output, args=())
 		prepare_output_thread.start()
 		prepare_output_thread.join()
-		if prepare_output_thread.exitcode: 
+		if prepare_output_thread.exitcode:
 		    raise Exception()
 		cleanup_thread = multiprocessing.Process(target=self.cleanup, args=())
 		cleanup_thread.start()
@@ -125,7 +126,7 @@ class Filter(BaseModel):
 
 			file_name = os.path.basename(self.input_sequence)
 			with open(os.path.join(self.working_directory,"{}.{}.json".format(file_name, model_type)), 'w') as fout:
-				fout.write(json.dumps(res))			
+				fout.write(json.dumps(res))
 
 			# with open(os.path.splitext(self.output_file)[0]+".{}.json".format(model_type), 'w') as fout:
 			# 	fout.write(json.dumps(res))

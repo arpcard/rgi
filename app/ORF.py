@@ -1,4 +1,4 @@
-from app.settings import os, SeqIO, logger
+from app.settings import os, logger
 import contextlib, tempfile, time, fileinput, math, multiprocessing, shutil
 from multiprocessing.pool import ThreadPool
 import pyrodigal

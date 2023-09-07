@@ -1,4 +1,5 @@
 from app.settings import *
+from Bio import SeqIO
 
 class Analyser(object):
 	"""Class to find analyse fasta files."""
@@ -24,4 +25,3 @@ class Analyser(object):
 				continue
 			d[checksum] = record.description
 			checksums.add(checksum)
-
