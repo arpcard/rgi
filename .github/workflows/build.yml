@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  BLAST_VERSION: 2.9.0
+  BLAST_VERSION: 2.14.1
 
 jobs:
   build:
