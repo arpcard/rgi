@@ -96,8 +96,8 @@ pushd tests
 echo `pwd`
 tree -L 2
 # echo "$cmd pytest --capture=fd -v -rxs"
-pytest test_1.py -v -rxs --color=auto --durations=0 -k "protein"
-# pytest --capture=fd -v -rxs
+#pytest test_1.py -v -rxs --color=auto --durations=0 -k "protein"
+pytest --capture=fd -v -rxs
 popd
 
 echo "=================================== DONE ==================================="
