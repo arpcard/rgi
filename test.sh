@@ -12,7 +12,7 @@ blastp -version
 bowtie2 --version
 diamond --version
 samtools --version
-# bamtools --version
+bamtools --version
 bedtools --version
 # bwa
 jellyfish --version
@@ -23,7 +23,7 @@ which rgi
 rgi -h
 
 echo "=================================== RGI AUTO LOAD ==================================="
-rgi auto_load --clean --debug
+rgi auto_load --clean
 # echo "=================================== DOWNLOAD CARD CANONICAL DATA ==================================="
 # # get latest card database
 # wget -O card_data.tar.bz2 --no-check-certificate https://card.mcmaster.ca/latest/data

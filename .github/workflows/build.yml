@@ -30,60 +30,58 @@ jobs:
         architecture: 'x64'
     - name: Install dependencies
       run: |
-        echo "=====> update and install prodigal, libs, cmake, and make ..."
-        echo `pwd`
 
         sudo apt-get -qq update
-        sudo apt-get install -y prodigal
-        sudo apt-get install -y libtbb-dev
-        sudo apt-get install -y cmake g++ make
+        sudo apt-get -qq install -y prodigal
+        sudo apt-get -qq install -y libtbb-dev
+        sudo apt-get -qq install -y cmake g++ make
 
         echo "install blast ..."
-        wget http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
+        wget --quiet http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
-        wget https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
-        unzip bowtie2-2.4.5-linux-x86_64.zip
+        wget --quiet https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
+        unzip -q bowtie2-2.4.5-linux-x86_64.zip
         sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
 
-        wget http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
+        wget --quiet http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
         sudo mv diamond /usr/bin
 
-        git clone https://github.com/lh3/bwa.git
-        pushd bwa && make && sudo mv bwa /usr/bin && popd
+        git clone --quiet https://github.com/lh3/bwa.git
+        pushd bwa && make --quiet && sudo mv bwa /usr/bin && popd
 
-        wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
+        wget --quiet https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
         mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
 
-        wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+        wget --quiet https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
         tar jxf samtools-1.9.tar.bz2
-        pushd samtools-1.9 && ./configure && make && sudo mv samtools /usr/bin && popd
+        pushd samtools-1.9 && ./configure --enable-silent-rules && make --quiet && sudo mv samtools /usr/bin && popd
 
-        # wget https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz
-        # tar xzf v2.5.1.tar.gz
-        # pushd bamtools-2.5.1/ && mkdir build && cd build && cmake .. && make && sudo make install && popd
-        # bamtools --version
+        wget --quiet https://github.com/pezmaster31/bamtools/archive/v2.5.2.tar.gz
+        tar xzf v2.5.2.tar.gz
+        pushd bamtools-2.5.2/ && mkdir build && cd build && cmake .. && make --quiet && sudo make install --quiet && popd
+        bamtools --version
 
-        wget https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
+        wget --quiet https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
         chmod +x bedtools && sudo mv bedtools /usr/bin
 
-        git clone https://bitbucket.org/genomicepidemiology/kma.git
-        pushd kma && make && sudo mv kma /usr/bin && popd
+        git clone --quiet https://bitbucket.org/genomicepidemiology/kma.git
+        pushd kma && make --quiet && sudo mv kma /usr/bin && popd
 
-        python -m pip install --upgrade pip
-        #python -m pip install flake8 pytest
-        python -m pip install pytest
-        python -m pip install setuptools
+        python -m pip install --upgrade --quiet pip
+        #python -m pip install --quiet flake8 pytest
+        python -m pip install --quiet pytest
+        python -m pip install --quiet setuptools
 
     - name: Install rgi
       run: |
         echo "=====> install rgi ..."
         echo `pwd`
-        tree -L 1
-        python setup.py build
-        sudo python setup.py install
+        pip3 install -r requirements.txt
+        pip3 install setuptools
+        pip3 install .
     - name: Check versions
       run: |
           echo "=====> check versions installed ..."
