@@ -89,10 +89,15 @@ rgi auto_load --clean
 
 echo "=================================== RUN TESTS ==================================="
 # run unit tests
-echo "$cmd cd tests"
-cd tests
-echo "$cmd pytest --capture=fd -v -rxs"
-pytest --capture=fd -v -rxs
+# echo "$cmd cd tests"
+pushd tests
+# cd tests
+echo `pwd`
+tree -L 2
+# echo "$cmd pytest --capture=fd -v -rxs"
+pytest test_1.py -v -rxs --color=auto --durations=0 -k "protein"
+# pytest --capture=fd -v -rxs
+popd
 
 echo "=================================== DONE ==================================="
 

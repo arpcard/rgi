@@ -31,7 +31,12 @@ def main(args):
 	# get latest card database
 	data=os.path.join(directory,"data")
 	card_data=os.path.join(directory,"card_data")
-	os.system("wget -O {data} --no-check-certificate https://card.mcmaster.ca/download/0/broadstreet-v{card_cannonical_version}.tar.bz2".format(
+	verbose = ""
+	if debug != "":
+		verbose = "--quiet"
+
+	os.system("wget {verbose} -O {data} --no-check-certificate https://card.mcmaster.ca/download/0/broadstreet-v{card_cannonical_version}.tar.bz2".format(
+		verbose=verbose,
 		data=data,
 		card_cannonical_version=card_cannonical_version
 		)
@@ -42,14 +47,15 @@ def main(args):
 	logger.info("=================================== DOWNLOAD CARD VARIANTS DATA ===================================")
 	variants=os.path.join(directory,"variants")
 	card_variants=os.path.join(directory,"card_variants")
-	os.system("wget -O {variants} --no-check-certificate https://card.mcmaster.ca/download/6/prevalence-v{card_variants_version}.tar.bz2".format(
+	os.system("wget {verbose} -O {variants} --no-check-certificate https://card.mcmaster.ca/download/6/prevalence-v{card_variants_version}.tar.bz2".format(
+		verbose=verbose,
 		variants=variants,
 		card_variants_version=card_variants_version
 		)
 	)
 	os.system("mkdir -p {card_variants}".format(card_variants=card_variants))
 	os.system("tar xf {variants} -C {card_variants}".format(variants=variants,card_variants=card_variants))
-	os.system("gunzip {card_variants}/*.gz".format(card_variants=card_variants))
+	os.system("gunzip {verbose} {card_variants}/*.gz".format(verbose=verbose,card_variants=card_variants))
 
 	logger.info("=================================== CARD CANONICAL ANNOTATIONS ===================================")
 	os.system("rgi card_annotation --input {card_data}/card.json".format(card_data=card_data))
