@@ -1,5 +1,6 @@
 from app.Base import BaseModel
 from app.settings import *
+from Bio.Blast import NCBIXML
 
 class Variant(BaseModel):
 	"""Class for protein variant searches."""
