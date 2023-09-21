@@ -20,9 +20,19 @@ class Database(object):
 	def build_databases(self):
 		"""Build BLAST and DIAMOND databases."""
 		self.write_fasta_from_json()
+		self.create_blast_config()
 		self.make_blast_database()
 		self.make_diamond_database()
 		self.write_fasta_from_json_rna()
+
+	def create_blast_config(self):
+		"""
+		This function stops NCBI application from sending usage report (which it does by default).
+		For more information see https://www.ncbi.nlm.nih.gov/books/NBK569851
+		"""
+		config_file="{path}".format(path=os.path.join(self.db,".ncbirc"))
+		logger.info("config_file: {}".format(config_file))
+		os.system("echo 'export BLAST_USAGE_REPORT=false' >> {config_file}".format(config_file=config_file))
 
 	def make_blast_database(self):
 		"""Build BLAST database from a FASTA file."""
@@ -176,7 +186,7 @@ class Database(object):
 								for seq in j[i]['model_sequences']['sequence']:
 									if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
 										basecomplement = self.complementary_strand(j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence'])
-							
+
 										fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
 										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
 										fout.write('%s\n' % (basecomplement))
@@ -202,11 +212,8 @@ class Database(object):
 					   "R":"Y", "Y":"R", "S":"S", "W":"W", "B":"V", "V":"B", "H":"D", "D":"H"}
 		complement = []
 
-		for base in strand: 
+		for base in strand:
 			complement.append(self.trans[base])
-		
+
 		complement_seq = ''.join(complement)
 		return complement_seq
-
-
-

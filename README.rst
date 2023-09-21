@@ -5,6 +5,11 @@
     :scale: 100%
     :target: https://travis-ci.org/arpcard/rgi
 
+.. |build-status| image:: https://github.com/arpcard/rgi/actions/workflows/build.yml/badge.svg?branch=master
+		 :alt: Workflow status badge
+		 :scale: 100%
+		 :target: https://github.com/arpcard/rgi/actions/workflows/build.yml
+
 .. |docs| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
     :alt: Documentation
     :scale: 100%
