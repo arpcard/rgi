@@ -18,7 +18,7 @@ dependencies:
   - beautifulsoup4 4.9.3
   - requests 2.24.0
   - lxml 4.6.1
-  - blast 2.9.0
+  - blast 2.14.1
   - zlib
   - prodigal 2.6.3
   - pyrodigal >=2.0.0

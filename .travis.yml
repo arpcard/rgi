@@ -4,10 +4,10 @@ notifications:
   email: true
 
 python:
-  - "3.6"
+  - "3.7"
 
 env:
-  - BLAST_VERSION=2.9.0
+  - BLAST_VERSION=2.14.1
 
 before_install:
   - sudo apt-get -qq update
