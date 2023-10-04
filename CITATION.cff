@@ -1,145 +1,145 @@
 cff-version: 1.1.0
 date-released: 2020-01-01
-version: 5.2.0
-message: "If you use RGI or CARD in your research please cite it as follows:"
+version: 6.0.3
+message: "If you use RGI or CARD in your research please cite:"
 repository-code: "https://github.com/arpcard/rgi"
-title: "CARD 2020: antibiotic resistome surveillance with the comprehensive antibiotic resistance database"
+title: "CARD 2023: expanded curation, support for machine learning, and resistome prediction at the Comprehensive Antibiotic Resistance Database"
 journal: "Nucleic Acids Research"
-doi: "10.1093/nar/gkz935"
+doi: "10.1093/nar/gkac920"
 authors:
   -
-    affiliation: "McMaster University"
     family-names: "Alcock"
-    given-names: "Brian P"
+    given-names: "BP"
   -
-    affiliation: "McMaster University"
-    family-names: "Raphenya"
-    given-names: "Amogelang R"
-  -
-    affiliation: "McMaster University"
-    family-names: "Lau"
-    given-names: "Tammy T Y"
-  -
-    affiliation: "McMaster University"
-    family-names: "Tsang"
-    given-names: "Kara K"
-  -
-    affiliation: "McMaster University"
-    family-names: "Bouchard"
-    given-names: "Mégane"
-  -
-    affiliation: "McMaster University"
-    family-names: "Edalatmand"
-    given-names: "Arman"
-  -
-    affiliation: "McMaster University"
     family-names: "Huynh"
-    given-names: "William"
+    given-names: "W"
   -
-    affiliation: "McMaster University"
-    family-names: "Nguyen"
-    given-names: "Anna-Lisa V"
+    family-names: "Chalil"
+    given-names: "R"
   -
-    affiliation: "McMaster University"
-    family-names: "Cheng"
-    given-names: "Annie A"
+    family-names: "Smith"
+    given-names: "KW"
   -
-    affiliation: "McMaster University"
-    family-names: "Liu"
-    given-names: "Sihan"
+    family-names: "Raphenya"
+    given-names: "AR"
   -
-    affiliation: "McMaster University"
-    family-names: "Min"
-    given-names: "Sally Y"
+    family-names: "Wlodarski"
+    given-names: "MA"
   -
-    affiliation: "McMaster University"
-    family-names: "Miroshnichenko"
-    given-names: "Anatoly"
+    family-names: "Edalatmand"
+    given-names: "A"
   -
-    affiliation: "McMaster University"
-    family-names: "Tran"
-    given-names: "Hiu-Ki"
+    family-names: "Petkau"
+    given-names: "A"
   -
-    affiliation: "McMaster University"
-    family-names: "Werfalli"
-    given-names: "Rafik E"
+    family-names: "Syed"
+    given-names: "SA"
   -
-    affiliation: "McMaster University"
+    family-names: "Tsang"
+    given-names: "KK"
+  -
+    family-names: "Baker"
+    given-names: "SJC"
+  -
+    family-names: "Dave"
+    given-names: "M"
+  -
+    family-names: "McCarthy"
+    given-names: "MC"
+  -
+    family-names: "Mukiri"
+    given-names: "KM"
+  -
     family-names: "Nasir"
-    given-names: "Jalees A"
+    given-names: "JA"
   -
-    affiliation: "McMaster University"
-    family-names: "Oloni"
-    given-names: "Martins"
+    family-names: "Golbon"
+    given-names: "B"
   -
-    affiliation: "McMaster University"
-    family-names: "Speicher"
-    given-names: "David J"
+    family-names: "Imtiaz"
+    given-names: "H"
   -
-    affiliation: "McMaster University"
-    family-names: "Florescu"
-    given-names: "Alexandra"
+    family-names: "Jiang"
+    given-names: "X"
   -
-    affiliation: "McMaster University"
-    family-names: "Singh"
-    given-names: "Bhavya"
+    family-names: "Kaur"
+    given-names: "K"
   -
-    affiliation: "McMaster University"
-    family-names: "Faltyn"
-    given-names: "Mateusz"
+    family-names: "Kwong"
+    given-names: "M"
   -
-    affiliation: "National Autonomous University of Mexico"
-    family-names: "Hernandez"
-    given-names: "Koutoucheva, Anastasia"
+    family-names: "Liang"
+    given-names: "ZC"
   -
-    affiliation: "McMaster University"
-    family-names: "Sharma"
-    given-names: "Arjun N"
+    family-names: "Niu"
+    given-names: "KC"
   -
-    affiliation: "McMaster University"
+    family-names: "Shan"
+    given-names: "P"
+  -
+    family-names: "Yang"
+    given-names: "JYJ"
+  -
+    family-names: "Gray"
+    given-names: "KL"
+  -
+    family-names: "Hoad"
+    given-names: "GR"
+  -
+    family-names: "Jia"
+    given-names: "B"
+  -
+    family-names: "Bhando"
+    given-names: "T"
+  -
+    family-names: "Carfrae"
+    given-names: "LA"
+  -
+    family-names: "Farha"
+    given-names: "MA"
+  -
+    family-names: "French"
+    given-names: "S"
+  -
+    family-names: "Gordzevich"
+    given-names: "R"
+  -
+    family-names: "Rachwalski"
+    given-names: "K"
+  -
+    family-names: "Tu"
+    given-names: "MM"
+  -
     family-names: "Bordeleau"
-    given-names: "Emily"
+    given-names: "E"
   -
-    affiliation: "Harvard University"
-    family-names: "Pawlowski"
-    given-names: "Andrew C"
-  -
-    affiliation: "McMaster University"
-    family-names: "Zubyk"
-    given-names: "Haley L"
-  -
-    affiliation: "University of British Columbia"
     family-names: "Dooley"
-    given-names: "Damion"
+    given-names: "D"
   -
-    affiliation: "Simon Fraser University"
     family-names: "Griffiths"
-    given-names: "Emma"
+    given-names: "E"
   -
-    affiliation: "Dalhousie University"
+    family-names: "Zubyk"
+    given-names: "HL"
+  -
+    family-names: "Brown"
+    given-names: "ED"
+  -
     family-names: "Maguire"
-    given-names: "Finlay"
+    given-names: "F"
   -
-    affiliation: "Simon Fraser University"
-    family-names: "Winsor"
-    given-names: "Geoff L"
-  -
-    affiliation: "Dalhousie University"
     family-names: "Beiko"
-    given-names: "Robert G"
+    given-names: "RG"
   -
-    affiliation: "Simon Fraser University"
-    family-names: "Brinkman"
-    given-names: "Fiona S L"
-  -
-    affiliation: "University of British Columbia"
     family-names: "Hsiao"
-    given-names: "William W L"
+    given-names: "WWL"
   -
-    affiliation: "Public Health Agency of Canada"
-    family-names: "Domselaar"
-    given-names: "Gary V"
+    family-names: "Brinkman"
+    given-names: "FSL"
   -
-    affiliation: "McMaster University"
+    family-names: "Van"
+    given-names: "Domselaar"
+    given-names: "G"
+  -
     family-names: "McArthur"
-    given-names: "Andrew G"
+    given-names: "AG"
