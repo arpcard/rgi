@@ -256,7 +256,7 @@ The following conda command will install all RGI dependencies (listed below):
 
 
 - `Python 3.6 <https://www.python.org/>`_
-- `NCBI BLAST 2.9.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
+- `NCBI BLAST 2.14.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
 - `DIAMOND 0.8.36 <https://github.com/bbuchfink/diamond>`_
