@@ -1,0 +1,29 @@
+name: 'Close stale issues'
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  REPO_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  stale:
+    name: Stale
+    runs-on: ubuntu-latest
+    steps:
+      - name: get repository name
+        run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+      - uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.STALE_TOKEN }}
+          username: ${{ github.repository_owner }}
+          stale-issue-message: 'Issue is stale and will be closed in 7 days unless there is new activity'
+          stale-pr-message: 'PR is stale and will be closed in 7 days unless there is new activity'
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'stale-exempt,kind/feature-request'
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'stale-exempt'
+          remove-stale-when-updated: 'True'
+          operations-per-run: 100
+          days-before-stale: 60
+          days-before-close: 7
