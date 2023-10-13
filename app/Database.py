@@ -182,19 +182,21 @@ class Database(object):
 										if "23S" in j[i]['ARO_name']:
 											if s not in snpList_23s:
 												snpList_23s.append(s)
+								if snpList:
+									for seq in j[i]['model_sequences']['sequence']:
+										if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
+											basecomplement = self.complementary_strand(j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence'])
 
-								for seq in j[i]['model_sequences']['sequence']:
-									if j[i]['model_sequences']['sequence'][seq]['dna_sequence']['strand'] == "-":
-										basecomplement = self.complementary_strand(j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence'])
+											fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
+											% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+											fout.write('%s\n' % (basecomplement))
 
-										fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
-										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-										fout.write('%s\n' % (basecomplement))
-
-									else:
-										fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
-										% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-										fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence']))
+										else:
+											fout.write('>%s_%s | model_type_id: 40295 | pass_bit_score: %s | SNP: %s | %s\n' \
+											% (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+											fout.write('%s\n' % (j[i]['model_sequences']['sequence'][seq]['dna_sequence']['sequence']))
+					# reset mutations list
+					snpList = []
 
 		# write snps to file
 		with open(os.path.join(self.db,"16s_rRNA.txt"), 'w') as f16s:
