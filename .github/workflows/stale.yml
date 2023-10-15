@@ -16,7 +16,6 @@ jobs:
       - uses: actions/stale@v8
         with:
           repo-token: ${{ secrets.STALE_TOKEN }}
-          username: ${{ github.repository_owner }}
           stale-issue-message: 'Issue is stale and will be closed in 7 days unless there is new activity'
           stale-pr-message: 'PR is stale and will be closed in 7 days unless there is new activity'
           stale-issue-label: 'stale'
