@@ -1,10 +1,15 @@
 name: 'Close stale issues'
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '11 11 * * *'
 
 env:
   REPO_NAME: ${{ github.event.repository.name }}
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   stale:
@@ -15,7 +20,6 @@ jobs:
         run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
       - uses: actions/stale@v8
         with:
-          repo-token: ${{ secrets.STALE_TOKEN }}
           stale-issue-message: 'Issue is stale and will be closed in 7 days unless there is new activity'
           stale-pr-message: 'PR is stale and will be closed in 7 days unless there is new activity'
           stale-issue-label: 'stale'
