@@ -30,3 +30,5 @@ dependencies:
   - bowtie2 >=2.3.4.3
   - bwa >=0.7.17
   - kma >=1.2.26s
+  - bioconda::jellyfish
+  - dask
