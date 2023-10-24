@@ -94,7 +94,7 @@ class Heatmap(object):
         """Reformats the dataframe to handle categorization data"""
         for model in class_dict:
             if len(class_dict[model]) > 1:
-                df = df.append([df.loc[model]]*(len(class_dict[model])-1))
+                df = pd.concat([df, pd.DataFrame([df.loc[model]]*(len(class_dict[model])-1))])
 
         # Assigns a unique identifier to each entry to index the dataframe without duplicates
         count = Counter(df.index.values)
