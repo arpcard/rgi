@@ -1,6 +1,6 @@
 from app.settings import *
 import csv, glob
-from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import statistics
 from Bio import SeqIO, Seq
@@ -114,6 +114,19 @@ class BWT(object):
 
 		self.output_tab = os.path.join(self.working_directory, "{}.temp.txt".format(self.output_file))
 		self.output_tab_sequences = os.path.join(self.working_directory, "{}.seqs.temp.txt".format(self.output_file))
+		# Parse tab-delimited file into dictionary for mapped reads
+		self.alignments = {}
+		with open(self.output_tab_sequences, 'r') as csvfile:
+			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+			for row in reader:
+				self.alignments.setdefault(row[2], []).append({
+						"qname": str(row[0]),
+						"flag": str(row[1]),
+						"rname": str(row[2]),
+						"pos": str(row[3]),
+						"mapq": str(row[4]),
+						"mrnm": str(row[5])
+						})
 		self.output_tab_coverage = os.path.join(self.working_directory, "{}.coverage.temp.txt".format(self.output_file))
 		self.output_tab_coverage_all_positions =  os.path.join(self.working_directory, "{}.coverage_all_positions.temp.txt".format(self.output_file))
 		self.output_tab_coverage_all_positions_summary = os.path.join(self.working_directory, "{}.coverage_all_positions.summary.temp.txt".format(self.output_file))
@@ -642,23 +655,8 @@ class BWT(object):
 		return baits
 
 	def get_alignments(self, hit_id, ref_len=0):
-		"""
-		Parse tab-delimited file into dictionary for mapped reads
-		"""
-		sequences = []
-		with open(self.output_tab_sequences, 'r') as csvfile:
-			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
-			for row in reader:
-				if hit_id == row[2]:
-					sequences.append({
-						"qname": str(row[0]),
-						"flag": str(row[1]),
-						"rname": str(row[2]),
-						"pos": str(row[3]),
-						"mapq": str(row[4]),
-						"mrnm": str(row[5])
-						})
-			return sequences
+		sequences = self.alignments.get(hit_id, [])
+		return sequences
 
 	def get_coverage_details(self, hit_id):
 		"""
@@ -1183,10 +1181,10 @@ class BWT(object):
 					if trailing_bases:
 						consensus_sequence_protein = consensus_sequence_protein[:-1]
 
-					if alignment_hit in read_coverage.keys():
+					if read_coverage.get(alignment_hit):
 						read_coverage_depth = read_coverage[alignment_hit]["depth"]
 
-					if alignment_hit in mutation.keys():
+					if mutation.get(alignment_hit):
 						snps = "; ".join(mutation[alignment_hit])
 
 				except Exception as e:
@@ -1339,9 +1337,13 @@ class BWT(object):
 		for alignment_hit in reads.keys():
 			jobs.append((alignment_hit, models, variants, baits, reads, models_by_accession,mutation,read_coverage,consensus_sequence,))
 
-		with Pool(processes=self.threads) as p:
-			results = p.map_async(self.jobs, jobs)
-			summary = results.get()
+		with ThreadPoolExecutor(max_workers=self.threads) as executor:
+			futures = []
+			summary = []
+			for job in jobs:
+				futures.append(executor.submit(self.jobs, job))
+			for future in as_completed(futures):
+				summary.append(future.result())
 
 		# logger.info("Time: {}".format( format(time.time() - t0, '.3f')))
 		# write json
