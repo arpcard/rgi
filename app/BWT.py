@@ -114,19 +114,6 @@ class BWT(object):
 
 		self.output_tab = os.path.join(self.working_directory, "{}.temp.txt".format(self.output_file))
 		self.output_tab_sequences = os.path.join(self.working_directory, "{}.seqs.temp.txt".format(self.output_file))
-		# Parse tab-delimited file into dictionary for mapped reads
-		self.alignments = {}
-		with open(self.output_tab_sequences, 'r') as csvfile:
-			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
-			for row in reader:
-				self.alignments.setdefault(row[2], []).append({
-						"qname": str(row[0]),
-						"flag": str(row[1]),
-						"rname": str(row[2]),
-						"pos": str(row[3]),
-						"mapq": str(row[4]),
-						"mrnm": str(row[5])
-						})
 		self.output_tab_coverage = os.path.join(self.working_directory, "{}.coverage.temp.txt".format(self.output_file))
 		self.output_tab_coverage_all_positions =  os.path.join(self.working_directory, "{}.coverage_all_positions.temp.txt".format(self.output_file))
 		self.output_tab_coverage_all_positions_summary = os.path.join(self.working_directory, "{}.coverage_all_positions.summary.temp.txt".format(self.output_file))
@@ -392,6 +379,23 @@ class BWT(object):
 		output_tab=self.output_tab
 		subprocess.run(f"samtools idxstats {input_bam} > {output_tab}", shell=True, check=True)
 
+	def preload_alignments(self):
+		"""
+		Parse tab-delimited file into dictionary for mapped reads
+		"""
+		self.alignments = {}
+		with open(self.output_tab_sequences, 'r') as csvfile:
+			reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+			for row in reader:
+				self.alignments.setdefault(row[2], []).append({
+						"qname": str(row[0]),
+						"flag": str(row[1]),
+						"rname": str(row[2]),
+						"pos": str(row[3]),
+						"mapq": str(row[4]),
+						"mrnm": str(row[5])
+						})
+				
 	def get_qname_rname_sequence(self):
 		"""
 		MAPQ (mapping quality - describes the uniqueness of the alignment, 0=non-unique, >10 probably unique) | awk '$5 > 0'
@@ -407,6 +411,7 @@ class BWT(object):
 		input_bam=self.sorted_bam_sorted_file_length_100
 		output_tab=self.output_tab_sequences
 		subprocess.run(f"samtools view --threads {threads} {input_bam} | cut -f 1,2,3,4,5,7 | sort -s -n -k 1,1 > {output_tab}", shell=True, check=True)
+		self.preload_alignments()
 
 	def get_coverage(self):
 		"""
@@ -831,7 +836,7 @@ class BWT(object):
 					reads_to_baits[j] = [t]
 				else:
 					if t not in reads_to_baits[j]:
-					 reads_to_baits[j].append(t)
+						reads_to_baits[j].append(t)
 
 		with open(self.reads_mapping_data_json, "w") as outfile2:
 			json.dump(reads_to_baits, outfile2)
