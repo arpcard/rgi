@@ -211,34 +211,22 @@ Remove RGI package:
 Install RGI using Docker/Singularity
 ------------------------------------
 
-RGI is available via dockerhub or biocontainers full installed with all
+RGI is available via biocontainers full installed with all
 databases appropriately loaded.
 
 Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not already available
 
-- Pull the Docker container from dockerhub (built from Dockerfile in repository) or biocontainers (built from Conda package).
+- Pull the Docker container from biocontainers (built from Conda package at https://quay.io/repository/biocontainers/rgi?tab=tags&tag=latest).
 
     .. code-block:: sh
 
-        docker pull finlaymaguire/rgi:latest
+        docker pull quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0
 
-    Or
-
-    .. code-block:: sh
-
-        docker pull quay.io/biocontainers/rgi:5.1.1--py_0
-
-- RGI can be executed from the containers as follows:
+- RGI can be executed from the container as follows:
 
     .. code-block:: sh
 
-        docker run -v $PWD:/data finlaymaguire/rgi rgi -h
-
-    Or
-
-    .. code-block:: sh
-
-        docker run -v $PWD:/data quay.io/biocontainers/rgi:5.1.1--py_0 rgi -h
+        docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0 rgi -h
 
 
 Install Development Version
