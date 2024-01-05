@@ -451,7 +451,7 @@ class MainBase(object):
                             )
                         )
                 else:
-                    data_version = json_data["card_canonical"]["data_version"]
+                    data_version = json_data["card_json"]["data_version"]
         else:
             print('\nError: no databases found in data path: {}. \nSee `rgi load --help`\n'.format(os.path.abspath(db)))
             exit()
