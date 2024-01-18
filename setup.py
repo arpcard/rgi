@@ -5,7 +5,7 @@ pip install .
 
 or
 
-python setup.py buil1d
+python setup.py build
 python setup.py test
 python setup.py install
 
