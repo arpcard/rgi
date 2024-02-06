@@ -74,3 +74,320 @@ Lastly, analyzing metagenomic assemblies or merged metagenomic reads using RGI m
 
  > `What RGI settings are best for a Metagenome-Assembled Genome (MAG)? <https://github.com/arpcard/FAQ#rgi-faqs>`_
 
+Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
+-------------------------------------------------------------------------------
+
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e, nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
+
+.. code-block:: sh
+
+   rgi main -h
+
+.. code-block:: sh
+
+					usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
+					                [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose]
+					                [--include_nudge] [--local] [--clean] [--keep] [--debug]
+					                [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v]
+					                [-g {PRODIGAL,PYRODIGAL}] [--split_prodigal_jobs]
+
+					Resistance Gene Identifier - 6.0.2 - Main
+
+					optional arguments:
+					  -h, --help            show this help message and exit
+					  -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
+					                        input file must be in either FASTA (contig and
+					                        protein) or gzip format! e.g myFile.fasta,
+					                        myFasta.fasta.gz
+					  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+					                        output folder and base filename
+					  -t {contig,protein}, --input_type {contig,protein}
+					                        specify data input type (default = contig)
+					  -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
+					                        specify alignment tool (default = BLAST)
+					  -n THREADS, --num_threads THREADS
+					                        number of threads (CPUs) to use in the BLAST search
+					                        (default=16)
+					  --include_loose       include loose hits in addition to strict and perfect
+					                        hits (default: False)
+					  --include_nudge       include hits nudged from loose to strict hits
+					                        (default: False)
+					  --local               use local database (default: uses database in
+					                        executable directory)
+					  --clean               removes temporary files (default: False)
+					  --keep                keeps Prodigal CDS when used with --clean (default:
+					                        False)
+					  --debug               debug mode (default: False)
+					  --low_quality         use for short contigs to predict partial genes
+					                        (default: False)
+					  -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
+					                        specify a data-type (default = NA)
+					  -v, --version         prints software version number
+					  -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
+					                        specify ORF finding tool (default = PRODIGAL)
+					  --split_prodigal_jobs
+					                        run multiple prodigal jobs simultaneously for contigs
+					                        in a fasta file (default: False)
+
+
+Loading CARD Reference Data for RGI main
+`````````````````````````````````````````
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local
+
+Running RGI main with Genome or Assembly DNA Sequences
+```````````````````````````````````````````````````````
+
+The default settings for RGI main will include Perfect or Strict predictions via BLAST against CARD reference sequences for ORFs predicted by Prodigal from submitted nucleotide sequences, applying any additional mutation screening depending upon the detection model type, e.g. CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_. Prodigal ORF predictions will include complete start-to-stop ORFs only (ignoring those less than 30 bp).
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean
+
+For AMR gene discovery, this can be expanded to include all Loose matches:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --include_loose
+
+Or alternatively, users can select to list Loose matches of 95% identity or better as Strict matches, regardless of alignment length:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --include_nudge
+
+Short contigs, small plasmids, low quality assemblies, or merged metagenomic reads should be analyzed using Prodigal's algorithms for low quality/coverage assemblies (i.e. contigs <20,000 bp) and inclusion of partial gene prediction. If the low sequence quality option is selected, RGI uses Prodigal anonymous mode for open reading frame prediction, supporting calls of partial AMR genes from short or low quality contigs:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean --low_quality
+
+Arguments can be used in combination. For example, analysis of metagenomic assemblies can be a computationally intensive approach so users may wish to use the faster DIAMOND algorithms, but the data may include short contigs with partial ORFs so the --low_quality flag may also be desirable. Partial ORFs may not pass curated bitscore cut-offs or novel samples may contain divergent alleles, so nudging 95% identity Loose matches to Strict matches may aid resistome annotation, although we suggest manual sorting of results by % identity or HSP length:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
+        --include_nudge
+
+This same analysis can be threaded over many processors if high-performance computing is available:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/nucleotide_input.fasta
+        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
+        --include_nudge --num_threads 40 --split_prodigal_jobs
+
+Running RGI main with Protein Sequences
+```````````````````````````````````````
+
+If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
+
+   .. code-block:: sh
+
+      rgi clean --local
+
+Download CARD data:
+
+   .. code-block:: sh
+
+      wget https://card.mcmaster.ca/latest/data
+      tar -xvf data ./card.json
+
+Load into local or working directory:
+
+   .. code-block:: sh
+
+      rgi load --card_json /path/to/card.json --local
+
+If protein FASTA sequences are submitted, RGI skips ORF prediction and uses the protein sequences directly (thus excluding the `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_). The same parameter combinations as above can be used, e.g. RGI annotating protein sequencing using the defaults:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/protein_input.fasta
+        --output_file /path/to/output_file --local --clean -t protein
+
+As above, for AMR gene discovery this can be expanded to include all Loose matches:
+
+   .. code-block:: sh
+
+      rgi main --input_sequence /path/to/protein_input.fasta
+        --output_file /path/to/output_file --local --clean --include_loose -t protein
+
+Other parameters can be used alone or in combination as above.
+
+Running RGI main using GNU Parallel
+````````````````````````````````````
+
+System wide and writing log files for each input file. Note: add code below to script.sh then run with `./script.sh /path/to/input_files`.
+
+   .. code-block:: sh
+
+      #!/bin/bash
+      DIR=`find . -mindepth 1 -type d`
+      for D in $DIR; do
+            NAME=$(basename $D);
+            parallel --no-notice --progress -j+0 'rgi main -i {} -o {.} -n 16 -a diamond --clean --debug > {.}.log 2>&1' ::: $NAME/*.{fa,fasta};
+      done
+
+RGI main Tab-Delimited Output Details
+`````````````````````````````````````
+
++----------------------------------------------------------+------------------------------------------------+
+|    Field                                                 | Contents                                       |
++==========================================================+================================================+
+|    ORF_ID                                                | Open Reading Frame identifier (internal to RGI)|
++----------------------------------------------------------+------------------------------------------------+
+|    Contig                                                | Source Sequence                                |
++----------------------------------------------------------+------------------------------------------------+
+|    Start                                                 | Start co-ordinate of ORF                       |
++----------------------------------------------------------+------------------------------------------------+
+|    Stop                                                  | End co-ordinate of ORF                         |
++----------------------------------------------------------+------------------------------------------------+
+|    Orientation                                           | Strand of ORF                                  |
++----------------------------------------------------------+------------------------------------------------+
+|    Cut_Off                                               | RGI Detection Paradigm (Perfect, Strict, Loose)|
++----------------------------------------------------------+------------------------------------------------+
+|    Pass_Bitscore                                         | Strict detection model bitscore cut-off        |
++----------------------------------------------------------+------------------------------------------------+
+|    Best_Hit_Bitscore                                     | Bitscore value of match to top hit in CARD     |
++----------------------------------------------------------+------------------------------------------------+
+|    Best_Hit_ARO                                          | ARO term of top hit in CARD                    |
++----------------------------------------------------------+------------------------------------------------+
+|    Best_Identities                                       | Percent identity of match to top hit in CARD   |
++----------------------------------------------------------+------------------------------------------------+
+|    ARO                                                   | ARO accession of match to top hit in CARD      |
++----------------------------------------------------------+------------------------------------------------+
+|    Model_type                                            | CARD detection model type                      |
++----------------------------------------------------------+------------------------------------------------+
+|    SNPs_in_Best_Hit_ARO                                  | Mutations observed in the ARO term of top hit  |
+|                                                          | in CARD (if applicable)                        |
++----------------------------------------------------------+------------------------------------------------+
+|    Other_SNPs                                            | Mutations observed in ARO terms of other hits  |
+|                                                          | indicated by model id (if applicable)          |
++----------------------------------------------------------+------------------------------------------------+
+|    Drug Class                                            | ARO Categorization                             |
++----------------------------------------------------------+------------------------------------------------+
+|    Resistance Mechanism                                  | ARO Categorization                             |
++----------------------------------------------------------+------------------------------------------------+
+|    AMR Gene Family                                       | ARO Categorization                             |
++----------------------------------------------------------+------------------------------------------------+
+|    Predicted_DNA                                         | ORF predicted nucleotide sequence              |
++----------------------------------------------------------+------------------------------------------------+
+|    Predicted_Protein                                     | ORF predicted protein sequence                 |
++----------------------------------------------------------+------------------------------------------------+
+|    CARD_Protein_Sequence                                 | Protein sequence of top hit in CARD            |
++----------------------------------------------------------+------------------------------------------------+
+|    Percentage Length of Reference Sequence               | (length of ORF protein /                       |
+|                                                          | length of CARD reference protein)              |
++----------------------------------------------------------+------------------------------------------------+
+|    ID                                                    | HSP identifier (internal to RGI)               |
++----------------------------------------------------------+------------------------------------------------+
+|    Model_id                                              | CARD detection model id                        |
++----------------------------------------------------------+------------------------------------------------+
+|    Nudged                                                | TRUE = Hit nudged from Loose to Strict         |
++----------------------------------------------------------+------------------------------------------------+
+|    Note                                                  | Reason for nudge or other notes                |
++----------------------------------------------------------+------------------------------------------------+
+|    Hit_Start                                             | Start co-ordinate for HSP in CARD reference    |
++----------------------------------------------------------+------------------------------------------------+
+|    Hit_End                                               | End co-ordinate for HSP in CARD reference      |
++----------------------------------------------------------+------------------------------------------------+
+|    Antibiotic                                            | ARO Categorization                             |
++----------------------------------------------------------+------------------------------------------------+
+
+Generating Heat Maps of RGI main Results
+````````````````````````````````````````
+
+.. code-block:: sh
+
+   rgi heatmap -h
+
+.. code-block:: sh
+
+				usage: rgi heatmap [-h] -i INPUT
+				                   [-cat {drug_class,resistance_mechanism,gene_family}] [-f]
+				                   [-o OUTPUT] [-clus {samples,genes,both}]
+				                   [-d {plain,fill,text}] [--debug]
+
+				Resistance Gene Identifier - 6.0.2 - Heatmap
+
+				Creates a heatmap when given multiple RGI results.
+
+				optional arguments:
+				  -h, --help            show this help message and exit
+				  -i INPUT, --input INPUT
+				                        Directory containing the RGI .json files (REQUIRED)
+				  -cat {drug_class,resistance_mechanism,gene_family}, --category {drug_class,resistance_mechanism,gene_family}
+				                        The option to organize resistance genes based on a category.
+				  -f, --frequency       Represent samples based on resistance profile.
+				  -o OUTPUT, --output OUTPUT
+				                        Name for the output EPS and PNG files.
+				                        The number of files run will automatically
+				                        be appended to the end of the file name.(default=RGI_heatmap)
+				  -clus {samples,genes,both}, --cluster {samples,genes,both}
+				                        Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).
+				  -d {plain,fill,text}, --display {plain,fill,text}
+				                        Specify display options for categories (deafult=plain).
+				  --debug               debug mode
+
+.. image:: images/heatmap.jpg
+
+RGI heatmap produces EPS and PNG image files. An example where rows are organized by AMR Gene Family and columns clustered by similarity of resistome is shown above.
+
+Generate a heat map from pre-compiled RGI main JSON files, samples and AMR genes organized alphabetically:
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+                --output /path/to/output_file
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by AMR gene family:
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+                --output /path/to/output_file -cat gene_family -clus samples
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by Drug Class:
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+                --output /path/to/output_file -cat drug_class -clus samples
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome and AMR genes organized by distribution among samples:
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+                --output /path/to/output_file -clus both
+
+Generate a heat map from pre-compiled RGI main JSON files, samples clustered by similarity of resistome (with histogram used for abundance of identical resistomes) and AMR genes organized by distribution among samples:
+
+      .. code-block:: sh
+
+            rgi heatmap --input /path/to/rgi_results_json_files_directory/
+                --output /path/to/output_file -clus both -f
+
