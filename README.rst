@@ -76,31 +76,31 @@ Search for RGI package and show available versions:
 
   .. code-block:: sh
 
-        $ mamba search --channel conda-forge --channel bioconda --channel defaults rgi
+        mamba search --channel conda-forge --channel bioconda --channel defaults rgi
 
 Create a new Conda environment
 
   .. code-block:: sh
 
-        $ mamba create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
+        mamba create --name rgi --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI package:
 
   .. code-block:: sh
 
-        $ mamba install --channel conda-forge --channel bioconda --channel defaults rgi
+        mamba install --channel conda-forge --channel bioconda --channel defaults rgi
 
 Install RGI specific version:
 
   .. code-block:: sh
 
-        $ mamba install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
+        mamba install --channel conda-forge --channel bioconda --channel defaults rgi=5.1.1
 
 Remove RGI package:
 
   .. code-block:: sh
 
-        $ mamba remove rgi
+        mamba remove rgi
 
 
 Install RGI using Docker/Singularity
@@ -136,7 +136,6 @@ The following conda command will install all RGI dependencies (listed below):
     git clone https://github.com/arpcard/rgi
     conda env create -f conda_env.yml
     conda activate rgi
-
 
 - `Python 3.6 <https://www.python.org/>`_
 - `NCBI BLAST 2.14.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
