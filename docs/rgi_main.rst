@@ -190,9 +190,7 @@ This same analysis can be threaded over many processors if high-performance comp
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta
-        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
-        --include_nudge --num_threads 40 --split_prodigal_jobs
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality --include_nudge --num_threads 40 --split_prodigal_jobs
 
 Running RGI main with Protein Sequences
 ```````````````````````````````````````
