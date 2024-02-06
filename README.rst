@@ -28,7 +28,7 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
 * `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
-* YouTube Video Lecture - Canadian Bioinformatics Workshops 2023: `Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
+* `CBW 2024 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
 
 .. contents::
 
