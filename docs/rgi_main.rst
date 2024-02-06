@@ -155,8 +155,7 @@ The default settings for RGI main will include Perfect or Strict predictions via
 
    .. code-block:: sh
 
-      rgi main --input_sequence /path/to/nucleotide_input.fasta
-        --output_file /path/to/output_file --local --clean
+      rgi main --input_sequence /path/to/nucleotide_input.fasta --output_file /path/to/output_file --local --clean
 
 For AMR gene discovery, this can be expanded to include all Loose matches:
 
