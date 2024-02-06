@@ -1,7 +1,5 @@
-Analyzing Metagenomic Reads (a.k.a. RGI bwt)
---------------------------------------------
-
- >  The text below provides an overview of analysis of FASTQ sequencing reads. For command line examples see `Running RGI bwt with FASTQ files <#running-rgi-bwt-with-fastq-files>`_.
+Analyzing Metagenomic Reads
+---------------------------
 
 RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ , `BWA <http://bio-bwa.sourceforge.net>`_ , or `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR alelle network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps </images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
 
@@ -20,10 +18,8 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 
 **Note**: As RGI bwt makes no assumptions about pre-processing of metagenomics data, we suggest prior quality/adaptor trimming of reads with `skewer <https://github.com/relipmoc/skewer>`_ and deduplication of reads using `dedupe.sh <https://sourceforge.net/projects/bbmap/>`_. If needed, down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. Thanks to Allison Guitor of McMaster University for these suggestions.
 
-Using RGI bwt (Metagenomic Short Reads, Genomic Short Reads)
-------------------------------------------------------------
-
-**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default RGI bwt aligned reads to reference sequences from CARD's protein homolog models, protein variant models, rRNA mutation models, and protein over-expression models. However, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, e.g. a wild-type gyrase susceptible to fluoroquinolones. As such, earlier versions of RGI were over-reporting antibiotic resistance genes by not checking for these curated mutations. For example, while the KMA algorithm reports SNPs relative to reference, RGI was not screening these SNPs against CARD. Read alignments against the protein variant model, rRNA mutation model, and protein over-expression model reference sequences can now only be listed by use of the new --include_other_models parameter, but at this time these results still do not include comparison to CARD's curated lists of mutations. As such, these often spurious results are no longer included in default RGI bwt output. Support for mutation screening models will be added to future versions of RGI bwt.**
+Using RGI bwt
+-------------
 
 .. code-block:: sh
 

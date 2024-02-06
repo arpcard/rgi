@@ -1,7 +1,5 @@
-Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes (a.k.a. RGI main)
------------------------------------------------------------------------------------------
-
- > The text below provides an overview of analysis of FASTA sequences (contigs, genomes, etc.). For command line examples see `Running RGI main with Genome or Assembly DNA Sequences <#running-rgi-main-with-genome-or-assembly-dna-sequences>`_.
+Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
+-----------------------------------------------------------------------
 
 If DNA FASTA sequences are submitted, RGI first predicts complete open reading frames (ORFs) using `Prodigal <https://github.com/hyattpd/Prodigal>`_ (ignoring those less than 30 bp) and analyzes the predicted protein sequences. This includes a secondary correction by RGI if Prodigal undercalls the correct start codon to ensure complete AMR genes are predicted. However, if Prodigal fails to predict an AMR ORF, RGI will produce a false negative result.
 
@@ -74,10 +72,8 @@ Lastly, analyzing metagenomic assemblies or merged metagenomic reads using RGI m
 
  > `What RGI settings are best for a Metagenome-Assembled Genome (MAG)? <https://github.com/arpcard/FAQ#rgi-faqs>`_
 
-Using RGI main (Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes)
--------------------------------------------------------------------------------
-
-**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e, nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
+Using RGI main
+--------------
 
 .. code-block:: sh
 
