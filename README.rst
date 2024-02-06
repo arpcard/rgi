@@ -30,13 +30,11 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 * `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
 * `CBW 2024 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
 
-.. contents::
-
 Overview and Use of RGI
 =======================
 
-* `Help Menu and Usage` </docs/rgi_help.rst>`_
-* `RGI Databases` </docs/rgi_load.rst>`_
+* `Help Menu and Usage </docs/rgi_help.rst>`_
+* `RGI Databases </docs/rgi_load.rst>`_
 * `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`_ (a.k.a. RGI main)
 * `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`_ (a.k.a. RGI bwt)
 * `K-mer Prediction of Pathogen-of-Origin for AMR Genes </docs/rgi_kmer.rst>`_ (beta-testing)
@@ -188,7 +186,7 @@ Running RGI Tests
 -------------------
 
 Running RGI on Compute Canada Serial Farm
-`````````````````````````````````````````
+=========================================
 
 **Order of operations**
 
