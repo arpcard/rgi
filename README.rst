@@ -27,18 +27,17 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 
 **CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
- > `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
-
- > `YouTube Video Lecture: Canadian Bioinformatics Workshops 2023 - Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
+* `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
+* `YouTube Video Lecture: Canadian Bioinformatics Workshops 2023 - Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=FvOCDlcYaTo&list=PL3izGL6oi0S8RG8vnwLXFznzJnKh8OR8F&index=6>`_
 
 .. contents::
 
 Overview of RGI
 ===============
 
-* [Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes](/docs/rgi_main.rst) (a.k.a. RGI main)
-* [Analyzing Metagenomic Reads](/docs/rgi_bwt.rst) (a.k.a. RGI bwt)
-* [K-mer Prediction of Pathogen-of-Origin for AMR Genes](/docs/rgi_kmer.rst) (beta-testing)
+* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes` </docs/rgi_main.rst>`_ (a.k.a. RGI main)
+* `Analyzing Metagenomic Reads` </docs/rgi_bwt.rst>`_ (a.k.a. RGI bwt)
+* `K-mer Prediction of Pathogen-of-Origin for AMR Genes` </docs/rgi_kmer.rst>`_ (beta-testing)
 
 License
 --------

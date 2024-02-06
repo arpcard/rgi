@@ -16,7 +16,7 @@ As outlined above, CARD's `Resistomes & Variants <https://card.mcmaster.ca/genom
 
 CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
-.. image:: images/kmerlogic.jpg
+.. image:: /images/kmerlogic.jpg
 
 .. code-block:: sh
 
