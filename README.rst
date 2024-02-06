@@ -35,9 +35,9 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 Overview of RGI
 ===============
 
-* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes` </docs/rgi_main.rst>`_ (a.k.a. RGI main)
-* `Analyzing Metagenomic Reads` </docs/rgi_bwt.rst>`_ (a.k.a. RGI bwt)
-* `K-mer Prediction of Pathogen-of-Origin for AMR Genes` </docs/rgi_kmer.rst>`_ (beta-testing)
+* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`_ (a.k.a. RGI main)
+* `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`_ (a.k.a. RGI bwt)
+* `K-mer Prediction of Pathogen-of-Origin for AMR Genes </docs/rgi_kmer.rst>`_ (beta-testing)
 
 License
 --------
