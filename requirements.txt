@@ -11,5 +11,5 @@ beautifulsoup4>=4.9.3
 requests==2.31.0
 lxml>=4.9.1
 dask[dataframe]
-pyrodigal>=2.0.0
+pyrodigal>=3.0.0
 setuptools>=47.1.0
