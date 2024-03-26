@@ -98,7 +98,7 @@ class CARDkmers(object):
                         type_hit = value[hsp]["type_match"]
                         dna = value[hsp]["orf_dna_sequence"]
 
-                        fasta.write(">{orf}__{hsp}__{model}__{type_hit}\n{dna}\n"
+                        fasta.write(">{orf}___{hsp}___{model}___{type_hit}\n{dna}\n"
                                     .format(orf=contig_id, hsp=hsp, model=model, type_hit=type_hit, dna=dna))
 
             except Exception as e:
@@ -113,28 +113,15 @@ class CARDkmers(object):
         """
 
         os.system("samtools index {input_bam}".format(input_bam=self.input_bam_file))
-        aligner = ""
-        bam_file = pysam.AlignmentFile(self.input_bam_file, "rb")
-        header = bam_file.text.split("\n")
-
-        for h in header:
-            if "@PG" in h:
-                aligner = h.split("\t")[1]
-
-        if aligner == "ID:KMA":
-            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
-                        .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$4"__"$3"__"$5"\\n"$11}""", out=self.fasta_file))
-        else:
-            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
-                        .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
-
+        os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk -F '\t' '{cmd}'; done > {out}"""
+                    .format(bam=self.input_bam_file, cmd="""{print ">"$1"___"$3"___"$2"___"$5"\\n"$10}""", out=self.fasta_file))
 
 
     def get_bwt_alignment_data(self, header):
         """
         bit-wise flag reference: http://blog.nextgenetics.net/?e=18
         """
-        qname, model, flag, mapq = header.split("__")
+        qname, model, flag, mapq = header.split("___")
 
         if flag.isdigit() is False:
             logger.error("failed to parse BAM file: {}, please check which aligner software was used to produce the BAM file in the RGI BWT step.".format(self.input_bam_file))
@@ -149,7 +136,7 @@ class CARDkmers(object):
             return read, model, flag, mapq
 
     # def get_rgi_data(self, header):
-    #     orf, hsp, model, type_hit = header.split("__")
+    #     orf, hsp, model, type_hit = header.split("___")
     #     return orf, hsp, model, type_hit
 
     def populate_rgi_json(self, orf, hsp, model, type_hit, num_kmers, amr_c, tax, gen, o):
@@ -221,12 +208,12 @@ class CARDkmers(object):
             dna = str(entry.seq)
             num_kmers = len(dna) - k + 1
             if type == 'rgi':
-                contig_id, hsp, model, type_hit = entry.id.split("__")
+                contig_id, hsp, model, type_hit = entry.id.split("___")
                 for x in self.orf_list:
                     if x.split()[0] == contig_id:
                         orf_id = x
             elif type == 'bwt':
-                read, model, flag, mapq = self.get_bwt_alignment_data(entry.id)
+                read, model, flag, mapq = self.get_bwt_alignment_data(entry.description)
             elif type == "fasta":
                 read = entry.id
             else:
