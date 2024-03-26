@@ -245,11 +245,11 @@ class PyORF(object):
 		if self.training_file is not None:
 			with open(self.training_file, "rb") as src:
 				training_info = pyrodigal.TrainingInfo.load(src)
-			orf_finder = pyrodigal.OrfFinder(meta=False, mask=True, training_info=training_info)
+			orf_finder = pyrodigal.GeneFinder(meta=False, mask=True, training_info=training_info)
 		elif self.low_quality or minimum_sequence_length < 20000:
-			orf_finder = pyrodigal.OrfFinder(meta=True, mask=True)
+			orf_finder = pyrodigal.GeneFinder(meta=True, mask=True)
 		else:
-			orf_finder = pyrodigal.OrfFinder(meta=False, mask=True)
+			orf_finder = pyrodigal.GeneFinder(meta=False, mask=True)
 			orf_finder.train(*sequences, force_nonsd=True)
 
 		with contextlib.ExitStack() as stack:
