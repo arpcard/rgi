@@ -8,7 +8,7 @@ pyfaidx>=0.5.4.1
 pyahocorasick==1.4.0
 pysam>=0.16.0.1
 beautifulsoup4>=4.9.3
-requests==2.31.0
+requests==2.32.0
 lxml>=4.9.1
 dask[dataframe]
 pyrodigal>=3.0.0
