@@ -1,3 +1,4 @@
 *.pyc
 app.log
 !__init__.py
+.DS_Store
