@@ -30,43 +30,52 @@ All RGI results are organized via the `Antibiotic Resistance Ontology <https://c
 
 **UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e., nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
 
-Curation at CARD is routinely ahead of RGI software development, so not all parameters or models curated in CARD will be annotated in sequences analyzed using RGI. For example, RGI does not currently support CARD's `protein knockout models <https://card.mcmaster.ca/ontology/40354>`_, `protein domain meta-models <https://card.mcmaster.ca/ontology/40326>`_, `gene cluster meta-models <https://card.mcmaster.ca/ontology/40298>`_, or `efflux pump system meta-models <https://card.mcmaster.ca/ontology/41112>`_. In addition, while CARD's `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_, and `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ are current supported by RGI, mutation screening currently only supports annotation of resistance-conferring SNPs via the `single resistance variant <https://card.mcmaster.ca/ontology/36301>`_ parameter. For example, here is a snapshot from CARD 3.2.3 for `protein variant models <https://card.mcmaster.ca/ontology/40293>`_:
+Curation at CARD is routinely ahead of RGI software development, so not all parameters or models curated in CARD will be annotated in sequences analyzed using RGI. For example, RGI does not currently support CARD's `protein knockout models <https://card.mcmaster.ca/ontology/40354>`_, `protein domain meta-models <https://card.mcmaster.ca/ontology/40326>`_, `gene cluster meta-models <https://card.mcmaster.ca/ontology/40298>`_, or `efflux pump system meta-models <https://card.mcmaster.ca/ontology/41112>`_. In addition, while CARD's `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_, and `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_ are current supported by RGI, mutation screening currently only supports annotation of resistance-conferring SNPs via the `single resistance variant <https://card.mcmaster.ca/ontology/36301>`_ parameter. For example, here is a snapshot from CARD 4.0.0 for `protein variant models <https://card.mcmaster.ca/ontology/40293>`_:
 
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    Parameters Among 220 PVMs                             | Frequency                                      | Supported by RGI    |
+|    Parameters Among 242 PVMs                             | Frequency                                      | Supported by RGI    |
 +==========================================================+================================================+=====================+
-|    single resistance variant                             | 1299                                           |yes                  |
+|    single resistance variant                             | 2398                                           |yes                  |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    high confidence TB                                    | 227                                            |no                   |
+|    nonsense mutation - Ter                               | 269                                            |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    multiple resistance variants                          | 113                                            |no                   |
+|    multiple resistance variants                          | 114                                            |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    deletion mutation from nucleotide sequence            | 95                                             |no                   |
+|    deletion mutation from nucleotide sequence            | 96                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    insertion mutation from nucleotide sequence           | 65                                             |no                   |
+|    insertion mutation from nucleotide sequence           | 67                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    nonsense mutation                                     | 52                                             |no                   |
+|    single resistance variant - Var                       | 61                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    minimal confidence TB                                 | 43                                             |no                   |
+|    snp in promoter region                                | 46                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    co-dependent single resistance variant                | 39                                             |no                   |
+|    frameshift mutation - fs                              | 27                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    moderate confidence TB                                | 28                                             |no                   |
+|    co-dependent single resistance variant                | 26                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
 |    deletion mutation from peptide sequence               | 22                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    frameshift mutation                                   | 14                                             |no                   |
+|    insertion mutation from peptide sequence              | 10                                             |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    insertion mutation from peptide sequence              | 9                                              |no                   |
+|    co-dependent insertion/deletion - fs                  | 8                                              |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    co-dependent insertion/deletion                       | 8                                              |no                   |
+|    co-dependent single resistance variant - fs           | 8                                              |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    co-dependent nonsense SNP                             | 5                                              |no                   |
+|    co-dependent nonsense SNP - Ter                       | 5                                              |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
-|    snp in promoter region                                | 4                                              |no                   |
+|    co-dependent single resistance variant - Ter          | 5                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    insertion mutation                                    | 5                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    insertion mutation from peptide sequence - dup        | 4                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+|    snp in promoter region - Var                          | 3                                              |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
 |    disruptive mutation in regulatory element             | 2                                              |no                   |
 +----------------------------------------------------------+------------------------------------------------+---------------------+
+|    frameshift mutation - Ter                             | 1                                              |no                   |
++----------------------------------------------------------+------------------------------------------------+---------------------+
+
 
 Lastly, analyzing metagenomic assemblies or merged metagenomic reads using RGI main is a computationally intensive approach, since each merged read or contig FASTA set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. However, this approach does (1) allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below), and (2) allow inclusion of `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ when annotating the resistome (as outlined below, RGI bwt's read mapping algorithms do not support models that require screening for mutations).
 
