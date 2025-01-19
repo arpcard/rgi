@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
 from app.MainBase import MainBase
 
-MainBase()
+def main():
+    MainBase()
+
+if __name__ == "__main__":
+    main()
