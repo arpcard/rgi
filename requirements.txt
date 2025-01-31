@@ -5,7 +5,7 @@ pandas>=0.15.0
 matplotlib>=2.1.2
 seaborn>=0.8.1
 pyfaidx>=0.5.4.1
-pyahocorasick==1.4.0
+pyahocorasick==2.1.0
 pysam>=0.16.0.1
 beautifulsoup4>=4.9.3
 requests==2.31.0

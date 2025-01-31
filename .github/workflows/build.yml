@@ -1,6 +1,5 @@
 # This workflow will install RGI dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Build RGI and test
 
 on:
@@ -24,14 +23,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-        architecture: 'x64'
     - name: Install dependencies
       run: |
 
+        echo  "start installing dependencies ..."
         sudo apt-get -qq update
         sudo apt-get -qq install -y prodigal tree
         sudo apt-get -qq install -y libtbb-dev
@@ -95,12 +90,6 @@ jobs:
           bedtools --version
           kma -v
           rgi -h
-    # - name: Lint with flake8
-    #   run: |
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
         bash test.sh
