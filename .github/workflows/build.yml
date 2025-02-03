@@ -37,32 +37,40 @@ jobs:
         tar xzf ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz
         sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
+        echo "install bowtie2 ..."
         wget --quiet https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
         unzip -q bowtie2-2.4.5-linux-x86_64.zip
         sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
 
+        echo "install diamond ..."
         wget --quiet http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
         sudo mv diamond /usr/bin
 
+        echo "install bwa ..."
         git clone --quiet https://github.com/lh3/bwa.git
         pushd bwa && make --quiet && sudo mv bwa /usr/bin && popd
 
+        echo "install jellyfish ..."
         wget --quiet https://github.com/gmarcais/Jellyfish/releases/download/v2.2.10/jellyfish-linux
         mv jellyfish-linux jellyfish && chmod +x jellyfish && sudo mv jellyfish /usr/bin
 
+        echo "install samtools ..."
         wget --quiet https://github.com/samtools/samtools/releases/download/1.21/samtools-1.21.tar.bz2
-        tar xzf samtools-1.21.tar.bz2
+        tar jxf samtools-1.21.tar.bz2
         pushd samtools-1.21 && ./configure --enable-silent-rules && make --quiet && sudo mv samtools /usr/bin && popd
 
+        echo "install bamtools ..."
         wget --quiet https://github.com/pezmaster31/bamtools/archive/v2.5.2.tar.gz
         tar xzf v2.5.2.tar.gz
         pushd bamtools-2.5.2/ && mkdir build && cd build && cmake .. && make --quiet && sudo make install --quiet && popd
         bamtools --version
 
+        echo "install bedtools ..."
         wget --quiet https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
         chmod +x bedtools && sudo mv bedtools /usr/bin
 
+        echo "install kma ..."
         git clone --quiet https://bitbucket.org/genomicepidemiology/kma.git
         pushd kma && make --quiet && sudo mv kma /usr/bin && popd
 
