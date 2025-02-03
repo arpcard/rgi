@@ -29,7 +29,7 @@ jobs:
         echo  "start installing dependencies ..."
         sudo apt-get -qq update
         sudo apt-get -qq install -y prodigal tree
-        sudo apt-get -qq install -y libtbb-dev libbz2-dev libbzip2
+        sudo apt-get -qq install -y libtbb-dev libbz2-dev
         sudo apt-get -qq install -y cmake g++ make
 
         echo "install blast ..."
