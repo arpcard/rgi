@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  BLAST_VERSION: 2.14.1
+  BLAST_VERSION: 2.16.0
 
 jobs:
   build:
@@ -38,9 +38,9 @@ jobs:
         sudo mv ncbi-blast-${BLAST_VERSION}+/bin/* /usr/bin
 
         echo "install bowtie2 ..."
-        wget --quiet https://github.com/BenLangmead/bowtie2/releases/download/v2.4.5/bowtie2-2.4.5-linux-x86_64.zip
-        unzip -q bowtie2-2.4.5-linux-x86_64.zip
-        sudo mv bowtie2-2.4.5-linux-x86_64/bowtie2* /usr/bin
+        wget --quiet https://github.com/BenLangmead/bowtie2/releases/download/v2.5.4/bowtie2-2.5.4-linux-x86_64.zip
+        unzip -q bowtie2-2.5.4-linux-x86_64.zip
+        sudo mv bowtie2-2.5.4-linux-x86_64/bowtie2* /usr/bin
 
         echo "install diamond ..."
         wget --quiet http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
@@ -64,11 +64,11 @@ jobs:
         wget --quiet https://github.com/pezmaster31/bamtools/archive/v2.5.2.tar.gz
         tar xzf v2.5.2.tar.gz
         pushd bamtools-2.5.2/ && mkdir build && cd build && cmake .. && make --quiet && sudo make install --quiet && popd
-        bamtools --version
 
         echo "install bedtools ..."
-        wget --quiet https://github.com/arq5x/bedtools2/releases/download/v2.28.0/bedtools
-        chmod +x bedtools && sudo mv bedtools /usr/bin
+        wget --quiet https://github.com/arq5x/bedtools2/releases/download/v2.31.1/bedtools-2.31.1.tar.gz
+        tar xzf bedtools-2.31.1.tar.gz
+        pushd bedtools2 && make --quiet && sudo mv bin/* /usr/bin && popd
 
         echo "install kma ..."
         git clone --quiet https://bitbucket.org/genomicepidemiology/kma.git
@@ -95,9 +95,11 @@ jobs:
           diamond --version
           jellyfish --version
           samtools --version
+          bamtools --version
           bedtools --version
           kma -v
-          rgi -h
+          rgi main --version
+          prodigal -v
     - name: Test with pytest
       run: |
         bash test.sh

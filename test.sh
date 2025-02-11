@@ -17,10 +17,13 @@ bedtools --version
 # bwa
 jellyfish --version
 kma -v
+prodigal -v
 
 echo "=================================== RGI EXECUTABLE LOCATION ==================================="
 which rgi
-rgi -h
+rgi main --version
+which python
+which python3
 
 # echo "=================================== RGI AUTO LOAD ==================================="
 # rgi auto_load --clean
@@ -89,13 +92,10 @@ rm wildcard_database_v*
 rm prevalence-v*
 
 echo "=================================== RUN TESTS ==================================="
-# run unit tests
-# echo "$cmd cd tests"
+
 pushd tests
-# cd tests
 echo `pwd`
 tree -L 2
-# echo "$cmd pytest --capture=fd -v -rxs"
 #pytest test_1.py -v -rxs --color=auto --durations=0 -k "protein"
 pytest --capture=fd -v -rxs
 popd

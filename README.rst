@@ -138,8 +138,8 @@ The following conda command will install all RGI dependencies (listed below):
     conda env create -f conda_env.yml
     conda activate rgi
 
-- `Python 3.6 <https://www.python.org/>`_
-- `NCBI BLAST 2.14.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
+- `Python 3.6+ <https://www.python.org/>`_
+- `NCBI BLAST 2.16.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
 - `DIAMOND 0.8.36 <https://github.com/bbuchfink/diamond>`_
@@ -152,13 +152,13 @@ The following conda command will install all RGI dependencies (listed below):
 - `pyfaidx 0.5.4.1+ <https://pypi.org/project/pyfaidx/>`_
 - `pyahocorasick 1.1.7+ <https://pypi.org/project/pyahocorasick/>`_
 - `OligoArrayAux 3.8 <http://unafold.rna.albany.edu/?q=DINAMelt/OligoArrayAux>`_
-- `samtools 1.9 <https://github.com/samtools/samtools>`_
-- `bamtools 2.5.1 <https://github.com/pezmaster31/bamtools>`_
-- `bedtools 2.27.1 <https://github.com/arq5x/bedtools2>`_
+- `samtools 1.21 <https://github.com/samtools/samtools>`_
+- `bamtools 2.5.2 <https://github.com/pezmaster31/bamtools>`_
+- `bedtools 2.31.1 <https://github.com/arq5x/bedtools2>`_
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
-- `Bowtie2 2.3.4.3 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
-- `BWA 0.7.17 (r1188) <https://github.com/lh3/bwa>`_
-- `KMA 1.3.4 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
+- `Bowtie2 2.5.4 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
+- `BWA 0.7.18 <https://github.com/lh3/bwa>`_
+- `KMA 1.4.17 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 
 Install RGI
