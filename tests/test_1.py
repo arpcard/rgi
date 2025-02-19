@@ -127,6 +127,18 @@ def test_rgi_homolog_model(rgi):
     assert validate_results(output_file, 100, 'NDM-1', 'Perfect') == True
 
 
+def test_rgi_variant_overexpression_model(rgi):
+
+    filename = "Pseudomonas2.fasta"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    run_rgi(rgi, 'contig', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.89, 'Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones', 'Strict') == True
+
+
 def test_rgi_variant_model(rgi):
 
     filename = "variant.fasta"
