@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+import csv
 from app.MainBase import MainBase
 
 inputs = "inputs/"
@@ -59,6 +60,23 @@ def validate_results(filepath, perc_identity=0, ARO_name='', type_match=''):
     else:
         print("missing file: {}".format(f))
         return False
+
+
+def check_mutation(filepath, aro, mutation):
+    filename = os.path.basename(filepath)
+    f = os.path.join("{}".format(filepath))
+    status = False
+    if os.path.isfile(f):
+        with open(f, 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+            for row in reader:
+                if row[12] != "SNPs_in_Best_Hit_ARO":
+                    if mutation in row[12] and aro == row[8]:
+                        status = True
+        return status
+    else:
+        print("missing file: {}".format(f))
+        return status
 
 
 def run_rgi(rgi, input_type, input_sequence, output_file):
@@ -126,17 +144,101 @@ def test_rgi_homolog_model(rgi):
 
     assert validate_results(output_file, 100, 'NDM-1', 'Perfect') == True
 
+# model_id 2196 T83I, two test Pseudomonas genomes:
+# Pseudomonas1.fasta does not contain a T83I mutation in Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones
 
-def test_rgi_variant_overexpression_model(rgi):
 
-    filename = "Pseudomonas2.fasta"
+def test_rgi_variant_without_mutation_model(rgi):
+
+    filename = "Pseudomonas1.fasta"
     output_file = os.path.join(
         working_directory, outputs, "{}.json".format(filename))
     run_rgi(rgi, 'contig', os.path.join(
         working_directory, inputs, filename), output_file)
 
     assert validate_results(
-        output_file, 99.89, 'Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones', 'Strict') == True
+        output_file, 99.89, 'Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones', 'Strict') == False
+
+# model_id 2196 T83I, two test Pseudomonas genomes:
+# Pseudomonas2.fasta contains a T83I mutation in Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones
+
+
+def test_rgi_variant_with_mutation_T83I_model(rgi):
+
+    filename = "Pseudomonas2.fasta"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
+    run_rgi(rgi, 'contig', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.89, 'Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones', 'Strict') == True and check_mutation(output_file_tab, "Pseudomonas aeruginosa gyrA conferring resistance to fluoroquinolones", "T83I") == True
+
+
+# model_id 1176 Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid, peptide test:
+# reference_pep.txt does not contain S17T, W90R, or S315Var -- No hits!
+def test_rgi_mtb_without_mutation_model(rgi):
+
+    filename = "reference_pep.txt"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    run_rgi(rgi, 'protein', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.89, 'Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid', 'Strict') == False
+
+
+# model_id 1176 Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid, peptide test:
+# reference_S17T_pep.txt contains S17T mutation
+def test_rgi_mtb_with_mutation_S17T_model(rgi):
+
+    filename = "reference_S17T_pep.txt"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
+    run_rgi(rgi, 'protein', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.86, 'Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid', 'Strict') == True and check_mutation(output_file_tab, "Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid", "S17T") == True
+
+# model_id 1176 Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid, peptide test:
+# reference_W90R_pep.txt contains W90R mutation
+
+
+def test_rgi_mtb_with_mutation_W90R_model(rgi):
+
+    filename = "reference_W90R_pep.txt"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
+    run_rgi(rgi, 'protein', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.86, 'Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid', 'Strict') == True and check_mutation(output_file_tab, "Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid", "W90R") == True
+
+
+# model_id 1176 Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid, peptide test:
+# reference_S315Var_P_pep.txt contains S315Var mutation (as S315P)
+
+def test_rgi_mtb_with_mutation_S315Var_model(rgi):
+
+    filename = "reference_S315Var_P_pep.txt"
+    output_file = os.path.join(
+        working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
+    run_rgi(rgi, 'protein', os.path.join(
+        working_directory, inputs, filename), output_file)
+
+    assert validate_results(
+        output_file, 99.86, 'Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid', 'Strict') == True and check_mutation(output_file_tab, "Mycobacterium tuberculosis katG mutations conferring resistance to isoniazid", "S315P") == True
 
 
 def test_rgi_variant_model(rgi):
@@ -144,11 +246,13 @@ def test_rgi_variant_model(rgi):
     filename = "variant.fasta"
     output_file = os.path.join(
         working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
     run_rgi(rgi, 'protein', os.path.join(
         working_directory, inputs, filename), output_file)
 
     assert validate_results(
-        output_file, 99.88, 'Escherichia coli gyrB conferring resistance to aminocoumarin', 'Strict') == True
+        output_file, 99.88, 'Escherichia coli gyrB conferring resistance to aminocoumarin', 'Strict') == True and check_mutation(output_file_tab, "Escherichia coli gyrB conferring resistance to aminocoumarin", "R136L") == True
 
 
 def test_rgi_overexpression_model(rgi):

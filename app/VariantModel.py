@@ -89,8 +89,8 @@ class Variant(BaseModel):
                             true_pass_evalue = float(
                                 pass_value[0:pass_value.find(' ')])
 
-                        logger.info(
-                            "mutation | model_type_id = " + str(align_title))
+                        # logger.info(
+                        #     "mutation | model_type_id = " + str(align_title))
                         init = 0
                         evalue_snp = self.extract_nth_bar(align_title, 2)
                         snpl = []
@@ -143,16 +143,28 @@ class Variant(BaseModel):
                                         orf_protein_sequence = str(
                                             submitted_proteins_dict[orf_info.decode().split(" ")[0]])
 
-                                    print("mutation | Model:"+str(model_id) + " | pos:" + str(pos) + " | change: "+str(hsp.query[pos - hsp.sbjct_start +
-                                                                                                                                 self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start
-                                                                                                                                                                                                                                              + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
+                                    # print("mutation | Model:"+str(model_id) + " | pos:" + str(pos) + " | change: "+str(hsp.query[pos - hsp.sbjct_start +
+                                    #                                                                                              self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start
+                                    #                                                                                                                                                                                                           + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
 
-                                    # Report ONLY if the SNPs are present
+                                    # wildtype
+                                    # wildtype = str(
+                                    #     hsp.sbjct[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
+                                    # check for Var
+                                    if str(chan) == "Var":
+                                        # update to the change
+                                        chan = str(
+                                            hsp.query[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
+                                        # update eachs
+                                        eachs["change"] = chan
+
+                                        # Report ONLY if the SNPs are present
                                     qry = int(
                                         pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
                                     sbj = int(
                                         pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
+                                    # if hsp.query[qry] == chan and chan != wildtype:
                                     if hsp.query[qry] == chan:
                                         query_snps = {}
                                         # logger.debug("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
@@ -165,8 +177,8 @@ class Variant(BaseModel):
                                         # print("hsp.sbjct_start: ", hsp.sbjct_start)
                                         query_snps = {
                                             "original": ori, "change": chan, "position": d+1}
-                                        print("query_snp on frame {} {}".format(
-                                            hsp.frame, json.dumps(query_snps, indent=2)))
+                                        # print("query_snp on frame {} {}".format(
+                                        #     hsp.frame, json.dumps(query_snps, indent=2)))
 
                                         try:
                                             if float(hsp.bits) >= float(true_pass_evalue):
