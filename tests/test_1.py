@@ -286,10 +286,8 @@ def test_rgi_effluxpump_model(rgi):
     assert validate_results(output_file, 97.28, 'MexR', 'Strict') == True
     assert validate_results(output_file, 89.12, 'MexR', 'Loose') == True
 
-# TODO:: update test
 
-
-def _test_rgi_rrna_model(rgi):
+def test_rgi_rrna_model(rgi):
 
     filename = "rrna.fasta"
     output_file = os.path.join(
@@ -306,8 +304,10 @@ def test_rgi_nudge_loose_to_strict(rgi):
     filename = "loose_to_strict.fasta"
     output_file = os.path.join(
         working_directory, outputs, "{}.json".format(filename))
+    output_file_tab = os.path.join(
+        working_directory, outputs, "{}.txt".format(filename))
     run_rgi(rgi, 'contig', os.path.join(
         working_directory, inputs, filename), output_file)
 
     assert validate_results(
-        output_file, 98.06, 'Escherichia coli EF-Tu mutants conferring resistance to Pulvomycin', 'Strict') == True
+        output_file, 98.06, 'Escherichia coli EF-Tu mutants conferring resistance to Pulvomycin', 'Strict') == True and check_mutation(output_file_tab, "Escherichia coli EF-Tu mutants conferring resistance to Pulvomycin", "R234F") == True

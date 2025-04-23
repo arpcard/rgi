@@ -70,7 +70,6 @@ class Variant(BaseModel):
                     orf_from = orf_info[c:]
 
                     model_type_id = self.extract_nth_bar(align_title, 0)
-                    # logger.info("model_type_id: {} ".format(model_type_id))
                     space_pos = align_title.index(' ')
                     hit_id = align_title[0:space_pos]
                     hit_id = hit_id.encode('ascii', 'replace')
@@ -80,7 +79,6 @@ class Variant(BaseModel):
                     seq_in_model = model_descrpt[underscore_in_MD +
                                                  1: model_descrpt.index(' ')]
                     pass_value = self.extract_nth_bar(alignment.title, 1)
-                    # logger.info("pass_value: {}".format(pass_value))
 
                     if model_type_id == 40293:
                         try:
@@ -89,8 +87,6 @@ class Variant(BaseModel):
                             true_pass_evalue = float(
                                 pass_value[0:pass_value.find(' ')])
 
-                        # logger.info(
-                        #     "mutation | model_type_id = " + str(align_title))
                         init = 0
                         evalue_snp = self.extract_nth_bar(align_title, 2)
                         snpl = []
@@ -106,8 +102,6 @@ class Variant(BaseModel):
                             original_change = (each_snp.split(
                                 ''.join(filter(str.isdigit, each_snp))))
 
-                            # snp_dict_list.append(
-                            #     {"original": each_snp[0], "change": each_snp[-1], "position": int(each_snp[1:-1])})
                             snp_dict_list.append(
                                 {"original": original_change[0], "change": original_change[-1], "position": position})
 
@@ -143,13 +137,10 @@ class Variant(BaseModel):
                                         orf_protein_sequence = str(
                                             submitted_proteins_dict[orf_info.decode().split(" ")[0]])
 
-                                    # print("mutation | Model:"+str(model_id) + " | pos:" + str(pos) + " | change: "+str(hsp.query[pos - hsp.sbjct_start +
-                                    #                                                                                              self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start
-                                    #                                                                                                                                                                                                           + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
-
                                     # wildtype
-                                    # wildtype = str(
-                                    #     hsp.sbjct[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
+                                    wildtype = str(
+                                        hsp.sbjct[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
+
                                     # check for Var
                                     if str(chan) == "Var":
                                         # update to the change
@@ -161,24 +152,16 @@ class Variant(BaseModel):
                                         # Report ONLY if the SNPs are present
                                     qry = int(
                                         pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
-                                    sbj = int(
-                                        pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
 
-                                    # if hsp.query[qry] == chan and chan != wildtype:
-                                    if hsp.query[qry] == chan:
+                                    if hsp.query[qry] == chan and chan != wildtype:
                                         query_snps = {}
-                                        # logger.debug("mutation | Model:"+str(model_id) + " | pos:" +str(pos) +" | change: "+str(hsp.query[pos - hsp.sbjct_start + \
-                                        # 		self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(chan) + " AND wildtype: " + str(hsp.sbjct[pos - hsp.sbjct_start \
-                                        # 		+self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))]) + "=" + str(ori))
 
                                         # get position of mutation in the query sequence
                                         d = int(
                                             pos) - hsp.sbjct_start - self.find_num_dash(hsp.query, (int(pos) - hsp.sbjct_start))
-                                        # print("hsp.sbjct_start: ", hsp.sbjct_start)
+
                                         query_snps = {
                                             "original": ori, "change": chan, "position": d+1}
-                                        # print("query_snp on frame {} {}".format(
-                                        #     hsp.frame, json.dumps(query_snps, indent=2)))
 
                                         try:
                                             if float(hsp.bits) >= float(true_pass_evalue):
