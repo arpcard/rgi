@@ -181,8 +181,8 @@ class Variant(BaseModel):
                                                     orf_info.decode(), 1)
                                                 sinsidedict["orf_end"] = self.extract_nth_bar(
                                                     orf_info.decode(), 2)
-                                                sinsidedict["orf_from"] = orf_from.decode(
-                                                )
+                                                sinsidedict["orf_from"] = self.trim_after_last_underscore(orf_from.decode(
+                                                ))
                                                 sinsidedict["model_name"] = json_data[model_id]["model_name"]
                                                 sinsidedict["model_type"] = json_data[model_id]["model_type"]
                                                 sinsidedict["model_type_id"] = model_type_id
@@ -221,8 +221,8 @@ class Variant(BaseModel):
                                                         orf_info.decode(), 1)
                                                     sinsidedict["orf_end"] = self.extract_nth_hash(
                                                         orf_info.decode(), 2)
-                                                    sinsidedict["orf_from"] = self.extract_nth_hash(
-                                                        orf_info.decode(), 0)
+                                                    sinsidedict["orf_from"] = self.trim_after_last_underscore(self.extract_nth_hash(
+                                                        orf_info.decode(), 0))
                                                     sinsidedict["hit_start"] = (
                                                         hsp.sbjct_start-1)*3
                                                     sinsidedict["hit_end"] = (
@@ -267,8 +267,8 @@ class Variant(BaseModel):
                                                     orf_info.decode(), 1)
                                                 slinsidedict["orf_end"] = self.extract_nth_bar(
                                                     orf_info.decode(), 2)
-                                                slinsidedict["orf_from"] = orf_from.decode(
-                                                )
+                                                slinsidedict["orf_from"] = self.trim_after_last_underscore(orf_from.decode(
+                                                ))
                                                 slinsidedict["model_name"] = json_data[model_id]["model_name"]
                                                 slinsidedict["model_type"] = json_data[model_id]["model_type"]
                                                 slinsidedict["model_type_id"] = model_type_id
@@ -307,8 +307,8 @@ class Variant(BaseModel):
                                                         orf_info.decode(), 1)
                                                     slinsidedict["orf_end"] = self.extract_nth_hash(
                                                         orf_info.decode(), 2)
-                                                    slinsidedict["orf_from"] = self.extract_nth_hash(
-                                                        orf_info.decode(), 0)
+                                                    slinsidedict["orf_from"] = self.trim_after_last_underscore(self.extract_nth_hash(
+                                                        orf_info.decode(), 0))
                                                     slinsidedict["hit_start"] = (
                                                         hsp.sbjct_start-1)*3
                                                     slinsidedict["hit_end"] = (

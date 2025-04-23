@@ -573,3 +573,12 @@ class BaseModel(object):
                 loose[i]["note"] = "loose hit with at least 95 percent identity pushed strict"
 
         return nudged, loose
+
+    def trim_after_last_underscore(self, text):
+        """
+        trim string from last underscore
+        """
+        last_underscore_index = text.rfind('_')
+        if last_underscore_index != -1:
+            return text[:last_underscore_index]
+        return text
