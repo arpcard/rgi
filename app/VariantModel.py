@@ -141,19 +141,25 @@ class Variant(BaseModel):
                                     wildtype = str(
                                         hsp.sbjct[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
 
+                                    # Report ONLY if the SNPs are present
+                                    qry = int(
+                                        pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
+
                                     # check for Var
                                     if str(chan) == "Var":
                                         # update to the change
                                         chan = str(
                                             hsp.query[pos - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (pos-hsp.sbjct_start))])
-                                        # update eachs
-                                        eachs["change"] = chan
 
-                                        # Report ONLY if the SNPs are present
-                                    qry = int(
-                                        pos) - hsp.sbjct_start + self.find_num_dash(hsp.sbjct, (int(pos) - hsp.sbjct_start))
+                                        if hsp.query[qry] == chan and chan != wildtype:
+                                            # update eachs
+                                            eachs["change"] = chan
+                                        else:
+                                            # change same as wildtype, don't report
+                                            chan = ""
 
-                                    if hsp.query[qry] == chan and chan != wildtype:
+                                    if hsp.query[qry] == chan:
+
                                         query_snps = {}
 
                                         # get position of mutation in the query sequence
