@@ -174,6 +174,8 @@ class Variant(BaseModel):
                                                 sinsidedict = {}
                                                 sinsidedict["type_match"] = "Strict"
                                                 sinsidedict["snp"] = eachs
+                                                sinsidedict["ast_source"] = self.get_ast_source(
+                                                    json_data[model_id], eachs)
                                                 sinsidedict["query_snp"] = query_snps
                                                 sinsidedict["orf_strand"] = self.extract_nth_bar(
                                                     orf_info.decode(), 0)
@@ -260,6 +262,8 @@ class Variant(BaseModel):
                                                 slinsidedict = {}
                                                 slinsidedict["type_match"] = "Loose"
                                                 slinsidedict["snp"] = eachs
+                                                slinsidedict["ast_source"] = self.get_ast_source(
+                                                    json_data[model_id], eachs)
                                                 slinsidedict["query_snp"] = query_snps
                                                 slinsidedict["orf_strand"] = self.extract_nth_bar(
                                                     orf_info.decode(), 0)

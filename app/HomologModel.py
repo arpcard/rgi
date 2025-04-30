@@ -128,6 +128,7 @@ class Homolog(BaseModel):
                                     # logger.info("Perfect hits")
                                     ppinsidedict = {}
                                     ppinsidedict["type_match"] = "Perfect"
+                                    ppinsidedict["ast_source"] = ""
                                     ppinsidedict["model_id"] = modelID
                                     ppinsidedict["orf_strand"] = self.extract_nth_bar(
                                         orfInfo.decode(), 0)
@@ -213,6 +214,7 @@ class Homolog(BaseModel):
                                     # logger.info("Strict hits")
                                     insidedict = {}
                                     insidedict["type_match"] = "Strict"
+                                    insidedict["ast_source"] = ""
                                     insidedict["orf_strand"] = self.extract_nth_bar(
                                         orfInfo.decode(), 0)
                                     insidedict["orf_start"] = self.extract_nth_bar(
@@ -299,6 +301,7 @@ class Homolog(BaseModel):
                                     # logger.info("Loose hits: {} {}".format(json_data[modelID]["model_name"], self.extract_nth_hash(orfInfo.decode(), 0)))
                                     linsidedict = {}
                                     linsidedict["type_match"] = "Loose"
+                                    linsidedict["ast_source"] = ""
                                     linsidedict["orf_strand"] = self.extract_nth_bar(
                                         orfInfo.decode(), 0)
                                     linsidedict["orf_start"] = self.extract_nth_bar(

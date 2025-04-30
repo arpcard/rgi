@@ -145,6 +145,8 @@ class Rrna(BaseModel):
                                             if float(hsp.bits) >= float(true_pass_evalue):
                                                 sinsidedict = {}
                                                 sinsidedict["type_match"] = "Strict"
+                                                sinsidedict["ast_source"] = self.get_ast_source(
+                                                    json_data[model_id], eachs)
                                                 sinsidedict["snp"] = eachs
                                                 sinsidedict["query_snp"] = query_snps
                                                 sinsidedict["orf_strand"] = strand
@@ -209,6 +211,8 @@ class Rrna(BaseModel):
                                             else:
                                                 slinsidedict = {}
                                                 slinsidedict["type_match"] = "Loose"
+                                                slinsidedict["ast_source"] = self.get_ast_source(
+                                                    json_data[model_id], eachs)
                                                 slinsidedict["snp"] = eachs
                                                 slinsidedict["query_snp"] = query_snps
                                                 slinsidedict["orf_strand"] = strand

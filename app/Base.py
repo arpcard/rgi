@@ -582,3 +582,23 @@ class BaseModel(object):
         if last_underscore_index != -1:
             return text[:last_underscore_index]
         return text
+
+    def get_ast_source(self, json_data, mutation_dict):
+        """
+        parse json to get ast source for each mutation
+        """
+        ast_source = []
+        mutation = mutation_dict["original"] + \
+            str(mutation_dict["position"]) + mutation_dict["change"]
+
+        sources = ["Curated-R", "FungAMR", "CRyPTIC-R", "CRyPTIC-S",
+                   "CRyPTIC-U", "ReSeqTB-High", "ReSeqTB-Moderate", "ReSeqTB-Minimal", "ReSeqTB-None", "ReSeqTB-Indeterminate", "WHO-R", "WHO-S", "WHO-U"]
+
+        for item in json_data:
+            if item == "model_param":
+                for s in sources:
+                    if s in json_data[item]["snp"].keys():
+                        if mutation in json_data[item]["snp"][s].values():
+                            ast_source.append(s)
+
+        return "; ".join(ast_source)

@@ -146,6 +146,7 @@ class Overexpression(BaseModel):
                                     # logger.debug("Perfect hits")
                                     ppinsidedict = {}
                                     ppinsidedict["type_match"] = "Perfect"
+                                    ppinsidedict["ast_source"] = ""
                                     ppinsidedict["model_id"] = modelID
                                     ppinsidedict["orf_strand"] = self.extract_nth_bar(
                                         orfInfo, 0)
@@ -249,6 +250,8 @@ class Overexpression(BaseModel):
                                                 snp_counter += 1
                                                 sinsidedict = {}
                                                 sinsidedict["type_match"] = "Strict"
+                                                sinsidedict["ast_source"] = self.get_ast_source(
+                                                    json_data[modelID], eachs)
                                                 sinsidedict["orf_strand"] = self.extract_nth_bar(
                                                     orfInfo.decode(), 0)
                                                 sinsidedict["orf_start"] = self.extract_nth_bar(
@@ -337,6 +340,7 @@ class Overexpression(BaseModel):
                                             # logger.debug("Strict hits - no SNP")
                                             insidedict = {}
                                             insidedict["type_match"] = "Strict"
+                                            insidedict["ast_source"] = ""
                                             insidedict["orf_strand"] = self.extract_nth_bar(
                                                 orfInfo.decode(), 0)
                                             insidedict["orf_start"] = self.extract_nth_bar(
@@ -423,6 +427,7 @@ class Overexpression(BaseModel):
                                     # logger.debug("Loose hits")
                                     linsidedict = {}
                                     linsidedict["type_match"] = "Loose"
+                                    linsidedict["ast_source"] = ""
                                     linsidedict["orf_strand"] = self.extract_nth_bar(
                                         orfInfo.decode(), 0)
                                     linsidedict["orf_start"] = self.extract_nth_bar(
