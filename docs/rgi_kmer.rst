@@ -8,16 +8,17 @@ CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prev
 Citing the RGI kmer_query Algorithms
 ------------------------------------
 
-If you use CARD k-mers in a publication, please cite:  
+If you use RGI k-mers in a publication, please cite:  
 
 Wlodarski, M.A., T.T.Y. Lau, B.P. Alcock, A.R. Raphenya, T.E. Ta, F. Maguire, R.G. Beiko, & A.G. McArthur. 2025. CARD k-mers: Unmasking the pathogen hosts and genomic contexts of antimicrobial resistance genes in metagenomic sequences. bioRxiv, submitted.
 
 Validation
 ----------
 
-The above pre-print provides full validation information and data for RGI kmer_query, but validation information is also available at https://github.com/mawlodarski/card-kmers.
+The above pre-print provides full validation information and data for RGI k-mers, but validation information is also available at https://github.com/mawlodarski/card-kmers.
 
 Major Findings:
+
 * The use of domain specific k-mers (i.e., ARG sequences) as reference data outperforms more generalized k-mer reference data (e.g., Kraken2).
 * For pathogen-of-origin prediction, CARD 61-mers classified 75.69% of ARG alleles to the correct species, with an additional 3.0% to the correct genus level, and achieved a low error rate (1.3%).
 * For genomic classification, CARD 61-mers correctly identified the genomic origin (chromosome or plasmid) for 63.18% of chromosome and 20.02% of plasmid ARG alleles, with a low error rate (1.03% for chromosome, 2.5% for plasmid).
