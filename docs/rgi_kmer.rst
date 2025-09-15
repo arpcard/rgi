@@ -89,7 +89,7 @@ Also pre-process these reference data for metagenomics reads (note that the file
       rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
 
-The pre-compiled 61 bp k-mers are available via CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_:
+The pre-compiled 15 or 61 bp k-mers are available via `CARD-R <https://card.mcmaster.ca/download>`_. Examples below use 61-mers:
 
    .. code-block:: sh
 
@@ -206,7 +206,7 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 Building Custom k-mer Classifiers
 `````````````````````````````````
 
-You must `Load CARD Reference Data`_ for these commands to work.
+You must load CARD reference data as above for these commands to work.
 
 As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp, available as downloadable, pre-compiled k-mer sets at the CARD website (pre-compiled 15-mers are also available), but users can also use RGI to create k-mers of any length. **Warning**: this is computationally intensive.
 
