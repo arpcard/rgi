@@ -35,9 +35,9 @@ Overview and Use of RGI
 
 * `Help Menu and Usage </docs/rgi_help.rst>`_
 * `Loading CARD Reference Databases </docs/rgi_load.rst>`_
-* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`_ (a.k.a. RGI main)
-* `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`_ (a.k.a. RGI bwt)
-* `K-mer Prediction of Pathogen-of-Origin for AMR Genes </docs/rgi_kmer.rst>`_ (a.k.a. RGI kmer_query) (now validated)
+* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`_ (a.k.a. RGI *main*)
+* `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`_ (a.k.a. RGI *bwt*)
+* `K-mer Prediction of Pathogen-of-Origin for AMR Genes </docs/rgi_kmer.rst>`_ (a.k.a. RGI *kmer_query*) (now validated)
 * `Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm </docs/rgi_digital_alliance.rst>`_
 
 License
