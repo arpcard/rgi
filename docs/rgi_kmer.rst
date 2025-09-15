@@ -21,7 +21,7 @@ Major Findings:
 
 * The use of domain specific k-mers (i.e., ARG sequences) as reference data outperforms more generalized k-mer reference data (e.g., Kraken2).
 * For pathogen-of-origin prediction, CARD 61-mers classified 75.69% of ARG alleles to the correct species, with an additional 3.0% to the correct genus level, and achieved a low error rate (1.3%). Due to the conservative nature of the algorithm for homologous genes among pathogens, 19.88% of test data were unclassified.
-* For genomic classification, CARD 61-mers correctly identified the genomic origin for 63.18% of chromosome and 20.02% of plasmid ARG alleles, with a low error rate (1.03% for chromosome, 2.5% for plasmid). Due to the conservative nature of the algorithm for horizontally transferred genes among pathogens, the remained of test data were unclassified.
+* For genomic classification, CARD 61-mers correctly identified the genomic origin for 63.18% of chromosome and 20.02% of plasmid ARG alleles, with a low error rate (1.03% for chromosome, 2.5% for plasmid). Due to the conservative nature of the algorithm for horizontally transferred genes among pathogens, the remaining test data were unclassified.
 * We recommend either 15-mers for faster library building and query processing, or 61-mers for a slightly higher accuracy, albeit at worse computational performance.
 
 Using RGI kmer_query
