@@ -17,7 +17,7 @@ Validation
 
 The above pre-print provides full validation information and data for RGI k-mers, but validation information is also available at https://github.com/mawlodarski/card-kmers.
 
-Major Findings:
+**Major Findings**:
 
 * The use of domain specific k-mers (i.e., ARG sequences) as reference data outperforms more generalized k-mer reference data (e.g., Kraken2).
 * For pathogen-of-origin prediction, CARD 61-mers classified 75.69% of ARG alleles to the correct species, with an additional 3.0% to the correct genus level, and achieved a low error rate (1.3%). Due to the conservative nature of the algorithm for homologous genes among pathogens, 19.88% of test data were unclassified.
