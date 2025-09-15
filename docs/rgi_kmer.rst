@@ -10,7 +10,7 @@ Citing the RGI kmer_query Algorithms
 
 If you use CARD k-mers in a publication, please cite:  
 
-> Wlodarski, M.A., T.T.Y. Lau, B.P. Alcock, A.R. Raphenya, T.E. Ta, F. Maguire, R.G. Beiko, & A.G. McArthur. 2025. CARD k-mers: Unmasking the pathogen hosts and genomic contexts of antimicrobial resistance genes in metagenomic sequences. bioRxiv, submitted.
+Wlodarski, M.A., T.T.Y. Lau, B.P. Alcock, A.R. Raphenya, T.E. Ta, F. Maguire, R.G. Beiko, & A.G. McArthur. 2025. CARD k-mers: Unmasking the pathogen hosts and genomic contexts of antimicrobial resistance genes in metagenomic sequences. bioRxiv, submitted.
 
 Validation
 ----------
