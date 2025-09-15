@@ -27,7 +27,7 @@ Major Findings:
 Using RGI kmer_query
 --------------------
 
-As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website.
+As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp, available as downloadable, pre-compiled k-mer sets at the CARD website (pre-compiled 15-mers are also available).
 
 CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space. To be considered for a taxonomic prediction, individual sequences (e.g. FASTA, RGI predicted ORF, metagenomic read) must pass the *--minimum* coverage value (default of 10, i.e. the number of k-mers in a sequence that need to match a single category, for both taxonomic and genomic classifications, in order for a classification to be made for that sequence). Subsequent classification is based on the following logic tree:
 
@@ -206,11 +206,9 @@ As with RGI bwt analysis, output is produced at both the allele and gene level:
 Building Custom k-mer Classifiers
 `````````````````````````````````
 
-**This is an unpublished algorithm undergoing beta-testing.**
-
 You must `Load CARD Reference Data`_ for these commands to work.
 
-As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp (based on unpublished analyses), available as downloadable, pre-compiled k-mer sets at the CARD website, but users can also use RGI to create k-mers of any length. **Warning**: this is computationally intensive.
+As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. The default k-mer length is 61 bp, available as downloadable, pre-compiled k-mer sets at the CARD website (pre-compiled 15-mers are also available), but users can also use RGI to create k-mers of any length. **Warning**: this is computationally intensive.
 
 .. code-block:: sh
 
