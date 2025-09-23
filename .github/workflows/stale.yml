@@ -20,7 +20,7 @@ jobs:
         run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
       - uses: actions/stale@v8
         with:
-          stale-issue-message: 'Issue is stale and will be closed in 7 days unless there is new activity'
+          stale-issue-message: "This issue is being automatically closed due to lack of activity for 30 days. While the CARD team does it's best to keep up, sometimes we are unable to do so. Please re-open this issue if you still need assistance."
           stale-pr-message: 'PR is stale and will be closed in 7 days unless there is new activity'
           stale-issue-label: 'stale'
           exempt-issue-labels: 'stale-exempt,kind/feature-request'
@@ -28,5 +28,5 @@ jobs:
           exempt-pr-labels: 'stale-exempt'
           remove-stale-when-updated: 'True'
           operations-per-run: 100
-          days-before-stale: 60
+          days-before-stale: 30
           days-before-close: 7
