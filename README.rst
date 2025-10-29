@@ -152,7 +152,7 @@ The following conda command will install all RGI dependencies (listed below):
 - `pyfaidx 0.5.4.1+ <https://pypi.org/project/pyfaidx/>`_
 - `pyahocorasick 1.1.7+ <https://pypi.org/project/pyahocorasick/>`_
 - `OligoArrayAux 3.8 <http://unafold.rna.albany.edu/?q=DINAMelt/OligoArrayAux>`_
-- `samtools 1.21 <https://github.com/samtools/samtools>`_
+- `samtools 1.22.1 <https://github.com/samtools/samtools>`_
 - `bamtools 2.5.2 <https://github.com/pezmaster31/bamtools>`_
 - `bedtools 2.31.1 <https://github.com/arq5x/bedtools2>`_
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
