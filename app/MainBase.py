@@ -18,11 +18,12 @@ from app.Heatmap import Heatmap
 from app.Baits import Baits
 from argparse import RawTextHelpFormatter
 
+
 class MainBase(object):
     def __init__(self, api=False):
         # """
         self.cpu_count = os.cpu_count()
-        USAGE='''%(prog)s <command> [<args>]
+        USAGE = '''%(prog)s <command> [<args>]
             commands are:
                ---------------------------------------------------------------------------------------
                Database
@@ -70,13 +71,14 @@ class MainBase(object):
 
                '''
 
-        parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
+        parser = argparse.ArgumentParser(prog="rgi", description='{} - {}'.format(
+            APP_NAME, SOFTWARE_VERSION), epilog=SOFTWARE_SUMMARY, usage=USAGE)
         parser.add_argument('command', choices=['main', 'tab', 'parser', 'load', 'auto_load',
                                                 'clean', 'galaxy', 'database', 'bwt', 'tm', 'card_annotation', 'wildcard_annotation', 'baits_annotation', 'remove_duplicates', 'heatmap', 'kmer_build', 'kmer_query'],
-                                                help='Subcommand to run')
+                            help='Subcommand to run')
 
         if api == False:
-            args=parser.parse_args(sys.argv[1:2])
+            args = parser.parse_args(sys.argv[1:2])
             if not hasattr(self, args.command):
                 logger.info("Unrecognized command: {}".format(args.command))
                 exit("Error: Unrecognized command: {}".format(args.command))
@@ -88,39 +90,48 @@ class MainBase(object):
         self.main_run(args)
 
     def main_args(self):
-        parser = argparse.ArgumentParser(prog="rgi main",description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
-        parser.add_argument('-i','--input_sequence', dest="input_sequence", required=True, \
-            help='input file must be in either FASTA (contig and protein) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
-        parser.add_argument('-o','--output_file', dest="output_file", required=True, help="output folder and base filename")
-        parser.add_argument('-t','--input_type', dest="input_type",
-                type=str.lower,
-                default="contig", choices=['contig','protein'],
-                required=False,
-                help='specify data input type (default = contig)')
-        parser.add_argument('-a','--alignment_tool', dest="aligner",
-                type=str.upper,
-                choices = ['DIAMOND', 'BLAST'],
-                default="BLAST",
-                help = "specify alignment tool (default = BLAST)")
-        parser.add_argument('-n','--num_threads', dest="threads", type=int,
-                default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
-        parser.add_argument('--include_loose', dest="loose", action='store_true', help="include loose hits in addition to strict and perfect hits (default: False)")
-        parser.add_argument('--include_nudge', dest="include_nudge", action='store_true', help="include hits nudged from loose to strict hits (default: False)")
-        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files (default: False)")
-        parser.add_argument('--keep', dest="keep", action="store_true", help="keeps Prodigal CDS when used with --clean (default: False)")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default: False)")
-        parser.add_argument('--low_quality', dest="low_quality", action="store_true", help="use for short contigs to predict partial genes (default: False)")
-        parser.add_argument('-d','--data', dest="data", default="NA",
-                choices=['wgs', 'plasmid', 'chromosome', 'NA'],
-                help = "specify a data-type (default = NA)")
-        parser.add_argument('-v','--version', action='version', version="{}".format(SOFTWARE_VERSION), help = "prints software version number")
+        parser = argparse.ArgumentParser(
+            prog="rgi main", description="{} - {} - Main".format(APP_NAME, SOFTWARE_VERSION))
+        parser.add_argument('-i', '--input_sequence', dest="input_sequence", required=True,
+                            help='input file must be in either FASTA (contig and protein) or gzip format! e.g myFile.fasta, myFasta.fasta.gz')
+        parser.add_argument('-o', '--output_file', dest="output_file",
+                            required=True, help="output folder and base filename")
+        parser.add_argument('-t', '--input_type', dest="input_type",
+                            type=str.lower,
+                            default="contig", choices=['contig', 'protein'],
+                            required=False,
+                            help='specify data input type (default = contig)')
+        parser.add_argument('-a', '--alignment_tool', dest="aligner",
+                            type=str.upper,
+                            choices=['DIAMOND', 'BLAST'],
+                            default="BLAST",
+                            help="specify alignment tool (default = BLAST)")
+        parser.add_argument('-n', '--num_threads', dest="threads", type=int,
+                            default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
+        parser.add_argument('--include_loose', dest="loose", action='store_true',
+                            help="include loose hits in addition to strict and perfect hits (default: False)")
+        parser.add_argument('--include_nudge', dest="include_nudge", action='store_true',
+                            help="include hits nudged from loose to strict hits (default: False)")
+        parser.add_argument('--local', dest="local_database", action='store_true',
+                            help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--clean', dest="clean", action="store_true",
+                            help="removes temporary files (default: False)")
+        parser.add_argument('--keep', dest="keep", action="store_true",
+                            help="keeps Prodigal CDS when used with --clean (default: False)")
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode (default: False)")
+        parser.add_argument('--low_quality', dest="low_quality", action="store_true",
+                            help="use for short contigs to predict partial genes (default: False)")
+        parser.add_argument('-d', '--data', dest="data", default="NA",
+                            choices=['wgs', 'plasmid', 'chromosome', 'NA'],
+                            help="specify a data-type (default = NA)")
+        parser.add_argument('-v', '--version', action='version', version="{}".format(
+            SOFTWARE_VERSION), help="prints software version number")
         parser.add_argument('-g',  '--orf_finder', dest="orf_finder",
-            type=str.upper,
-            choices=['PRODIGAL', 'PYRODIGAL'],
-            default='PRODIGAL',
-            help="specify ORF finding tool (default = PRODIGAL)")
-        parser.add_argument('--split_prodigal_jobs', dest="split_prodigal_jobs", action="store_true", help="run multiple prodigal jobs simultaneously for contigs in a fasta file (default: False)")
+                            type=str.upper,
+                            choices=['PRODIGAL', 'PYRODIGAL'],
+                            default='PRODIGAL',
+                            help="specify ORF finding tool (default = PRODIGAL)")
         return parser
 
     def main_run(self, args):
@@ -133,8 +144,10 @@ class MainBase(object):
         self.tab_run(args)
 
     def tab_args(self):
-        parser = argparse.ArgumentParser(prog="rgi tab", description="{} - {} - Tab-delimited".format(APP_NAME, SOFTWARE_VERSION))
-        parser.add_argument('-i', '--afile', help='must be a rgi json result file', required=True)
+        parser = argparse.ArgumentParser(
+            prog="rgi tab", description="{} - {} - Tab-delimited".format(APP_NAME, SOFTWARE_VERSION))
+        parser.add_argument(
+            '-i', '--afile', help='must be a rgi json result file', required=True)
         return parser
 
     def tab_run(self, args):
@@ -196,30 +209,32 @@ class MainBase(object):
 
     def kmer_query_args(self):
         parser = argparse.ArgumentParser(prog="rgi kmer_query",
-            description='{} - {} - Kmer Query \n\nTests sequenes using CARD*kmers'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
+                                         description='{} - {} - Kmer Query \n\nTests sequenes using CARD*kmers'.format(APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-i', '--input', dest="input", required=True,
-            help="Input file (bam file from RGI*BWT, json file of RGI results, fasta file of sequences)")
+                            help="Input file (bam file from RGI*BWT, json file of RGI results, fasta file of sequences)")
         parser.add_argument('--bwt', action="store_true",
-            help="Specify if the input file for analysis is a bam file generated from RGI*BWT")
+                            help="Specify if the input file for analysis is a bam file generated from RGI*BWT")
         parser.add_argument('--rgi', action="store_true",
-            help="Specify if the input file is a RGI results json file")
+                            help="Specify if the input file is a RGI results json file")
         parser.add_argument('--fasta', action="store_true",
-            help="Specify if the input file is a fasta file of sequences")
+                            help="Specify if the input file is a fasta file of sequences")
         parser.add_argument('-k', '--kmer_size', dest="k", required=True,
-            help="length of k")
+                            help="length of k")
         parser.add_argument('-m', '--minimum', dest="min", default=10,
-            help="Minimum number of kmers in the called category for the classification to be made (default=10).")
-        parser.add_argument('-n','--threads', dest="threads", type=int,
-            default=1, help="number of threads (CPUs) to use (default={})".format(1))
+                            help="Minimum number of kmers in the called category for the classification to be made (default=10).")
+        parser.add_argument('-n', '--threads', dest="threads", type=int,
+                            default=1, help="number of threads (CPUs) to use (default={})".format(1))
         parser.add_argument('-o', '--output', dest="output", required=True,
-            help="Output file name.")
+                            help="Output file name.")
         parser.add_argument('--local', dest="local_database", action='store_true',
-            help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+                            help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode")
         return parser
 
     def kmer_query_run(self, args):
-        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k, args.min, args.threads, args.output, args.local_database, args.debug)
+        obj = CARDkmers(args.input, args.bwt, args.rgi, args.fasta, args.k,
+                        args.min, args.threads, args.output, args.local_database, args.debug)
         obj.run()
 
     def card_annotation(self):
@@ -276,23 +291,37 @@ class MainBase(object):
         self.bwt_run(args)
 
     def bwt_args(self):
-		# description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
-        parser = argparse.ArgumentParser(prog="rgi bwt",description="{} - {} - BWT \n\nAligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.".format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
-        parser.add_argument('-1', '--read_one', required=True, help="raw read one (qc and trimmed)")
-        parser.add_argument('-2', '--read_two', help="raw read two (qc and trimmed)")
-        parser.add_argument('-a', '--aligner', default="kma", choices=['kma','bowtie2','bwa'], help="select read aligner (default=kma)")
-        parser.add_argument('-n','--threads', dest="threads", type=int,default=self.cpu_count, help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
-        parser.add_argument('-o','--output_file', dest="output_file", required=True, help="name of output filename(s)")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode (default=False)")
-        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files (default=False)")
-        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--include_wildcard', dest="include_wildcard", action="store_true", help="include wildcard (default=False)")
-        parser.add_argument('--include_other_models', dest="include_other_models", action="store_true", \
-            help="include protein variant, rRNA variant, knockout, and protein overexpression models (default=False)")
-        parser.add_argument('--include_baits', dest="include_baits", action="store_true", help="include baits (default=False)")
-        parser.add_argument('--mapq', dest="mapq", help="filter reads based on MAPQ score (default=False)")
-        parser.add_argument('--mapped', dest="mapped", help="filter reads based on mapped reads (default=False)")
-        parser.add_argument('--coverage', dest="coverage", help="filter reads based on coverage of reference sequence")
+        # description="{} - {} - Main".format(APP_NAME,SOFTWARE_VERSION))
+        parser = argparse.ArgumentParser(prog="rgi bwt", description="{} - {} - BWT \n\nAligns metagenomic reads to CARD and wildCARD reference using kma, bowtie2 or bwa and provide reports.".format(
+            APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
+        parser.add_argument('-1', '--read_one', required=True,
+                            help="raw read one (qc and trimmed)")
+        parser.add_argument('-2', '--read_two',
+                            help="raw read two (qc and trimmed)")
+        parser.add_argument('-a', '--aligner', default="kma", choices=[
+                            'kma', 'bowtie2', 'bwa'], help="select read aligner (default=kma)")
+        parser.add_argument('-n', '--threads', dest="threads", type=int, default=self.cpu_count,
+                            help="number of threads (CPUs) to use (default={})".format(self.cpu_count))
+        parser.add_argument('-o', '--output_file', dest="output_file",
+                            required=True, help="name of output filename(s)")
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode (default=False)")
+        parser.add_argument('--clean', dest="clean", action="store_true",
+                            help="removes temporary files (default=False)")
+        parser.add_argument('--local', dest="local_database", action='store_true',
+                            help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--include_wildcard', dest="include_wildcard",
+                            action="store_true", help="include wildcard (default=False)")
+        parser.add_argument('--include_other_models', dest="include_other_models", action="store_true",
+                            help="include protein variant, rRNA variant, knockout, and protein overexpression models (default=False)")
+        parser.add_argument('--include_baits', dest="include_baits",
+                            action="store_true", help="include baits (default=False)")
+        parser.add_argument(
+            '--mapq', dest="mapq", help="filter reads based on MAPQ score (default=False)")
+        parser.add_argument('--mapped', dest="mapped",
+                            help="filter reads based on mapped reads (default=False)")
+        parser.add_argument('--coverage', dest="coverage",
+                            help="filter reads based on coverage of reference sequence")
 
         return parser
 
@@ -321,13 +350,18 @@ class MainBase(object):
         self.tm_run(args)
 
     def tm_args(self):
-        parser = argparse.ArgumentParser(prog="rgi tm",description='{} - {} - TM'.format(APP_NAME,SOFTWARE_VERSION))
-        parser.add_argument('-i', '--input_file', dest="input_file", help="input_file")
-        parser.add_argument('-o', '--output_file', dest="output_file", help="output_file")
+        parser = argparse.ArgumentParser(
+            prog="rgi tm", description='{} - {} - TM'.format(APP_NAME, SOFTWARE_VERSION))
+        parser.add_argument('-i', '--input_file',
+                            dest="input_file", help="input_file")
+        parser.add_argument('-o', '--output_file',
+                            dest="output_file", help="output_file")
         parser.add_argument('-t', '--filter_temperature', dest="filter_temperature", default=65,
-            help="desired melting temperature (default=65).")
-        parser.add_argument('--clean', dest="clean", action="store_true", help="removes temporary files")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+                            help="desired melting temperature (default=65).")
+        parser.add_argument('--clean', dest="clean",
+                            action="store_true", help="removes temporary files")
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode")
         return parser
 
     def tm_run(self, args):
@@ -346,22 +380,28 @@ class MainBase(object):
         self.heatmap_run(args)
 
     def heatmap_args(self):
-        parser = argparse.ArgumentParser(prog="rgi heatmap",description='{} - {} - Heatmap \n\nCreates a heatmap when given multiple RGI results.'.format(APP_NAME,SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
-        parser.add_argument('-i', '--input', dest="input", required=True, help="Directory containing the RGI .json files (REQUIRED)")
+        parser = argparse.ArgumentParser(prog="rgi heatmap", description='{} - {} - Heatmap \n\nCreates a heatmap when given multiple RGI results.'.format(
+            APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
+        parser.add_argument('-i', '--input', dest="input", required=True,
+                            help="Directory containing the RGI .json files (REQUIRED)")
         parser.add_argument('-cat', '--category', dest="classification", choices=("drug_class", "resistance_mechanism", "gene_family"),
-            help="The option to organize resistance genes based on a category.")
-        parser.add_argument('-f', '--frequency', dest="frequency", action="store_true", help="Represent samples based on resistance profile.")
-        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap", help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
+                            help="The option to organize resistance genes based on a category.")
+        parser.add_argument('-f', '--frequency', dest="frequency", action="store_true",
+                            help="Represent samples based on resistance profile.")
+        parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap",
+                            help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
         parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),
-            help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
+                            help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
         parser.add_argument('-d', '--display', dest="display", choices=("plain", "fill", "text"), default="plain",
-            help="Specify display options for categories (deafult=plain).")
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+                            help="Specify display options for categories (deafult=plain).")
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode")
 
         return parser
 
     def heatmap_run(self, args):
-        obj = Heatmap(args.input, args.classification, args.frequency, args.output, args.cluster, args.display, args.debug)
+        obj = Heatmap(args.input, args.classification, args.frequency,
+                      args.output, args.cluster, args.display, args.debug)
         obj.run()
 
     def clean(self):
@@ -382,10 +422,12 @@ class MainBase(object):
         self.galaxy_run(args)
 
     def galaxy_args(self):
-        parser = argparse.ArgumentParser(prog="rgi galaxy", description="{} - {} - Galaxy project wrapper".\
-            format(APP_NAME, SOFTWARE_VERSION), epilog=GALAXY_PROJECT_WRAPPER)
-        parser.add_argument('--galaxy_database', help='path to CARD data and blast databases', required=True)
-        parser.add_argument('--debug', dest="debug", action="store_true", help="debug mode")
+        parser = argparse.ArgumentParser(prog="rgi galaxy", description="{} - {} - Galaxy project wrapper".
+                                         format(APP_NAME, SOFTWARE_VERSION), epilog=GALAXY_PROJECT_WRAPPER)
+        parser.add_argument(
+            '--galaxy_database', help='path to CARD data and blast databases', required=True)
+        parser.add_argument('--debug', dest="debug",
+                            action="store_true", help="debug mode")
         return parser
 
     def galaxy_run(self, args):
@@ -398,10 +440,14 @@ class MainBase(object):
         print(self.database_run(args))
 
     def database_args(self):
-        parser = argparse.ArgumentParser(prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))
-        parser.add_argument('-v','--version',action='store_true', required=True, help = "prints data version number")
-        parser.add_argument('--local', dest="local_database", action='store_true', help="use local database (default: uses database in executable directory)")
-        parser.add_argument('--all', action='store_true', help="data version number used for `rgi bwt` and `rgi main` (default: rgi main)")
+        parser = argparse.ArgumentParser(
+            prog="rgi database", description="{} - {} - Database".format(APP_NAME, SOFTWARE_VERSION))
+        parser.add_argument('-v', '--version', action='store_true',
+                            required=True, help="prints data version number")
+        parser.add_argument('--local', dest="local_database", action='store_true',
+                            help="use local database (default: uses database in executable directory)")
+        parser.add_argument('--all', action='store_true',
+                            help="data version number used for `rgi bwt` and `rgi main` (default: rgi main)")
         return parser
 
     def database_run(self, args):
@@ -412,13 +458,15 @@ class MainBase(object):
             # error if it doesn't exist
             if not os.path.exists(LOCAL_DATABASE):
                 print("Error: missing local directory: {}".format(LOCAL_DATABASE))
-                print("Please run `rgi load --local -i <path to card.json>` to create local database.")
-                print("See `rgi load --help` to upload the card.json to rgi application.\n".format(os.path.abspath(LOCAL_DATABASE)))
+                print(
+                    "Please run `rgi load --local -i <path to card.json>` to create local database.")
+                print("See `rgi load --help` to upload the card.json to rgi application.\n".format(
+                    os.path.abspath(LOCAL_DATABASE)))
                 exit()
         else:
             db = data_path
 
-        indecies_directory = os.path.join(db,"loaded_databases.json")
+        indecies_directory = os.path.join(db, "loaded_databases.json")
 
         if os.path.isfile(indecies_directory) == True:
             with open(indecies_directory) as json_file:
@@ -431,16 +479,18 @@ class MainBase(object):
                         json_data["card_canonical"]["data_version"],
                         json_data["card_variants"]["data_version"],
                         kmers_str
-                        )
                     )
-                    if "model_type_used" in json_data["card_canonical"].keys() or "model_type_used" in json_data["card_variants"].keys() :
+                    )
+                    if "model_type_used" in json_data["card_canonical"].keys() or "model_type_used" in json_data["card_variants"].keys():
                         card_canonical_model_type_used = "N/A"
                         card_variants_model_type_used = "N/A"
 
                         if len(json_data["card_canonical"]["model_type_used"]) > 0:
-                            card_canonical_model_type_used = ";".join(json_data["card_canonical"]["model_type_used"])
+                            card_canonical_model_type_used = ";".join(
+                                json_data["card_canonical"]["model_type_used"])
                         if len(json_data["card_variants"]["model_type_used"]) > 0:
-                            card_variants_model_type_used = ";".join(json_data["card_variants"]["model_type_used"])
+                            card_variants_model_type_used = ";".join(
+                                json_data["card_variants"]["model_type_used"])
 
                         data_version = ("card_canonical: {} | card_canonical_model_type_used: {} | card_variants: {} | card_variants_model_type_used: {} | kmer_sizes: {}".format(
                             json_data["card_canonical"]["data_version"],
@@ -448,7 +498,7 @@ class MainBase(object):
                             json_data["card_variants"]["data_version"],
                             card_variants_model_type_used,
                             kmers_str
-                            )
+                        )
                         )
                 else:
                     data_version = json_data["card_json"]["data_version"]
@@ -460,6 +510,7 @@ class MainBase(object):
             print('\nError: no databases found in data path: {}. \nSee `rgi load --help`\n'.format(os.path.abspath(db)))
 
         return data_version
+
 
 if __name__ == '__main__':
     MainBase()

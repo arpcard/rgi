@@ -89,13 +89,13 @@ Using RGI main
 
 .. code-block:: sh
 
-					usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
-					                [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose]
-					                [--include_nudge] [--local] [--clean] [--keep] [--debug]
-					                [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v]
-					                [-g {PRODIGAL,PYRODIGAL}] [--split_prodigal_jobs]
+               usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}] 
+                               [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose] 
+                               [--include_nudge] [--local] [--clean] [--keep]
+                               [--debug] [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v] 
+                               [-g {PRODIGAL,PYRODIGAL}]
 
-					Resistance Gene Identifier - 6.0.2 - Main
+               Resistance Gene Identifier - 6.0.6 - Main
 
 					optional arguments:
 					  -h, --help            show this help message and exit
@@ -129,9 +129,6 @@ Using RGI main
 					  -v, --version         prints software version number
 					  -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
 					                        specify ORF finding tool (default = PRODIGAL)
-					  --split_prodigal_jobs
-					                        run multiple prodigal jobs simultaneously for contigs
-					                        in a fasta file (default: False)
 
 
 Loading CARD Reference Data for RGI main
@@ -195,13 +192,6 @@ Arguments can be used in combination. For example, analysis of metagenomic assem
         --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
         --include_nudge
 
-This same analysis can be threaded over many processors if high-performance computing is available:
-
-   .. code-block:: sh
-
-      rgi main --input_sequence /path/to/nucleotide_input.fasta
-        --output_file /path/to/output_file --local --clean -a DIAMOND --low_quality
-        --include_nudge --num_threads 40 --split_prodigal_jobs
 
 Running RGI main with Protein Sequences
 ```````````````````````````````````````
