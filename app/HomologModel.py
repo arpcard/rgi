@@ -123,7 +123,7 @@ class Homolog(BaseModel):
                                     submitted_proteins_dict[orfInfo.decode().split(" ")[0]])
 
                             try:
-                                if card_sequence.upper() == orf_protein_sequence.upper():
+                                if card_sequence.upper() == orf_protein_sequence.upper() or hsp.match.upper() == card_sequence.upper():
                                     """ Perfect hits """
                                     # logger.info("Perfect hits")
                                     ppinsidedict = {}
