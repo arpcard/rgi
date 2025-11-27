@@ -7,8 +7,9 @@ from app.settings import *
 
 
 def clean():
-    files = glob.glob(os.path.join(path, "*"), include_hidden=True)
+    files = [f for f in os.listdir(os.path.join(path))]
     for f in files:
+        f = os.path.join(path, f)
         remove_directory(f)
         if os.path.isfile(f) and os.path.splitext(os.path.basename(f))[1][1:].strip() in ["adraft", "xml", "fsa", "draft", "pyc", "log"]:
             os.remove(f)
@@ -22,16 +23,18 @@ def clean():
                     os.remove(f)
 
     # clean data files
-    data_files = glob.glob(os.path.join(data_path, "*"))
+    data_files = [f for f in os.listdir(os.path.join(data_path))]
     for datafile in data_files:
+        datafile = os.path.join(data_path, datafile)
         if os.path.isfile(datafile) and os.path.basename(datafile) not in ["card.json", ".gitignore", "__init__.py"]:
             logger.info("Remove: {}".format(datafile))
             os.remove(datafile)
     logger.info("Cleaned directory: {}".format(data_path))
 
     # clean db files
-    db_files = glob.glob(os.path.join(path, "*"))
+    db_files = [f for f in os.listdir(os.path.join(path))]
     for dbfile in db_files:
+        dbfile = os.path.join(path, dbfile)
         if os.path.isfile(dbfile) and os.path.basename(dbfile) not in [".gitignore", "__init__.py"]:
             logger.info("Remove: {}".format(dbfile))
             os.remove(dbfile)
@@ -41,9 +44,9 @@ def clean():
 def clean_local():
     if os.path.exists(LOCAL_DATABASE):
         logger.info("clean: {}".format(LOCAL_DATABASE))
-        files = glob.glob(os.path.join(LOCAL_DATABASE, "*"),
-                          include_hidden=True)
+        files = [f for f in os.listdir(os.path.join(LOCAL_DATABASE))]
         for f in files:
+            f = os.path.join(LOCAL_DATABASE, f)
             if os.path.isfile(f) and os.path.basename(f) not in ["card.json"]:
                 logger.info("Remove: {}".format(f))
                 os.remove(f)
