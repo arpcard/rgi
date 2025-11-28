@@ -123,13 +123,15 @@ class Database(object):
                                                    % (j[i]['model_id'], j[i]['model_name']))
                                     logger.info(
                                         "Please let the CARD Admins know! Email: card@mcmaster.ca")
+                                    snpList = []  # reset
 
                                 try:
                                     for seq in j[i]['model_sequences']['sequence']:
-                                        fout.write('>%s_%s | model_type_id: 40293 | pass_bit_score: %s | SNP: %s | %s\n'
-                                                   % (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-                                        fout.write('%s\n' % (
-                                            j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+                                        if len(snpList) > 0:
+                                            fout.write('>%s_%s | model_type_id: 40293 | pass_bit_score: %s | SNP: %s | %s\n'
+                                                       % (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+                                            fout.write('%s\n' % (
+                                                j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
                                 except Exception as e:
                                     logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running."
                                                    % (j[i]['model_id'], j[i]['model_name']))
@@ -154,13 +156,15 @@ class Database(object):
                                                    % (j[i]['model_id'], j[i]['model_name']))
                                     logger.info(
                                         "Please let the CARD Admins know! Email: card@mcmaster.ca")
+                                    snpList = []  # reset
 
                                 try:
                                     for seq in j[i]['model_sequences']['sequence']:
-                                        fout.write('>%s_%s | model_type_id: 41091 | pass_bit_score: %s | SNP: %s | %s\n'
-                                                   % (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
-                                        fout.write('%s\n' % (
-                                            j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
+                                        if len(snpList) > 0:
+                                            fout.write('>%s_%s | model_type_id: 41091 | pass_bit_score: %s | SNP: %s | %s\n'
+                                                       % (i, seq, pass_bit_score, ','.join(snpList), j[i]['ARO_name']))
+                                            fout.write('%s\n' % (
+                                                j[i]['model_sequences']['sequence'][seq]['protein_sequence']['sequence']))
                                 except Exception as e:
                                     logger.warning("No model sequences for model (%s, %s). RGI will omit this model and keep running."
                                                    % (j[i]['model_id'], j[i]['model_name']))
