@@ -25,7 +25,7 @@ RGI analyses can be performed via the CARD website `RGI portal <https://card.mcm
 
 May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RGI analysis of assembled contigs (FASTA) or metagenomic sequencing reads (FASTQ): `CZ ID AMR Pipeline Workflow <https://chanzuckerberg.zendesk.com/hc/en-us/articles/15091031482644-AMR-Pipeline-Workflow>`_.
 
-**CARD reference sequences and significance cut-offs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
+**CARD reference sequences and significance cutoffs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
 * `CARD Frequency Asked Questions <https://github.com/arpcard/FAQ>`_
 * `CBW 2024 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=Z4gAAYRExSg&list=PL3izGL6oi0S_e5T8qx-74WRaMR5K5U8V5&index=8>`_
