@@ -26,7 +26,7 @@ All RGI results are organized via the `Antibiotic Resistance Ontology <https://c
 
 **Note**: Users have the option of using BLAST or `DIAMOND <https://github.com/bbuchfink/diamond>`_ for generation of local alignments and assessment of bit-scores within RGI. The default is BLAST, but DIAMOND generates alignments faster than BLAST and the RGI developers routinely assess DIAMOND's performance to ensure it calculates equivalent bit-scores as BLAST given RGI's Perfect / Strict / Loose paradigm is dependant upon hand curated bit-score cutoffs. As such, RGI may not support the latest version of DIAMOND.
 
- > What are CARD detection models and how are bit-score cutoffs determined? See: `GitHub discussion of RGI Perfect, Strict, and Loose <https://github.com/arpcard/rgi/issues/140>`_ and Mukiri <i>et al</i>. 2025. Increasing the predictive accuracy of the Resistance Gene Identifier by evaluating antimicrobial resistance gene over- and underprediction.`bioRxiv, 2025.12.11.693720 <https://www.biorxiv.org/content/10.64898/2025.12.11.693720v1>`_
+> What are CARD detection models and how are bit-score cutoffs determined? See: `GitHub discussion of RGI Perfect, Strict, and Loose <https://github.com/arpcard/rgi/issues/140>`_, plus Mukiri <i>et al</i>. 2025. Increasing the predictive accuracy of the Resistance Gene Identifier by evaluating antimicrobial resistance gene over- and underprediction. `bioRxiv, 2025.12.11.693720 <https://www.biorxiv.org/content/10.64898/2025.12.11.693720v1>`_.
 
 **UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default all Loose matches of 95% identity or better were automatically listed as Strict, regardless of alignment length. At that time, this behaviour could only be suppressed by using the --exclude_nudge parameter. This default behaviour and the --exclude_nudge parameter have been discontinued. Loose matches of 95% identity or better can now only be listed (i.e., nudged) as Strict matches, regardless of alignment length, by use of the new --include_nudge parameter. As such, these often spurious results are no longer included in default RGI main output.**
 
@@ -78,7 +78,7 @@ Curation at CARD is routinely ahead of RGI software development, so not all para
 
 Lastly, analyzing metagenomic assemblies or merged metagenomic reads using RGI main is a computationally intensive approach, since each merged read or contig FASTA set may contain partial ORFs, requiring RGI to perform large amounts of BLAST/DIAMOND analyses against CARD reference proteins. However, this approach does (1) allow analysis of metagenomic sequences in protein space, overcoming issues of high-stringency read mapping relative to nucleotide reference databases (see below), and (2) allow inclusion of `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_ when annotating the resistome (as outlined below, RGI bwt's read mapping algorithms do not support models that require screening for mutations).
 
- > `What RGI settings are best for a Metagenome-Assembled Genome (MAG)? <https://github.com/arpcard/FAQ#rgi-faqs>`_
+> `What RGI settings are best for a Metagenome-Assembled Genome (MAG)? <https://github.com/arpcard/FAQ#rgi-faqs>`_
 
 Using RGI main
 --------------
