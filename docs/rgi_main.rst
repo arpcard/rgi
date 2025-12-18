@@ -263,9 +263,9 @@ RGI main Tab-Delimited Output Details
 +----------------------------------------------------------+------------------------------------------------+
 |    Cut_Off                                               | RGI Detection Paradigm (Perfect, Strict, Loose)|
 +----------------------------------------------------------+------------------------------------------------+
-|    Pass_bit-score                                         | Strict detection model bit-score cutoff       |
+|    Pass_bit-score                                        | Strict detection model bit-score cutoff        |
 +----------------------------------------------------------+------------------------------------------------+
-|    Best_Hit_bit-score                                     | bit-score value of match to top hit in CARD   |
+|    Best_Hit_bit-score                                    | bit-score value of match to top hit in CARD    |
 +----------------------------------------------------------+------------------------------------------------+
 |    Best_Hit_ARO                                          | ARO term of top hit in CARD                    |
 +----------------------------------------------------------+------------------------------------------------+
