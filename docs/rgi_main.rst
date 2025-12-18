@@ -1,3 +1,6 @@
+.. contents:: Page Contents
+   :local:
+
 Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
 -----------------------------------------------------------------------
 

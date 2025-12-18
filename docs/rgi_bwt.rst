@@ -1,3 +1,6 @@
+.. contents:: Page Contents
+   :local:
+   
 Analyzing Metagenomic Reads
 ---------------------------
 

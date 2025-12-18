@@ -1,3 +1,6 @@
+.. contents:: Page Contents
+   :local:
+
 Loading CARD Reference Data
 ````````````````````````````
 

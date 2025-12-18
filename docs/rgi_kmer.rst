@@ -1,3 +1,6 @@
+.. contents:: Page Contents
+   :local:
+
 K-mer Prediction of Pathogen-of-Origin for AMR Genes
 ----------------------------------------------------
 
