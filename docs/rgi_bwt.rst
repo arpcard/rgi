@@ -1,4 +1,4 @@
-.. contents:: Page Contents
+.. contents:: **Page Contents**
    :local:
    
 Analyzing Metagenomic Reads

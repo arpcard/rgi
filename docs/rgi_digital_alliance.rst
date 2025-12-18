@@ -1,4 +1,4 @@
-.. contents:: Page Contents
+.. contents:: **Page Contents**
    :local:
    
 Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm

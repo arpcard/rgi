@@ -1,4 +1,4 @@
-.. contents:: Page Contents
+.. contents:: **Page Contents**
    :local:
 
 Help Menu and Usage
