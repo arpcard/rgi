@@ -89,7 +89,7 @@ class Filter(BaseModel):
         """
         Read all json into one json results file
         """
-        logger.info(">>>> prepare output(s) for input: {}".format(
+        logger.info("prepare output(s) for input: {}".format(
             self.input_sequence))
         file_name = os.path.basename(self.input_sequence)
         obj = ConvertJsonToTSV(self.output_file,

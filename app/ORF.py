@@ -52,30 +52,29 @@ class ORF(object):
         if self.low_quality == True or minimum_sequence_length < 20000:
             quality = "-p meta"
 
-            filename = os.path.basename(self.input_file)
+        filename = os.path.basename(self.input_file)
 
-            stdout = "2> /dev/null"
+        stdout = "2> /dev/null"
 
-            cmd = "prodigal -q -m -a {trans_file} -i {input_file} -o  {output_file} -d {nuc_file} -s {potential_genes} {quality} {stdout}" \
-                .format(
-                    trans_file=os.path.join(
-                        self.working_directory, "{}.temp.contig.fsa".format(filename)),
-                    input_file=self.input_file,
-                    output_file=os.path.join(
-                        self.working_directory, "{}.temp.draft".format(filename)),
-                    quality=quality,
-                    stdout=stdout,
-                    nuc_file=os.path.join(
-                        self.working_directory,  "{}.temp.contigToORF.fsa".format(filename)),
-                    potential_genes=os.path.join(
-                        self.working_directory,  "{}.temp.potentialGenes".format(filename))
-                )
+        cmd = "prodigal -q -m -a {trans_file} -i {input_file} -o  {output_file} -d {nuc_file} -s {potential_genes} {quality} {stdout}" \
+            .format(
+                trans_file=os.path.join(
+                    self.working_directory, "{}.temp.contig.fsa".format(filename)),
+                input_file=self.input_file,
+                output_file=os.path.join(
+                    self.working_directory, "{}.temp.draft".format(filename)),
+                quality=quality,
+                stdout=stdout,
+                nuc_file=os.path.join(
+                    self.working_directory,  "{}.temp.contigToORF.fsa".format(filename)),
+                potential_genes=os.path.join(
+                    self.working_directory,  "{}.temp.potentialGenes".format(filename))
+            )
+        os.system(cmd)
 
-            os.system(cmd)
-
-            if self.clean == True:
-                os.remove(os.path.join(self.working_directory,
-                                       "{}.temp.draft".format(filename)))
+        if self.clean == True:
+            os.remove(os.path.join(self.working_directory,
+                                   "{}.temp.draft".format(filename)))
 
     def worker(self, input_fasta):
         o_f_path, o_f_name = os.path.split(os.path.abspath(input_fasta))

@@ -142,7 +142,7 @@ The following conda command will install all RGI dependencies (listed below):
 - `NCBI BLAST 2.16.0 <https://blast.ncbi.nlm.nih.gov/Blast.cgi>`_
 - `zlib <https://bitbucket.org/gutworth/six>`_
 - `Prodigal 2.6.3 <https://github.com/hyattpd/prodigal/wiki/Installation>`_
-- `DIAMOND 0.8.36 <https://github.com/bbuchfink/diamond>`_
+- `DIAMOND 2.1.16 <https://github.com/bbuchfink/diamond>`_
 - `Biopython 1.78 <https://biopython.org/>`_
 - `filetype 1.0.0+ <https://pypi.org/project/filetype/>`_
 - `pytest 3.0.0+ <https://docs.pytest.org/en/latest/>`_
@@ -158,7 +158,7 @@ The following conda command will install all RGI dependencies (listed below):
 - `Jellyfish 2.2.10 <https://github.com/gmarcais/Jellyfish>`_
 - `Bowtie2 2.5.4 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_
 - `BWA 0.7.18 <https://github.com/lh3/bwa>`_
-- `KMA 1.4.17 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
+- `KMA 1.6.10 <https://bitbucket.org/genomicepidemiology/kma/src/master>`_
 
 
 Install RGI
