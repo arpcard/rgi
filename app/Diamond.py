@@ -31,6 +31,7 @@ class Diamond(object):
 
     def run(self):
         """Runs DIAMOND algorithm."""
+        logger.info("run diamond")
         cmd = ('diamond {program} --xml-blord-format --db {db} \
 				   --query {input} --outfmt {outfmt} --out {output_file}  \
 				   --threads {num_threads}  --index-chunks {index_chunks} \
@@ -38,8 +39,7 @@ class Diamond(object):
 				   --salltitles  --quiet --more-sensitive'
                .format(
                    program=self.program,
-                   in_ref=os.path.join(self.db, "proteindb.fsa"),
-                   db=os.path.join(self.db, "protein.db"),
+                   db=os.path.join(self.db, "protein.db.dmnd"),
                    input=self.input_file,
                    output_file=self.output_file,
                    num_threads=self.num_threads,
@@ -48,7 +48,7 @@ class Diamond(object):
                    outfmt=self.outfmt
                )
                )
-
+        # logger.debug(cmd)
         os.system(cmd)
         logger.info(
             "done running diamond {} -> {}".format(self.program, self.db))
