@@ -43,7 +43,7 @@ jobs:
         sudo mv bowtie2-2.5.4-linux-x86_64/bowtie2* /usr/bin
 
         echo "install diamond ..."
-        wget --quiet http://github.com/bbuchfink/diamond/releases/download/v0.8.36/diamond-linux64.tar.gz
+        wget --quiet https://github.com/bbuchfink/diamond/releases/download/v2.1.16/diamond-linux64.tar.gz
         tar xzf diamond-linux64.tar.gz
         sudo mv diamond /usr/bin
 
