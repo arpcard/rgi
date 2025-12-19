@@ -92,46 +92,46 @@ Using RGI main
 
 .. code-block:: sh
 
-               usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}] 
-                               [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose] 
-                               [--include_nudge] [--local] [--clean] [--keep]
-                               [--debug] [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v] 
-                               [-g {PRODIGAL,PYRODIGAL}]
+               usage: rgi main [-h] -i INPUT_SEQUENCE -o OUTPUT_FILE [-t {contig,protein}]
+                              [-a {DIAMOND,BLAST}] [-n THREADS] [--include_loose]
+                              [--include_nudge] [--local] [--clean] [--keep] [--debug]
+                              [--low_quality] [-d {wgs,plasmid,chromosome,NA}] [-v]
+                              [-g {PRODIGAL,PYRODIGAL}]
 
-               Resistance Gene Identifier - 6.0.6 - Main
+               Resistance Gene Identifier - 6.0.7 - Main
 
-					optional arguments:
-					  -h, --help            show this help message and exit
-					  -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
-					                        input file must be in either FASTA (contig and
-					                        protein) or gzip format! e.g myFile.fasta,
-					                        myFasta.fasta.gz
-					  -o OUTPUT_FILE, --output_file OUTPUT_FILE
-					                        output folder and base filename
-					  -t {contig,protein}, --input_type {contig,protein}
-					                        specify data input type (default = contig)
-					  -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
-					                        specify alignment tool (default = BLAST)
-					  -n THREADS, --num_threads THREADS
-					                        number of threads (CPUs) to use in the BLAST search
-					                        (default=16)
-					  --include_loose       include loose hits in addition to strict and perfect
-					                        hits (default: False)
-					  --include_nudge       include hits nudged from loose to strict hits
-					                        (default: False)
-					  --local               use local database (default: uses database in
-					                        executable directory)
-					  --clean               removes temporary files (default: False)
-					  --keep                keeps Prodigal CDS when used with --clean (default:
-					                        False)
-					  --debug               debug mode (default: False)
-					  --low_quality         use for short contigs to predict partial genes
-					                        (default: False)
-					  -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
-					                        specify a data-type (default = NA)
-					  -v, --version         prints software version number
-					  -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
-					                        specify ORF finding tool (default = PRODIGAL)
+               optional arguments:
+               -h, --help            show this help message and exit
+               -i INPUT_SEQUENCE, --input_sequence INPUT_SEQUENCE
+                                       input file must be in either FASTA (contig and
+                                       protein) or gzip format! e.g myFile.fasta,
+                                       myFasta.fasta.gz
+               -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                                       output folder and base filename
+               -t {contig,protein}, --input_type {contig,protein}
+                                       specify data input type (default = contig)
+               -a {DIAMOND,BLAST}, --alignment_tool {DIAMOND,BLAST}
+                                       specify alignment tool (default = BLAST)
+               -n THREADS, --threads THREADS
+                                       number of threads (CPUs) to use in the BLAST search
+                                       (default=16)
+               --include_loose       include loose hits in addition to strict and perfect
+                                       hits (default: False)
+               --include_nudge       include hits nudged from loose to strict hits
+                                       (default: False)
+               --local               use local database (default: uses database in
+                                       executable directory)
+               --clean               removes temporary files (default: False)
+               --keep                keeps Prodigal CDS when used with --clean (default:
+                                       False)
+               --debug               debug mode (default: False)
+               --low_quality         use for short contigs to predict partial genes
+                                       (default: False)
+               -d {wgs,plasmid,chromosome,NA}, --data {wgs,plasmid,chromosome,NA}
+                                       specify a data-type (default = NA)
+               -v, --version         prints software version number
+               -g {PRODIGAL,PYRODIGAL}, --orf_finder {PRODIGAL,PYRODIGAL}
+                                       specify ORF finding tool (default = PRODIGAL)
 
 
 Loading CARD Reference Data for RGI main

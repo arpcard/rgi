@@ -106,7 +106,7 @@ class MainBase(object):
                             choices=['DIAMOND', 'BLAST'],
                             default="BLAST",
                             help="specify alignment tool (default = BLAST)")
-        parser.add_argument('-n', '--num_threads', dest="threads", type=int,
+        parser.add_argument('-n', '--threads', dest="threads", type=int,
                             default=self.cpu_count, help="number of threads (CPUs) to use in the BLAST search (default={})".format(self.cpu_count))
         parser.add_argument('--include_loose', dest="loose", action='store_true',
                             help="include loose hits in addition to strict and perfect hits (default: False)")
