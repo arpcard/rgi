@@ -280,7 +280,7 @@ def test_rgi_effluxpump_model(rgi):
     assert validate_results(output_file, 100, 'OprM', 'Perfect') == True
     assert validate_results(
         output_file, 100, 'Pseudomonas aeruginosa CpxR', 'Perfect') == True
-    assert validate_results(output_file, 99.82, 'MexB', 'Strict') == True
+    assert validate_results(output_file, 99.82, 'MexA', 'Strict') == True
     assert validate_results(output_file, 99.59, 'OprM', 'Strict') == True
     assert validate_results(output_file, 98.12, 'nalC', 'Strict') == True
     assert validate_results(output_file, 97.28, 'MexR', 'Strict') == True
