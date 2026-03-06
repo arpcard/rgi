@@ -24,7 +24,7 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 Read or Fragment Counts?
 ------------------------
 
-RGI bwt reports read counts, not fragment counts. Thus, alignment of the R1 and R2 reads from a single fragments will generate a count of 2.
+RGI bwt reports read counts, not fragment counts. Thus, alignment of the R1 and R2 reads from a single fragment will generate a count of 2.
 
 Using RGI bwt
 -------------
