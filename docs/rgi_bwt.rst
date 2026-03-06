@@ -21,6 +21,11 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 
 **Note**: As RGI bwt makes no assumptions about pre-processing of metagenomics data, we suggest prior quality/adaptor trimming of reads with `skewer <https://github.com/relipmoc/skewer>`_ and deduplication of reads using `dedupe.sh <https://sourceforge.net/projects/bbmap/>`_. If needed, down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. Thanks to Allison Guitor of McMaster University for these suggestions.
 
+Read or Fragment Counts?
+------------------------
+
+RGI bwt reports read counts, not fragment counts. Thus, alignment of the R1 and R2 reads from a single fragments will generate a count of 2.
+
 Using RGI bwt
 -------------
 
