@@ -129,23 +129,16 @@ class CARDkmers(object):
 
         os.system("samtools index {input_bam}".format(
             input_bam=self.input_bam_file))
-        aligners = []
-        bam_file = pysam.AlignmentFile(self.input_bam_file, "rb")
-        header = bam_file.text.split("\n")
 
-        for h in header:
-            if "@PG" in h:
-                fields = h.strip().split("\t")
-                for f in fields:
-                    if f.startswith("ID:"):
-                        aligners.append(f[3:])
-        # print(">>>>", aligners)
-        if "KMA" in aligners:
-            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
-                      .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$4"__"$3"__"$5"\\n"$11}""", out=self.fasta_file))
-        else:
-            os.system("""samtools view -F 4 -F 2048 {bam} | while read line; do awk '{cmd}'; done > {out}"""
-                      .format(bam=self.input_bam_file, cmd="""{print ">"$1"__"$3"__"$2"__"$5"\\n"$10}""", out=self.fasta_file))
+        exclude_flag = 4 | 2048
+
+        with open(os.path.join(self.fasta_file), 'w') as fout:
+            with pysam.AlignmentFile(self.input_bam_file, "rb") as bam:
+                for read in bam.fetch(until_eof=True):
+                    if read.flag & exclude_flag:
+                        continue
+                    fout.write('>%s__%s__%s__%s\n%s\n' % (
+                        read.query_name.replace(" ", "_"), read.reference_name, read.flag, read.mapping_quality, read.seq))
 
     def get_bwt_alignment_data(self, header):
         """
