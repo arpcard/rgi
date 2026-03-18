@@ -22,7 +22,7 @@ dependencies:
   - zlib
   - prodigal 2.6.3
   - pyrodigal >=3.0.0
-  - diamond 0.8.36
+  - diamond >=0.8.36
   - oligoarrayaux 3.8
   - samtools 1.22.1
   - bamtools 2.5.2
