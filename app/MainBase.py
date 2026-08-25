@@ -388,6 +388,8 @@ class MainBase(object):
                             help="The option to organize resistance genes based on a category.")
         parser.add_argument('-f', '--frequency', dest="frequency", action="store_true",
                             help="Represent samples based on resistance profile.")
+        parser.add_argument('-l', '--include_loose', dest="include_loose", action="store_true",
+                            help="Include loose predictions.")
         parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap",
                             help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
         parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),
@@ -400,7 +402,7 @@ class MainBase(object):
         return parser
 
     def heatmap_run(self, args):
-        obj = Heatmap(args.input, args.classification, args.frequency,
+        obj = Heatmap(args.input, args.classification, args.frequency, args.include_loose,
                       args.output, args.cluster, args.display, args.debug)
         obj.run()
 
