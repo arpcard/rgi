@@ -14,10 +14,11 @@ class Heatmap(object):
     This is a program that genreates a heatmap of multiple RGI analyses.
     """
 
-    def __init__(self, input, classification, frequency, output, cluster, display, debug):
+    def __init__(self, input, classification, frequency, include_loose,output, cluster, display, debug):
         self.input = input
         self.classification = classification
         self.frequency = frequency
+        self.include_loose = include_loose
         self.output = output
         self.cluster = cluster
         self.display = display
@@ -332,7 +333,7 @@ class Heatmap(object):
                         hsp = max(value.keys(), key=(lambda key: value[key]['bit_score']))
 
                         # Flag to exclude loose hits
-                        if value[hsp]["type_match"] != "Loose":
+                        if value[hsp]["type_match"] != "Loose" or self.include_loose:
                             topmodel = value[hsp]["model_name"]
                             tophits[topmodel] = value[hsp]["type_match"]
 
@@ -409,7 +410,7 @@ class Heatmap(object):
         genelist = sorted(genelist)
 
         # Create a dictionary that will convert type of hit to num. value
-        conversion = {"Perfect": 2, "Strict": 1}
+        conversion = {"Perfect": 3, "Strict": 2, "Loose": 1}
 
         # Apply conversion so hit criteria is number based
         for sample in genes:
@@ -428,7 +429,7 @@ class Heatmap(object):
 
         # Fixed colourmap values (purple, teal, yellow)
         cmap_values = [0, 1, 2, 3]
-        custom_cmap = matplotlib.colors.ListedColormap(['#4c0057', '#00948f', '#feed00'])
+        custom_cmap = matplotlib.colors.ListedColormap(['#000000', '#4c0057', '#00948f', '#feed00'])
         norm = matplotlib.colors.BoundaryNorm(cmap_values, custom_cmap.N)
 
         # If the classification option chosen:
@@ -848,15 +849,16 @@ class Heatmap(object):
                     print('Output file %s: AMR genes are listed in alphabetical order '
                     'and samples have been clustered hierarchically (see SciPy documentation). '
                     'Yellow represents a perfect hit, teal represents a strict hit, purple '
-                    'represents no hit.' %(file_name))
+                    'represents a loose hit, black represents no hit.' %(file_name))
                 elif self.cluster == 'genes':
                     print('Output file %s: AMR genes have been clustered hierarchically. '
                     'Yellow represents a perfect hit, teal represents a strict hit, purple '
-                    'represents no hit.' %(file_name))
+                    'represents a loose hit, black represents no hit.' %(file_name))
                 elif self.cluster == 'both':
                     print('Output file %s: AMR genes and samples have been clustered hierarchically '
                     '(see SciPy documentation). Yellow represents a perfect hit, teal represents a strict hit, purple '
-                    'represents no hit.' %(file_name))
+                    'represents a loose hit, black represents no hit.' %(file_name))
                 else:
                     print('Output file %s: Yellow represents a perfect hit, '
-                    'teal represents a strict hit, purple represents no hit.' %(file_name))
+                    'teal represents a strict hit, purple represents a loose hit,'
+                    ' black represents  no hit.' %(file_name))
