@@ -513,7 +513,7 @@ class BaseModel(object):
             sequence (str): portion on a sequence
         """
         # remove the last 2 characters from header as this is appended by prodigal
-        header = header[:header.rfind("_")]
+        # header = header[:header.rfind("_")]
         genes = False
         # logger.info("[PARTIAL] ARO: {} | contig: {} | filename: {}".format(name, header, fasta_file))
         try:
