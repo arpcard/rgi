@@ -19,7 +19,19 @@ CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalen
 
 **Note**: While CARD's Resistomes & Variants increases the allelic diversity of the reference data for non-clinical samples, it does so at the cost of inflating the allele network problem outlined above. Summarizing results at the level of AMR Gene Family may be more accurate than summarizing at the level of individual antibiotic resistance genes.
 
-**Note**: As RGI bwt makes no assumptions about pre-processing of metagenomics data, we suggest prior quality/adaptor trimming of reads with `skewer <https://github.com/relipmoc/skewer>`_ and deduplication of reads using `dedupe.sh <https://sourceforge.net/projects/bbmap/>`_. If needed, down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. Thanks to Allison Guitor of McMaster University for these suggestions.
+Pre-Processing
+--------------
+
+RGI bwt makes no assumptions about pre-processing of metagenomics data. We suggest prior quality/adaptor trimming of reads with `skewer <https://github.com/relipmoc/skewer>`_ and deduplication of reads using `dedupe.sh <https://sourceforge.net/projects/bbmap/>`_. Thanks to Allison Guitor of McMaster University for these suggestions.
+
+Normalization
+-------------
+
+RGI bwt does not perform any abundance normalization. Its output (allele_mapping_data.txt and gene_mapping_data.txt from rgi bwt) reports raw read counts per detected resistance gene, and normalization is left to the user as a downstream step. We recommended the samsum package (https://github.com/hallamlab/samsum) for computing normalized, relative abundance values directly from RGI bwt's SAM or BAM alignment output. 
+
+CARD and RGI do not prescribe one specific normalization metric for cross-sample comparison, but we can point to two common approaches. The first is a coverage-based metric such as FPKM or RPKM. The second, which our own team has used, is subsampling all samples down to a common total read depth (rarefaction) before comparing resistance gene counts, which sidesteps the need for a per-sample scaling factor entirely by equalizing sequencing effort directly. Down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. 
+
+For complex samples, our recent targeted enrichment work may be useful: `Hackenberger et al. 2025, Applied and Environmental Microbiology <hhttps://pubmed.ncbi.nlm.nih.gov/40019273/>`_. It describes CARPDM, our probe design software, along with two ready-made probe sets, allCARD and clinicalCARD, that enrich ARG-containing DNA before sequencing, increasing the number of resistance-gene mapping reads by up to roughly 600-fold relative to shotgun sequencing in our wastewater and soil testing. This meaningfully reduces the sequencing depth and cost needed to reliably detect low-abundance ARGs in a matrix with heavy DNA background, and its methods section, including the rarefaction approach mentioned above, may be a useful reference point for workflow regardless of whether you use enrichment.
 
 Read or Fragment Counts?
 ------------------------
