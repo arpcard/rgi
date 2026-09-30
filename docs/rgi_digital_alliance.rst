@@ -1,8 +1,8 @@
 .. contents:: **Page Contents**
    :local:
    
-Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm
-=====================================================================
+Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Serial Farm
+========================================================================================
 
 **Order of operations**
 
@@ -10,7 +10,7 @@ Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm
 
    ## Running jobs on computecanada using serial farm method
 
-   - `rgi bwt` was used as example.
+   - `rgi bwt` was used as an example.
 
    ### step 1:
 
@@ -22,7 +22,7 @@ Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm
 
    ### step 3:
 
-   - create table.dat using script make_table_dat.sh with inputs files in all_samples directory
+   - create table.dat using script make_table_dat.sh with input files in all_samples directory
    ./make_table_dat.sh ./all_samples/ > table.dat
 
    ### step 4:
@@ -52,7 +52,7 @@ Running RGI on Digital Alliance (formerly Compute Canada) Serial Farm
          done
     done
 
-This block of code is used to generate the arguments for serial farming. In this example, rgi bwt is used, however depending on the job you are running you may update it according to your specifications.
+This block of code is used to generate the arguments for serial farming. In this example, rgi bwt is used; however, depending on the job you are running you may update it according to your specifications.
 
 **Update the job_script.sh to match used tool**
 
@@ -66,7 +66,7 @@ This block of code is used to generate the arguments for serial farming. In this
    #SBATCH --mail-user=raphenar@mcmaster.ca
    #SBATCH --mail-type=ALL
 
-   # Extracing the $I_FOR-th line from file $TABLE:
+   # Extracting the $I_FOR-th line from file $TABLE:
    LINE=`sed -n ${I_FOR}p "$TABLE"`
 
    # Echoing the command (optional), with the case number prepended:
@@ -80,7 +80,7 @@ This block of code is used to generate the arguments for serial farming. In this
    #echo "rgi bwt $LINE"
    eval "rgi bwt $LINE"
 
-Update this block of code according to which tool you want to use. In this example, rgi bwt is shown, however for your use-case, you may update it accordingly.
+Update this block of code according to which tool you want to use. In this example, rgi bwt is shown; however, for your use-case, you may update it accordingly.
 
 **Creating the table.dat**
 
@@ -92,7 +92,7 @@ To create the table.dat, use the script made before named make_table_dat.sh alon
 
 **Submit multiple jobs using for_loop.sh**
 
-This script is used once all the previous steps are completed. This script allows you to submit multiple jobs into Compute Canada for rgi.
+This script is used once all the previous steps are completed. This script allows you to submit multiple jobs to the Digital Research Alliance of Canada for rgi.
 
 .. code-block:: sh
 
@@ -113,7 +113,7 @@ This script is used once all the previous steps are completed. This script allow
 
 **Resources**
 
-More information on serial farming on Compute Canada can be found here_.
+More information on serial farming on Digital Research Alliance of Canada systems can be found here_.
 
 .. _here: https://docs.computecanada.ca/wiki/Running_jobs#Serial_job
 

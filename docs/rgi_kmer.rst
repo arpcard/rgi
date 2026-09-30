@@ -4,14 +4,14 @@
 K-mer Prediction of Pathogen-of-Origin for AMR Genes
 ----------------------------------------------------
 
-CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provides a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp, but pre-compiled 15-mers are also available) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for matches found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
+CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp, but pre-compiled 15-mers are also available) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for matches found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
 
-**CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
+**CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** The reported results are entirely dependent upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
 
 Citing the RGI kmer_query Algorithms
 ------------------------------------
 
-If you use RGI k-mers in a publication, please cite:  
+If you use RGI k-mers in a publication, please cite:
 
 Wlodarski, M.A., T.T.Y. Lau, B.P. Alcock, A.R. Raphenya, T.E. Ta, F. Maguire, R.G. Beiko, & A.G. McArthur. 2025. CARD k-mers: Unmasking the pathogen hosts and genomic contexts of antimicrobial resistance genes in metagenomic sequences. `bioRxiv, 2025.09.15.676352 <https://www.biorxiv.org/content/10.1101/2025.09.15.676352v1>`_.
 
@@ -22,10 +22,10 @@ The above pre-print provides full validation information and data for RGI k-mers
 
 **Major Findings**:
 
-* The use of domain specific k-mers (i.e., ARG sequences) as reference data outperforms more generalized k-mer reference data (e.g., Kraken2).
+* The use of domain-specific k-mers (i.e., ARG sequences) as reference data outperforms more generalized k-mer reference data (e.g., Kraken2).
 * For pathogen-of-origin prediction, CARD 61-mers classified 75.69% of ARG alleles to the correct species, with an additional 3.0% to the correct genus level, and achieved a low error rate (1.3%). Due to the conservative nature of the algorithm for homologous genes among pathogens, 19.88% of test data were unclassified.
 * For genomic classification, CARD 61-mers correctly identified the genomic origin for 63.18% of chromosome and 20.02% of plasmid ARG alleles, with a low error rate (1.03% for chromosome, 2.5% for plasmid). Due to the conservative nature of the algorithm for horizontally transferred genes among pathogens, the remaining test data were unclassified.
-* We recommend either 15-mers for faster library building and query processing, or 61-mers for a slightly higher accuracy, albeit at worse computational performance.
+* We recommend either 15-mers for faster library building and query processing, or 61-mers for slightly higher accuracy, albeit at worse computational performance.
 
 Using RGI kmer_query
 --------------------
@@ -85,7 +85,7 @@ Load into local or working directory:
 
       rgi load --card_json /path/to/card.json --local
 
-Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded; please adjust accordingly):
 
    .. code-block:: sh
 
@@ -124,7 +124,7 @@ CARD k-mer Classifier analysis of Genome or Assembly DNA Sequences RGI main resu
    rgi kmer_query --rgi --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_main.json --output /path/to/output_file --local
 
-CARD k-mer Classifier analysis of Metagenomics RGI btw results (e.g. using 8 processors, minimum k-mer coverage of 10):
+CARD k-mer Classifier analysis of Metagenomics RGI bwt results (e.g. using 8 processors, minimum k-mer coverage of 10):
 
 .. code-block:: sh
 
@@ -239,14 +239,14 @@ As outlined above, CARD-R's `Resistomes, Variants, & Prevalence Data <https://ca
 				  --batch_size BATCH_SIZE
 				                        number of kmers to query at a time using pyahocorasick--the greater the number the more memory usage (default=100,000)
 
-Example generation of 31 bp k-mers using 20 processors (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+Example generation of 31 bp k-mers using 20 processors (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded; please adjust accordingly):
 
 .. code-block:: sh
 
    rgi kmer_build --input_directory /path/to/wildcard
     --card card_database_v3.0.1.fasta -k 31 --threads 20 --batch_size 100000
 
-The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+The *--skip* flag can be used if you are making k-mers a second time (33 bp in the example below) to avoid re-generating intermediate files (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded; please adjust accordingly):
 
 .. code-block:: sh
 

@@ -4,18 +4,19 @@
 Analyzing Metagenomic Reads
 ---------------------------
 
-RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ , `BWA <http://bio-bwa.sourceforge.net>`_ , or `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR alelle network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps </images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
+RGI can align short DNA sequences in FASTQ format using `Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_, `BWA <http://bio-bwa.sourceforge.net>`_, or `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_. The default and recommended read aligner is `KMA <https://bitbucket.org/genomicepidemiology/kma/src/master>`_ due to its documented `better performance for redundant databases <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ such as CARD. While CARD is not truly redundant, i.e. there are no identical reference sequences, CARD does reflect the `AMR allele network problem <https://pubmed.ncbi.nlm.nih.gov/29335005/>`_ in that many sequences are very similar. For example, the nucleotide sequences of TEM-1 and TEM-2 are `99% similar with no alignment gaps </images/TEM-alignment.jpg>`_. A sample generating short reads from a legitimate TEM-1 gene may result in reads aligned among TEM-1, TEM-2, or other TEM beta-lactamases depending upon the alignment algorithm chosen. The `KMA publication <https://pubmed.ncbi.nlm.nih.gov/30157759/>`_ and our own simulations find KMA best resolves this issue:
 
 .. image:: /images/simulation.jpg
-The above illustrates simulated 90x short read coverage from seven antibiotic resistance gene nucleotide reference sequences in CARD (catB, OXA-1, AAC(6')-Ib, NDM-1, BRP(MBL), QnrB1, CTX-M-15), subsequently aligned with RGI bwt against CARD using Bowtie2 or KMA algorithms. Reads are aligned to a single reference gene using KMA but for Bowtie2 the same reads are aligned across a selection of similar reference sequences, with associated lower MAPQ scores. Note that KMA has limits in its ability to resolve very similar sequences, e.g. all simulated catB3 reads were all aligned to catI and all simulated AAC(6')-Ib reads were aligned to AAC(6')-Ib-cr. These simulated data are available at: https://github.com/raphenya/read-mapping-analysis.
 
-**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default RGI bwt aligned reads to reference sequences from CARD's protein homolog models, protein variant models, rRNA mutation models, and protein over-expression models. However, as outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, e.g. a wild-type gyrase susceptible to fluoroquinolones. As such, earlier versions of RGI were over-reporting antibiotic resistance genes by not checking for these curated mutations. For example, while the KMA algorithm reports SNPs relative to reference, RGI was not screening these SNPs against CARD. Read alignments against the protein variant model, rRNA mutation model, and protein over-expression model reference sequences can now only be listed by use of the new --include_other_models parameter, but at this time these results still do not include comparison to CARD's curated lists of mutations. As such, these often spurious results are no longer included in default RGI bwt output. Support for mutation screening models will be added to future versions of RGI bwt.**
+The above illustrates simulated 90x short read coverage from seven antibiotic resistance gene nucleotide reference sequences in CARD (catB, OXA-1, AAC(6')-Ib, NDM-1, BRP(MBL), QnrB1, CTX-M-15), subsequently aligned with RGI bwt against CARD using Bowtie2 or KMA algorithms. Reads are aligned to a single reference gene using KMA but for Bowtie2 the same reads are aligned across a selection of similar reference sequences, with associated lower MAPQ scores. Note that KMA has limits in its ability to resolve very similar sequences, e.g. all simulated catB3 reads were aligned to catI and all simulated AAC(6')-Ib reads were aligned to AAC(6')-Ib-cr. These simulated data are available at: https://github.com/raphenya/read-mapping-analysis.
 
-For RGI bwt, FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended for non-clinical samples as the allelic diversity for AMR genes is greatly unrepresented in the published literature, with a strong bias towards clinical antibiotic resistance genes and pathogens, hampering high-stringency read mapping for samples with divergent alleles. Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
+**UPDATED RGI version 6.0.0 onward: In earlier versions of RGI, by default RGI bwt aligned reads to reference sequences from CARD's protein homolog models, protein variant models, rRNA gene variant models, and protein overexpression models. However, as outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic-susceptible alleles, e.g. a wild-type gyrase susceptible to fluoroquinolones. As such, earlier versions of RGI were over-reporting antibiotic resistance genes by not checking for these curated mutations. For example, while the KMA algorithm reports SNPs relative to reference, RGI was not screening these SNPs against CARD. Read alignments against the protein variant model, rRNA gene variant model, and protein overexpression model reference sequences can now only be listed by use of the new --include_other_models parameter, but at this time these results still do not include comparison to CARD's curated lists of mutations. As such, these often spurious results are no longer included in default RGI bwt output. Support for mutation screening models will be added to future versions of RGI bwt.**
+
+For RGI bwt, FASTQ sequences can be aligned to the 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMed) or additionally to the *in silico* predicted allelic variants available in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ data set. The latter is highly recommended for non-clinical samples as the allelic diversity for AMR genes is greatly underrepresented in the published literature, with a strong bias towards clinical antibiotic resistance genes and pathogens, hampering high-stringency read mapping for samples with divergent alleles. Inclusion of CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ allows read mapping to predicted allelic variants and AMR gene homologs for a wide variety of pathogens, incorporation of CARD's `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for easier interpretation of predicted AMR genes, and ultimately use of k-mer classifiers for prediction of pathogen-of-origin for FASTQ reads predicted to encode AMR genes (see below).
 
  > `What data is included in CARD? Can I add unpublished data? <https://github.com/arpcard/FAQ#card-faqs>`_
 
-CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD) were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for hundreds of pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, genomic island sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including secondary screen for key mutations. The reported results are entirely dependant upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation. RGI bwt will indicate if the reference sequence for aligned reads is from the 'canonical' curated CARD reference sequences or from CARD's Resistomes & Variants, allowing users to know if the underlying reference is an *in silico* prediction or experimentally validated resistance gene.
+CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ and `Prevalence Data <https://card.mcmaster.ca/prevalence>`_ (nicknamed WildCARD) were generated using the RGI to analyze molecular sequence data available in `NCBI Genomes <https://www.ncbi.nlm.nih.gov/genome/>`_ for hundreds of pathogens of interest (see `Sampling Table <https://card.mcmaster.ca/prevalence>`_). For each of these pathogens, complete chromosome sequences, complete plasmid sequences, genomic island sequences, and whole genome shotgun (WGS) assemblies were analyzed individually by RGI. RGI results were then aggregated to calculate prevalence statistics for distribution of AMR genes among pathogens and plasmids, predicted resistomes, and to produce a catalog of predicted AMR alleles. These data were predicted under RGI's **Perfect** and **Strict** paradigms (see above), the former tracking perfect matches at the amino acid level to the curated reference sequences and mutations in the CARD, while the latter predicts previously unknown variants of known AMR genes, including a secondary screen for key mutations. The reported results are entirely dependent upon the curated AMR detection models in CARD, the algorithms available in RGI, the pathogens sampled, and the sequence data available at NCBI at their time of generation. RGI bwt will indicate if the reference sequence for aligned reads is from the 'canonical' curated CARD reference sequences or from CARD's Resistomes & Variants, allowing users to know if the underlying reference is an *in silico* prediction or experimentally validated resistance gene.
 
 **Note**: While CARD's Resistomes & Variants increases the allelic diversity of the reference data for non-clinical samples, it does so at the cost of inflating the allele network problem outlined above. Summarizing results at the level of AMR Gene Family may be more accurate than summarizing at the level of individual antibiotic resistance genes.
 
@@ -27,11 +28,11 @@ RGI bwt makes no assumptions about pre-processing of metagenomics data. We sugge
 Normalization
 -------------
 
-RGI bwt does not perform any abundance normalization. Its output (allele_mapping_data.txt and gene_mapping_data.txt from rgi bwt) reports raw read counts per detected resistance gene, and normalization is left to the user as a downstream step. We recommended the samsum package (https://github.com/hallamlab/samsum) for computing normalized, relative abundance values directly from RGI bwt's SAM or BAM alignment output. 
+RGI bwt does not perform any abundance normalization. Its output (allele_mapping_data.txt and gene_mapping_data.txt from rgi bwt) reports raw read counts per detected resistance gene, and normalization is left to the user as a downstream step. We recommend the samsum package (https://github.com/hallamlab/samsum) for computing normalized, relative abundance values directly from RGI bwt's SAM or BAM alignment output. 
 
 CARD and RGI do not prescribe one specific normalization metric for cross-sample comparison, but we can point to two common approaches. The first is a coverage-based metric such as FPKM or RPKM. The second, which our own team has used, is subsampling all samples down to a common total read depth (rarefaction) before comparing resistance gene counts, which sidesteps the need for a per-sample scaling factor entirely by equalizing sequencing effort directly. Down-sampling of FASTQ data can be performed using `seqtk <https://github.com/lh3/seqtk>`_. 
 
-For complex samples, our recent targeted enrichment work may be useful: `Hackenberger et al. 2025, Applied and Environmental Microbiology <https://pubmed.ncbi.nlm.nih.gov/40019273/>`_. It describes CARPDM, our probe design software, along with two ready-made probe sets, allCARD and clinicalCARD, that enrich ARG-containing DNA before sequencing, increasing the number of resistance-gene mapping reads by up to roughly 600-fold relative to shotgun sequencing in our wastewater and soil testing. This meaningfully reduces the sequencing depth and cost needed to reliably detect low-abundance ARGs in a matrix with heavy DNA background, and its methods section, including the rarefaction approach mentioned above, may be a useful reference point for workflow regardless of whether you use enrichment.
+For complex samples, our recent targeted enrichment work may be useful: `Hackenberger et al. 2025, Applied and Environmental Microbiology <https://pubmed.ncbi.nlm.nih.gov/40019273/>`_. It describes CARPDM, our probe design software, along with two ready-made probe sets, allCARD and clinicalCARD, that enrich ARG-containing DNA before sequencing, increasing the number of resistance-gene mapping reads by up to roughly 600-fold relative to shotgun sequencing in our wastewater and soil testing. This meaningfully reduces the sequencing depth and cost needed to reliably detect low-abundance ARGs in a matrix with heavy DNA background, and its methods section, including the rarefaction approach mentioned above, may be a useful reference point for workflows regardless of whether you use enrichment.
 
 Read or Fragment Counts?
 ------------------------
@@ -123,14 +124,14 @@ Load into local or working directory:
 
       rgi load --card_json /path/to/card.json --local
 
-Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly):
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded; please adjust accordingly):
 
    .. code-block:: sh
 
       rgi card_annotation -i /path/to/card.json > card_annotation.log 2>&1
       rgi load -i /path/to/card.json --card_annotation card_database_v3.0.1.fasta --local
 
-As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.ka. WildCARD) data:
+As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.k.a. WildCARD) data:
 
    .. code-block:: sh
 
@@ -139,7 +140,7 @@ As outlined above, metagenomics analyses may additionally include CARD's `Resist
       tar -xjf wildcard_data.tar.bz2 -C wildcard
       gunzip wildcard/*.gz
 
-Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the parameter *version_number* depend on the version of CARD data downloaded, please adjust accordingly):
+Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the parameter *version_number* depend on the version of CARD data downloaded; please adjust accordingly):
 
    .. code-block:: sh
 
@@ -150,9 +151,9 @@ Pre-process the WildCARD reference data for metagenomics reads (note that the fi
         --wildcard_index /path/to/wildcard/index-for-model-sequences.txt
         --card_annotation card_database_v3.0.1.fasta --local
 
-RGI will use FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
+RGI will use FASTQ files as provided; be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
 
-The default settings for RGI bwt will align reads using KMA against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, i.e. reference sequences that do not require SNP mapping to predict resistance. The default uses only 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMED):
+The default settings for RGI bwt will align reads using KMA against CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_, i.e. reference sequences that do not require SNP mapping to predict resistance. The default uses only 'canonical' curated CARD reference sequences associated with the Antibiotic Resistance Ontology (i.e. sequences available in GenBank with clear experimental evidence of elevated MIC in a peer-reviewed journal available in PubMed):
 
    .. code-block:: sh
 
@@ -187,7 +188,7 @@ RGI bwt can use an expanded reference set by aligning reads to both 'canonical' 
 Running RGI bwt with FASTQ files - All Model Types
 ```````````````````````````````````````````````````
 
-RGI bwt can also be used to align reads to CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ **plus** `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA mutation models <https://card.mcmaster.ca/ontology/40295>`_, and `protein over-expression models <https://card.mcmaster.ca/ontology/41091>`_. As outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic susceptible alleles, but RGI bwt as of yet does not perform this comparison. Use these results with caution.
+RGI bwt can also be used to align reads to CARD's `protein homolog models <https://card.mcmaster.ca/ontology/40292>`_ **plus** `protein variant models <https://card.mcmaster.ca/ontology/40293>`_, `rRNA gene variant models <https://card.mcmaster.ca/ontology/40295>`_, and `protein overexpression models <https://card.mcmaster.ca/ontology/41091>`_. As outlined above, the latter three model types require comparison to CARD's curated lists of mutations known to confer phenotypic antibiotic resistance to differentiate alleles conferring resistance from antibiotic-susceptible alleles, but RGI bwt as of yet does not perform this comparison. Use these results with caution.
 
 If you have not already done so, you must load CARD reference data for these commands to work. First, remove any previous loads:
 
@@ -208,7 +209,7 @@ Load into local or working directory:
 
       rgi load --card_json /path/to/card.json --local
 
-Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded, please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
+Also pre-process these reference data for metagenomics reads (note that the filename *card_database_v3.0.1.fasta* depends on the version of CARD data downloaded; please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
 
    .. code-block:: sh
 
@@ -216,7 +217,7 @@ Also pre-process these reference data for metagenomics reads (note that the file
       rgi load -i /path/to/card.json
         --card_annotation_all_models card_database_v3.0.1_all.fasta --local
 
-As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.ka. WildCARD) data:
+As outlined above, metagenomics analyses may additionally include CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ protein homolog model reference data if desired. If you wish to include these reference data, additionally download the Resistomes & Variants (a.k.a. WildCARD) data:
 
    .. code-block:: sh
 
@@ -225,7 +226,7 @@ As outlined above, metagenomics analyses may additionally include CARD's `Resist
       tar -xjf wildcard_data.tar.bz2 -C wildcard
       gunzip wildcard/*.gz
 
-Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the paramater *version_number* depend on the version of CARD data downloaded, please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
+Pre-process the WildCARD reference data for metagenomics reads (note that the filenames *wildcard_database_v3.0.2.fasta* and *card_database_v3.0.1.fasta* plus the parameter *version_number* depend on the version of CARD data downloaded; please adjust accordingly). Note the use of the *_all* version of reference files when loading reference data for all model types:
 
    .. code-block:: sh
 
@@ -237,7 +238,7 @@ Pre-process the WildCARD reference data for metagenomics reads (note that the fi
         --card_annotation_all_models card_database_v3.0.1_all.fasta
         --local
 
-RGI will use FASTQ files as provided, be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
+RGI will use FASTQ files as provided; be sure to include linker and quality trimming, plus sorting or any other needed pre-processing prior to using RGI (see suggestions above). **Note**: RGI bwt will assume unpaired reads unless the -2 flag is used. The examples below assume paired reads.
 
 The default settings for RGI bwt will align reads using KMA:
 
@@ -360,7 +361,7 @@ RGI bwt read mapping results at allele level
 
 **Reference Allele Source:**
 
-Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI matches in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
+Entries with *CARD Curation* are aligned to a reference allele from a published, characterized AMR gene, i.e. 'canonical CARD', and thus encode a 100% match to the reference protein sequence. Otherwise, entries will be reported as *in silico* allele predictions based on either **Perfect** or **Strict** RGI matches in CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_, with percent identity to the CARD reference protein reported. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low-identity AMR homolog.
 
 RGI bwt read mapping results at gene level
 ``````````````````````````````````````````
@@ -402,7 +403,7 @@ RGI bwt read mapping results at gene level
 +----------------------------------------------------------+---------------------------------------------------+
 |    Average Length Coverage (bp)                          | Average bp of reference allele(s) covered by reads|
 +----------------------------------------------------------+---------------------------------------------------+
-|    Average MAPQ (Completely Mapped Reads)                | Statistics for reference matches                  |
+|    Average MAPQ (Completely Mapped Reads)                | Average MAPQ value                                |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Number of Mapped Baits                                | not yet supported                                 |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -433,5 +434,5 @@ RGI bwt read mapping results at gene level
 
 **Reference Allele(s) Identity to CARD Reference Protein:**
 
-Gives range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low identity AMR homolog.
+Gives the range of *Reference Allele Source* values reported in the RGI bwt read mapping results at allele level, indicating the range of percent identity at the amino acid level of the encoded proteins to the corresponding CARD reference sequence. Matches with low values should be used with caution, as CARD's `Resistomes & Variants <https://card.mcmaster.ca/genomes>`_ has predicted a low-identity AMR homolog.
 

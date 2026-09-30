@@ -62,13 +62,13 @@ First download the latest AMR reference data from CARD:
       wget https://card.mcmaster.ca/latest/data
       tar -xvf data ./card.json
 
-Load in Local or working directory:
+Load into local or working directory:
 
    .. code-block:: sh
 
       rgi load --card_json /path/to/card.json --local
 
-Load System wide:
+Load system-wide:
 
    .. code-block:: sh
 
@@ -83,7 +83,7 @@ Local or working directory:
 
       rgi database --version --local
 
-System wide :
+System-wide:
 
    .. code-block:: sh
 
@@ -98,7 +98,7 @@ Local or working directory:
 
       rgi clean --local
 
-System wide:
+System-wide:
 
    .. code-block:: sh
 
@@ -126,7 +126,7 @@ Download CARD and WildCARD data:
       tar -xjf wildcard_data.tar.bz2 -C wildcard
       gunzip wildcard/*.gz
 
-Create annotation files (note that the parameter *version_number* depends upon the versions of WildCARD data downloaded, please adjust accordingly):
+Create annotation files (note that the parameter *version_number* depends upon the versions of WildCARD data downloaded; please adjust accordingly):
 
    .. code-block:: sh
 
@@ -134,7 +134,7 @@ Create annotation files (note that the parameter *version_number* depends upon t
       rgi wildcard_annotation -i wildcard --card_json /path/to/card.json
         -v version_number > wildcard_annotation.log 2>&1
 
-Load all data into RGI (note that the FASTA filenames plus the parameter *version_number* depend on the versions of CARD and WildCARD data downloaded, please adjust accordingly):
+Load all data into RGI (note that the FASTA filenames plus the parameter *version_number* depend on the versions of CARD and WildCARD data downloaded; please adjust accordingly):
 
    .. code-block:: sh
 
