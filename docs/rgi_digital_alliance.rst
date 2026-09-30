@@ -8,7 +8,7 @@ Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Ser
 
 .. code-block:: sh
 
-   ## Running jobs on computecanada using serial farm method
+   ## Running jobs on the Digital Research Alliance of Canada using serial farm method
 
    - `rgi bwt` was used as an example.
 
@@ -31,7 +31,7 @@ Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Ser
 
    ### Resource:
 
-   - https://docs.computecanada.ca/wiki/Running_jobs#Serial_job
+   - https://www.alliancecan.ca
 
 
 **Update the make_table_dat.sh**
@@ -115,5 +115,5 @@ This script is used once all the previous steps are completed. This script allow
 
 More information on serial farming on Digital Research Alliance of Canada systems can be found here_.
 
-.. _here: https://docs.computecanada.ca/wiki/Running_jobs#Serial_job
+.. _here: https://www.alliancecan.ca
 
