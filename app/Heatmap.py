@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 class Heatmap(object):
     """
-    This is a program that genreates a heatmap of multiple RGI analyses.
+    This is a program that generates a heatmap of multiple RGI analyses.
     """
 
     def __init__(self, input, classification, frequency, include_loose,output, cluster, display, debug):
@@ -595,7 +595,7 @@ class Heatmap(object):
                 plt.savefig(file_name + '.png', bbox_inches="tight", format="png", pad_inches=0.5)
                 if self.cluster == "samples":
                     print('Output file {fn}: AMR genes categorised by {c} and only unique '
-                    'resistome profiles are displayed with ther frequency and have been '
+                    'resistome profiles are displayed with their frequency and have been '
                     'clustered hierarchically (see SciPy documentation). Yellow '
                     'represents a perfect hit, teal represents a strict hit, purple '
                     'represents no hit. Genes with asterisks (*) appear multiple times '
@@ -603,7 +603,7 @@ class Heatmap(object):
                     'antibiotic resistance ontology (ARO).'.format(fn=file_name, c=classification))
                 else:
                     print('Output file {fn}: AMR genes categorised by {c} and '
-                    'only unique resistome profiles are displayed with ther '
+                    'only unique resistome profiles are displayed with their '
                     'frequency. Yellow represents a perfect hit, teal represents '
                     'a strict hit, purple represents no hit. Genes with asterisks '
                     '(*) appear multiple times because they belong to more than '
@@ -797,11 +797,11 @@ class Heatmap(object):
                 elif self.cluster == 'genes':
                     print('Output file %s: AMR genes have been clustered hierarchically '
                     '(see SciPy documentation) and unique resistome profiles are '
-                    'displayed with ther frequency. Yellow represents a perfect hit, teal represents a strict hit, purple '
+                    'displayed with their frequency. Yellow represents a perfect hit, teal represents a strict hit, purple '
                     'represents no hit.' %(file_name))
                 elif self.cluster == 'both':
                     print('Output file %s: AMR genes and unique resistome profiles '
-                    'displayed with ther frequency have been clustered hierarchically '
+                    'displayed with their frequency have been clustered hierarchically '
                     '(see SciPy documentation). Yellow represents a perfect hit, teal represents a strict hit, purple '
                     'represents no hit.' %(file_name))
                 else:

@@ -452,7 +452,7 @@ class CARDkmers(object):
         if not (all(v == 0 for v in read['genomic_info'].values())):
             if read['genomic_info']['chr'] > self.min-1:
                 if read['genomic_info']['plasmid'] + read['genomic_info']['chr + plasmid'] > self.min-1:
-                    # differnt species and genus, but chr + plasmid kmer
+                    # different species and genus, but chr + plasmid kmer
                     self.get_ambiguous_data(allele, cp_allele)
                 else:
                     # different species and genus only chr kmer (not mobile)

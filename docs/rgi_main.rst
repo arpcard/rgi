@@ -349,9 +349,9 @@ Generating Heat Maps of RGI main Results
 				                        The number of files run will automatically
 				                        be appended to the end of the file name.(default=RGI_heatmap)
 				  -clus {samples,genes,both}, --cluster {samples,genes,both}
-				                        Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).
+				                        Option to use SciPy's hierarchical clustering algorithm to cluster rows (AMR genes) or columns (samples).
 				  -d {plain,fill,text}, --display {plain,fill,text}
-				                        Specify display options for categories (deafult=plain).
+				                        Specify display options for categories (default=plain).
 				  --debug               debug mode
 
 .. image:: /images/heatmap.jpg

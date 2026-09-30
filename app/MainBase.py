@@ -209,7 +209,7 @@ class MainBase(object):
 
     def kmer_query_args(self):
         parser = argparse.ArgumentParser(prog="rgi kmer_query",
-                                         description='{} - {} - Kmer Query \n\nTests sequenes using CARD*kmers'.format(APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
+                                         description='{} - {} - Kmer Query \n\nTests sequences using CARD*kmers'.format(APP_NAME, SOFTWARE_VERSION), formatter_class=RawTextHelpFormatter)
         parser.add_argument('-i', '--input', dest="input", required=True,
                             help="Input file (bam file from RGI*BWT, json file of RGI results, fasta file of sequences)")
         parser.add_argument('--bwt', action="store_true",
@@ -393,9 +393,9 @@ class MainBase(object):
         parser.add_argument('-o', '--output', dest="output", default="RGI_heatmap",
                             help="Name for the output EPS and PNG files.\nThe number of files run will automatically \nbe appended to the end of the file name.(default={})".format('RGI_heatmap'))
         parser.add_argument('-clus', '--cluster', dest="cluster", choices=("samples", "genes", "both"),
-                            help="Option to use SciPy's hiearchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
+                            help="Option to use SciPy's hierarchical clustering algorithm to cluster rows (AMR genes) or columns (samples).")
         parser.add_argument('-d', '--display', dest="display", choices=("plain", "fill", "text"), default="plain",
-                            help="Specify display options for categories (deafult=plain).")
+                            help="Specify display options for categories (default=plain).")
         parser.add_argument('--debug', dest="debug",
                             action="store_true", help="debug mode")
 

@@ -47,7 +47,7 @@ CARD's k-mer classifiers assume the data submitted for analysis has been predict
 
 				Resistance Gene Identifier - 6.0.2 - Kmer Query
 
-				Tests sequenes using CARD*kmers
+				Tests sequences using CARD*kmers
 
 				optional arguments:
 				  -h, --help            show this help message and exit
