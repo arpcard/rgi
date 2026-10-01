@@ -82,25 +82,47 @@ Using RGI bwt
 
 **Note**: The mapq, mapped, and coverage filters are planned features and do not yet work (but values are reported for manual filtering). Support for AMR bait capture methods (--include_baits) is forthcoming.
 
-`BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt:
+`BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt (unpaired reads):
 
    .. code-block:: sh
 
       bwa mem -M -t {threads} {index_directory} {read_one} > {output_sam_file}
 
-`Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt:
+`BWA <http://bio-bwa.sourceforge.net>`_ usage within RGI bwt (paired reads, i.e. when -2 is used):
+
+   .. code-block:: sh
+
+      bwa mem -t {threads} {index_directory} {read_one} {read_two} > {output_sam_file}
+
+`Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt (unpaired reads):
 
    .. code-block:: sh
 
       bowtie2 --very-sensitive-local --threads {threads} -x {index_directory}
         -U {unpaired_reads} -S {output_sam_file}
 
-`KMA <https://bitbucket.org/genomicepidemiology/kma/src/master/>`_ usage within RGI bwt (default):
+`Bowtie2 <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>`_ usage within RGI bwt (paired reads, i.e. when -2 is used):
+
+   .. code-block:: sh
+
+      bowtie2 --quiet --very-sensitive-local --threads {threads} -x {index_directory}
+        -1 {read_one} -2 {read_two} -S {output_sam_file}
+
+`KMA <https://bitbucket.org/genomicepidemiology/kma/src/master/>`_ usage within RGI bwt (default; interleaved or unpaired reads):
 
    .. code-block:: sh
 
       kma -mem_mode -ex_mode -1t1 -vcf -int {read_one} -t {threads}
         -t_db {index_directory} -o {output_sam_file}.temp -sam
+
+`KMA <https://bitbucket.org/genomicepidemiology/kma/src/master/>`_ usage within RGI bwt (default; paired reads, i.e. when -2 is used):
+
+   .. code-block:: sh
+
+      kma -mem_mode -ex_mode -1t1 -vcf -ipe {read_one} {read_two} -t {threads}
+        -t_db {index_directory} -o {output_sam_file}.temp -sam
+
+The aligner options above are fixed within RGI bwt and are not user-adjustable. Note that, apart from Depth (taken from KMA's own results when using KMA), the read counts, Percent Coverage, Length Coverage, and Average MAPQ reported by RGI bwt are calculated from the aligner's SAM output using samtools and bedtools, so they will not necessarily match the summary statistics reported by a standalone aligner run (e.g. KMA's Template_Coverage).
 
 Running RGI bwt with FASTQ files - Restricted to Protein Homolog Models
 ````````````````````````````````````````````````````````````````````````
