@@ -25,6 +25,11 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 * `CARD Frequently Asked Questions <https://github.com/arpcard/FAQ>`_
 * `CBW 2024 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=Z4gAAYRExSg&list=PL3izGL6oi0S_e5T8qx-74WRaMR5K5U8V5&index=8>`_
 
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
+   :backlinks: none
+
 Overview and Use of RGI
 =======================
 
