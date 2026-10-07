@@ -16,7 +16,7 @@ The Resistance Gene Identifier (RGI)
 
 This application is used to predict antibiotic resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
-RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via use of a `Galaxy wrapper <https://toolshed.g2.bx.psu.edu/view/card/rgi/715bc9aeef69>`_ for the `Galaxy <https://galaxyproject.org/tutorials/g101>`_ platform, or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
+RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via the `Galaxy <https://galaxyproject.org>`_ platform (see `Use RGI in Galaxy`_ below), or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
 May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RGI analysis of assembled contigs (FASTA) or metagenomic sequencing reads (FASTQ): `CZ ID AMR Pipeline Workflow <https://chanzuckerberg.zendesk.com/hc/en-us/articles/15091031482644-AMR-Pipeline-Workflow>`_.
 
@@ -118,6 +118,19 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
     .. code-block:: sh
 
         docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0 rgi -h
+
+Use RGI in Galaxy
+-----------------
+
+RGI is available in the `Galaxy <https://galaxyproject.org>`_ web platform through a community-maintained suite of Galaxy tools written by `@tcollins2011 <https://github.com/tcollins2011>`_ and published in the `Galaxy Tool Shed <https://toolshed.g2.bx.psu.edu>`_. The CARD team recommends this suite for Galaxy users:
+
+- `RGI main <https://toolshed.g2.bx.psu.edu/view/tcollins/rgi_main>`_ - resistome prediction from genome assemblies (contigs) or protein sequences, equivalent to ``rgi main``.
+- `RGI bwt <https://toolshed.g2.bx.psu.edu/view/tcollins/rgi_bwt>`_ - alignment of metagenomic sequencing reads to CARD, equivalent to ``rgi bwt``.
+- `CARD <https://toolshed.g2.bx.psu.edu/view/tcollins/data_manager_rgi_card>`_ and `WildCARD <https://toolshed.g2.bx.psu.edu/view/tcollins/data_manager_rgi_wildcard>`_ data managers, which Galaxy administrators use to install CARD reference data on their servers.
+
+On `usegalaxy.org <https://usegalaxy.org>`_, RGI main and RGI bwt are installed in the Metagenomic Analysis tool section, with CARD reference data provided by the server administrators. Other Galaxy servers can install the suite from the Tool Shed. The Galaxy tools may lag the latest RGI release, so check the tool version shown in Galaxy. Questions about the Galaxy tools themselves should go to the `wrapper repository <https://github.com/tcollins2011/collins_galaxy_tools>`_; questions about RGI or CARD should go to this repository's issue tracker or card@mcmaster.ca.
+
+The earlier CARD-maintained Galaxy wrapper (``card/rgi`` in the Tool Shed, from the `rgi_wrapper <https://github.com/arpcard/rgi_wrapper>`_ and `rgi_database_builder <https://github.com/arpcard/rgi_database_builder>`_ repositories) is retired and no longer updated; its last version wraps RGI 5.2.1.
 
 
 Install Development Version
