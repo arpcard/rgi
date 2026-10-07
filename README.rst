@@ -16,7 +16,7 @@ The Resistance Gene Identifier (RGI)
 
 This application is used to predict antibiotic resistome(s) from protein or nucleotide data based on homology and SNP models. The application uses reference data from the `Comprehensive Antibiotic Resistance Database (CARD) <https://card.mcmaster.ca/>`_.
 
-RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via the `Galaxy <https://galaxyproject.org>`_ platform (see `Use RGI in Galaxy`_ below), or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
+RGI analyses can be performed via the CARD website `RGI portal <https://card.mcmaster.ca/analyze/rgi>`_, via the `Galaxy <https://galaxyproject.org>`_ platform (see `Install RGI in Galaxy`_ below), or alternatively you can install RGI from Conda or run RGI from Docker (see below). The instructions below discuss use of RGI at the command line, following a general overview of how RGI works for genomes, genome assemblies, proteomes, and metagenomic sequencing.
 
 May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RGI analysis of assembled contigs (FASTA) or metagenomic sequencing reads (FASTQ): `CZ ID AMR Pipeline Workflow <https://chanzuckerberg.zendesk.com/hc/en-us/articles/15091031482644-AMR-Pipeline-Workflow>`_.
 
@@ -119,13 +119,13 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 
     .. code-block:: sh
 
-        docker pull quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0
+        docker pull quay.io/biocontainers/rgi:6.0.8--pyh05cac1d_0
 
 - RGI can be executed from the container as follows:
 
     .. code-block:: sh
 
-        docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0 rgi -h
+        docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.8--pyh05cac1d_0 rgi -h
 
 Install RGI in Galaxy
 ---------------------
