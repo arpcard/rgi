@@ -127,8 +127,8 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 
         docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0 rgi -h
 
-Installing RGI in Galaxy
-------------------------
+Install RGI in Galaxy
+---------------------
 
 RGI is available in the `Galaxy <https://galaxyproject.org>`_ web platform through a community-maintained suite of Galaxy tools written by `@tcollins2011 <https://github.com/tcollins2011>`_ and published in the `Galaxy Tool Shed <https://toolshed.g2.bx.psu.edu>`_. The CARD team recommends this suite for Galaxy users:
 
