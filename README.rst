@@ -23,15 +23,18 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 **CARD reference sequences and significance cutoffs are under constant curation - as CARD curation evolves, the results of RGI evolve.**
 
 * `CARD Frequently Asked Questions <https://github.com/arpcard/FAQ>`_
-* `CBW 2024 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=Z4gAAYRExSg&list=PL3izGL6oi0S_e5T8qx-74WRaMR5K5U8V5&index=8>`_
+* `CBW 2025 Infectious Disease Genomic Epidemiology - Antimicrobial Resistant Gene (AMR) Analysis using CARD & RGI <https://www.youtube.com/watch?v=OXwLQmg7xUg>`_
 
-.. contents:: Table of Contents
+.. contents:: **Table of Contents**
    :local:
    :depth: 2
    :backlinks: none
 
 Overview and Use of RGI
 =======================
+
+Running RGI
+-----------
 
 * `Help Menu and Usage </docs/rgi_help.rst>`_
 * `Loading CARD Reference Databases </docs/rgi_load.rst>`_
@@ -124,8 +127,8 @@ Install `docker <https://docs.docker.com/get-docker/>`_ on your system if not al
 
         docker run -v $PWD:/data quay.io/biocontainers/rgi:6.0.3--pyha8f3691_0 rgi -h
 
-Use RGI in Galaxy
------------------
+Installing RGI in Galaxy
+------------------------
 
 RGI is available in the `Galaxy <https://galaxyproject.org>`_ web platform through a community-maintained suite of Galaxy tools written by `@tcollins2011 <https://github.com/tcollins2011>`_ and published in the `Galaxy Tool Shed <https://toolshed.g2.bx.psu.edu>`_. The CARD team recommends this suite for Galaxy users:
 
