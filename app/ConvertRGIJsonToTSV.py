@@ -344,6 +344,9 @@ class ConvertJsonToTSV(object):
                                     best_snps = "n/a"
                                     other_snps = "n/a"
 
+                                ordered_categories_list = self.order_categories(
+                                    rgi_data, hsp, ordered)
+
                                 match_dict[hsp] = [hsp, "", "", "", "",
                                                    rgi_data[hsp][ordered[0]
                                                                  ]["type_match"],
@@ -361,12 +364,9 @@ class ConvertJsonToTSV(object):
                                                                  ]["model_type"],
                                                    best_snps,
                                                    other_snps,
-                                                   "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"]
-                                                             if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Drug Class'),
-                                                   "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"]
-                                                             if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Resistance Mechanism'),
-                                                   "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"]
-                                                             if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'AMR Gene Family'),
+                                                   ordered_categories_list[0],
+                                                   ordered_categories_list[1],
+                                                   ordered_categories_list[2],
                                                    "",
                                                    rgi_data[hsp][ordered[0]
                                                                  ]["orf_prot_sequence"],
@@ -383,14 +383,45 @@ class ConvertJsonToTSV(object):
                                                                  ]["hit_start"],
                                                    rgi_data[hsp][ordered[0]
                                                                  ]["hit_end"],
-                                                   "; ".join(rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_name"] for x in rgi_data[hsp][ordered[0]]["ARO_category"]
-                                                             if rgi_data[hsp][ordered[0]]["ARO_category"][x]["category_aro_class_name"] == 'Antibiotic'),
+                                                   ordered_categories_list[3],
                                                    rgi_data[hsp][ordered[0]
                                                                  ]["ast_source"]
                                                    ]
 
                             for key, value in match_dict.items():
                                 writer.writerow(value)
+
+    def order_categories(self, rgi_data, hsp, ordered):
+
+        drug_class_list = sorted(
+            [c["category_aro_name"] for c in rgi_data[hsp][ordered[0]]["ARO_category"].values()
+             if c["category_aro_class_name"] == 'Drug Class'],
+            key=str.lower
+        )
+        drug_class = "; ".join(drug_class_list)
+
+        resistance_mechanism_list = sorted(
+            [c["category_aro_name"] for c in rgi_data[hsp][ordered[0]]["ARO_category"].values()
+             if c["category_aro_class_name"] == 'Resistance Mechanism'],
+            key=str.lower
+        )
+        resistance_mechanism = "; ".join(resistance_mechanism_list)
+
+        amr_gene_family_list = sorted(
+            [c["category_aro_name"] for c in rgi_data[hsp][ordered[0]]["ARO_category"].values()
+             if c["category_aro_class_name"] == 'AMR Gene Family'],
+            key=str.lower
+        )
+        amr_gene_family = "; ".join(amr_gene_family_list)
+
+        antibiotic_list = sorted(
+            [c["category_aro_name"] for c in rgi_data[hsp][ordered[0]]["ARO_category"].values()
+             if c["category_aro_class_name"] == 'Antibiotic'],
+            key=str.lower
+        )
+        antibiotic = "; ".join(antibiotic_list)
+
+        return drug_class, resistance_mechanism, amr_gene_family, antibiotic
 
     def manual():
         h = {}
