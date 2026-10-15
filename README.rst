@@ -151,6 +151,7 @@ The following conda command will install all RGI dependencies (listed below):
 .. code-block:: sh
 
     git clone https://github.com/arpcard/rgi
+    cd rgi
     conda env create -f conda_env.yml
     conda activate rgi
 
