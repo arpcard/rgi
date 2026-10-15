@@ -51,9 +51,11 @@ class BWT(object):
 		Files:
 
 		card_reference.fasta == CARD[homolog]
-		card_reference_all.fasta == CARD[homolog,rRNA,overexpression,variants,knockout]
+		card_reference_all.fasta == CARD[homolog,
+		    rRNA,overexpression,variants,knockout]
 		card_wildcard_reference.fasta == CARD[homolog] + WILD[homolog]
-		card_wildcard_reference_all.fasta == CARD[homolog,rRNA,overexpression,variants,knockout] + WILD[homolog,rRNA,overexpression,variants,knockout]
+		card_wildcard_reference_all.fasta == CARD[homolog,rRNA,overexpression,
+		    variants,knockout] + WILD[homolog,rRNA,overexpression,variants,knockout]
 		"""
         # card canonical
         # CARD[homolog]
@@ -390,7 +392,7 @@ class BWT(object):
 
     def convert_sam_to_bam(self, input_sam_file, output_bam_file):
         """
-        Convert sam file to bam file and use fixmate to fix mate information and mark secondary 
+        Convert sam file to bam file and use fixmate to fix mate information and mark secondary
         alignments (flag 0x100) for reads with multiple alignments.
         """
 
@@ -1519,11 +1521,17 @@ class BWT(object):
                         "; ".join(r["mate_pair"]),
                         r["reference"]["sequence_length"],
                         # r["mutation"],
-                        "; ".join(r["resistomes"]["AMR Gene Family"]),
-                        "; ".join(r["resistomes"]["Drug Class"]),
+                        "; ".join(
+                            sorted(r["resistomes"]["AMR Gene Family"], key=str.lower)),
+                        "; ".join(
+                            sorted(r["resistomes"]["Drug Class"], key=str.lower)),
                         # ,r["predicted_pathogen"]
-                        "; ".join(r["resistomes"]["Resistance Mechanism"]
-                                  ), r["depth"], r["snps"], r["consensus_sequence_dna"], r["consensus_sequence_protein"]
+                        "; ".join(
+                            sorted(r["resistomes"]["Resistance Mechanism"], key=str.lower)),
+                        r["depth"],
+                        r["snps"],
+                        r["consensus_sequence_dna"],
+                        r["consensus_sequence_protein"]
                     ])
 
         # wrtie tab-delimited gene_mapping_data
@@ -1812,10 +1820,11 @@ class BWT(object):
                             "; ".join(
                                 mapping_summary[i]["reference_sequence_length"]),
                             "; ".join(
-                                mapping_summary[i]["AMR Gene Family"]),
-                            "; ".join(mapping_summary[i]["Drug Class"]),
+                                sorted(mapping_summary[i]["AMR Gene Family"], key=str.lower)),
                             "; ".join(
-                                mapping_summary[i]["Resistance Mechanism"])
+                                sorted(mapping_summary[i]["Drug Class"], key=str.lower)),
+                            "; ".join(
+                                sorted(mapping_summary[i]["Resistance Mechanism"], key=str.lower))
                         ])
 
                 else:
@@ -1849,10 +1858,12 @@ class BWT(object):
                         "; ".join(mate_pairs),
                         "; ".join(
                             mapping_summary[i]["reference_sequence_length"]),
-                        "; ".join(mapping_summary[i]["AMR Gene Family"]),
-                        "; ".join(mapping_summary[i]["Drug Class"]),
                         "; ".join(
-                            mapping_summary[i]["Resistance Mechanism"])
+                            sorted(mapping_summary[i]["AMR Gene Family"], key=str.lower)),
+                        "; ".join(
+                            sorted(mapping_summary[i]["Drug Class"], key=str.lower)),
+                        "; ".join(
+                            sorted(mapping_summary[i]["Resistance Mechanism"], key=str.lower))
                     ])
 
     def check_index(self, index_directory, reference_genome):
