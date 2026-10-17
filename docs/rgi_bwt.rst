@@ -340,7 +340,8 @@ RGI bwt read mapping results at allele level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown. Use k-mers to verify pathogen-of-origin.|
+|                                                          | be shown. Use k-mers to predict                   |
+|                                                          | pathogen-of-origin.                               |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to allele       |
 +----------------------------------------------------------+---------------------------------------------------+
@@ -412,7 +413,8 @@ RGI bwt read mapping results at gene level
 |    Resistomes & Variants: Observed Pathogen(s)           | CARD Prevalence pathogens bearing this allele     |
 |                                                          | sequence. If Reference DB is CARD, pathogen used  |
 |                                                          | as the reference in the CARD detection model will |
-|                                                          | be shown. Use k-mers to verify pathogen-of-origin.|
+|                                                          | be shown. Use k-mers to predict                   |
+|                                                          | pathogen-of-origin.                               |
 +----------------------------------------------------------+---------------------------------------------------+
 |    Completely Mapped Reads                               | Number of reads mapped completely to these alleles|
 +----------------------------------------------------------+---------------------------------------------------+

@@ -6,7 +6,7 @@ K-mer Prediction of Pathogen-of-Origin for AMR Genes
 
 CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ provide a data set of AMR alleles and their distribution among pathogens and plasmids. CARD's k-mer classifiers sub-sample these sequences to identify k-mers (default length 61 bp, but pre-compiled 15-mers are also available) that are uniquely found within AMR alleles of individual pathogen species, pathogen genera, pathogen-restricted plasmids, or promiscuous plasmids. CARD's k-mer classifiers can then be used to predict pathogen-of-origin for matches found by RGI for genomes, genome assemblies, metagenomic contigs, or metagenomic reads.
 
-**CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** The reported results are entirely dependent upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_.
+**CARD's k-mer classifiers assume the data submitted for analysis has been predicted to encode AMR genes, via RGI or another AMR bioinformatic tool. The k-mer data set was generated from and is intended exclusively for AMR sequence space.** The reported results are entirely dependent upon the curated AMR detection models in CARD, the algorithms available in RGI, and the pathogens & sequences sampled during generation of CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_. Predictions are limited to the hosts sampled for each AMR gene; see `Interpreting CARD k-mer Predictions`_ below.
 
 Citing the RGI kmer_query Algorithms
 ------------------------------------
@@ -130,6 +130,13 @@ CARD k-mer Classifier analysis of Metagenomics RGI bwt results (e.g. using 8 pro
 
    rgi kmer_query --bwt --kmer_size 61 --threads 8 --minimum 10
     --input /path/to/rgi_bwt.bam --output /path/to/output_file --local
+
+Interpreting CARD k-mer Predictions
+```````````````````````````````````
+
+CARD k-mer predictions are limited to the host species sampled in CARD-R's `Resistomes, Variants, & Prevalence Data <https://card.mcmaster.ca/prevalence>`_ for each AMR gene. The k-mer sets are built only from the allele sequences in that data set, grouped by the host species recorded for each allele, so *kmer_query* can only predict a species or genus that was sampled for the gene in question. An AMR gene carried by a host that was not sampled, including commensal or environmental bacteria such as gut anaerobes, can be labelled with one of the sampled species if it shares k-mers with their alleles, or left unclassified. The hosts sampled for a gene can be seen in its Resistomes & Variants (prevalence) data on the CARD website.
+
+A CARD k-mer prediction is therefore evidence that a sequence resembles alleles known from the predicted host, not proof that the host is present. For example, in CARD 4.0.2 the vanD alleles in Resistomes & Variants come from *Enterococcus faecalis*, *E. faecium*, *Blautia producta*, *Ruthenibacterium lactatiformans* and *Enterocloster clostridioformis*, so a vanD cluster from another gut anaerobe may be labelled *E. faecium*. Because vanB and vanD are common in human gut anaerobes in the absence of vancomycin-resistant enterococci (`Ballard et al. 2005 <https://pubmed.ncbi.nlm.nih.gov/15616278/>`_; `Domingo et al. 2005 <https://pubmed.ncbi.nlm.nih.gov/16251331/>`_), an *Enterococcus* prediction for a vanB or vanD gene from stool or gut metagenomes should not on its own be taken as evidence of VRE.
 
 CARD k-mer Classifier Output
 ````````````````````````````

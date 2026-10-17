@@ -56,7 +56,7 @@ RGI *bwt* aligns short FASTQ reads to CARD's protein homolog model reference seq
 CARD k-mers: Pathogen-of-Origin and Genomic Context Prediction for AMR Genes
 ----------------------------------------------------------------------------
 
-CARD k-mers, run as RGI *kmer_query*, uses k-mers derived from CARD's Resistomes & Variants data to predict the likely pathogen-of-origin (species or genus) and genomic context (chromosome or plasmid) of AMR genes detected by RGI *main* or RGI *bwt*. Pre-compiled 61-mer and 15-mer libraries are available from CARD, and custom libraries can be built with RGI *kmer_build*. See `CARD k-mers </docs/rgi_kmer.rst>`__ for usage; validation data and the analysis workflow are at `mawlodarski/card-kmers <https://github.com/mawlodarski/card-kmers>`__.
+CARD k-mers, run as RGI *kmer_query*, uses k-mers derived from CARD's Resistomes & Variants data to predict the likely pathogen-of-origin (species or genus) and genomic context (chromosome or plasmid) of AMR genes detected by RGI *main* or RGI *bwt*. Predictions are limited to the host species sampled for each gene in Resistomes & Variants, so a gene from an unsampled host may be labelled with a sampled species. Pre-compiled 61-mer and 15-mer libraries are available from CARD, and custom libraries can be built with RGI *kmer_build*. See `CARD k-mers </docs/rgi_kmer.rst>`__ for usage; validation data and the analysis workflow are at `mawlodarski/card-kmers <https://github.com/mawlodarski/card-kmers>`__.
 
 Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Serial Farm
 ----------------------------------------------------------------------------------------
