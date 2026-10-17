@@ -33,15 +33,35 @@ May 2023: Chan Zuckerberg ID (CZ ID) has implemented a web-based platform for RG
 Overview and Use of RGI
 =======================
 
-Running RGI
------------
+Help Menu and Usage
+-------------------
 
-* `Help Menu and Usage </docs/rgi_help.rst>`_
-* `Loading CARD Reference Databases </docs/rgi_load.rst>`_
-* `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`_ (a.k.a. RGI *main*)
-* `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`_ (a.k.a. RGI *bwt*)
-* `K-mer Prediction of Pathogen-of-Origin for AMR Genes </docs/rgi_kmer.rst>`_ (a.k.a. RGI *kmer_query*) (now validated)
-* `Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Serial Farm </docs/rgi_digital_alliance.rst>`_
+RGI is run at the command line as ``rgi <command>``, with commands for loading and managing CARD reference data (e.g. *load*, *auto_load*, *database*), analyzing sequences (*main*, *bwt*), k-mer prediction of pathogen-of-origin (*kmer_query*, *kmer_build*), and generating summaries (e.g. *heatmap*, *tab*). See `Help Menu and Usage </docs/rgi_help.rst>`__ for the full list of commands and their options.
+
+Loading CARD Reference Databases
+--------------------------------
+
+Before analysis, RGI must be loaded with CARD's reference data, optionally together with CARD's Resistomes & Variants data (WildCARD) and the pre-compiled k-mer libraries. Data can be loaded into the working directory (``--local``) or for the RGI installation as a whole. See `Loading CARD Reference Databases </docs/rgi_load.rst>`__.
+
+Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes
+-----------------------------------------------------------------------
+
+RGI *main* predicts open reading frames from DNA FASTA (or uses protein FASTA directly) and detects AMR genes and mutations using CARD's protein homolog, protein variant, protein overexpression, and rRNA gene variant models under the **Perfect**, **Strict**, and **Loose** paradigm, using BLAST or DIAMOND. See `Analyzing Genomes, Genome Assemblies, Metagenomic Contigs, or Proteomes </docs/rgi_main.rst>`__.
+
+Analyzing Metagenomic Reads
+---------------------------
+
+RGI *bwt* aligns short FASTQ reads to CARD's protein homolog model reference sequences (and optionally to CARD's Resistomes & Variants alleles) using KMA (default and recommended), Bowtie2, or BWA, and reports gene- and allele-level read mapping results. See `Analyzing Metagenomic Reads </docs/rgi_bwt.rst>`__.
+
+CARD k-mers: Pathogen-of-Origin and Genomic Context Prediction for AMR Genes
+----------------------------------------------------------------------------
+
+CARD k-mers, run as RGI *kmer_query*, uses k-mers derived from CARD's Resistomes & Variants data to predict the likely pathogen-of-origin (species or genus) and genomic context (chromosome or plasmid) of AMR genes detected by RGI *main* or RGI *bwt*. Pre-compiled 61-mer and 15-mer libraries are available from CARD, and custom libraries can be built with RGI *kmer_build*. See `CARD k-mers </docs/rgi_kmer.rst>`__ for usage; validation data and the analysis workflow are at `mawlodarski/card-kmers <https://github.com/mawlodarski/card-kmers>`__.
+
+Running RGI on Digital Research Alliance of Canada (formerly Compute Canada) Serial Farm
+----------------------------------------------------------------------------------------
+
+Example scripts for running many RGI jobs in parallel (illustrated with RGI *bwt*) using the Digital Research Alliance of Canada serial farm method. See `Running RGI on Digital Research Alliance of Canada Serial Farm </docs/rgi_digital_alliance.rst>`__.
 
 License
 --------
